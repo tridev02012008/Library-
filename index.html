@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hariom Library Ultimate - 5 Shift System</title>
+    <title>Hariom Library Ultimate - Premium Control Panel</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
@@ -14,17 +14,21 @@
             --success-color: #10b981;
             --danger-color: #ef4444;
             --warning-color: #f59e0b;
+            --warning-alert: #f97316; /* 3 din pahle alert ke liye */
             --night-color: #38bdf8;
             --unreserved-color: #475569;
             --text-color: #f8fafc;
+            --active-premium: #312e81; /* Premium Dark Indigo Active Bookings ke liye */
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-color); padding: 15px; }
         .header { background: linear-gradient(135deg, #3b82f6, #8b5cf6); padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
+        
         .admin-section { background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; }
         .admin-section input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #233554; background: #0b0f19; color: white; }
         .btn { padding: 10px 20px; border: none; border-radius: 8px; background: var(--primary-color); color: white; cursor: pointer; font-weight: bold; }
         .btn-danger { background: var(--danger-color); }
+        .btn-logout { background: #475569; font-size: 0.8rem; padding: 5px 10px; }
         
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
         .stat-card { background: var(--card-color); padding: 12px; border-radius: 10px; text-align: center; border-left: 4px solid var(--primary-color); }
@@ -39,8 +43,14 @@
         
         .seat { background: #1e293b; padding: 8px 4px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; font-weight: bold; font-size: 1rem; cursor: pointer; color: white; transition: 0.2s; min-height: 75px; position: relative; border: 1px solid #334155; }
         
+        /* Seat State Stylings */
         .seat.is-unreserved { background: var(--unreserved-color); border-color: #64748b; }
-        .ur-badge { font-size: 0.65rem; background: rgba(255, 255, 255, 0.2); padding: 1px 4px; border-radius: 4px; margin-left: 4px; vertical-align: middle; color: #cbd5e1; }
+        .seat.is-booked { background: var(--active-premium) !important; border-color: var(--primary-color); }
+        .seat.is-allshift { border-color: #eab308; background: #232212 !important; }
+        .seat.has-alert { border: 2px dashed var(--warning-alert) !important; animation: mildBlink 2s infinite; }
+        .seat.has-expired { border: 2px solid var(--danger-color) !important; }
+        
+        .ur-badge { font-size: 0.65rem; background: rgba(255, 255, 255, 0.2); padding: 1px 4px; border-radius: 4px; margin-left: 4px; color: #cbd5e1; }
 
         .indicators { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; margin-top: 5px; }
         .main-shifts { display: flex; justify-content: center; gap: 3px; width: 100%; }
@@ -49,27 +59,29 @@
         .seat.is-unreserved .dot { background: #334155; }
         
         .dot.active { background: var(--success-color); }
+        .dot.alert { background: var(--warning-alert) !important; animation: blink 1.2s infinite; }
         .dot.expired { background: var(--danger-color) !important; animation: blink 1.5s infinite; }
         
         .night-dot { width: 8px; height: 8px; border-radius: 50%; background: transparent; border: 1px dashed #475569; }
         .seat.is-unreserved .night-dot { border-color: #334155; }
         .night-dot.active { background: var(--night-color); border: none; }
-        .night-dot.expired { background: var(--danger-color); border: none; animation: blink 1.5s infinite; }
+        .night-dot.alert { background: var(--warning-alert) !important; border: none; animation: blink 1.2s infinite; }
+        .night-dot.expired { background: var(--danger-color) !important; border: none; animation: blink 1.5s infinite; }
 
         .all-shift-indicator { width: 30px; height: 6px; border-radius: 3px; background: #475569; display: none; }
         .all-shift-indicator.active { background: #eab308; display: block; }
-        .all-shift-indicator.expired { background: var(--danger-color); display: block; animation: blink 1.5s infinite; }
+        .all-shift-indicator.alert { background: var(--warning-alert) !important; display: block; animation: blink 1.2s infinite; }
+        .all-shift-indicator.expired { background: var(--danger-color) !important; display: block; animation: blink 1.5s infinite; }
 
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-
-        .seat.is-allshift { border-color: #eab308; background: #232212; }
-        .seat.has-expired { border-color: var(--danger-color); }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }
+        @keyframes mildBlink { 0% { border-color: var(--warning-alert); } 50% { border-color: transparent; } 100% { border-color: var(--warning-alert); } }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 100; padding: 15px; }
         .modal-content { background: var(--card-color); padding: 20px; border-radius: 15px; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
         .modal-content h3 { margin-bottom: 15px; border-bottom: 1px solid #233554; padding-bottom: 10px; text-align: center; }
         
-        .shift-block { background: #0b0f19; padding: 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #233554; }
+        .shift-block { background: #0b0f19; padding: 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #233554; transition: 0.3s; }
+        .shift-block.disabled-block { opacity: 0.25; pointer-events: none; border-color: #ef444433; }
         .shift-block h4 { color: #a855f7; margin-bottom: 8px; font-size: 0.9rem; display: flex; justify-content: space-between; }
         .shift-block.night-block h4 { color: var(--night-color); }
         .shift-block.all-block h4 { color: #eab308; }
@@ -81,6 +93,7 @@
         
         .waiting-section { background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
         .waiting-item { display: flex; justify-content: space-between; background: #0b0f19; padding: 10px; border-radius: 6px; margin-bottom: 5px; align-items: center; }
+        .modal-actions { display: flex; justify-content: space-between; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -90,7 +103,7 @@
         <p style="font-size: 0.8rem; opacity: 0.8;">Multi-Shift Realtime Control Panel</p>
     </div>
 
-    <div class="admin-section">
+    <div class="admin-section" id="authSection">
         <input type="password" id="adminPhone" placeholder="Enter Admin Mobile Number...">
         <button class="btn" onclick="verifyAdmin()">Verify</button>
     </div>
@@ -119,9 +132,9 @@
         <div class="modal-content">
             <h3 id="modalTitle">Seat Details</h3>
             
-            <div class="shift-block all-block">
+            <div class="shift-block all-block" id="block_all">
                 <h4>Option A: Full Day / All Shift (6 AM - 10 PM)</h4>
-                <div class="form-row full"><div class="form-group"><label>Student Name</label><input type="text" id="name_all"></div></div>
+                <div class="form-row full"><div class="form-group"><label>Student Name</label><input type="text" id="name_all" oninput="toggleModalShifts(this.value)"></div></div>
                 <div class="form-row">
                     <div class="form-group"><label>Phone</label><input type="text" id="phone_all"></div>
                     <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_all"></div>
@@ -129,9 +142,9 @@
                 <div class="form-row full"><div class="form-group"><label>Renewal Date</label><input type="date" id="date_all"></div></div>
             </div>
 
-            <p style="text-align: center; color:#64748b; font-size:0.8rem; margin:10px 0;">— OR USE INDIVIDUAL SHIFTS —</p>
+            <p id="orDivider" style="text-align: center; color:#64748b; font-size:0.8rem; margin:10px 0;">— OR USE INDIVIDUAL SHIFTS —</p>
 
-            <div class="shift-block">
+            <div class="shift-block normal-shift" id="block_m">
                 <h4>1. Morning Shift (6 AM - 10 AM)</h4>
                 <div class="form-row">
                     <div class="form-group"><label>Name</label><input type="text" id="name_m"></div>
@@ -143,7 +156,7 @@
                 </div>
             </div>
 
-            <div class="shift-block">
+            <div class="shift-block normal-shift" id="block_n">
                 <h4>2. Noon Shift (10 AM - 2 PM)</h4>
                 <div class="form-row">
                     <div class="form-group"><label>Name</label><input type="text" id="name_n"></div>
@@ -155,7 +168,7 @@
                 </div>
             </div>
 
-            <div class="shift-block">
+            <div class="shift-block normal-shift" id="block_an">
                 <h4>3. Afternoon Shift (2 PM - 6 PM)</h4>
                 <div class="form-row">
                     <div class="form-group"><label>Name</label><input type="text" id="name_an"></div>
@@ -167,7 +180,7 @@
                 </div>
             </div>
 
-            <div class="shift-block">
+            <div class="shift-block normal-shift" id="block_e">
                 <h4>4. Evening Shift (6 PM - 10 PM)</h4>
                 <div class="form-row">
                     <div class="form-group"><label>Name</label><input type="text" id="name_e"></div>
@@ -179,7 +192,7 @@
                 </div>
             </div>
 
-            <div class="shift-block night-block">
+            <div class="shift-block night-block" id="block_night">
                 <h4>🌙 Extra: Night Shift (10 PM onwards)</h4>
                 <div class="form-row">
                     <div class="form-group"><label>Name</label><input type="text" id="name_night"></div>
@@ -203,55 +216,65 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Admin Numbers Configured Securely
         const allowedAdmins = ["9815761696", "7631427170", "6207479929", "9155435099", "7488038058"]; 
         let isAdminVerified = false;
         let activeSeatNumber = null;
         const TOTAL_SEATS = 105;
         let globalLibraryData = {};
 
+        // Check LocalStorage on Load so admin verification is permanent
+        window.onload = function() {
+            if (localStorage.getItem('hariom_admin_verified') === 'true') {
+                isAdminVerified = true;
+                showLoggedInAdmin();
+            }
+        };
+
         function verifyAdmin() {
             const input = document.getElementById('adminPhone').value;
-            if(allowedAdmins.includes(input)) { isAdminVerified = true; alert("✅ Admin Verified!"); } 
-            else { isAdminVerified = false; alert("❌ Access Denied!"); }
+            if(allowedAdmins.includes(input)) { 
+                isAdminVerified = true; 
+                localStorage.setItem('hariom_admin_verified', 'true');
+                showLoggedInAdmin();
+                alert("✅ Admin Verified Permanently!"); 
+            } else { 
+                isAdminVerified = false; 
+                alert("❌ Access Denied!"); 
+            }
         }
 
+        function showLoggedInAdmin() {
+            document.getElementById('authSection').innerHTML = `
+                <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+                    <span style="color:var(--success-color); font-weight:bold;">⚡ Admin Status: Active (Logged In)</span>
+                    <button class="btn btn-logout" onclick="logoutAdmin()">Logout</button>
+                </div>`;
+        }
+
+        function logoutAdmin() {
+            localStorage.removeItem('hariom_admin_verified');
+            location.reload();
+        }
+
+        // Grid Generation
         const grid = document.getElementById('seatsGrid');
         for(let i=1; i<=TOTAL_SEATS; i++) {
             const el = document.createElement('div');
-            
-            if (i >= 64 && i <= 85) {
-                el.className = 'seat is-unreserved';
-                el.innerHTML = `
-                    <span>${i}<span class="ur-badge">UR</span></span>
-                    <div class="indicators">
-                        <div class="all-shift-indicator" id="all-ind-${i}"></div>
-                        <div class="main-shifts" id="main-shifts-${i}">
-                            <span class="dot" title="Morning"></span>
-                            <span class="dot" title="Noon"></span>
-                            <span class="dot" title="Afternoon"></span>
-                            <span class="dot" title="Evening"></span>
-                        </div>
-                        <div class="night-dot" id="night-ind-${i}" title="Night Shift"></div>
+            const isUR = (i >= 64 && i <= 85);
+            el.className = isUR ? 'seat is-unreserved' : 'seat';
+            el.innerHTML = `
+                <span>${i}${isUR ? '<span class="ur-badge">UR</span>' : ''}</span>
+                <div class="indicators">
+                    <div class="all-shift-indicator" id="all-ind-${i}"></div>
+                    <div class="main-shifts" id="main-shifts-${i}">
+                        <span class="dot" title="Morning"></span>
+                        <span class="dot" title="Noon"></span>
+                        <span class="dot" title="Afternoon"></span>
+                        <span class="dot" title="Evening"></span>
                     </div>
-                `;
-            } else {
-                el.className = 'seat';
-                el.innerHTML = `
-                    <span>${i}</span>
-                    <div class="indicators">
-                        <div class="all-shift-indicator" id="all-ind-${i}"></div>
-                        <div class="main-shifts" id="main-shifts-${i}">
-                            <span class="dot" title="Morning"></span>
-                            <span class="dot" title="Noon"></span>
-                            <span class="dot" title="Afternoon"></span>
-                            <span class="dot" title="Evening"></span>
-                        </div>
-                        <div class="night-dot" id="night-ind-${i}" title="Night Shift"></div>
-                    </div>
-                `;
-            }
-            
+                    <div class="night-dot" id="night-ind-${i}" title="Night Shift"></div>
+                </div>
+            `;
             el.id = `seat-${i}`;
             el.setAttribute('onclick', `openSeatModal(${i})`);
             grid.appendChild(el);
@@ -267,7 +290,12 @@
         function updateUI(seats) {
             let totalIncome = 0;
             let activeBookings = 0;
-            const todayStr = new Date().toISOString().split('T')[0];
+            
+            // Current dates conversion logic
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const threeDaysLater = new Date(today);
+            threeDaysLater.setDate(today.getDate() + 3);
 
             for(let i=1; i<=TOTAL_SEATS; i++) {
                 const seatEl = document.getElementById(`seat-${i}`);
@@ -278,62 +306,87 @@
                 const nightInd = document.getElementById(`night-ind-${i}`);
                 const dots = mainShiftsDiv.querySelectorAll('.dot');
 
+                // Reset ClassNames
                 allInd.className = 'all-shift-indicator';
                 nightInd.className = 'night-dot';
                 dots.forEach(d => d.className = 'dot');
-                
-                if (i >= 64 && i <= 85) {
-                    seatEl.className = 'seat is-unreserved';
-                } else {
-                    seatEl.className = 'seat';
-                }
+                seatEl.className = (i >= 64 && i <= 85) ? 'seat is-unreserved' : 'seat';
 
                 let hasExpired = false;
+                let hasAlert = false;
+                let seatHasAnyBooking = false;
 
                 totalIncome += (parseInt(data.fees_all) || 0) + (parseInt(data.fees_m) || 0) + 
                                (parseInt(data.fees_n) || 0) + (parseInt(data.fees_an) || 0) + 
                                (parseInt(data.fees_e) || 0) + (parseInt(data.fees_night) || 0);
 
+                // Helper to evaluate expiry & alert statuses
+                function checkStatus(dateStr) {
+                    if(!dateStr) return 'none';
+                    const targetDate = new Date(dateStr);
+                    targetDate.setHours(0,0,0,0);
+                    if(targetDate <= today) return 'expired';
+                    if(targetDate <= threeDaysLater) return 'alert';
+                    return 'active';
+                }
+
                 if(data.name_all) {
                     activeBookings++;
+                    seatHasAnyBooking = true;
                     allInd.classList.add('active');
-                    mainShiftsDiv.style.display = 'none';
+                    mainShiftsDiv.style.display = 'none'; // All-Shift hone par baki standard shift gayab ho jayegi
                     seatEl.classList.add('is-allshift');
                     
-                    if(data.date_all && data.date_all <= todayStr) {
-                        allInd.classList.add('expired');
-                        hasExpired = true;
-                    }
+                    const status = checkStatus(data.date_all);
+                    if(status === 'expired') { allInd.classList.add('expired'); hasExpired = true; }
+                    else if(status === 'alert') { allInd.classList.add('alert'); hasAlert = true; }
                 } else {
                     mainShiftsDiv.style.display = 'flex';
-                    
                     const shifts = ['m', 'n', 'an', 'e'];
                     shifts.forEach((s, idx) => {
                         if(data[`name_${s}`]) {
                             activeBookings++;
+                            seatHasAnyBooking = true;
                             dots[idx].classList.add('active');
-                            if(data[`date_${s}`] && data[`date_${s}`] <= todayStr) {
-                                dots[idx].classList.add('expired');
-                                hasExpired = true;
-                            }
+                            
+                            const status = checkStatus(data[`date_${s}`]);
+                            if(status === 'expired') { dots[idx].classList.add('expired'); hasExpired = true; }
+                            else if(status === 'alert') { dots[idx].classList.add('alert'); hasAlert = true; }
                         }
                     });
                 }
 
+                // Night shift checking independent of All shift
                 if(data.name_night) {
                     activeBookings++;
+                    seatHasAnyBooking = true;
                     nightInd.classList.add('active');
-                    if(data.date_night && data.date_night <= todayStr) {
-                        nightInd.classList.add('expired');
-                        hasExpired = true;
-                    }
+                    
+                    const status = checkStatus(data.date_night);
+                    if(status === 'expired') { nightInd.classList.add('expired'); hasExpired = true; }
+                    else if(status === 'alert') { nightInd.classList.add('alert'); hasAlert = true; }
                 }
 
+                // UI Final Premium Color Application logic
+                if(seatHasAnyBooking && !data.name_all) seatEl.classList.add('is-booked');
+                if(hasAlert) seatEl.classList.add('has-alert');
                 if(hasExpired) seatEl.classList.add('has-expired');
             }
 
             document.getElementById('activeBookingsCount').innerText = activeBookings;
             document.getElementById('totalIncome').innerText = '₹' + totalIncome;
+        }
+
+        function toggleModalShifts(allShiftValue) {
+            const normalBlocks = document.querySelectorAll('.normal-shift');
+            const divider = document.getElementById('orDivider');
+            if(allShiftValue.trim() !== "") {
+                normalBlocks.forEach(b => b.classList.add('disabled-block'));
+                divider.style.opacity = '0.2';
+            } else {
+                normalBlocks.forEach(b => b.classList.remove('disabled-block'));
+                divider.style.opacity = '1';
+            }
         }
 
         function openSeatModal(seatNum) {
@@ -349,6 +402,7 @@
                 document.getElementById(`fees_${f}`).value = data[`fees_${f}`] || 0;
             });
 
+            toggleModalShifts(data['name_all'] || '');
             document.getElementById('seatModal').style.display = 'flex';
         }
 
@@ -363,11 +417,22 @@
 
             const update = {};
             const fields = ['all', 'm', 'n', 'an', 'e', 'night'];
+            
+            // If All shift has text, ignore inputs of sub shifts completely
+            const isAllShiftActive = document.getElementById('name_all').value.trim() !== "";
+
             fields.forEach(f => {
-                update[`name_${f}`] = document.getElementById(`name_${f}`).value;
-                update[`phone_${f}`] = document.getElementById(`phone_${f}`).value;
-                update[`date_${f}`] = document.getElementById(`date_${f}`).value;
-                update[`fees_${f}`] = parseInt(document.getElementById(`fees_${f}`).value) || 0;
+                if(isAllShiftActive && ['m', 'n', 'an', 'e'].includes(f)) {
+                    update[`name_${f}`] = "";
+                    update[`phone_${f}`] = "";
+                    update[`date_${f}`] = "";
+                    update[`fees_${f}`] = 0;
+                } else {
+                    update[`name_${f}`] = document.getElementById(`name_${f}`).value;
+                    update[`phone_${f}`] = document.getElementById(`phone_${f}`).value;
+                    update[`date_${f}`] = document.getElementById(`date_${f}`).value;
+                    update[`fees_${f}`] = parseInt(document.getElementById(`fees_${f}`).value) || 0;
+                }
             });
 
             database.ref('library_v3/seats/' + activeSeatNumber).set(update)
@@ -385,10 +450,12 @@
                 document.getElementById('waitPhone').value = '';
             });
         }
+        
         function removeWaiting(key) {
             if(!isAdminVerified) { alert("⚠️ Verify admin status!"); return; }
             database.ref('library_v3/waiting/' + key).remove();
         }
+        
         function updateWaitingUI(waitingData) {
             const container = document.getElementById('waitingListContainer');
             container.innerHTML = '';
