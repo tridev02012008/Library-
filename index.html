@@ -8,17 +8,29 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { padding: 15px; background: #0f172a; color: #f8fafc; }
         .header { background: linear-gradient(135deg, #4f46e5, #7c3aed); padding: 25px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); }
+        
+        /* Stats Dashboard Styling */
         .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .stat-card { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); padding: 15px; border-radius: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
-        .stat-card h3 { font-size: 10px; color: #94a3b8; text-transform: uppercase; }
-        .stat-card p { font-size: 20px; font-weight: bold; color: #fff; margin-top: 5px; }
+        .stat-card { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); padding: 12px 5px; border-radius: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
+        .stat-card h3 { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-card p { font-size: 18px; font-weight: bold; color: #fff; margin-top: 5px; }
+        
         .search-box { width: 100%; padding: 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; color: white; margin-bottom: 20px; }
         .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
         .seat { padding: 15px 5px; text-align: center; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
-        .empty { background: linear-gradient(135deg, #10b981, #059669); }
-        .day { background: linear-gradient(135deg, #3b82f6, #2563eb); }
-        .night { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
-        .full { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        
+        /* Shift Wise Colors for Reserved Seats */
+        .empty { background: linear-gradient(135deg, #10b981, #059669); }          /* Green */
+        .allshift { background: linear-gradient(135deg, #6366f1, #4f46e5); }       /* Indigo */
+        .morning { background: linear-gradient(135deg, #f59e0b, #d97706); }        /* Amber/Orange */
+        .noon { background: linear-gradient(135deg, #3b82f6, #2563eb); }           /* Blue */
+        .afternoon { background: linear-gradient(135deg, #ec4899, #db2777); }      /* Pink */
+        .evening { background: linear-gradient(135deg, #14b8a6, #0d9488); }        /* Teal */
+        .night { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }          /* Purple */
+        
+        /* Special Color for Unreserved Khali Seats (64 to 85) */
+        .unreserved-empty { background: linear-gradient(135deg, #64748b, #475569); border: 2px dashed #94a3b8; } /* Greyish/Silver dashed border */
+
         .expiring { background: linear-gradient(135deg, #ef4444, #b91c1c); box-shadow: 0 0 15px rgba(239, 68, 68, 0.6); animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
         
@@ -32,6 +44,11 @@
         .btn-save { background: #4f46e5; color: white; }
         .btn-cancel { background: #334155; color: white; }
         .btn-clear { background: #b91c1c; color: white; }
+        
+        /* Indicator label style inside modal */
+        .seat-type-tag { font-size: 11px; padding: 3px 8px; border-radius: 5px; font-weight: bold; display: inline-block; margin-bottom: 15px; }
+        .tag-reserved { background: rgba(79, 70, 229, 0.2); color: #818cf8; border: 1px solid #4f46e5; }
+        .tag-unreserved { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; border: 1px solid #64748b; }
     </style>
 </head>
 <body>
@@ -41,19 +58,28 @@
         <p style="font-size: 12px; opacity: 0.8;">Premium Management System</p>
     </div>
 
+    <!-- Shift Count Dashboard -->
     <div class="stats">
-        <div class="stat-card"><h3>Day</h3><p id="count-day">0</p></div>
-        <div class="stat-card"><h3>Night</h3><p id="count-night">0</p></div>
-        <div class="stat-card"><h3>Vacant</h3><p id="count-vacant">175</p></div>
+        <div class="stat-card"><h3>Vacant (Khali)</h3><p id="count-vacant">105</p></div>
+        <div class="stat-card"><h3>All Shift (6am-10pm)</h3><p id="count-allshift">0</p></div>
+        <div class="stat-card"><h3>Morning (6am-10am)</h3><p id="count-morning">0</p></div>
+        <div class="stat-card"><h3>Noon (10am-2pm)</h3><p id="count-noon">0</p></div>
+        <div class="stat-card"><h3>Afternoon (2pm-6pm)</h3><p id="count-afternoon">0</p></div>
+        <div class="stat-card"><h3>Evening (6pm-10pm)</h3><p id="count-evening">0</p></div>
+        <div class="stat-card"><h3>Night (10pm-6am)</h3><p id="count-night">0</p></div>
     </div>
 
-    <input type="text" id="search" class="search-box" placeholder="Search by name or number..." oninput="filterSeats()">
+    <input type="text" id="search" class="search-box" placeholder="Search by name or seat number..." oninput="filterSeats()">
 
     <div class="grid" id="seats-grid"></div>
 
     <div class="modal" id="seatModal">
         <div class="modal-content">
-            <h2 id="modal-title" style="margin-bottom:20px;">Seat Details</h2>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h2 id="modal-title">Seat Details</h2>
+                <span id="seatTypeTag" class="seat-type-tag"></span>
+            </div>
+            
             <div class="form-group">
                 <label>Name</label>
                 <input type="text" id="studentName">
@@ -67,12 +93,15 @@
                 <input type="date" id="renewalDate">
             </div>
             <div class="form-group">
-                <label>Shift</label>
+                <label>Shift Selection</label>
                 <select id="studentShift">
                     <option value="empty">Khali (Empty)</option>
-                    <option value="day">Day Only</option>
-                    <option value="night">Night Only</option>
-                    <option value="full">Full Day</option>
+                    <option value="allshift">All Shift (6 AM - 10 PM)</option>
+                    <option value="morning">Morning (6 AM - 10 AM)</option>
+                    <option value="noon">Noon (10 AM - 2 PM)</option>
+                    <option value="afternoon">Afternoon (2 PM - 6 PM)</option>
+                    <option value="evening">Evening (6 PM - 10 PM)</option>
+                    <option value="night">Night (10 PM - 6 AM)</option>
                 </select>
             </div>
             <div class="btn-group">
@@ -84,8 +113,14 @@
     </div>
 
     <script>
-        let libraryData = JSON.parse(localStorage.getItem('library_175_data')) || {};
+        const TOTAL_SEATS = 105;
+        let libraryData = JSON.parse(localStorage.getItem('library_105_shifts_data')) || {};
         let activeSeat = null;
+
+        // Check if a seat is unreserved (64 to 85)
+        function isUnreservedSeat(seatNo) {
+            return seatNo >= 64 && seatNo <= 85;
+        }
 
         function isExpiring(dateStr) {
             if(!dateStr) return false;
@@ -99,11 +134,19 @@
         function initGrid() {
             const grid = document.getElementById('seats-grid');
             grid.innerHTML = '';
-            for(let i = 1; i <= 175; i++) {
+            for(let i = 1; i <= TOTAL_SEATS; i++) {
                 const data = libraryData[i] || { name: '', phone: '', shift: 'empty', renewalDate: '' };
                 const div = document.createElement('div');
+                
                 let cssClass = `seat ${data.shift}`;
-                if(data.shift !== 'empty' && isExpiring(data.renewalDate)) cssClass = 'seat expiring';
+                
+                // If seat is empty AND falls between 64 and 85, apply special Unreserved class
+                if(data.shift === 'empty' && isUnreservedSeat(i)) {
+                    cssClass = 'seat unreserved-empty';
+                } else if(data.shift !== 'empty' && isExpiring(data.renewalDate)) {
+                    cssClass = 'seat expiring';
+                }
+                
                 div.className = cssClass;
                 div.id = `seat-card-${i}`;
                 div.innerText = i;
@@ -116,6 +159,17 @@
         function openModal(seatNo) {
             activeSeat = seatNo;
             document.getElementById('modal-title').innerText = `Seat ${seatNo}`;
+            
+            // Set Reserved/Unreserved tag in modal popup
+            const tag = document.getElementById('seatTypeTag');
+            if(isUnreservedSeat(seatNo)) {
+                tag.innerText = "UNRESERVED";
+                tag.className = "seat-type-tag tag-unreserved";
+            } else {
+                tag.innerText = "RESERVED";
+                tag.className = "seat-type-tag tag-reserved";
+            }
+
             const data = libraryData[seatNo] || { name: '', phone: '', shift: 'empty', renewalDate: '' };
             document.getElementById('studentName').value = data.name;
             document.getElementById('studentPhone').value = data.phone;
@@ -135,29 +189,35 @@
             if(shift === 'empty') delete libraryData[activeSeat];
             else libraryData[activeSeat] = { name, phone, shift, renewalDate };
             
-            localStorage.setItem('library_175_data', JSON.stringify(libraryData));
+            localStorage.setItem('library_105_shifts_data', JSON.stringify(libraryData));
             initGrid(); closeModal();
         }
 
-        function clearSeat() { delete libraryData[activeSeat]; localStorage.setItem('library_175_data', JSON.stringify(libraryData)); initGrid(); closeModal(); }
+        function clearSeat() { delete libraryData[activeSeat]; localStorage.setItem('library_105_shifts_data', JSON.stringify(libraryData)); initGrid(); closeModal(); }
 
         function updateStats() {
-            let day = 0, night = 0, occupied = 0;
-            for(let i = 1; i <= 175; i++) {
+            let counts = { allshift: 0, morning: 0, noon: 0, afternoon: 0, evening: 0, night: 0, occupied: 0 };
+            
+            for(let i = 1; i <= TOTAL_SEATS; i++) {
                 if(libraryData[i]) {
-                    occupied++;
-                    if(libraryData[i].shift.includes('day')) day++;
-                    if(libraryData[i].shift.includes('night')) night++;
+                    counts.occupied++;
+                    if(counts.hasOwnProperty(libraryData[i].shift)) {
+                        counts[libraryData[i].shift]++;
+                    }
                 }
             }
-            document.getElementById('count-day').innerText = day;
-            document.getElementById('count-night').innerText = night;
-            document.getElementById('count-vacant').innerText = 175 - occupied;
+            document.getElementById('count-allshift').innerText = counts.allshift;
+            document.getElementById('count-morning').innerText = counts.morning;
+            document.getElementById('count-noon').innerText = counts.noon;
+            document.getElementById('count-afternoon').innerText = counts.afternoon;
+            document.getElementById('count-evening').innerText = counts.evening;
+            document.getElementById('count-night').innerText = counts.night;
+            document.getElementById('count-vacant').innerText = TOTAL_SEATS - counts.occupied;
         }
 
         function filterSeats() {
             const val = document.getElementById('search').value.toLowerCase();
-            for(let i = 1; i <= 175; i++) {
+            for(let i = 1; i <= TOTAL_SEATS; i++) {
                 const card = document.getElementById(`seat-card-${i}`);
                 const data = libraryData[i];
                 let match = i.toString() === val;
