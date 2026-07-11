@@ -28,7 +28,6 @@
         .admin-section input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #233554; background: #0b0f19; color: white; }
         .btn { padding: 10px 20px; border: none; border-radius: 8px; background: var(--primary-color); color: white; cursor: pointer; font-weight: bold; }
         .btn-danger { background: var(--danger-color); }
-        .btn-logout { background: #475569; font-size: 0.8rem; padding: 5px 10px; }
         
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
         .stat-card { background: var(--card-color); padding: 12px; border-radius: 10px; text-align: center; border-left: 4px solid var(--primary-color); }
@@ -103,7 +102,8 @@
         <p style="font-size: 0.8rem; opacity: 0.8;">Multi-Shift Realtime Control Panel</p>
     </div>
 
-    <div class="admin-section" id="authSection">
+    <!-- Admin Section: UI fixed blocks always looking same -->
+    <div class="admin-section">
         <input type="password" id="adminPhone" placeholder="Enter Admin Mobile Number...">
         <button class="btn" onclick="verifyAdmin()">Verify</button>
     </div>
@@ -222,38 +222,26 @@
         const TOTAL_SEATS = 105;
         let globalLibraryData = {};
 
-        // Check LocalStorage on Load so admin verification is permanent
+        // Hidden auto-fill functionality on load
         window.onload = function() {
-            if (localStorage.getItem('hariom_admin_verified') === 'true') {
+            const savedAdmin = localStorage.getItem('hariom_saved_admin');
+            if (savedAdmin && allowedAdmins.includes(savedAdmin)) {
                 isAdminVerified = true;
-                showLoggedInAdmin();
+                document.getElementById('adminPhone').value = savedAdmin;
             }
         };
 
         function verifyAdmin() {
-            const input = document.getElementById('adminPhone').value;
+            const input = document.getElementById('adminPhone').value.trim();
             if(allowedAdmins.includes(input)) { 
                 isAdminVerified = true; 
-                localStorage.setItem('hariom_admin_verified', 'true');
-                showLoggedInAdmin();
-                alert("✅ Admin Verified Permanently!"); 
+                localStorage.setItem('hariom_saved_admin', input);
+                alert("✅ Admin Verified & Saved!"); 
             } else { 
                 isAdminVerified = false; 
+                localStorage.removeItem('hariom_saved_admin');
                 alert("❌ Access Denied!"); 
             }
-        }
-
-        function showLoggedInAdmin() {
-            document.getElementById('authSection').innerHTML = `
-                <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-                    <span style="color:var(--success-color); font-weight:bold;">⚡ Admin Status: Active (Logged In)</span>
-                    <button class="btn btn-logout" onclick="logoutAdmin()">Logout</button>
-                </div>`;
-        }
-
-        function logoutAdmin() {
-            localStorage.removeItem('hariom_admin_verified');
-            location.reload();
         }
 
         // Grid Generation
@@ -291,7 +279,6 @@
             let totalIncome = 0;
             let activeBookings = 0;
             
-            // Current dates conversion logic
             const today = new Date();
             today.setHours(0,0,0,0);
             const threeDaysLater = new Date(today);
@@ -306,7 +293,6 @@
                 const nightInd = document.getElementById(`night-ind-${i}`);
                 const dots = mainShiftsDiv.querySelectorAll('.dot');
 
-                // Reset ClassNames
                 allInd.className = 'all-shift-indicator';
                 nightInd.className = 'night-dot';
                 dots.forEach(d => d.className = 'dot');
@@ -320,7 +306,6 @@
                                (parseInt(data.fees_n) || 0) + (parseInt(data.fees_an) || 0) + 
                                (parseInt(data.fees_e) || 0) + (parseInt(data.fees_night) || 0);
 
-                // Helper to evaluate expiry & alert statuses
                 function checkStatus(dateStr) {
                     if(!dateStr) return 'none';
                     const targetDate = new Date(dateStr);
@@ -334,7 +319,7 @@
                     activeBookings++;
                     seatHasAnyBooking = true;
                     allInd.classList.add('active');
-                    mainShiftsDiv.style.display = 'none'; // All-Shift hone par baki standard shift gayab ho jayegi
+                    mainShiftsDiv.style.display = 'none'; 
                     seatEl.classList.add('is-allshift');
                     
                     const status = checkStatus(data.date_all);
@@ -356,7 +341,6 @@
                     });
                 }
 
-                // Night shift checking independent of All shift
                 if(data.name_night) {
                     activeBookings++;
                     seatHasAnyBooking = true;
@@ -367,7 +351,6 @@
                     else if(status === 'alert') { nightInd.classList.add('alert'); hasAlert = true; }
                 }
 
-                // UI Final Premium Color Application logic
                 if(seatHasAnyBooking && !data.name_all) seatEl.classList.add('is-booked');
                 if(hasAlert) seatEl.classList.add('has-alert');
                 if(hasExpired) seatEl.classList.add('has-expired');
@@ -417,8 +400,6 @@
 
             const update = {};
             const fields = ['all', 'm', 'n', 'an', 'e', 'night'];
-            
-            // If All shift has text, ignore inputs of sub shifts completely
             const isAllShiftActive = document.getElementById('name_all').value.trim() !== "";
 
             fields.forEach(f => {
