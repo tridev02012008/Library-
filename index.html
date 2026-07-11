@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hariom Library Ultimate - Premium Control Panel</title>
+    <title>Hariom Smart Library - Ultimate Control Panel</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
@@ -14,11 +14,13 @@
             --success-color: #10b981;
             --danger-color: #ef4444;
             --warning-color: #f59e0b;
-            --warning-alert: #f97316; /* 3 din pahle alert ke liye */
+            --warning-alert: #f97316; 
             --night-color: #38bdf8;
-            --unreserved-color: #475569;
+            --unreserved-color: #334155;
             --text-color: #f8fafc;
-            --active-premium: #312e81; /* Premium Dark Indigo Active Bookings ke liye */
+            
+            --active-booking-bg: #1e1b4b; 
+            --active-booking-border: #818cf8;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-color); padding: 15px; }
@@ -40,40 +42,38 @@
         
         .seats-container { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 30px; }
         
-        .seat { background: #1e293b; padding: 8px 4px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; font-weight: bold; font-size: 1rem; cursor: pointer; color: white; transition: 0.2s; min-height: 75px; position: relative; border: 1px solid #334155; }
+        .seat { background: #1e293b; padding: 8px 4px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; font-weight: bold; font-size: 1rem; cursor: pointer; color: white; transition: 0.2s; min-height: 75px; position: relative; border: 1px solid #475569; }
         
-        /* Seat State Stylings */
-        .seat.is-unreserved { background: var(--unreserved-color); border-color: #64748b; }
-        .seat.is-booked { background: var(--active-premium) !important; border-color: var(--primary-color); }
-        .seat.is-allshift { border-color: #eab308; background: #232212 !important; }
-        .seat.has-alert { border: 2px dashed var(--warning-alert) !important; animation: mildBlink 2s infinite; }
-        .seat.has-expired { border: 2px solid var(--danger-color) !important; }
-        
-        .ur-badge { font-size: 0.65rem; background: rgba(255, 255, 255, 0.2); padding: 1px 4px; border-radius: 4px; margin-left: 4px; color: #cbd5e1; }
+        .seat.is-unreserved { background: #1a2333; border-color: #475569; position: relative; }
+        .seat.is-unreserved::after { content: 'UR'; position: absolute; top: 2px; right: 4px; font-size: 0.6rem; color: #94a3b8; background: rgba(255,255,255,0.07); padding: 1px 3px; border-radius: 3px; }
 
+        .seat.is-booked { background: var(--active-booking-bg) !important; border-color: var(--active-booking-border) !important; }
+        .seat.is-allshift { border-color: #eab308 !important; background: #232212 !important; }
+        
+        .seat.has-alert { border: 2px dashed var(--warning-alert) !important; animation: mildBlink 2s infinite; }
+        .seat.has-expired { border: 2px dashed var(--danger-color) !important; background: #2d1015 !important; animation: severeBlink 1.5s infinite; }
+        
         .indicators { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; margin-top: 5px; }
         .main-shifts { display: flex; justify-content: center; gap: 3px; width: 100%; }
         
         .dot { width: 6px; height: 6px; border-radius: 50%; background: #475569; transition: 0.2s; }
-        .seat.is-unreserved .dot { background: #334155; }
-        
         .dot.active { background: var(--success-color); }
         .dot.alert { background: var(--warning-alert) !important; animation: blink 1.2s infinite; }
-        .dot.expired { background: var(--danger-color) !important; animation: blink 1.5s infinite; }
+        .dot.expired { background: var(--danger-color) !important; animation: blink 1.2s infinite; }
         
         .night-dot { width: 8px; height: 8px; border-radius: 50%; background: transparent; border: 1px dashed #475569; }
-        .seat.is-unreserved .night-dot { border-color: #334155; }
         .night-dot.active { background: var(--night-color); border: none; }
         .night-dot.alert { background: var(--warning-alert) !important; border: none; animation: blink 1.2s infinite; }
-        .night-dot.expired { background: var(--danger-color) !important; border: none; animation: blink 1.5s infinite; }
+        .night-dot.expired { background: var(--danger-color) !important; border: none; animation: blink 1.2s infinite; }
 
         .all-shift-indicator { width: 30px; height: 6px; border-radius: 3px; background: #475569; display: none; }
         .all-shift-indicator.active { background: #eab308; display: block; }
         .all-shift-indicator.alert { background: var(--warning-alert) !important; display: block; animation: blink 1.2s infinite; }
-        .all-shift-indicator.expired { background: var(--danger-color) !important; display: block; animation: blink 1.5s infinite; }
+        .all-shift-indicator.expired { background: var(--danger-color) !important; display: block; animation: blink 1.2s infinite; }
 
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }
         @keyframes mildBlink { 0% { border-color: var(--warning-alert); } 50% { border-color: transparent; } 100% { border-color: var(--warning-alert); } }
+        @keyframes severeBlink { 0% { border-color: var(--danger-color); } 50% { border-color: transparent; } 100% { border-color: var(--danger-color); } }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 100; padding: 15px; }
         .modal-content { background: var(--card-color); padding: 20px; border-radius: 15px; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
@@ -102,7 +102,6 @@
         <p style="font-size: 0.8rem; opacity: 0.8;">Multi-Shift Realtime Control Panel</p>
     </div>
 
-    <!-- Admin Section: UI fixed blocks always looking same -->
     <div class="admin-section">
         <input type="password" id="adminPhone" placeholder="Enter Admin Mobile Number...">
         <button class="btn" onclick="verifyAdmin()">Verify</button>
@@ -222,13 +221,17 @@
         const TOTAL_SEATS = 105;
         let globalLibraryData = {};
 
-        // Hidden auto-fill functionality on load
-        window.onload = function() {
+        // Persist Verification State
+        function checkLocalAdmin() {
             const savedAdmin = localStorage.getItem('hariom_saved_admin');
             if (savedAdmin && allowedAdmins.includes(savedAdmin)) {
                 isAdminVerified = true;
                 document.getElementById('adminPhone').value = savedAdmin;
             }
+        }
+
+        window.onload = function() {
+            checkLocalAdmin();
         };
 
         function verifyAdmin() {
@@ -236,7 +239,7 @@
             if(allowedAdmins.includes(input)) { 
                 isAdminVerified = true; 
                 localStorage.setItem('hariom_saved_admin', input);
-                alert("✅ Admin Verified & Saved!"); 
+                alert("✅ Admin Verified successfully!"); 
             } else { 
                 isAdminVerified = false; 
                 localStorage.removeItem('hariom_saved_admin');
@@ -244,14 +247,13 @@
             }
         }
 
-        // Grid Generation
         const grid = document.getElementById('seatsGrid');
         for(let i=1; i<=TOTAL_SEATS; i++) {
             const el = document.createElement('div');
             const isUR = (i >= 64 && i <= 85);
             el.className = isUR ? 'seat is-unreserved' : 'seat';
             el.innerHTML = `
-                <span>${i}${isUR ? '<span class="ur-badge">UR</span>' : ''}</span>
+                <span>${i}</span>
                 <div class="indicators">
                     <div class="all-shift-indicator" id="all-ind-${i}"></div>
                     <div class="main-shifts" id="main-shifts-${i}">
@@ -273,6 +275,9 @@
             globalLibraryData = data.seats || {};
             updateUI(globalLibraryData);
             updateWaitingUI(data.waiting || {});
+            
+            // Re-enforce verification after Firebase updates UI to avoid loops
+            checkLocalAdmin();
         });
 
         function updateUI(seats) {
