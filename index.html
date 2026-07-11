@@ -15,7 +15,7 @@
             --danger-color: #ef4444;
             --warning-color: #f59e0b;
             --night-color: #38bdf8;
-            --unreserved-color: #475569; /* Special color for UR seats */
+            --unreserved-color: #475569;
             --text-color: #f8fafc;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
@@ -37,42 +37,34 @@
         
         .seats-container { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 30px; }
         
-        /* Seat Layout Styling */
         .seat { background: #1e293b; padding: 8px 4px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; font-weight: bold; font-size: 1rem; cursor: pointer; color: white; transition: 0.2s; min-height: 75px; position: relative; border: 1px solid #334155; }
         
-        /* Unreserved Special Style */
         .seat.is-unreserved { background: var(--unreserved-color); border-color: #64748b; }
         .ur-badge { font-size: 0.65rem; background: rgba(255, 255, 255, 0.2); padding: 1px 4px; border-radius: 4px; margin-left: 4px; vertical-align: middle; color: #cbd5e1; }
 
-        /* Indicators Container */
         .indicators { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; margin-top: 5px; }
         .main-shifts { display: flex; justify-content: center; gap: 3px; width: 100%; }
         
-        /* Dots System */
         .dot { width: 6px; height: 6px; border-radius: 50%; background: #475569; transition: 0.2s; }
-        .seat.is-unreserved .dot { background: #334155; } /* Darker empty dots for UR seats */
+        .seat.is-unreserved .dot { background: #334155; }
         
         .dot.active { background: var(--success-color); }
         .dot.expired { background: var(--danger-color) !important; animation: blink 1.5s infinite; }
         
-        /* Night Unique Indicator */
         .night-dot { width: 8px; height: 8px; border-radius: 50%; background: transparent; border: 1px dashed #475569; }
         .seat.is-unreserved .night-dot { border-color: #334155; }
         .night-dot.active { background: var(--night-color); border: none; }
         .night-dot.expired { background: var(--danger-color); border: none; animation: blink 1.5s infinite; }
 
-        /* Unified Single Dot for All Shift */
         .all-shift-indicator { width: 30px; height: 6px; border-radius: 3px; background: #475569; display: none; }
         .all-shift-indicator.active { background: #eab308; display: block; }
         .all-shift-indicator.expired { background: var(--danger-color); display: block; animation: blink 1.5s infinite; }
 
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
-        /* Status Colors for Box Border/Background highlights */
         .seat.is-allshift { border-color: #eab308; background: #232212; }
         .seat.has-expired { border-color: var(--danger-color); }
 
-        /* Modal Layout */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 100; padding: 15px; }
         .modal-content { background: var(--card-color); padding: 20px; border-radius: 15px; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
         .modal-content h3 { margin-bottom: 15px; border-bottom: 1px solid #233554; padding-bottom: 10px; text-align: center; }
@@ -113,7 +105,6 @@
 
     <div class="seats-container" id="seatsGrid"></div>
 
-    <!-- Waiting List -->
     <div class="waiting-section">
         <h3>📋 Waiting List</h3>
         <div style="display: flex; gap: 5px; margin-top: 10px;">
@@ -124,12 +115,10 @@
         <div class="waiting-list" id="waitingListContainer"></div>
     </div>
 
-    <!-- Multi Shift Booking Modal -->
     <div class="modal" id="seatModal">
         <div class="modal-content">
             <h3 id="modalTitle">Seat Details</h3>
             
-            <!-- ALL SHIFT BLOCK -->
             <div class="shift-block all-block">
                 <h4>Option A: Full Day / All Shift (6 AM - 10 PM)</h4>
                 <div class="form-row full"><div class="form-group"><label>Student Name</label><input type="text" id="name_all"></div></div>
@@ -142,7 +131,6 @@
 
             <p style="text-align: center; color:#64748b; font-size:0.8rem; margin:10px 0;">— OR USE INDIVIDUAL SHIFTS —</p>
 
-            <!-- 4 SHIFTS BLOCKS -->
             <div class="shift-block">
                 <h4>1. Morning Shift (6 AM - 10 AM)</h4>
                 <div class="form-row">
@@ -191,7 +179,6 @@
                 </div>
             </div>
 
-            <!-- NIGHT SHIFT BLOCK -->
             <div class="shift-block night-block">
                 <h4>🌙 Extra: Night Shift (10 PM onwards)</h4>
                 <div class="form-row">
@@ -216,7 +203,8 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        const allowedAdmins = ["9999999999", "8888888888", "7777777777"]; 
+        // Admin Numbers Configured Securely
+        const allowedAdmins = ["9815761696", "7631427170", "6207479929", "9155435099", "7488038058"]; 
         let isAdminVerified = false;
         let activeSeatNumber = null;
         const TOTAL_SEATS = 105;
@@ -228,12 +216,10 @@
             else { isAdminVerified = false; alert("❌ Access Denied!"); }
         }
 
-        // Generate Grid with Unreserved styling logic
         const grid = document.getElementById('seatsGrid');
         for(let i=1; i<=TOTAL_SEATS; i++) {
             const el = document.createElement('div');
             
-            // Checking if seat is between 64 and 85
             if (i >= 64 && i <= 85) {
                 el.className = 'seat is-unreserved';
                 el.innerHTML = `
@@ -292,7 +278,6 @@
                 const nightInd = document.getElementById(`night-ind-${i}`);
                 const dots = mainShiftsDiv.querySelectorAll('.dot');
 
-                // Reset Statuses but preserve Unreserved Class
                 allInd.className = 'all-shift-indicator';
                 nightInd.className = 'night-dot';
                 dots.forEach(d => d.className = 'dot');
@@ -305,12 +290,10 @@
 
                 let hasExpired = false;
 
-                // Total Revenue Calculation
                 totalIncome += (parseInt(data.fees_all) || 0) + (parseInt(data.fees_m) || 0) + 
                                (parseInt(data.fees_n) || 0) + (parseInt(data.fees_an) || 0) + 
                                (parseInt(data.fees_e) || 0) + (parseInt(data.fees_night) || 0);
 
-                // Case 1: ALL SHIFT BOOKED
                 if(data.name_all) {
                     activeBookings++;
                     allInd.classList.add('active');
@@ -322,7 +305,6 @@
                         hasExpired = true;
                     }
                 } else {
-                    // Case 2: INDIVIDUAL SHIFTS MANAGEMENT
                     mainShiftsDiv.style.display = 'flex';
                     
                     const shifts = ['m', 'n', 'an', 'e'];
@@ -338,7 +320,6 @@
                     });
                 }
 
-                // Case 3: NIGHT SHIFT (Independent Tracker)
                 if(data.name_night) {
                     activeBookings++;
                     nightInd.classList.add('active');
@@ -371,6 +352,10 @@
             document.getElementById('seatModal').style.display = 'flex';
         }
 
+        document.getElementById('seatModal').addEventListener('click', function(e) {
+            if(e.target === this) closeModal();
+        });
+
         function closeModal() { document.getElementById('seatModal').style.display = 'none'; }
 
         function saveMultiShiftData() {
@@ -390,7 +375,6 @@
                 .catch(err => alert("Error saving data: " + err));
         }
 
-        // Waiting List Functions
         function addWaiting() {
             if(!isAdminVerified) { alert("⚠️ Verify admin status!"); return; }
             const name = document.getElementById('waitName').value;
@@ -418,7 +402,6 @@
             });
         }
 
-        // Search Engine
         function filterSeats() {
             const query = document.getElementById('searchBox').value.toLowerCase();
             const fields = ['all', 'm', 'n', 'an', 'e', 'night'];
