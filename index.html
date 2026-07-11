@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Ultimate Shift Manager</title>
+    <!-- Tailwind CSS v4 -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        body { -webkit-tap-highlight-color: transparent; }
+        .seat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 8px; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans pb-24">
+
+    <!-- App Header -->
+    <header class="bg-indigo-600 text-white p-4 sticky top-0 shadow-md z-40 flex justify-between items-center">
+        <div>
+            <h1 class="text-xl font-bold tracking-wide">📚 Smart Library Pro</h1>
+            <p class="text-[11px] text-indigo-200">Day Shifts + Full Day + Night Shift Enabled</p>
+        </div>
+        <div class="text-sm bg-indigo-700 px-3 py-1 rounded-full font-semibold">
+            105 Seats Management
+        </div>
+    </header>
+
+    <!-- App Main Container -->
+    <main class="p-4 max-w-md mx-auto">
+        
+        <!-- Stats Dashboard -->
+        <div class="grid grid-cols-3 gap-2 mb-4">
+            <div class="bg-white p-3 rounded-2xl shadow-xs border border-gray-100 text-center">
+                <p class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Total Day Students</p>
+                <p id="total-day-count" class="text-xl font-black text-indigo-600">0</p>
+            </div>
+            <div class="bg-white p-3 rounded-2xl shadow-xs border border-gray-100 text-center">
+                <p class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Night Students</p>
+                <p id="total-night-count" class="text-xl font-black text-purple-600">0</p>
+            </div>
+            <div class="bg-white p-3 rounded-2xl shadow-xs border border-gray-100 text-center">
+                <p class="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Fully Vacant Seats</p>
+                <p id="vacant-seats-count" class="text-xl font-black text-green-500">0</p>
+            </div>
+        </div>
+
+        <!-- Search & Filters -->
+        <div class="mb-4 space-y-2">
+            <input type="text" id="search-input" oninput="renderSeats()" placeholder="🔍 Student, Phone ya Seat No. khojein..." 
+                   class="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm focus:outline-hidden focus:border-indigo-500 shadow-xs">
+            
+            <!-- Quick View Filter -->
+            <div class="flex gap-1 overflow-x-auto pb-1 text-[11px]">
+                <button onclick="setViewFilter('all')" id="btn-filter-all" class="px-3 py-1.5 rounded-full font-medium bg-indigo-600 text-white shadow-xs shrink-0">All Views</button>
+                <button onclick="setViewFilter('day')" id="btn-filter-day" class="px-3 py-1.5 rounded-full font-medium bg-white text-gray-600 border border-gray-200 shrink-0">Day Occupied</button>
+                <button onclick="setViewFilter('night')" id="btn-filter-night" class="px-3 py-1.5 rounded-full font-medium bg-white text-gray-600 border border-gray-200 shrink-0">Night Occupied</button>
+            </div>
+        </div>
+
+        <!-- Seat Map -->
+        <div class="bg-white p-4 rounded-2xl shadow-xs border border-gray-100 mb-6">
+            <!-- Legend Indicators -->
+            <div class="grid grid-cols-3 gap-1 text-[10px] mb-4 text-center font-medium text-gray-500 bg-gray-50 p-2 rounded-xl">
+                <div class="flex items-center justify-center gap-1"><span class="w-2.5 h-2.5 bg-green-500 rounded-xs"></span> Empty</div>
+                <div class="flex items-center justify-center gap-1"><span class="w-2.5 h-2.5 bg-purple-600 rounded-xs"></span> Night Only</div>
+                <div class="flex items-center justify-center gap-1"><span class="w-2.5 h-2.5 bg-orange-600 rounded-xs"></span> Full Day</div>
+            </div>
+
+            <div id="seat-container" class="seat-grid">
+                <!-- JS handles injection -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Action Sheet (Popup Modal) -->
+    <div id="seat-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-end transition-opacity duration-300">
+        <div class="bg-white w-full rounded-t-3xl p-5 shadow-2xl max-w-md mx-auto max-h-[92vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-3">
+                <div>
+                    <h3 id="modal-title" class="text-lg font-bold text-gray-900">Seat Configuration</h3>
+                    <p id="modal-subtitle" class="text-xs text-gray-400"></p>
+                </div>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 text-2xl font-bold px-2">&times;</button>
+            </div>
+            
+            <!-- Type Selector: Standard Shifts vs Full Day Shift -->
+            <div class="mb-3">
+                <label class="block text-[10px] font-bold text-gray-400 mb-1 tracking-wider uppercase">DAY TIME BLOCK TYPE</label>
+                <div class="grid grid-cols-2 gap-2 bg-gray-100 p-1 rounded-xl text-xs font-bold">
+                    <button onclick="toggleDayMode('slots')" id="mode-slots-btn" class="py-2 rounded-lg text-center bg-white text-indigo-600 shadow-xs">4 Independent Shifts</button>
+                    <button onclick="toggleDayMode('fullday')" id="mode-fullday-btn" class="py-2 rounded-lg text-center text-gray-500">All Shift (6AM - 10PM)</button>
+                </div>
+            </div>
+
+            <!-- Dynamic Shift Tabs Control -->
+            <div id="shift-tabs-wrapper" class="grid grid-cols-4 gap-1 bg-gray-100 p-1 rounded-xl mb-4 text-[11px] font-bold">
+                <button onclick="switchActiveTab('shift1')" id="tab-shift1" class="py-1.5 rounded-lg text-center bg-white text-indigo-600 shadow-xs">6-10AM</button>
+                <button onclick="switchActiveTab('shift2')" id="tab-shift2" class="py-1.5 rounded-lg text-center text-gray-500">10-2PM</button>
+                <button onclick="switchActiveTab('shift3')" id="tab-shift3" class="py-1.5 rounded-lg text-center text-gray-500">2-6PM</button>
+                <button onclick="switchActiveTab('shift4')" id="tab-shift4" class="py-1.5 rounded-lg text-center text-gray-500">6-10PM</button>
+            </div>
+
+            <!-- Night Shift Separate Access Area -->
+            <div class="border-t border-b border-gray-100 py-2 my-3">
+                <button onclick="switchActiveTab('night')" id="tab-night" class="w-full py-2 rounded-xl text-center font-bold text-xs bg-gray-100 text-gray-600 border border-gray-200">
+                    🌙 Toggle Night Shift Panel (10 PM - 6 AM)
+                </button>
+            </div>
+
+            <!-- Form Content Box -->
+            <div class="space-y-3 bg-gray-50 p-3 rounded-2xl border border-gray-100">
+                <div class="flex justify-between items-center">
+                    <span id="form-current-panel-title" class="text-xs font-bold text-indigo-600 uppercase tracking-wide">Editing: Shift 1</span>
+                    <span id="night-badge" class="hidden text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-bold">Night Protection Active</span>
+                </div>
+                
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 mb-1 tracking-wider uppercase">STUDENT NAAM</label>
+                    <input type="text" id="student-name" class="w-full border border-gray-200 rounded-xl p-2.5 bg-white text-sm font-medium focus:outline-hidden focus:border-indigo-500" placeholder="Student ka naam...">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 mb-1 tracking-wider uppercase">MOBILE NUMBER</label>
+                    <input type="tel" id="student-phone" class="w-full border border-gray-200 rounded-xl p-2.5 bg-white text-sm font-medium focus:outline-hidden focus:border-indigo-500" placeholder="Mobile number...">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 mb-1 tracking-wider uppercase">RENEWAL TARIK</label>
+                    <input type="date" id="renewal-date" class="w-full border border-gray-200 rounded-xl p-2.5 bg-white text-sm font-medium focus:outline-hidden focus:border-indigo-500">
+                </div>
+
+                <!-- Night Specific Mandatory Security Fields -->
+                <div id="night-security-box" class="hidden bg-purple-50 p-3 rounded-xl border border-purple-100 space-y-2">
+                    <span class="text-[10px] font-bold text-purple-800 tracking-wider uppercase block">🔴 Night Verification Column</span>
+                    <label class="flex items-center gap-2 text-xs text-gray-700 font-semibold cursor-pointer">
+                        <input type="checkbox" id="security-id-collected" class="w-4 h-4 accent-purple-600 rounded-sm">
+                        <span>Aadhaar Card Photo / Document Jamah Kar Liya?</span>
+                    </label>
+                    <p class="text-[10px] text-purple-600 font-medium">Note: Night shift verification checklist ko select rakhna zaroori hai.</p>
+                </div>
+                
+                <div class="flex gap-2 pt-2">
+                    <button onclick="clearActivePanel()" class="flex-1 bg-white text-gray-600 border border-gray-200 font-bold p-3 text-xs rounded-xl active:scale-95 transition-transform">Clear This Shift</button>
+                    <button onclick="saveActivePanel()" class="flex-1 bg-indigo-600 text-white font-bold p-3 text-xs rounded-xl active:scale-95 transition-transform">Save This Shift</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Engine -->
+    <script>
+        const TOTAL_SEATS = 105;
+        // Storage layout: { seatNo: { isFullDay: false, shift1: {}, ..., night: { name, phone, date, idCollected: true } } }
+        let seatsData = JSON.parse(localStorage.getItem('library_v2_data')) || {};
+        
+        let currentSeat = null;
+        let currentTargetTab = 'shift1'; // shift1, shift2, shift3, shift4, fullday, night
+        let currentViewFilter = 'all';
+
+        function setViewFilter(mode) {
+            currentViewFilter = mode;
+            ['all', 'day', 'night'].forEach(f => {
+                document.getElementById(`btn-filter-${f}`).className = f === mode ? 
+                    "px-3 py-1.5 rounded-full font-medium bg-indigo-600 text-white shadow-xs shrink-0" : 
+                    "px-3 py-1.5 rounded-full font-medium bg-white text-gray-600 border border-gray-200 shrink-0";
+            });
+            renderSeats();
+        }
+
+        function renderSeats() {
+            const container = document.getElementById('seat-container');
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            container.innerHTML = '';
+
+            let dayStudents = 0, nightStudents = 0, fullyVacant = 0;
+
+            for (let i = 1; i <= TOTAL_SEATS; i++) {
+                const data = seatsData[i] || {};
+                
+                let dayBookedCount = 0;
+                let isFullDayActive = data.isFullDay === true;
+                let hasNightActive = data.night && data.night.name && data.night.name.trim() !== '';
+                let matchSearch = false;
+
+                // Checking Day Shifts
+                if (isFullDayActive) {
+                    if (data.fullday && data.fullday.name) {
+                        dayBookedCount = 4;
+                        dayStudents++;
+                        if (data.fullday.name.toLowerCase().includes(query) || (data.fullday.phone && data.fullday.phone.includes(query))) matchSearch = true;
+                    }
+                } else {
+                    for (let s = 1; s <= 4; s++) {
+                        const slot = data[`shift${s}`];
+                        if (slot && slot.name && slot.name.trim() !== '') {
+                            dayBookedCount++;
+                            dayStudents++;
+                            if (slot.name.toLowerCase().includes(query) || (slot.phone && slot.phone.includes(query))) matchSearch = true;
+                        }
+                    }
+                }
+
+                // Checking Night Shift
+                if (hasNightActive) {
+                    nightStudents++;
+                    if (data.night.name.toLowerCase().includes(query) || (data.night.phone && data.night.phone.includes(query))) matchSearch = true;
+                }
+
+                if (i.toString() === query) matchSearch = true;
+                if (dayBookedCount === 0 && !hasNightActive) fullyVacant++;
+
+                // Apply view filter logic
+                if (currentViewFilter === 'day' && dayBookedCount === 0) continue;
+                if (currentViewFilter === 'night' && !hasNightActive) continue;
+                if (query !== '' && !matchSearch) continue;
+
+                // UI Processing Button
+                const btn = document.createElement('button');
+                let bgStyle = 'bg-green-500 text-white'; // Fully open status
+
+                if (isFullDayActive) {
+                    bgStyle = 'bg-orange-600 text-white'; // Blocked completely by Full Day student
+                } else if (dayBookedCount > 0 && dayBookedCount < 4 && !hasNightActive) {
+                    bgStyle = 'bg-blue-500 text-white'; // Mixed dynamic partial daytime
+                } else if (dayBookedCount === 4 && !hasNightActive) {
+                    bgStyle = 'bg-red-500 text-white'; // Standard Daytime filled completely
+                } else if (dayBookedCount === 0 && hasNightActive) {
+                    bgStyle = 'bg-purple-600 text-white'; // Night active, day open
+                } else if (dayBookedCount > 0 && hasNightActive) {
+                    bgStyle = 'bg-linear-to-br from-red-500 to-purple-600 text-white'; // Both blocks loaded together
+                }
+
+                btn.className = `h-14 rounded-xl font-bold flex flex-col items-center justify-center text-xs shadow-xs transition-all active:scale-90 ${bgStyle}`;
+                
+                // Display Title Label Calculation
+                let textLabel = 'Khali';
+                if (isFullDayActive) textLabel = 'Full Day';
+                else if (dayBookedCount > 0 && !hasNightActive) textLabel = `${dayBookedCount}/4 Day`;
+                else if (dayBookedCount === 0 && hasNightActive) textLabel = 'Night Only';
+                else if (dayBookedCount > 0 && hasNightActive) textLabel = `Day+Night`;
+
+                btn.innerHTML = `
+                    <span class="text-[10px] opacity-80">S-${i}</span>
+                    <span class="text-[9px] truncate w-full px-0.5 font-normal text-center">${textLabel}</span>
+                `;
+
+                btn.onclick = () => openConfigModal(i);
+                container.appendChild(btn);
+            }
+
+            document.getElementById('total-day-count').innerText = dayStudents;
+            document.getElementById('total-night-count').innerText = nightStudents;
+            document.getElementById('vacant-seats-count').innerText = fullyVacant;
+        }
+
+        function openConfigModal(seatNo) {
+            currentSeat = seatNo;
+            const data = seatsData[seatNo] || { isFullDay: false };
+            
+            document.getElementById('modal-title').innerText = `Seat No. ${seatNo}`;
+            document.getElementById('modal-subtitle').innerText = `Configure multi-tier shift mapping strategy`;
+
+            if (data.isFullDay) {
+                toggleDayMode('fullday');
+            } else {
+                toggleDayMode('slots');
+            }
+            
+            document.getElementById('seat-modal').classList.remove('hidden');
+        }
+
+        function toggleDayMode(mode) {
+            const data = seatsData[currentSeat] || {};
+            
+            const slotsBtn = document.getElementById('mode-slots-btn');
+            const fullDayBtn = document.getElementById('mode-fullday-btn');
+            const tabsWrapper = document.getElementById('shift-tabs-wrapper');
+
+            if (mode === 'fullday') {
+                fullDayBtn.className = "py-2 rounded-lg text-center bg-white text-indigo-600 shadow-xs";
+                slotsBtn.className = "py-2 rounded-lg text-center text-gray-500";
+                tabsWrapper.classList.add('hidden'); // Individual tabs drop off
+                switchActiveTab('fullday');
+            } else {
+                slotsBtn.className = "py-2 rounded-lg text-center bg-white text-indigo-600 shadow-xs";
+                fullDayBtn.className = "py-2 rounded-lg text-center text-gray-500";
+                tabsWrapper.classList.remove('hidden'); // Reveal parts tracking
+                switchActiveTab('shift1');
+            }
+        }
+
+        function switchActiveTab(targetTab) {
+            currentTargetTab = targetTab;
+            
+            // Set tab indicators highlights layout 
+            for (let i = 1; i <= 4; i++) {
+                const tab = document.getElementById(`tab-shift${i}`);
+                if (`shift${i}` === targetTab) {
+                    tab.className = "py-1.5 rounded-lg text-center bg-white text-indigo-600 shadow-xs";
+                } else {
+                    tab.className = "py-1.5 rounded-lg text-center text-gray-500";
+                }
+            }
+
+            const nightTab = document.getElementById('tab-night');
+            if (targetTab === 'night') {
+                nightTab.className = "w-full py-2 rounded-xl text-center font-bold text-xs bg-purple-600 text-white border border-purple-700 shadow-xs";
+                document.getElementById('night-security-box').classList.remove('hidden');
+                document.getElementById('night-badge').classList.remove('hidden');
+                document.getElementById('form-current-panel-title').innerText = "Editing: Night Shift Panel";
+            } else {
+                nightTab.className = "w-full py-2 rounded-xl text-center font-bold text-xs bg-gray-100 text-gray-600 border border-gray-200";
+                document.getElementById('night-security-box').classList.add('hidden');
+                document.getElementById('night-badge').classList.add('hidden');
+                document.getElementById('form-current-panel-title').innerText = targetTab === 'fullday' ? "Editing: All Shift (Full Day)" : `Editing: Independent ${targetTab.toUpperCase()}`;
+            }
+
+            // Bind values down inside active target object structure
+            const data = seatsData[currentSeat] || {};
+            const activeProfile = data[targetTab] || { name: '', phone: '', date: '', idCollected: false };
+
+            document.getElementById('student-name').value = activeProfile.name || '';
+            document.getElementById('student-phone').value = activeProfile.phone || '';
+            document.getElementById('renewal-date').value = activeProfile.date || '';
+            document.getElementById('security-id-collected').checked = activeProfile.idCollected === true;
+        }
+
+        function saveActivePanel() {
+            const name = document.getElementById('student-name').value.trim();
+            const phone = document.getElementById('student-phone').value.trim();
+            const date = document.getElementById('renewal-date').value;
+            const idCollected = document.getElementById('security-id-collected').checked;
+
+            if (!seatsData[currentSeat]) {
+                seatsData[currentSeat] = { isFullDay: false };
+            }
+
+            // Define overall configuration matrix structure states 
+            if (currentTargetTab === 'fullday') {
+                seatsData[currentSeat].isFullDay = (name !== '');
+            } else if (currentTargetTab.startsWith('shift')) {
+                seatsData[currentSeat].isFull
