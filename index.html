@@ -4,62 +4,67 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Library Pro</title>
-    <link rel="manifest" href="manifest.json">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body { padding: 15px; background: #f5f7fb; }
-        .header { background: #4f46e5; color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { padding: 15px; background: #0f172a; color: #f8fafc; }
+        .header { background: linear-gradient(135deg, #4f46e5, #7c3aed); padding: 25px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); }
         .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .stat-card { background: white; padding: 15px; border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .stat-card h3 { font-size: 11px; color: #6b7280; text-transform: uppercase; margin-bottom: 5px; }
-        .stat-card p { font-size: 24px; font-weight: bold; color: #4f46e5; }
-        .search-box { width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 15px; font-size: 16px; }
-        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px; }
-        .seat { padding: 15px 5px; text-align: center; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; font-size: 14px; }
-        .empty { background: #10b981; }
-        .night { background: #8b5cf6; }
-        .full { background: #f97316; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 100; }
-        .modal-content { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; }
-        .modal-content h2 { margin-bottom: 15px; font-size: 18px; }
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 12px; margin-bottom: 5px; color: #4b5563; }
-        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; }
-        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
-        .btn { flex: 1; padding: 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .stat-card { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); padding: 15px; border-radius: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
+        .stat-card h3 { font-size: 10px; color: #94a3b8; text-transform: uppercase; }
+        .stat-card p { font-size: 20px; font-weight: bold; color: #fff; margin-top: 5px; }
+        .search-box { width: 100%; padding: 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; color: white; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+        .seat { padding: 15px 5px; text-align: center; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+        .empty { background: linear-gradient(135deg, #10b981, #059669); }
+        .day { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .night { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .full { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .expiring { background: linear-gradient(135deg, #ef4444, #b91c1c); box-shadow: 0 0 15px rgba(239, 68, 68, 0.6); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 100; }
+        .modal-content { background: #1e293b; padding: 25px; border-radius: 20px; width: 90%; max-width: 400px; border: 1px solid #334155; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 5px; }
+        .form-group input, .form-group select { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 10px; color: white; }
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
+        .btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .btn-save { background: #4f46e5; color: white; }
-        .btn-cancel { background: #e5e7eb; color: #374151; }
-        .btn-clear { background: #ef4444; color: white; }
+        .btn-cancel { background: #334155; color: white; }
+        .btn-clear { background: #b91c1c; color: white; }
     </style>
 </head>
 <body>
 
     <div class="header">
         <h2>📚 Smart Library Pro</h2>
-        <p style="font-size: 13px; opacity: 0.9; margin-top: 5px;">105 Seats Management</p>
+        <p style="font-size: 12px; opacity: 0.8;">Premium Management System</p>
     </div>
 
     <div class="stats">
-        <div class="stat-card"><h3>Day Students</h3><p id="count-day">0</p></div>
-        <div class="stat-card"><h3>Night Students</h3><p id="count-night">0</p></div>
-        <div class="stat-card"><h3>Vacant Seats</h3><p id="count-vacant">105</p></div>
+        <div class="stat-card"><h3>Day</h3><p id="count-day">0</p></div>
+        <div class="stat-card"><h3>Night</h3><p id="count-night">0</p></div>
+        <div class="stat-card"><h3>Vacant</h3><p id="count-vacant">175</p></div>
     </div>
 
-    <input type="text" id="search" class="search-box" placeholder="Student ya Seat No. khojein..." oninput="filterSeats()">
+    <input type="text" id="search" class="search-box" placeholder="Search by name or number..." oninput="filterSeats()">
 
     <div class="grid" id="seats-grid"></div>
 
-    <!-- Modal Form -->
     <div class="modal" id="seatModal">
         <div class="modal-content">
-            <h2 id="modal-title">Seat Details</h2>
+            <h2 id="modal-title" style="margin-bottom:20px;">Seat Details</h2>
             <div class="form-group">
-                <label>Student Name</label>
-                <input type="text" id="studentName" placeholder="Naam daalein">
+                <label>Name</label>
+                <input type="text" id="studentName">
             </div>
             <div class="form-group">
-                <label>Phone Number</label>
-                <input type="tel" id="studentPhone" placeholder="Mobile no. daalein">
+                <label>Phone</label>
+                <input type="tel" id="studentPhone">
+            </div>
+            <div class="form-group">
+                <label>Renewal Date</label>
+                <input type="date" id="renewalDate">
             </div>
             <div class="form-group">
                 <label>Shift</label>
@@ -72,23 +77,34 @@
             </div>
             <div class="btn-group">
                 <button class="btn btn-cancel" onclick="closeModal()">Cancel</button>
-                <button class="btn btn-clear" onclick="clearSeat()">Clear Seat</button>
+                <button class="btn btn-clear" onclick="clearSeat()">Clear</button>
                 <button class="btn btn-save" onclick="saveSeat()">Save</button>
             </div>
         </div>
     </div>
 
     <script>
-        let libraryData = JSON.parse(localStorage.getItem('library_105_data')) || {};
+        let libraryData = JSON.parse(localStorage.getItem('library_175_data')) || {};
         let activeSeat = null;
+
+        function isExpiring(dateStr) {
+            if(!dateStr) return false;
+            const expiry = new Date(dateStr);
+            const today = new Date();
+            const diffTime = expiry - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays >= 0 && diffDays <= 3;
+        }
 
         function initGrid() {
             const grid = document.getElementById('seats-grid');
             grid.innerHTML = '';
-            for(let i = 1; i <= 105; i++) {
-                const seatState = libraryData[i] || { name: '', phone: '', shift: 'empty' };
+            for(let i = 1; i <= 175; i++) {
+                const data = libraryData[i] || { name: '', phone: '', shift: 'empty', renewalDate: '' };
                 const div = document.createElement('div');
-                div.className = `seat ${seatState.shift}`;
+                let cssClass = `seat ${data.shift}`;
+                if(data.shift !== 'empty' && isExpiring(data.renewalDate)) cssClass = 'seat expiring';
+                div.className = cssClass;
                 div.id = `seat-card-${i}`;
                 div.innerText = i;
                 div.setAttribute('onclick', `openModal(${i})`);
@@ -99,75 +115,57 @@
 
         function openModal(seatNo) {
             activeSeat = seatNo;
-            document.getElementById('modal-title').innerText = `Seat Number ${seatNo}`;
-            const data = libraryData[seatNo] || { name: '', phone: '', shift: 'empty' };
+            document.getElementById('modal-title').innerText = `Seat ${seatNo}`;
+            const data = libraryData[seatNo] || { name: '', phone: '', shift: 'empty', renewalDate: '' };
             document.getElementById('studentName').value = data.name;
             document.getElementById('studentPhone').value = data.phone;
             document.getElementById('studentShift').value = data.shift;
+            document.getElementById('renewalDate').value = data.renewalDate;
             document.getElementById('seatModal').style.display = 'flex';
         }
 
-        function closeModal() {
-            document.getElementById('seatModal').style.display = 'none';
-        }
+        function closeModal() { document.getElementById('seatModal').style.display = 'none'; }
 
         function saveSeat() {
             const name = document.getElementById('studentName').value;
             const phone = document.getElementById('studentPhone').value;
             const shift = document.getElementById('studentShift').value;
+            const renewalDate = document.getElementById('renewalDate').value;
             
-            if(shift === 'empty') {
-                delete libraryData[activeSeat];
-            } else {
-                libraryData[activeSeat] = { name, phone, shift };
-            }
+            if(shift === 'empty') delete libraryData[activeSeat];
+            else libraryData[activeSeat] = { name, phone, shift, renewalDate };
             
-            localStorage.setItem('library_105_data', JSON.stringify(libraryData));
-            initGrid();
-            closeModal();
+            localStorage.setItem('library_175_data', JSON.stringify(libraryData));
+            initGrid(); closeModal();
         }
 
-        function clearSeat() {
-            delete libraryData[activeSeat];
-            localStorage.setItem('library_105_data', JSON.stringify(libraryData));
-            initGrid();
-            closeModal();
-        }
+        function clearSeat() { delete libraryData[activeSeat]; localStorage.setItem('library_175_data', JSON.stringify(libraryData)); initGrid(); closeModal(); }
 
         function updateStats() {
             let day = 0, night = 0, occupied = 0;
-            for(let i = 1; i <= 105; i++) {
+            for(let i = 1; i <= 175; i++) {
                 if(libraryData[i]) {
                     occupied++;
-                    if(libraryData[i].shift === 'day') day++;
-                    if(libraryData[i].shift === 'night') night++;
-                    if(libraryData[i].shift === 'full') { day++; night++; }
+                    if(libraryData[i].shift.includes('day')) day++;
+                    if(libraryData[i].shift.includes('night')) night++;
                 }
             }
             document.getElementById('count-day').innerText = day;
             document.getElementById('count-night').innerText = night;
-            document.getElementById('count-vacant').innerText = 105 - occupied;
+            document.getElementById('count-vacant').innerText = 175 - occupied;
         }
 
         function filterSeats() {
             const val = document.getElementById('search').value.toLowerCase();
-            for(let i = 1; i <= 105; i++) {
+            for(let i = 1; i <= 175; i++) {
                 const card = document.getElementById(`seat-card-${i}`);
                 const data = libraryData[i];
-                if(!val) {
-                    card.style.display = 'block';
-                    continue;
-                }
                 let match = i.toString() === val;
-                if(data) {
-                    if(data.name.toLowerCase().includes(val) || data.phone.includes(val)) {
-                        match = true;
-                    }
-                }
-                card.style.display = match ? 'block' : 'none';
+                if(data && (data.name.toLowerCase().includes(val) || data.phone.includes(val))) match = true;
+                if(!val) card.style.display = 'block';
+                else card.style.display = match ? 'block' : 'none';
             }
         }
-
         initGrid();
     </script>
 </body>
