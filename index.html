@@ -3,230 +3,441 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Library Pro</title>
+    <title>Hariom Library Ultimate - 5 Shift System</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-color: #151f32;
+            --primary-color: #6366f1;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --night-color: #38bdf8;
+            --unreserved-color: #475569; /* Special color for UR seats */
+            --text-color: #f8fafc;
+        }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { padding: 15px; background: #0f172a; color: #f8fafc; }
-        .header { background: linear-gradient(135deg, #4f46e5, #7c3aed); padding: 25px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); }
+        body { background-color: var(--bg-color); color: var(--text-color); padding: 15px; }
+        .header { background: linear-gradient(135deg, #3b82f6, #8b5cf6); padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
+        .admin-section { background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; }
+        .admin-section input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #233554; background: #0b0f19; color: white; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; background: var(--primary-color); color: white; cursor: pointer; font-weight: bold; }
+        .btn-danger { background: var(--danger-color); }
         
-        /* Stats Dashboard Styling */
-        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .stat-card { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); padding: 12px 5px; border-radius: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
-        .stat-card h3 { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
-        .stat-card p { font-size: 18px; font-weight: bold; color: #fff; margin-top: 5px; }
-        
-        .search-box { width: 100%; padding: 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; color: white; margin-bottom: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-        .seat { padding: 15px 5px; text-align: center; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
-        
-        /* Shift Wise Colors for Reserved Seats */
-        .empty { background: linear-gradient(135deg, #10b981, #059669); }          /* Green */
-        .allshift { background: linear-gradient(135deg, #6366f1, #4f46e5); }       /* Indigo */
-        .morning { background: linear-gradient(135deg, #f59e0b, #d97706); }        /* Amber/Orange */
-        .noon { background: linear-gradient(135deg, #3b82f6, #2563eb); }           /* Blue */
-        .afternoon { background: linear-gradient(135deg, #ec4899, #db2777); }      /* Pink */
-        .evening { background: linear-gradient(135deg, #14b8a6, #0d9488); }        /* Teal */
-        .night { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }          /* Purple */
-        
-        /* Special Color for Unreserved Khali Seats (64 to 85) */
-        .unreserved-empty { background: linear-gradient(135deg, #64748b, #475569); border: 2px dashed #94a3b8; } /* Greyish/Silver dashed border */
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+        .stat-card { background: var(--card-color); padding: 12px; border-radius: 10px; text-align: center; border-left: 4px solid var(--primary-color); }
+        .stat-card.vacant { border-left-color: var(--success-color); }
+        .stat-card.income { grid-column: span 2; font-size: 1.1rem; border-left-color: #ec4899; }
+        .stat-card div { font-size: 0.8rem; color: #64748b; text-transform: uppercase; }
+        .stat-card span { font-size: 1.4rem; font-weight: bold; display: block; margin-top: 5px; }
 
-        .expiring { background: linear-gradient(135deg, #ef4444, #b91c1c); box-shadow: 0 0 15px rgba(239, 68, 68, 0.6); animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        .search-box { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #233554; background: var(--card-color); color: white; margin-bottom: 20px; }
         
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 100; }
-        .modal-content { background: #1e293b; padding: 25px; border-radius: 20px; width: 90%; max-width: 400px; border: 1px solid #334155; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 5px; }
-        .form-group input, .form-group select { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 10px; color: white; }
-        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
-        .btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        .btn-save { background: #4f46e5; color: white; }
-        .btn-cancel { background: #334155; color: white; }
-        .btn-clear { background: #b91c1c; color: white; }
+        .seats-container { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 30px; }
         
-        /* Indicator label style inside modal */
-        .seat-type-tag { font-size: 11px; padding: 3px 8px; border-radius: 5px; font-weight: bold; display: inline-block; margin-bottom: 15px; }
-        .tag-reserved { background: rgba(79, 70, 229, 0.2); color: #818cf8; border: 1px solid #4f46e5; }
-        .tag-unreserved { background: rgba(148, 163, 184, 0.2); color: #cbd5e1; border: 1px solid #64748b; }
+        /* Seat Layout Styling */
+        .seat { background: #1e293b; padding: 8px 4px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; font-weight: bold; font-size: 1rem; cursor: pointer; color: white; transition: 0.2s; min-height: 75px; position: relative; border: 1px solid #334155; }
+        
+        /* Unreserved Special Style */
+        .seat.is-unreserved { background: var(--unreserved-color); border-color: #64748b; }
+        .ur-badge { font-size: 0.65rem; background: rgba(255, 255, 255, 0.2); padding: 1px 4px; border-radius: 4px; margin-left: 4px; vertical-align: middle; color: #cbd5e1; }
+
+        /* Indicators Container */
+        .indicators { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; margin-top: 5px; }
+        .main-shifts { display: flex; justify-content: center; gap: 3px; width: 100%; }
+        
+        /* Dots System */
+        .dot { width: 6px; height: 6px; border-radius: 50%; background: #475569; transition: 0.2s; }
+        .seat.is-unreserved .dot { background: #334155; } /* Darker empty dots for UR seats */
+        
+        .dot.active { background: var(--success-color); }
+        .dot.expired { background: var(--danger-color) !important; animation: blink 1.5s infinite; }
+        
+        /* Night Unique Indicator */
+        .night-dot { width: 8px; height: 8px; border-radius: 50%; background: transparent; border: 1px dashed #475569; }
+        .seat.is-unreserved .night-dot { border-color: #334155; }
+        .night-dot.active { background: var(--night-color); border: none; }
+        .night-dot.expired { background: var(--danger-color); border: none; animation: blink 1.5s infinite; }
+
+        /* Unified Single Dot for All Shift */
+        .all-shift-indicator { width: 30px; height: 6px; border-radius: 3px; background: #475569; display: none; }
+        .all-shift-indicator.active { background: #eab308; display: block; }
+        .all-shift-indicator.expired { background: var(--danger-color); display: block; animation: blink 1.5s infinite; }
+
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+        /* Status Colors for Box Border/Background highlights */
+        .seat.is-allshift { border-color: #eab308; background: #232212; }
+        .seat.has-expired { border-color: var(--danger-color); }
+
+        /* Modal Layout */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 100; padding: 15px; }
+        .modal-content { background: var(--card-color); padding: 20px; border-radius: 15px; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
+        .modal-content h3 { margin-bottom: 15px; border-bottom: 1px solid #233554; padding-bottom: 10px; text-align: center; }
+        
+        .shift-block { background: #0b0f19; padding: 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #233554; }
+        .shift-block h4 { color: #a855f7; margin-bottom: 8px; font-size: 0.9rem; display: flex; justify-content: space-between; }
+        .shift-block.night-block h4 { color: var(--night-color); }
+        .shift-block.all-block h4 { color: #eab308; }
+        
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 6px; }
+        .form-row.full { grid-template-columns: 1fr; }
+        label { font-size: 0.75rem; color: #64748b; display: block; margin-bottom: 2px; }
+        input { width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #233554; background: var(--card-color); color: white; font-size: 0.85rem; }
+        
+        .waiting-section { background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
+        .waiting-item { display: flex; justify-content: space-between; background: #0b0f19; padding: 10px; border-radius: 6px; margin-bottom: 5px; align-items: center; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h2>📚 Smart Library Pro</h2>
-        <p style="font-size: 12px; opacity: 0.8;">Premium Management System</p>
+        <h2>📚 Hariom Smart Library</h2>
+        <p style="font-size: 0.8rem; opacity: 0.8;">Multi-Shift Realtime Control Panel</p>
     </div>
 
-    <!-- Shift Count Dashboard -->
-    <div class="stats">
-        <div class="stat-card"><h3>Vacant (Khali)</h3><p id="count-vacant">105</p></div>
-        <div class="stat-card"><h3>All Shift (6am-10pm)</h3><p id="count-allshift">0</p></div>
-        <div class="stat-card"><h3>Morning (6am-10am)</h3><p id="count-morning">0</p></div>
-        <div class="stat-card"><h3>Noon (10am-2pm)</h3><p id="count-noon">0</p></div>
-        <div class="stat-card"><h3>Afternoon (2pm-6pm)</h3><p id="count-afternoon">0</p></div>
-        <div class="stat-card"><h3>Evening (6pm-10pm)</h3><p id="count-evening">0</p></div>
-        <div class="stat-card"><h3>Night (10pm-6am)</h3><p id="count-night">0</p></div>
+    <div class="admin-section">
+        <input type="password" id="adminPhone" placeholder="Enter Admin Mobile Number...">
+        <button class="btn" onclick="verifyAdmin()">Verify</button>
     </div>
 
-    <input type="text" id="search" class="search-box" placeholder="Search by name or seat number..." oninput="filterSeats()">
+    <div class="stats-grid">
+        <div class="stat-card vacant"><div>Total Seats</div><span>105</span></div>
+        <div class="stat-card"><div>Active Bookings</div><span id="activeBookingsCount">0</span></div>
+        <div class="stat-card income"><div>💰 Total Monthly Collection</div><span id="totalIncome">₹0</span></div>
+    </div>
 
-    <div class="grid" id="seats-grid"></div>
+    <input type="text" id="searchBox" class="search-box" placeholder="Search student name or seat number..." oninput="filterSeats()">
 
+    <div class="seats-container" id="seatsGrid"></div>
+
+    <!-- Waiting List -->
+    <div class="waiting-section">
+        <h3>📋 Waiting List</h3>
+        <div style="display: flex; gap: 5px; margin-top: 10px;">
+            <input type="text" id="waitName" placeholder="Student Name" style="flex:1; padding:8px; border-radius:6px; background:#0b0f19; color:white; border:1px solid #233554;">
+            <input type="text" id="waitPhone" placeholder="Phone" style="flex:1; padding:8px; border-radius:6px; background:#0b0f19; color:white; border:1px solid #233554;">
+            <button class="btn" onclick="addWaiting()">Add</button>
+        </div>
+        <div class="waiting-list" id="waitingListContainer"></div>
+    </div>
+
+    <!-- Multi Shift Booking Modal -->
     <div class="modal" id="seatModal">
         <div class="modal-content">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <h2 id="modal-title">Seat Details</h2>
-                <span id="seatTypeTag" class="seat-type-tag"></span>
-            </div>
+            <h3 id="modalTitle">Seat Details</h3>
             
-            <div class="form-group">
-                <label>Name</label>
-                <input type="text" id="studentName">
+            <!-- ALL SHIFT BLOCK -->
+            <div class="shift-block all-block">
+                <h4>Option A: Full Day / All Shift (6 AM - 10 PM)</h4>
+                <div class="form-row full"><div class="form-group"><label>Student Name</label><input type="text" id="name_all"></div></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Phone</label><input type="text" id="phone_all"></div>
+                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_all"></div>
+                </div>
+                <div class="form-row full"><div class="form-group"><label>Renewal Date</label><input type="date" id="date_all"></div></div>
             </div>
-            <div class="form-group">
-                <label>Phone</label>
-                <input type="tel" id="studentPhone">
+
+            <p style="text-align: center; color:#64748b; font-size:0.8rem; margin:10px 0;">— OR USE INDIVIDUAL SHIFTS —</p>
+
+            <!-- 4 SHIFTS BLOCKS -->
+            <div class="shift-block">
+                <h4>1. Morning Shift (6 AM - 10 AM)</h4>
+                <div class="form-row">
+                    <div class="form-group"><label>Name</label><input type="text" id="name_m"></div>
+                    <div class="form-group"><label>Phone</label><input type="text" id="phone_m"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_m"></div>
+                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_m"></div>
+                </div>
             </div>
-            <div class="form-group">
-                <label>Renewal Date</label>
-                <input type="date" id="renewalDate">
+
+            <div class="shift-block">
+                <h4>2. Noon Shift (10 AM - 2 PM)</h4>
+                <div class="form-row">
+                    <div class="form-group"><label>Name</label><input type="text" id="name_n"></div>
+                    <div class="form-group"><label>Phone</label><input type="text" id="phone_n"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_n"></div>
+                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_n"></div>
+                </div>
             </div>
-            <div class="form-group">
-                <label>Shift Selection</label>
-                <select id="studentShift">
-                    <option value="empty">Khali (Empty)</option>
-                    <option value="allshift">All Shift (6 AM - 10 PM)</option>
-                    <option value="morning">Morning (6 AM - 10 AM)</option>
-                    <option value="noon">Noon (10 AM - 2 PM)</option>
-                    <option value="afternoon">Afternoon (2 PM - 6 PM)</option>
-                    <option value="evening">Evening (6 PM - 10 PM)</option>
-                    <option value="night">Night (10 PM - 6 AM)</option>
-                </select>
+
+            <div class="shift-block">
+                <h4>3. Afternoon Shift (2 PM - 6 PM)</h4>
+                <div class="form-row">
+                    <div class="form-group"><label>Name</label><input type="text" id="name_an"></div>
+                    <div class="form-group"><label>Phone</label><input type="text" id="phone_an"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_an"></div>
+                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_an"></div>
+                </div>
             </div>
-            <div class="btn-group">
-                <button class="btn btn-cancel" onclick="closeModal()">Cancel</button>
-                <button class="btn btn-clear" onclick="clearSeat()">Clear</button>
-                <button class="btn btn-save" onclick="saveSeat()">Save</button>
+
+            <div class="shift-block">
+                <h4>4. Evening Shift (6 PM - 10 PM)</h4>
+                <div class="form-row">
+                    <div class="form-group"><label>Name</label><input type="text" id="name_e"></div>
+                    <div class="form-group"><label>Phone</label><input type="text" id="phone_e"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_e"></div>
+                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_e"></div>
+                </div>
+            </div>
+
+            <!-- NIGHT SHIFT BLOCK -->
+            <div class="shift-block night-block">
+                <h4>🌙 Extra: Night Shift (10 PM onwards)</h4>
+                <div class="form-row">
+                    <div class="form-group"><label>Name</label><input type="text" id="name_night"></div>
+                    <div class="form-group"><label>Phone</label><input type="text" id="phone_night"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_night"></div>
+                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_night"></div>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-danger" onclick="closeModal()">Close</button>
+                <button class="btn" onclick="saveMultiShiftData()">Save Configuration</button>
             </div>
         </div>
     </div>
 
     <script>
+        const firebaseConfig = { databaseURL: "https://hariom-library-3c480-default-rtdb.firebaseio.com/" };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        const allowedAdmins = ["9999999999", "8888888888", "7777777777"]; 
+        let isAdminVerified = false;
+        let activeSeatNumber = null;
         const TOTAL_SEATS = 105;
-        let libraryData = JSON.parse(localStorage.getItem('library_105_shifts_data')) || {};
-        let activeSeat = null;
+        let globalLibraryData = {};
 
-        // Check if a seat is unreserved (64 to 85)
-        function isUnreservedSeat(seatNo) {
-            return seatNo >= 64 && seatNo <= 85;
+        function verifyAdmin() {
+            const input = document.getElementById('adminPhone').value;
+            if(allowedAdmins.includes(input)) { isAdminVerified = true; alert("✅ Admin Verified!"); } 
+            else { isAdminVerified = false; alert("❌ Access Denied!"); }
         }
 
-        function isExpiring(dateStr) {
-            if(!dateStr) return false;
-            const expiry = new Date(dateStr);
-            const today = new Date();
-            const diffTime = expiry - today;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            return diffDays >= 0 && diffDays <= 3;
-        }
-
-        function initGrid() {
-            const grid = document.getElementById('seats-grid');
-            grid.innerHTML = '';
-            for(let i = 1; i <= TOTAL_SEATS; i++) {
-                const data = libraryData[i] || { name: '', phone: '', shift: 'empty', renewalDate: '' };
-                const div = document.createElement('div');
-                
-                let cssClass = `seat ${data.shift}`;
-                
-                // If seat is empty AND falls between 64 and 85, apply special Unreserved class
-                if(data.shift === 'empty' && isUnreservedSeat(i)) {
-                    cssClass = 'seat unreserved-empty';
-                } else if(data.shift !== 'empty' && isExpiring(data.renewalDate)) {
-                    cssClass = 'seat expiring';
-                }
-                
-                div.className = cssClass;
-                div.id = `seat-card-${i}`;
-                div.innerText = i;
-                div.setAttribute('onclick', `openModal(${i})`);
-                grid.appendChild(div);
-            }
-            updateStats();
-        }
-
-        function openModal(seatNo) {
-            activeSeat = seatNo;
-            document.getElementById('modal-title').innerText = `Seat ${seatNo}`;
+        // Generate Grid with Unreserved styling logic
+        const grid = document.getElementById('seatsGrid');
+        for(let i=1; i<=TOTAL_SEATS; i++) {
+            const el = document.createElement('div');
             
-            // Set Reserved/Unreserved tag in modal popup
-            const tag = document.getElementById('seatTypeTag');
-            if(isUnreservedSeat(seatNo)) {
-                tag.innerText = "UNRESERVED";
-                tag.className = "seat-type-tag tag-unreserved";
+            // Checking if seat is between 64 and 85
+            if (i >= 64 && i <= 85) {
+                el.className = 'seat is-unreserved';
+                el.innerHTML = `
+                    <span>${i}<span class="ur-badge">UR</span></span>
+                    <div class="indicators">
+                        <div class="all-shift-indicator" id="all-ind-${i}"></div>
+                        <div class="main-shifts" id="main-shifts-${i}">
+                            <span class="dot" title="Morning"></span>
+                            <span class="dot" title="Noon"></span>
+                            <span class="dot" title="Afternoon"></span>
+                            <span class="dot" title="Evening"></span>
+                        </div>
+                        <div class="night-dot" id="night-ind-${i}" title="Night Shift"></div>
+                    </div>
+                `;
             } else {
-                tag.innerText = "RESERVED";
-                tag.className = "seat-type-tag tag-reserved";
+                el.className = 'seat';
+                el.innerHTML = `
+                    <span>${i}</span>
+                    <div class="indicators">
+                        <div class="all-shift-indicator" id="all-ind-${i}"></div>
+                        <div class="main-shifts" id="main-shifts-${i}">
+                            <span class="dot" title="Morning"></span>
+                            <span class="dot" title="Noon"></span>
+                            <span class="dot" title="Afternoon"></span>
+                            <span class="dot" title="Evening"></span>
+                        </div>
+                        <div class="night-dot" id="night-ind-${i}" title="Night Shift"></div>
+                    </div>
+                `;
+            }
+            
+            el.id = `seat-${i}`;
+            el.setAttribute('onclick', `openSeatModal(${i})`);
+            grid.appendChild(el);
+        }
+
+        database.ref('library_v3').on('value', (snapshot) => {
+            const data = snapshot.val() || {};
+            globalLibraryData = data.seats || {};
+            updateUI(globalLibraryData);
+            updateWaitingUI(data.waiting || {});
+        });
+
+        function updateUI(seats) {
+            let totalIncome = 0;
+            let activeBookings = 0;
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            for(let i=1; i<=TOTAL_SEATS; i++) {
+                const seatEl = document.getElementById(`seat-${i}`);
+                const data = seats[i] || {};
+                
+                const allInd = document.getElementById(`all-ind-${i}`);
+                const mainShiftsDiv = document.getElementById(`main-shifts-${i}`);
+                const nightInd = document.getElementById(`night-ind-${i}`);
+                const dots = mainShiftsDiv.querySelectorAll('.dot');
+
+                // Reset Statuses but preserve Unreserved Class
+                allInd.className = 'all-shift-indicator';
+                nightInd.className = 'night-dot';
+                dots.forEach(d => d.className = 'dot');
+                
+                if (i >= 64 && i <= 85) {
+                    seatEl.className = 'seat is-unreserved';
+                } else {
+                    seatEl.className = 'seat';
+                }
+
+                let hasExpired = false;
+
+                // Total Revenue Calculation
+                totalIncome += (parseInt(data.fees_all) || 0) + (parseInt(data.fees_m) || 0) + 
+                               (parseInt(data.fees_n) || 0) + (parseInt(data.fees_an) || 0) + 
+                               (parseInt(data.fees_e) || 0) + (parseInt(data.fees_night) || 0);
+
+                // Case 1: ALL SHIFT BOOKED
+                if(data.name_all) {
+                    activeBookings++;
+                    allInd.classList.add('active');
+                    mainShiftsDiv.style.display = 'none';
+                    seatEl.classList.add('is-allshift');
+                    
+                    if(data.date_all && data.date_all <= todayStr) {
+                        allInd.classList.add('expired');
+                        hasExpired = true;
+                    }
+                } else {
+                    // Case 2: INDIVIDUAL SHIFTS MANAGEMENT
+                    mainShiftsDiv.style.display = 'flex';
+                    
+                    const shifts = ['m', 'n', 'an', 'e'];
+                    shifts.forEach((s, idx) => {
+                        if(data[`name_${s}`]) {
+                            activeBookings++;
+                            dots[idx].classList.add('active');
+                            if(data[`date_${s}`] && data[`date_${s}`] <= todayStr) {
+                                dots[idx].classList.add('expired');
+                                hasExpired = true;
+                            }
+                        }
+                    });
+                }
+
+                // Case 3: NIGHT SHIFT (Independent Tracker)
+                if(data.name_night) {
+                    activeBookings++;
+                    nightInd.classList.add('active');
+                    if(data.date_night && data.date_night <= todayStr) {
+                        nightInd.classList.add('expired');
+                        hasExpired = true;
+                    }
+                }
+
+                if(hasExpired) seatEl.classList.add('has-expired');
             }
 
-            const data = libraryData[seatNo] || { name: '', phone: '', shift: 'empty', renewalDate: '' };
-            document.getElementById('studentName').value = data.name;
-            document.getElementById('studentPhone').value = data.phone;
-            document.getElementById('studentShift').value = data.shift;
-            document.getElementById('renewalDate').value = data.renewalDate;
+            document.getElementById('activeBookingsCount').innerText = activeBookings;
+            document.getElementById('totalIncome').innerText = '₹' + totalIncome;
+        }
+
+        function openSeatModal(seatNum) {
+            activeSeatNumber = seatNum;
+            document.getElementById('modalTitle').innerText = `Manage Seat - ${seatNum}`;
+            const data = globalLibraryData[seatNum] || {};
+            
+            const fields = ['all', 'm', 'n', 'an', 'e', 'night'];
+            fields.forEach(f => {
+                document.getElementById(`name_${f}`).value = data[`name_${f}`] || '';
+                document.getElementById(`phone_${f}`).value = data[`phone_${f}`] || '';
+                document.getElementById(`date_${f}`).value = data[`date_${f}`] || '';
+                document.getElementById(`fees_${f}`).value = data[`fees_${f}`] || 0;
+            });
+
             document.getElementById('seatModal').style.display = 'flex';
         }
 
         function closeModal() { document.getElementById('seatModal').style.display = 'none'; }
 
-        function saveSeat() {
-            const name = document.getElementById('studentName').value;
-            const phone = document.getElementById('studentPhone').value;
-            const shift = document.getElementById('studentShift').value;
-            const renewalDate = document.getElementById('renewalDate').value;
-            
-            if(shift === 'empty') delete libraryData[activeSeat];
-            else libraryData[activeSeat] = { name, phone, shift, renewalDate };
-            
-            localStorage.setItem('library_105_shifts_data', JSON.stringify(libraryData));
-            initGrid(); closeModal();
+        function saveMultiShiftData() {
+            if(!isAdminVerified) { alert("⚠️ Please verify Admin Number first!"); return; }
+
+            const update = {};
+            const fields = ['all', 'm', 'n', 'an', 'e', 'night'];
+            fields.forEach(f => {
+                update[`name_${f}`] = document.getElementById(`name_${f}`).value;
+                update[`phone_${f}`] = document.getElementById(`phone_${f}`).value;
+                update[`date_${f}`] = document.getElementById(`date_${f}`).value;
+                update[`fees_${f}`] = parseInt(document.getElementById(`fees_${f}`).value) || 0;
+            });
+
+            database.ref('library_v3/seats/' + activeSeatNumber).set(update)
+                .then(() => { closeModal(); })
+                .catch(err => alert("Error saving data: " + err));
         }
 
-        function clearSeat() { delete libraryData[activeSeat]; localStorage.setItem('library_105_shifts_data', JSON.stringify(libraryData)); initGrid(); closeModal(); }
-
-        function updateStats() {
-            let counts = { allshift: 0, morning: 0, noon: 0, afternoon: 0, evening: 0, night: 0, occupied: 0 };
-            
-            for(let i = 1; i <= TOTAL_SEATS; i++) {
-                if(libraryData[i]) {
-                    counts.occupied++;
-                    if(counts.hasOwnProperty(libraryData[i].shift)) {
-                        counts[libraryData[i].shift]++;
-                    }
-                }
-            }
-            document.getElementById('count-allshift').innerText = counts.allshift;
-            document.getElementById('count-morning').innerText = counts.morning;
-            document.getElementById('count-noon').innerText = counts.noon;
-            document.getElementById('count-afternoon').innerText = counts.afternoon;
-            document.getElementById('count-evening').innerText = counts.evening;
-            document.getElementById('count-night').innerText = counts.night;
-            document.getElementById('count-vacant').innerText = TOTAL_SEATS - counts.occupied;
+        // Waiting List Functions
+        function addWaiting() {
+            if(!isAdminVerified) { alert("⚠️ Verify admin status!"); return; }
+            const name = document.getElementById('waitName').value;
+            const phone = document.getElementById('waitPhone').value;
+            if(!name) return;
+            database.ref('library_v3/waiting').push().set({ name, phone }).then(() => {
+                document.getElementById('waitName').value = '';
+                document.getElementById('waitPhone').value = '';
+            });
+        }
+        function removeWaiting(key) {
+            if(!isAdminVerified) { alert("⚠️ Verify admin status!"); return; }
+            database.ref('library_v3/waiting/' + key).remove();
+        }
+        function updateWaitingUI(waitingData) {
+            const container = document.getElementById('waitingListContainer');
+            container.innerHTML = '';
+            Object.keys(waitingData).forEach((key, idx) => {
+                const item = waitingData[key];
+                container.innerHTML += `
+                    <div class="waiting-item">
+                        <span><strong>#${idx+1}</strong> ${item.name} (${item.phone})</span>
+                        <button class="btn btn-danger" style="padding:4px 10px; font-size:0.75rem;" onclick="removeWaiting('${key}')">Remove</button>
+                    </div>`;
+            });
         }
 
+        // Search Engine
         function filterSeats() {
-            const val = document.getElementById('search').value.toLowerCase();
-            for(let i = 1; i <= TOTAL_SEATS; i++) {
-                const card = document.getElementById(`seat-card-${i}`);
-                const data = libraryData[i];
-                let match = i.toString() === val;
-                if(data && (data.name.toLowerCase().includes(val) || data.phone.includes(val))) match = true;
-                if(!val) card.style.display = 'block';
-                else card.style.display = match ? 'block' : 'none';
+            const query = document.getElementById('searchBox').value.toLowerCase();
+            const fields = ['all', 'm', 'n', 'an', 'e', 'night'];
+            for(let i=1; i<=TOTAL_SEATS; i++) {
+                const seatEl = document.getElementById(`seat-${i}`);
+                const data = globalLibraryData[i];
+                if(!query) { seatEl.style.opacity = '1'; continue; }
+                
+                let match = i.toString() === query;
+                if(data) {
+                    fields.forEach(f => {
+                        if(data[`name_${f}`] && data[`name_${f}`].toLowerCase().includes(query)) {
+                            match = true;
+                        }
+                    });
+                }
+                seatEl.style.opacity = match ? '1' : '0.1';
             }
         }
-        initGrid();
     </script>
 </body>
 </html>
