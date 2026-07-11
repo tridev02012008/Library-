@@ -16,7 +16,7 @@
             --warning-color: #f59e0b;
             --warning-alert: #f97316; 
             --night-color: #38bdf8;
-            --unreserved-color: #334155;
+            --unreserved-color: #ffffff; /* White Color for Unreserved Seats */
             --text-color: #f8fafc;
             
             --active-booking-bg: #1e1b4b; 
@@ -44,24 +44,27 @@
         
         .seat { background: #1e293b; padding: 8px 4px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; font-weight: bold; font-size: 1rem; cursor: pointer; color: white; transition: 0.2s; min-height: 75px; position: relative; border: 1px solid #475569; }
         
-        .seat.is-unreserved { background: #1a2333; border-color: #475569; position: relative; }
-        .seat.is-unreserved::after { content: 'UR'; position: absolute; top: 2px; right: 4px; font-size: 0.6rem; color: #94a3b8; background: rgba(255,255,255,0.07); padding: 1px 3px; border-radius: 3px; }
+        /* Highlighted White Unreserved Seat Styling */
+        .seat.is-unreserved { background: var(--unreserved-color) !important; border-color: #cbd5e1 !important; color: #0b0f19 !important; position: relative; }
+        .seat.is-unreserved::after { content: 'UR'; position: absolute; top: 2px; right: 4px; font-size: 0.6rem; color: #475569; background: rgba(0,0,0,0.08); padding: 1px 3px; border-radius: 3px; }
 
-        .seat.is-booked { background: var(--active-booking-bg) !important; border-color: var(--active-booking-border) !important; }
-        .seat.is-allshift { border-color: #eab308 !important; background: #232212 !important; }
+        .seat.is-booked { background: var(--active-booking-bg) !important; border-color: var(--active-booking-border) !important; color: white !important; }
+        .seat.is-allshift { border-color: #eab308 !important; background: #232212 !important; color: white !important; }
         
         .seat.has-alert { border: 2px dashed var(--warning-alert) !important; animation: mildBlink 2s infinite; }
-        .seat.has-expired { border: 2px dashed var(--danger-color) !important; background: #2d1015 !important; animation: severeBlink 1.5s infinite; }
+        .seat.has-expired { border: 2px dashed var(--danger-color) !important; background: #2d1015 !important; color: white !important; animation: severeBlink 1.5s infinite; }
         
         .indicators { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; margin-top: 5px; }
         .main-shifts { display: flex; justify-content: center; gap: 3px; width: 100%; }
         
         .dot { width: 6px; height: 6px; border-radius: 50%; background: #475569; transition: 0.2s; }
+        .seat.is-unreserved .dot { background: #94a3b8; } /* Lighter dots for white background readability */
         .dot.active { background: var(--success-color); }
         .dot.alert { background: var(--warning-alert) !important; animation: blink 1.2s infinite; }
         .dot.expired { background: var(--danger-color) !important; animation: blink 1.2s infinite; }
         
         .night-dot { width: 8px; height: 8px; border-radius: 50%; background: transparent; border: 1px dashed #475569; }
+        .seat.is-unreserved .night-dot { border-color: #94a3b8; }
         .night-dot.active { background: var(--night-color); border: none; }
         .night-dot.alert { background: var(--warning-alert) !important; border: none; animation: blink 1.2s infinite; }
         .night-dot.expired { background: var(--danger-color) !important; border: none; animation: blink 1.2s infinite; }
@@ -221,7 +224,6 @@
         const TOTAL_SEATS = 105;
         let globalLibraryData = {};
 
-        // Persist Verification State
         function checkLocalAdmin() {
             const savedAdmin = localStorage.getItem('hariom_saved_admin');
             if (savedAdmin && allowedAdmins.includes(savedAdmin)) {
@@ -275,8 +277,6 @@
             globalLibraryData = data.seats || {};
             updateUI(globalLibraryData);
             updateWaitingUI(data.waiting || {});
-            
-            // Re-enforce verification after Firebase updates UI to avoid loops
             checkLocalAdmin();
         });
 
@@ -301,6 +301,8 @@
                 allInd.className = 'all-shift-indicator';
                 nightInd.className = 'night-dot';
                 dots.forEach(d => d.className = 'dot');
+                
+                // Keep the structural unreserved class intact
                 seatEl.className = (i >= 64 && i <= 85) ? 'seat is-unreserved' : 'seat';
 
                 let hasExpired = false;
