@@ -26,16 +26,10 @@
         body { background-color: var(--bg-color); color: var(--text-color); padding: 15px; }
         .header { background: linear-gradient(135deg, #3b82f6, #8b5cf6); padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
         
-        .admin-section { background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-        .admin-section input { flex: 1; min-width: 200px; padding: 10px; border-radius: 8px; border: 1px solid #233554; background: #0b0f19; color: white; }
-        
-        .tools-section { background: var(--card-color); padding: 12px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-        
-        .btn { padding: 10px 20px; border: none; border-radius: 8px; background: var(--primary-color); color: white; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .admin-section { background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; }
+        .admin-section input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #233554; background: #0b0f19; color: white; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; background: var(--primary-color); color: white; cursor: pointer; font-weight: bold; }
         .btn-danger { background: var(--danger-color); }
-        .btn-success { background: var(--success-color); }
-        .btn-warning { background: var(--warning-color); color: #0b0f19; }
-        .btn:hover { opacity: 0.9; }
         
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
         .stat-card { background: var(--card-color); padding: 12px; border-radius: 10px; text-align: center; border-left: 4px solid var(--primary-color); }
@@ -48,7 +42,7 @@
         
         .seats-container { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 30px; }
         
-        .seat { background: #1e293b; padding: 8px 4px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; font-weight: bold; font-size: 1rem; cursor: pointer; color: white; transition: 0.2s; min-height: 85px; position: relative; border: 1px solid #475569; }
+        .seat { background: #1e293b; padding: 8px 4px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; font-weight: bold; font-size: 1rem; cursor: pointer; color: white; transition: 0.2s; min-height: 75px; position: relative; border: 1px solid #475569; }
         
         .seat.is-unreserved { background: #1a2333; border-color: #475569; position: relative; }
         .seat.is-unreserved::after { content: 'UR'; position: absolute; top: 2px; right: 4px; font-size: 0.6rem; color: #94a3b8; background: rgba(255,255,255,0.07); padding: 1px 3px; border-radius: 3px; }
@@ -56,15 +50,9 @@
         .seat.is-booked { background: var(--active-booking-bg) !important; border-color: var(--active-booking-border) !important; }
         .seat.is-allshift { border-color: #eab308 !important; background: #232212 !important; }
         
-        .seat.has-alert { border: 2px dashed var(--warning-alert) !important; }
-        .seat.has-expired { border: 2px dashed var(--danger-color) !important; background: #2d1015 !important; }
+        .seat.has-alert { border: 2px dashed var(--warning-alert) !important; animation: mildBlink 2s infinite; }
+        .seat.has-expired { border: 2px dashed var(--danger-color) !important; background: #2d1015 !important; animation: severeBlink 1.5s infinite; }
         
-        /* Chamakta hua teer aur baki paisa panel */
-        .due-indicator-wrapper { position: absolute; top: -16px; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 5; animation: arrowBlink 0.8s infinite alternate; }
-        .due-amount-badge { background: #ff3333; color: white; font-size: 0.65rem; padding: 1px 4px; border-radius: 4px; box-shadow: 0 0 6px #ff0000; font-weight: 800; white-space: nowrap; }
-        .due-arrow { font-size: 1.1rem; color: #ff3333; text-shadow: 0 0 6px #ff0000; line-height: 1; margin-top: -2px; }
-        .seat.has-due .due-indicator-wrapper { display: flex; }
-
         .indicators { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; margin-top: 5px; }
         .main-shifts { display: flex; justify-content: center; gap: 3px; width: 100%; }
         
@@ -84,10 +72,11 @@
         .all-shift-indicator.expired { background: var(--danger-color) !important; display: block; animation: blink 1.2s infinite; }
 
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }
-        @keyframes arrowBlink { 0% { transform: translateY(0); opacity: 0.4; } 100% { transform: translateY(-4px); opacity: 1; } }
+        @keyframes mildBlink { 0% { border-color: var(--warning-alert); } 50% { border-color: transparent; } 100% { border-color: var(--warning-alert); } }
+        @keyframes severeBlink { 0% { border-color: var(--danger-color); } 50% { border-color: transparent; } 100% { border-color: var(--danger-color); } }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 100; padding: 15px; }
-        .modal-content { background: var(--card-color); padding: 20px; border-radius: 15px; width: 100%; max-width: 440px; max-height: 90vh; overflow-y: auto; }
+        .modal-content { background: var(--card-color); padding: 20px; border-radius: 15px; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
         .modal-content h3 { margin-bottom: 15px; border-bottom: 1px solid #233554; padding-bottom: 10px; text-align: center; }
         
         .shift-block { background: #0b0f19; padding: 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #233554; transition: 0.3s; }
@@ -101,27 +90,9 @@
         label { font-size: 0.75rem; color: #64748b; display: block; margin-bottom: 2px; }
         input { width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #233554; background: var(--card-color); color: white; font-size: 0.85rem; }
         
-        .due-row-layout { display: flex; align-items: center; gap: 8px; padding-top: 4px; }
-        .due-row-layout label { display: inline; cursor: pointer; color: #ef4444; font-weight: bold; }
-        .due-row-layout input[type="checkbox"] { width: auto; cursor: pointer; }
-
-        /* ID Proof / Cam Styles */
-        .id-upload-container { margin-top: 8px; background: #151f32; padding: 6px; border-radius: 6px; border: 1px dashed #334155; }
-        .id-actions { display: flex; gap: 6px; margin-top: 4px; }
-        .id-preview-box { width: 100%; max-height: 100px; object-fit: contain; background: #000; border-radius: 4px; margin-top: 6px; display: none; border: 1px solid #233554; cursor: pointer; }
-        .id-preview-box.visible { display: block; }
-        .file-input-label { background: #334155; padding: 4px 8px; font-size: 0.75rem; border-radius: 4px; text-align: center; cursor: pointer; flex: 1; display: inline-block; font-weight: bold; }
-        .file-input-label:hover { background: #475569; }
-
         .waiting-section { background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
         .waiting-item { display: flex; justify-content: space-between; background: #0b0f19; padding: 10px; border-radius: 6px; margin-bottom: 5px; align-items: center; }
-        .modal-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
-        .modal-btn-row { display: flex; justify-content: space-between; gap: 8px; }
-        .modal-btn-row .btn { flex: 1; }
-
-        /* Fullscreen View Image Modal */
-        #imageViewerModal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:200; justify-content:center; align-items:center; }
-        #imageViewerModal img { max-width:95%; max-height:85vh; border-radius:8px; box-shadow:0 0 15px rgba(255,255,255,0.2); }
+        .modal-actions { display: flex; justify-content: space-between; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -133,13 +104,7 @@
 
     <div class="admin-section">
         <input type="password" id="adminPhone" placeholder="Enter Admin Mobile Number...">
-        <button class="btn" onclick="verifyAdmin()">Verify Admin</button>
-    </div>
-
-    <!-- Data Backup & Excel Panel -->
-    <div class="tools-section">
-        <button class="btn btn-success" onclick="downloadExcelBreakup()">📊 Download Excel Breakup</button>
-        <button class="btn btn-warning" onclick="backupJSONData()">💾 Backup Database (JSON)</button>
+        <button class="btn" onclick="verifyAdmin()">Verify</button>
     </div>
 
     <div class="stats-grid">
@@ -148,7 +113,7 @@
         <div class="stat-card income"><div>💰 Total Monthly Collection</div><span id="totalIncome">₹0</span></div>
     </div>
 
-    <input type="text" id="searchBox" class="search-box" placeholder="Search student name, seat number, phone or due status..." oninput="filterSeats()">
+    <input type="text" id="searchBox" class="search-box" placeholder="Search student name or seat number..." oninput="filterSeats()">
 
     <div class="seats-container" id="seatsGrid"></div>
 
@@ -162,43 +127,22 @@
         <div class="waiting-list" id="waitingListContainer"></div>
     </div>
 
-    <!-- MAIN MODAL FOR SEAT MANAGEMENT -->
     <div class="modal" id="seatModal">
         <div class="modal-content">
             <h3 id="modalTitle">Seat Details</h3>
             
-            <!-- OPTION A: ALL SHIFT -->
             <div class="shift-block all-block" id="block_all">
                 <h4>Option A: Full Day / All Shift (6 AM - 10 PM)</h4>
                 <div class="form-row full"><div class="form-group"><label>Student Name</label><input type="text" id="name_all" oninput="toggleModalShifts(this.value)"></div></div>
                 <div class="form-row">
                     <div class="form-group"><label>Phone</label><input type="text" id="phone_all"></div>
-                    <div class="form-group"><label>Fees Paid (₹)</label><input type="number" id="fees_all"></div>
+                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_all"></div>
                 </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_all"></div>
-                    <div class="form-group due-row-layout">
-                        <input type="checkbox" id="due_all" onchange="toggleDueInput('all')">
-                        <label for="due_all">⚠️ Fees Due H?</label>
-                    </div>
-                </div>
-                <div class="form-row id_due_amt_row" id="due_amt_box_all" style="display:none; margin-top:4px;">
-                    <div class="form-group" style="grid-column: span 2;"><label style="color:#ef4444;">Baki (Due) Amount Kitna Hai? (₹)</label><input type="number" id="dueamt_all" value="0"></div>
-                </div>
-                <!-- ID Proof Section -->
-                <div class="id-upload-container">
-                    <label>🪪 Identity Proof / Aadhaar Photo:</label>
-                    <div class="id-actions">
-                        <label class="file-input-label">📁 Select File<input type="file" accept="image/*" id="file_all" style="display:none;" onchange="processIdImage(this, 'all')"></label>
-                        <label class="file-input-label" style="background:#0284c7;" onclick="triggerCamera('all')">📸 Use Camera</label>
-                    </div>
-                    <img id="prev_all" class="id-preview-box" onclick="viewFullImage(this.src)" alt="ID Preview">
-                </div>
+                <div class="form-row full"><div class="form-group"><label>Renewal Date</label><input type="date" id="date_all"></div></div>
             </div>
 
             <p id="orDivider" style="text-align: center; color:#64748b; font-size:0.8rem; margin:10px 0;">— OR USE INDIVIDUAL SHIFTS —</p>
 
-            <!-- SHIFT 1: MORNING -->
             <div class="shift-block normal-shift" id="block_m">
                 <h4>1. Morning Shift (6 AM - 10 AM)</h4>
                 <div class="form-row">
@@ -207,20 +151,10 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group"><label>Renewal Date</label><input type="date" id="date_m"></div>
-                    <div class="form-group"><label>Fees Paid (₹)</label><input type="number" id="fees_m"></div>
-                </div>
-                <div class="due-row-layout"><input type="checkbox" id="due_m" onchange="toggleDueInput('m')"><label for="due_m">⚠️ Fees Due H?</label></div>
-                <div class="form-row" id="due_amt_box_m" style="display:none; margin-top:4px;"><div class="form-group" style="grid-column:span 2;"><label style="color:#ef4444;">Baki Amount (₹)</label><input type="number" id="dueamt_m" value="0"></div></div>
-                <div class="id-upload-container">
-                    <div class="id-actions">
-                        <label class="file-input-label">📁 File<input type="file" accept="image/*" id="file_m" style="display:none;" onchange="processIdImage(this, 'm')"></label>
-                        <label class="file-input-label" style="background:#0284c7;" onclick="triggerCamera('m')">📸 Camera</label>
-                    </div>
-                    <img id="prev_m" class="id-preview-box" onclick="viewFullImage(this.src)">
+                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_m"></div>
                 </div>
             </div>
 
-            <!-- SHIFT 2: NOON -->
             <div class="shift-block normal-shift" id="block_n">
                 <h4>2. Noon Shift (10 AM - 2 PM)</h4>
                 <div class="form-row">
@@ -229,20 +163,10 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group"><label>Renewal Date</label><input type="date" id="date_n"></div>
-                    <div class="form-group"><label>Fees Paid (₹)</label><input type="number" id="fees_n"></div>
-                </div>
-                <div class="due-row-layout"><input type="checkbox" id="due_n" onchange="toggleDueInput('n')"><label for="due_n">⚠️ Fees Due H?</label></div>
-                <div class="form-row" id="due_amt_box_n" style="display:none; margin-top:4px;"><div class="form-group" style="grid-column:span 2;"><label style="color:#ef4444;">Baki Amount (₹)</label><input type="number" id="dueamt_n" value="0"></div></div>
-                <div class="id-upload-container">
-                    <div class="id-actions">
-                        <label class="file-input-label">📁 File<input type="file" accept="image/*" id="file_n" style="display:none;" onchange="processIdImage(this, 'n')"></label>
-                        <label class="file-input-label" style="background:#0284c7;" onclick="triggerCamera('n')">📸 Camera</label>
-                    </div>
-                    <img id="prev_n" class="id-preview-box" onclick="viewFullImage(this.src)">
+                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_n"></div>
                 </div>
             </div>
 
-            <!-- SHIFT 3: AFTERNOON -->
             <div class="shift-block normal-shift" id="block_an">
                 <h4>3. Afternoon Shift (2 PM - 6 PM)</h4>
                 <div class="form-row">
@@ -251,20 +175,10 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group"><label>Renewal Date</label><input type="date" id="date_an"></div>
-                    <div class="form-group"><label>Fees Paid (₹)</label><input type="number" id="fees_an"></div>
-                </div>
-                <div class="due-row-layout"><input type="checkbox" id="due_an" onchange="toggleDueInput('an')"><label for="due_an">⚠️ Fees Due H?</label></div>
-                <div class="form-row" id="due_amt_box_an" style="display:none; margin-top:4px;"><div class="form-group" style="grid-column:span 2;"><label style="color:#ef4444;">Baki Amount (₹)</label><input type="number" id="dueamt_an" value="0"></div></div>
-                <div class="id-upload-container">
-                    <div class="id-actions">
-                        <label class="file-input-label">📁 File<input type="file" accept="image/*" id="file_an" style="display:none;" onchange="processIdImage(this, 'an')"></label>
-                        <label class="file-input-label" style="background:#0284c7;" onclick="triggerCamera('an')">📸 Camera</label>
-                    </div>
-                    <img id="prev_an" class="id-preview-box" onclick="viewFullImage(this.src)">
+                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_an"></div>
                 </div>
             </div>
 
-            <!-- SHIFT 4: EVENING -->
             <div class="shift-block normal-shift" id="block_e">
                 <h4>4. Evening Shift (6 PM - 10 PM)</h4>
                 <div class="form-row">
@@ -273,20 +187,10 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group"><label>Renewal Date</label><input type="date" id="date_e"></div>
-                    <div class="form-group"><label>Fees Paid (₹)</label><input type="number" id="fees_e"></div>
-                </div>
-                <div class="due-row-layout"><input type="checkbox" id="due_e" onchange="toggleDueInput('e')"><label for="due_e">⚠️ Fees Due H?</label></div>
-                <div class="form-row" id="due_amt_box_e" style="display:none; margin-top:4px;"><div class="form-group" style="grid-column:span 2;"><label style="color:#ef4444;">Baki Amount (₹)</label><input type="number" id="dueamt_e" value="0"></div></div>
-                <div class="id-upload-container">
-                    <div class="id-actions">
-                        <label class="file-input-label">📁 File<input type="file" accept="image/*" id="file_e" style="display:none;" onchange="processIdImage(this, 'e')"></label>
-                        <label class="file-input-label" style="background:#0284c7;" onclick="triggerCamera('e')">📸 Camera</label>
-                    </div>
-                    <img id="prev_e" class="id-preview-box" onclick="viewFullImage(this.src)">
+                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_e"></div>
                 </div>
             </div>
 
-            <!-- SHIFT 5: EXTRA NIGHT -->
             <div class="shift-block night-block" id="block_night">
                 <h4>🌙 Extra: Night Shift (10 PM onwards)</h4>
                 <div class="form-row">
@@ -295,37 +199,16 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group"><label>Renewal Date</label><input type="date" id="date_night"></div>
-                    <div class="form-group"><label>Fees Paid (₹)</label><input type="number" id="fees_night"></div>
-                </div>
-                <div class="due-row-layout"><input type="checkbox" id="due_night" onchange="toggleDueInput('night')"><label for="due_night">⚠️ Fees Due H?</label></div>
-                <div class="form-row" id="due_amt_box_night" style="display:none; margin-top:4px;"><div class="form-group" style="grid-column:span 2;"><label style="color:#ef4444;">Baki Amount (₹)</label><input type="number" id="dueamt_night" value="0"></div></div>
-                <div class="id-upload-container">
-                    <div class="id-actions">
-                        <label class="file-input-label">📁 File<input type="file" accept="image/*" id="file_night" style="display:none;" onchange="processIdImage(this, 'night')"></label>
-                        <label class="file-input-label" style="background:#0284c7;" onclick="triggerCamera('night')">📸 Camera</label>
-                    </div>
-                    <img id="prev_night" class="id-preview-box" onclick="viewFullImage(this.src)">
+                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_night"></div>
                 </div>
             </div>
 
             <div class="modal-actions">
-                <button class="btn btn-warning" onclick="clearEntireSeat()">Vacant Seat (Khali Karein)</button>
-                <div class="modal-btn-row">
-                    <button class="btn btn-danger" onclick="closeModal()">Close</button>
-                    <button class="btn" onclick="saveMultiShiftData()">Save Configuration</button>
-                </div>
+                <button class="btn btn-danger" onclick="closeModal()">Close</button>
+                <button class="btn" onclick="saveMultiShiftData()">Save Configuration</button>
             </div>
         </div>
     </div>
-
-    <!-- FULLSCREEN PHOTO BOX VIEWER -->
-    <div id="imageViewerModal" onclick="this.style.display='none';">
-        <img id="fullImageTag" src="" alt="Full Identity Screen">
-        <p style="position:absolute; bottom:20px; color:white; font-size:0.9rem;">Click anywhere to close full view</p>
-    </div>
-
-    <!-- CAPTURE TRICK STREAM HOLDER (HIDDEN) -->
-    <input type="file" accept="image/*" capture="environment" id="globalCameraTrigger" style="display:none;">
 
     <script>
         const firebaseConfig = { databaseURL: "https://hariom-library-3c480-default-rtdb.firebaseio.com/" };
@@ -337,10 +220,8 @@
         let activeSeatNumber = null;
         const TOTAL_SEATS = 105;
         let globalLibraryData = {};
-        
-        // Dynamic temporary memory to host base64 raw pictures
-        let capturedImagesMem = { all: "", m: "", n: "", an: "", e: "", night: "" };
 
+        // Persist Verification State
         function checkLocalAdmin() {
             const savedAdmin = localStorage.getItem('hariom_saved_admin');
             if (savedAdmin && allowedAdmins.includes(savedAdmin)) {
@@ -372,10 +253,6 @@
             const isUR = (i >= 64 && i <= 85);
             el.className = isUR ? 'seat is-unreserved' : 'seat';
             el.innerHTML = `
-                <div class="due-indicator-wrapper" id="due-wrap-${i}">
-                    <span class="due-amount-badge" id="due-amt-lbl-${i}">₹0</span>
-                    <div class="due-arrow">⬇</div>
-                </div>
                 <span>${i}</span>
                 <div class="indicators">
                     <div class="all-shift-indicator" id="all-ind-${i}"></div>
@@ -401,17 +278,6 @@
             checkLocalAdmin();
         });
 
-        function parseLocalDate(dateStr) {
-            if(!dateStr) return null;
-            const parts = dateStr.split('-');
-            return new Date(parts[0], parts[1] - 1, parts[2]);
-        }
-
-        function toggleDueInput(shiftKey) {
-            const chk = document.getElementById(`due_${shiftKey}`).checked;
-            document.getElementById(`due_amt_box_${shiftKey}`).style.display = chk ? 'block' : 'none';
-        }
-
         function updateUI(seats) {
             let totalIncome = 0;
             let activeBookings = 0;
@@ -429,20 +295,15 @@
                 const mainShiftsDiv = document.getElementById(`main-shifts-${i}`);
                 const nightInd = document.getElementById(`night-ind-${i}`);
                 const dots = mainShiftsDiv.querySelectorAll('.dot');
-                const dueWrap = document.getElementById(`due-wrap-${i}`);
-                const dueAmtLabel = document.getElementById(`due-amt-lbl-${i}`);
 
                 allInd.className = 'all-shift-indicator';
                 nightInd.className = 'night-dot';
                 dots.forEach(d => d.className = 'dot');
                 seatEl.className = (i >= 64 && i <= 85) ? 'seat is-unreserved' : 'seat';
-                seatEl.classList.remove('has-due');
 
                 let hasExpired = false;
                 let hasAlert = false;
                 let seatHasAnyBooking = false;
-                let seatHasAnyDue = false;
-                let seatTotalDueAmount = 0;
 
                 totalIncome += (parseInt(data.fees_all) || 0) + (parseInt(data.fees_m) || 0) + 
                                (parseInt(data.fees_n) || 0) + (parseInt(data.fees_an) || 0) + 
@@ -450,24 +311,19 @@
 
                 function checkStatus(dateStr) {
                     if(!dateStr) return 'none';
-                    const targetDate = parseLocalDate(dateStr);
-                    if(!targetDate) return 'none';
+                    const targetDate = new Date(dateStr);
+                    targetDate.setHours(0,0,0,0);
                     if(targetDate <= today) return 'expired';
                     if(targetDate <= threeDaysLater) return 'alert';
                     return 'active';
                 }
 
-                // Check Full Day Shift
                 if(data.name_all) {
                     activeBookings++;
                     seatHasAnyBooking = true;
                     allInd.classList.add('active');
                     mainShiftsDiv.style.display = 'none'; 
                     seatEl.classList.add('is-allshift');
-                    if(data.due_all === true) {
-                        seatHasAnyDue = true;
-                        seatTotalDueAmount += (parseInt(data.dueamt_all) || 0);
-                    }
                     
                     const status = checkStatus(data.date_all);
                     if(status === 'expired') { allInd.classList.add('expired'); hasExpired = true; }
@@ -480,10 +336,6 @@
                             activeBookings++;
                             seatHasAnyBooking = true;
                             dots[idx].classList.add('active');
-                            if(data[`due_${s}`] === true) {
-                                seatHasAnyDue = true;
-                                seatTotalDueAmount += (parseInt(data[`dueamt_${s}`]) || 0);
-                            }
                             
                             const status = checkStatus(data[`date_${s}`]);
                             if(status === 'expired') { dots[idx].classList.add('expired'); hasExpired = true; }
@@ -492,15 +344,10 @@
                     });
                 }
 
-                // Check Night Shift
                 if(data.name_night) {
                     activeBookings++;
                     seatHasAnyBooking = true;
                     nightInd.classList.add('active');
-                    if(data.due_night === true) {
-                        seatHasAnyDue = true;
-                        seatTotalDueAmount += (parseInt(data.dueamt_night) || 0);
-                    }
                     
                     const status = checkStatus(data.date_night);
                     if(status === 'expired') { nightInd.classList.add('expired'); hasExpired = true; }
@@ -510,15 +357,6 @@
                 if(seatHasAnyBooking && !data.name_all) seatEl.classList.add('is-booked');
                 if(hasAlert) seatEl.classList.add('has-alert');
                 if(hasExpired) seatEl.classList.add('has-expired');
-                
-                // Show arrow Indicator along with total amount live on screen
-                if(seatHasAnyDue) {
-                    seatEl.classList.add('has-due');
-                    dueWrap.style.display = 'flex';
-                    dueAmtLabel.innerText = '₹' + seatTotalDueAmount;
-                } else {
-                    dueWrap.style.display = 'none';
-                }
             }
 
             document.getElementById('activeBookingsCount').innerText = activeBookings;
@@ -537,46 +375,6 @@
             }
         }
 
-        // Processing upload images & compressing to Base64 to save inside Firebase directly
-        function processIdImage(inputElement, shiftKey) {
-            const file = inputElement.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const imgBase64 = e.target.result;
-                capturedImagesMem[shiftKey] = imgBase64;
-                const prevEl = document.getElementById(`prev_${shiftKey}`);
-                prevEl.src = imgBase64;
-                prevEl.classList.add('visible');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // Triggers the system native environment camera layer
-        function triggerCamera(shiftKey) {
-            const trigger = document.getElementById('globalCameraTrigger');
-            trigger.onchange = function() {
-                if(trigger.files && trigger.files[0]) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        capturedImagesMem[shiftKey] = e.target.result;
-                        const prevEl = document.getElementById(`prev_${shiftKey}`);
-                        prevEl.src = e.target.result;
-                        prevEl.classList.add('visible');
-                    };
-                    reader.readAsDataURL(trigger.files[0]);
-                }
-            };
-            trigger.click();
-        }
-
-        function viewFullImage(srcString) {
-            if(!srcString || srcString.includes('window.location')) return;
-            document.getElementById('fullImageTag').src = srcString;
-            document.getElementById('imageViewerModal').style.display = 'flex';
-        }
-
         function openSeatModal(seatNum) {
             activeSeatNumber = seatNum;
             document.getElementById('modalTitle').innerText = `Manage Seat - ${seatNum}`;
@@ -588,25 +386,6 @@
                 document.getElementById(`phone_${f}`).value = data[`phone_${f}`] || '';
                 document.getElementById(`date_${f}`).value = data[`date_${f}`] || '';
                 document.getElementById(`fees_${f}`).value = data[`fees_${f}`] || 0;
-                
-                const dueChecked = data[`due_${f}`] || false;
-                document.getElementById(`due_${f}`).checked = dueChecked;
-                document.getElementById(`dueamt_${f}`).value = data[`dueamt_${f}`] || 0;
-                
-                // Toggle showing the baki amount text element input box
-                document.getElementById(`due_amt_box_${f}`).style.display = dueChecked ? 'block' : 'none';
-
-                // Setup previews if ID proof image binary path was found
-                const prevEl = document.getElementById(`prev_${f}`);
-                if(data[`id_img_${f}`]) {
-                    capturedImagesMem[f] = data[`id_img_${f}`];
-                    prevEl.src = data[`id_img_${f}`];
-                    prevEl.classList.add('visible');
-                } else {
-                    capturedImagesMem[f] = "";
-                    prevEl.src = "";
-                    prevEl.classList.remove('visible');
-                }
             });
 
             toggleModalShifts(data['name_all'] || '');
@@ -619,51 +398,66 @@
 
         function closeModal() { document.getElementById('seatModal').style.display = 'none'; }
 
+        // फंक्शन: WhatsApp या नोटिफिकेशन अलर्ट ट्रिगर करने के लिए
+        function sendShiftNotification(studentName, phone, shiftName, seatNo, renewalDate) {
+            if (!phone || !studentName) return;
+            
+            const message = `नमस्ते ${studentName}, हरीओम स्मार्ट लाइब्रेरी में सीट नंबर ${seatNo} पर आपकी ${shiftName} बुक/अपडेट हो गई है। नवीनीकरण तिथि: ${renewalDate || 'N/A'}. धन्यवाद!`;
+            
+            // यह WhatsApp लिंक ओपन करेगा
+            const encodedText = encodeURIComponent(message);
+            const whatsappUrl = `https://api.whatsapp.com/send?phone=91${phone}&text=${encodedText}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
         function saveMultiShiftData() {
             if(!isAdminVerified) { alert("⚠️ Please verify Admin Number first!"); return; }
 
+            const oldSeatData = globalLibraryData[activeSeatNumber] || {};
             const update = {};
             const fields = ['all', 'm', 'n', 'an', 'e', 'night'];
             const isAllShiftActive = document.getElementById('name_all').value.trim() !== "";
 
-            let clientPhone = "";
-            let clientName = "";
-            let clientShift = "";
-            let clientDate = "";
-            let isDueActive = false;
-            let currentDueAmountToSend = 0;
+            // शिफ्ट के नाम हिंदी/साफ अक्षरों में मैपिंग
+            const shiftNamesMapping = {
+                'all': 'Full Day (All Shift)',
+                'm': 'Morning Shift',
+                'n': 'Noon Shift',
+                'an': 'Afternoon Shift',
+                'e': 'Evening Shift',
+                'night': 'Night Shift'
+            };
+
+            const shiftsToNotify = [];
 
             fields.forEach(f => {
-                const currentName = document.getElementById(`name_${f}`).value.trim();
-                const currentPhone = document.getElementById(`phone_${f}`).value.trim();
-                const currentDate = document.getElementById(`date_${f}`).value;
-                const currentDue = document.getElementById(`due_${f}`).checked;
-                const currentDueAmt = parseInt(document.getElementById(`dueamt_${f}`).value) || 0;
-
                 if(isAllShiftActive && ['m', 'n', 'an', 'e'].includes(f)) {
                     update[`name_${f}`] = "";
                     update[`phone_${f}`] = "";
                     update[`date_${f}`] = "";
                     update[`fees_${f}`] = 0;
-                    update[`due_${f}`] = false;
-                    update[`dueamt_${f}`] = 0;
-                    update[`id_img_${f}`] = "";
                 } else {
-                    update[`name_${f}`] = currentName;
-                    update[`phone_${f}`] = currentPhone;
-                    update[`date_${f}`] = currentDate;
-                    update[`fees_${f}`] = parseInt(document.getElementById(`fees_${f}`).value) || 0;
-                    update[`due_${f}`] = currentDue;
-                    update[`dueamt_${f}`] = currentDueAmt;
-                    update[`id_img_${f}`] = capturedImagesMem[f] || "";
+                    const newName = document.getElementById(`name_${f}`).value.trim();
+                    const newPhone = document.getElementById(`phone_${f}`).value.trim();
+                    const newDate = document.getElementById(`date_${f}`).value;
+                    const newFees = parseInt(document.getElementById(`fees_${f}`).value) || 0;
 
-                    if(currentName !== "" && currentPhone !== "") {
-                        clientName = currentName;
-                        clientPhone = currentPhone;
-                        clientDate = currentDate;
-                        isDueActive = currentDue;
-                        currentDueAmountToSend = currentDueAmt;
-                        clientShift = (f === 'all') ? "Full Day Shift" : (f === 'm') ? "Morning Shift" : (f === 'n') ? "Noon Shift" : (f === 'an') ? "Afternoon Shift" : (f === 'e') ? "Evening Shift" : "Night Shift";
+                    update[`name_${f}`] = newName;
+                    update[`phone_${f}`] = newPhone;
+                    update[`date_${f}`] = newDate;
+                    update[`fees_${f}`] = newFees;
+
+                    // लॉजिक: चेक करें क्या यह शिफ्ट नई जोड़ी गई है या बदली गई है
+                    const oldName = (oldSeatData[`name_${f}`] || "").trim();
+                    const oldPhone = (oldSeatData[`phone_${f}`] || "").trim();
+
+                    if (newName !== "" && (newName !== oldName || newPhone !== oldPhone)) {
+                        shiftsToNotify.push({
+                            name: newName,
+                            phone: newPhone,
+                            shiftText: shiftNamesMapping[f],
+                            date: newDate
+                        });
                     }
                 }
             });
@@ -672,93 +466,20 @@
                 .then(() => { 
                     closeModal(); 
                     
-                    if(clientPhone !== "" && clientName !== "") {
-                        let cleanPhone = clientPhone.replace(/\D/g, ''); 
-                        if(cleanPhone.length === 10) cleanPhone = "91" + cleanPhone; 
-                        
-                        let msg = "";
-                        if(isDueActive) {
-                            msg = `Hello ${clientName},\nHariom Smart Library mein aapki Seat No. ${activeSeatNumber} (${clientShift}) ke fees ka payment DUES chal raha hai. Aapka kul ₹${currentDueAmountToSend} baki hai. Kripya jald se jald jama karein.\nDhanyawad! 🙏`;
-                        } else {
-                            msg = `Hello ${clientName},\nHariom Smart Library mein aapki Seat No. ${activeSeatNumber} (${clientShift}) ke liye data confirm/renew ho gaya hai.\nValid Till: ${clientDate || 'N/A'}.\nDhanyawad! 🙏`;
-                        }
-                        
-                        const encodedMsg = encodeURIComponent(msg);
-                        window.open(`https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMsg}`, '_blank');
+                    // सिर्फ उन्हीं शिफ्ट के लिए मैसेज भेजें जो नए जोड़े या बदले गए हैं
+                    if(shiftsToNotify.length > 0) {
+                        shiftsToNotify.forEach(shift => {
+                            sendShiftNotification(shift.name, shift.phone, shift.shiftText, activeSeatNumber, shift.date);
+                        });
                     }
                 })
                 .catch(err => alert("Error saving data: " + err));
         }
 
-        function clearEntireSeat() {
-            if(!isAdminVerified) { alert("⚠️ Please verify Admin Number first!"); return; }
-            if(!confirm(`Kya aap Seat number ${activeSeatNumber} ko puri tarah khali karna chahte hain?`)) return;
-
-            const update = {};
-            const fields = ['all', 'm', 'n', 'an', 'e', 'night'];
-            fields.forEach(f => {
-                update[`name_${f}`] = "";
-                update[`phone_${f}`] = "";
-                update[`date_${f}`] = "";
-                update[`fees_${f}`] = 0;
-                update[`due_${f}`] = false;
-                update[`dueamt_${f}`] = 0;
-                update[`id_img_${f}`] = "";
-            });
-
-            database.ref('library_v3/seats/' + activeSeatNumber).set(update)
-                .then(() => { closeModal(); })
-                .catch(err => alert("Error vacating seat: " + err));
-        }
-
-        function downloadExcelBreakup() {
-            let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "Seat No,Shift Type,Student Name,Phone,Fees Paid,Renewal Date,Due Status,Due Amount\n";
-
-            const shiftLabels = {
-                'all': 'Full Day Shift', 'm': 'Morning Shift', 'n': 'Noon Shift', 'an': 'Afternoon Shift', 'e': 'Evening Shift', 'night': 'Night Shift'
-            };
-
-            for (let i = 1; i <= TOTAL_SEATS; i++) {
-                const data = globalLibraryData[i] || {};
-                let shiftsToCheck = ['all', 'm', 'n', 'an', 'e', 'night'];
-                
-                shiftsToCheck.forEach(s => {
-                    if(data[`name_${s}`]) {
-                        const name = data[`name_${s}`].replace(/,/g, " "); 
-                        const phone = data[`phone_${s}`] || "";
-                        const fees = data[`fees_${s}`] || "0";
-                        const date = data[`date_${s}`] || "";
-                        const dueStatus = data[`due_${s}`] ? "DUE" : "PAID";
-                        const dueAmt = data[`dueamt_${s}`] || "0";
-                        csvContent += `${i},${shiftLabels[s]},${name},${phone},${fees},${date},${dueStatus},${dueAmt}\n`;
-                    }
-                });
-            }
-
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "Hariom_Library_Seat_Breakup.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        function backupJSONData() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(globalLibraryData, null, 4));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", `Hariom_Library_Backup_${new Date().toISOString().slice(0,10)}.json`);
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            document.body.removeChild(downloadAnchor);
-        }
-
         function addWaiting() {
             if(!isAdminVerified) { alert("⚠️ Verify admin status!"); return; }
-            const name = document.getElementById('waitName').value.trim();
-            const phone = document.getElementById('waitPhone').value.trim();
+            const name = document.getElementById('waitName').value;
+            const phone = document.getElementById('waitPhone').value;
             if(!name) return;
             database.ref('library_v3/waiting').push().set({ name, phone }).then(() => {
                 document.getElementById('waitName').value = '';
@@ -785,7 +506,7 @@
         }
 
         function filterSeats() {
-            const query = document.getElementById('searchBox').value.toLowerCase().trim();
+            const query = document.getElementById('searchBox').value.toLowerCase();
             const fields = ['all', 'm', 'n', 'an', 'e', 'night'];
             for(let i=1; i<=TOTAL_SEATS; i++) {
                 const seatEl = document.getElementById(`seat-${i}`);
@@ -793,17 +514,9 @@
                 if(!query) { seatEl.style.opacity = '1'; continue; }
                 
                 let match = i.toString() === query;
-                
-                if(query === 'due' && seatEl.classList.contains('has-due')) {
-                    match = true;
-                }
-
                 if(data) {
                     fields.forEach(f => {
                         if(data[`name_${f}`] && data[`name_${f}`].toLowerCase().includes(query)) {
-                            match = true;
-                        }
-                        if(data[`phone_${f}`] && data[`phone_${f}`].includes(query)) {
                             match = true;
                         }
                     });
