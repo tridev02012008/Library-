@@ -46,7 +46,7 @@
         
         .seats-container { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 30px; }
         
-        .seat { background: #1e293b; padding: 8px 4px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; font-weight: bold; font-size: 1rem; cursor: pointer; color: white; transition: 0.2s; min-height: 75px; position: relative; border: 1px solid #475569; }
+        .seat { background: #1e293b; padding: 8px 4px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; font-weight: bold; font-size: 1rem; cursor: pointer; color: white; transition: 0.2s; min-height: 85px; position: relative; border: 1px solid #475569; }
         
         .seat.is-unreserved { background: #1a2333; border-color: #475569; position: relative; }
         .seat.is-unreserved::after { content: 'UR'; position: absolute; top: 2px; right: 4px; font-size: 0.6rem; color: #94a3b8; background: rgba(255,255,255,0.07); padding: 1px 3px; border-radius: 3px; }
@@ -54,11 +54,15 @@
         .seat.is-booked { background: var(--active-booking-bg) !important; border-color: var(--active-booking-border) !important; }
         .seat.is-allshift { border-color: #eab308 !important; background: #232212 !important; }
         
-        /* Blinking Classes */
+        /* Blinking & Due Arrow Layout */
         .seat.has-alert { border: 2px dashed var(--warning-alert) !important; animation: mildBlink 2s infinite; }
         .seat.has-expired { border: 2px dashed var(--danger-color) !important; background: #2d1015 !important; animation: severeBlink 1.5s infinite; }
-        .seat.has-due { border: 2px dashed var(--due-color) !important; animation: yellowBlink 1.8s infinite; }
+        .seat.has-due { border: 2px dashed var(--due-color) !important; }
         
+        /* Arrow Indicator Style */
+        .due-arrow-indicator { display: none; position: absolute; top: -14px; background: var(--due-color); color: #0b0f19; font-size: 0.65rem; padding: 1px 4px; border-radius: 4px; z-index: 5; animation: arrowBlink 1.2s infinite; font-weight: 800; white-space: nowrap; }
+        .due-arrow-indicator::after { content: ''; position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%); border-width: 4px 4px 0; border-style: solid; border-color: var(--due-color) transparent; }
+
         .indicators { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; margin-top: 5px; }
         .main-shifts { display: flex; justify-content: center; gap: 3px; width: 100%; }
         
@@ -66,24 +70,24 @@
         .dot.active { background: var(--success-color); }
         .dot.alert { background: var(--warning-alert) !important; animation: blink 1.2s infinite; }
         .dot.expired { background: var(--danger-color) !important; animation: blink 1.2s infinite; }
-        .dot.due { background: var(--due-color) !important; animation: blink 1.2s infinite; }
+        .dot.due { background: var(--due-color) !important; }
         
         .night-dot { width: 8px; height: 8px; border-radius: 50%; background: transparent; border: 1px dashed #475569; }
         .night-dot.active { background: var(--night-color); border: none; }
         .night-dot.alert { background: var(--warning-alert) !important; border: none; animation: blink 1.2s infinite; }
         .night-dot.expired { background: var(--danger-color) !important; border: none; animation: blink 1.2s infinite; }
-        .night-dot.due { background: var(--due-color) !important; border: none; animation: blink 1.2s infinite; }
+        .night-dot.due { background: var(--due-color) !important; border: none; }
 
         .all-shift-indicator { width: 30px; height: 6px; border-radius: 3px; background: #475569; display: none; }
         .all-shift-indicator.active { background: #eab308; display: block; }
         .all-shift-indicator.alert { background: var(--warning-alert) !important; display: block; animation: blink 1.2s infinite; }
         .all-shift-indicator.expired { background: var(--danger-color) !important; display: block; animation: blink 1.2s infinite; }
-        .all-shift-indicator.due { background: var(--due-color) !important; display: block; animation: blink 1.2s infinite; }
+        .all-shift-indicator.due { background: var(--due-color) !important; display: block; }
 
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }
+        @keyframes arrowBlink { 0% { transform: translateY(0); opacity: 1; } 50% { transform: translateY(-3px); opacity: 0.4; } 100% { transform: translateY(0); opacity: 1; } }
         @keyframes mildBlink { 0% { border-color: var(--warning-alert); } 50% { border-color: transparent; } 100% { border-color: var(--warning-alert); } }
         @keyframes severeBlink { 0% { border-color: var(--danger-color); } 50% { border-color: transparent; } 100% { border-color: var(--danger-color); } }
-        @keyframes yellowBlink { 0% { border-color: var(--due-color); } 50% { border-color: transparent; } 100% { border-color: var(--due-color); } }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 100; padding: 15px; }
         .modal-content { background: var(--card-color); padding: 20px; border-radius: 15px; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
@@ -108,6 +112,14 @@
         .camera-container { display: flex; flex-direction: column; align-items: center; gap: 10px; background: #0b0f19; padding: 10px; border-radius: 8px; margin-top: 10px; border: 1px solid #233554; }
         #video { width: 100%; max-width: 280px; height: 180px; background: #233554; border-radius: 6px; object-fit: cover; }
         #canvas { display: none; }
+
+        /* Aadhaar Card Secure Database Box Layout */
+        .secure-vault { width: 100%; margin-top: 15px; background: #111a2e; border: 1px dashed var(--success-color); border-radius: 8px; padding: 10px; }
+        .secure-vault h4 { font-size: 0.85rem; color: var(--success-color); margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
+        .vault-inputs { display: grid; grid-template-columns: 1fr 2fr; gap: 5px; margin-bottom: 10px; }
+        .vault-list { max-height: 150px; overflow-y: auto; margin-top: 8px; font-size: 0.8rem; }
+        .vault-item { background: #0b0f19; padding: 6px; border-radius: 4px; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid var(--success-color); }
+        .vault-item img { width: 40px; height: 25px; object-fit: cover; border-radius: 2px; border: 1px solid #475569; }
     </style>
 </head>
 <body>
@@ -142,9 +154,19 @@
             <canvas id="canvas" width="320" height="240"></canvas>
             <div style="display: flex; gap: 8px; width: 100%; max-width: 280px;">
                 <button class="btn" style="flex: 1; padding: 6px;" onclick="startCamera()">Start Cam</button>
-                <button class="btn btn-success" style="flex: 1; padding: 6px;" onclick="captureDoc()">Verify Doc</button>
+                <button class="btn btn-success" style="flex: 1; padding: 6px;" onclick="captureDoc()">Verify & Save</button>
             </div>
             <p id="camStatus" style="font-size: 0.8rem; color: #64748b;">Camera status: Offline</p>
+            
+            <!-- Aadhaar / ID Card Safe Vault Storage Box -->
+            <div class="secure-vault">
+                <h4>🛡️ Aadhaar Card Secure Vault Storage</h4>
+                <div class="vault-inputs">
+                    <input type="number" id="vaultSeat" placeholder="Seat No">
+                    <input type="text" id="vaultName" placeholder="Student Name / Details">
+                </div>
+                <div class="vault-list" id="vaultListContainer"></div>
+            </div>
         </div>
     </div>
 
@@ -272,7 +294,6 @@
         let globalLibraryData = {};
         let streamRef = null;
 
-        // Persist Verification State
         function checkLocalAdmin() {
             const savedAdmin = localStorage.getItem('hariom_saved_admin');
             if (savedAdmin && allowedAdmins.includes(savedAdmin)) {
@@ -298,7 +319,7 @@
             }
         }
 
-        // Camera Logic
+        // Camera Initialization
         function startCamera() {
             const video = document.getElementById('video');
             navigator.mediaDevices.getUserMedia({ video: true })
@@ -308,21 +329,41 @@
                     document.getElementById('camStatus').innerText = "Camera status: Active Streaming";
                     document.getElementById('camStatus').style.color = "var(--success-color)";
                 })
-                .catch(err => {
-                    alert("Unable to open camera: " + err);
-                });
+                .catch(err => { alert("Unable to open camera: " + err); });
         }
 
+        // Capture Document and Push to Firebase Secure Vault Storage
         function captureDoc() {
             if (!streamRef) { alert("Please start the camera first."); return; }
+            if(!isAdminVerified) { alert("⚠️ Verify admin status first!"); return; }
+            
+            const seatNo = document.getElementById('vaultSeat').value.trim();
+            const studName = document.getElementById('vaultName').value.trim();
+            
+            if(!seatNo || !studName) {
+                alert("Please fill Seat No and Student Name in Vault boxes before capturing document photo!");
+                return;
+            }
+
             const canvas = document.getElementById('canvas');
             const video = document.getElementById('video');
             const context = canvas.getContext('2d');
             context.drawImage(video, 0, 0, 320, 240);
-            alert("📸 Document snap processed successfully for instant verification tracking!");
+            const dataUrl = canvas.toDataURL('image/jpeg');
+
+            database.ref('library_v3/secured_docs').push().set({
+                seat: seatNo,
+                name: studName,
+                image: dataUrl,
+                timestamp: new Date().toLocaleString()
+            }).then(() => {
+                alert(`📸 Document photo securely vaulted for Seat ${seatNo}!`);
+                document.getElementById('vaultSeat').value = '';
+                document.getElementById('vaultName').value = '';
+            });
         }
 
-        // Excel Backup logic (CSV format compatible with Microsoft Excel)
+        // Excel Export Backup
         function exportToExcel() {
             if (Object.keys(globalLibraryData).length === 0) {
                 alert("No data available to export yet!");
@@ -358,12 +399,14 @@
             document.body.removeChild(link);
         }
 
+        // Generate Seat layout elements with integrated upper arrow div
         const grid = document.getElementById('seatsGrid');
         for(let i=1; i<=TOTAL_SEATS; i++) {
             const el = document.createElement('div');
             const isUR = (i >= 64 && i <= 85);
             el.className = isUR ? 'seat is-unreserved' : 'seat';
             el.innerHTML = `
+                <div class="due-arrow-indicator" id="arrow-ind-${i}">↓ ₹0</div>
                 <span>${i}</span>
                 <div class="indicators">
                     <div class="all-shift-indicator" id="all-ind-${i}"></div>
@@ -381,11 +424,13 @@
             grid.appendChild(el);
         }
 
+        // Live Realtime sync from Firebase
         database.ref('library_v3').on('value', (snapshot) => {
             const data = snapshot.val() || {};
             globalLibraryData = data.seats || {};
             updateUI(globalLibraryData);
             updateWaitingUI(data.waiting || {});
+            updateVaultUI(data.secured_docs || {});
             checkLocalAdmin();
         });
 
@@ -401,6 +446,7 @@
 
             for(let i=1; i<=TOTAL_SEATS; i++) {
                 const seatEl = document.getElementById(`seat-${i}`);
+                const arrowEl = document.getElementById(`arrow-ind-${i}`);
                 const data = seats[i] || {};
                 
                 const allInd = document.getElementById(`all-ind-${i}`);
@@ -412,19 +458,23 @@
                 nightInd.className = 'night-dot';
                 dots.forEach(d => d.className = 'dot');
                 seatEl.className = (i >= 64 && i <= 85) ? 'seat is-unreserved' : 'seat';
+                
+                arrowEl.style.display = 'none';
 
                 let hasExpired = false;
                 let hasAlert = false;
-                let hasDue = false;
                 let seatHasAnyBooking = false;
+                let seatCurrentDueAmount = 0;
 
                 totalIncome += (parseInt(data.fees_all) || 0) + (parseInt(data.fees_m) || 0) + 
                                (parseInt(data.fees_n) || 0) + (parseInt(data.fees_an) || 0) + 
                                (parseInt(data.fees_e) || 0) + (parseInt(data.fees_night) || 0);
 
-                totalDue += (parseInt(data.due_all) || 0) + (parseInt(data.due_m) || 0) + 
-                            (parseInt(data.due_n) || 0) + (parseInt(data.due_an) || 0) + 
-                            (parseInt(data.due_e) || 0) + (parseInt(data.due_night) || 0);
+                seatCurrentDueAmount += (parseInt(data.due_all) || 0) + (parseInt(data.due_m) || 0) + 
+                                       (parseInt(data.due_n) || 0) + (parseInt(data.due_an) || 0) + 
+                                       (parseInt(data.due_e) || 0) + (parseInt(data.due_night) || 0);
+                
+                totalDue += seatCurrentDueAmount;
 
                 function checkStatus(dateStr) {
                     if(!dateStr) return 'none';
@@ -433,11 +483,6 @@
                     if(targetDate <= today) return 'expired';
                     if(targetDate <= threeDaysLater) return 'alert';
                     return 'active';
-                }
-
-                // Check overall dynamic dues for visual alerts
-                function checkDueActive(dueVal) {
-                    return (parseInt(dueVal) > 0);
                 }
 
                 if(data.name_all) {
@@ -451,7 +496,7 @@
                     if(status === 'expired') { allInd.classList.add('expired'); hasExpired = true; }
                     else if(status === 'alert') { allInd.classList.add('alert'); hasAlert = true; }
                     
-                    if(checkDueActive(data.due_all)) { allInd.classList.add('due'); hasDue = true; }
+                    if(parseInt(data.due_all) > 0) { allInd.classList.add('due'); }
                 } else {
                     mainShiftsDiv.style.display = 'flex';
                     const shifts = ['m', 'n', 'an', 'e'];
@@ -465,7 +510,7 @@
                             if(status === 'expired') { dots[idx].classList.add('expired'); hasExpired = true; }
                             else if(status === 'alert') { dots[idx].classList.add('alert'); hasAlert = true; }
                             
-                            if(checkDueActive(data[`due_${s}`])) { dots[idx].classList.add('due'); hasDue = true; }
+                            if(parseInt(data[`due_${s}`]) > 0) { dots[idx].classList.add('due'); }
                         }
                     });
                 }
@@ -479,18 +524,38 @@
                     if(status === 'expired') { nightInd.classList.add('expired'); hasExpired = true; }
                     else if(status === 'alert') { nightInd.classList.add('alert'); hasAlert = true; }
                     
-                    if(checkDueActive(data.due_night)) { nightInd.classList.add('due'); hasDue = true; }
+                    if(parseInt(data.due_night) > 0) { nightInd.classList.add('due'); }
                 }
 
                 if(seatHasAnyBooking && !data.name_all) seatEl.classList.add('is-booked');
                 if(hasAlert) seatEl.classList.add('has-alert');
                 if(hasExpired) seatEl.classList.add('has-expired');
-                if(hasDue) seatEl.classList.add('has-due'); // Restored Yellow Blink layout
+                
+                // Trigger Blinking Arrow if Due exists
+                if(seatCurrentDueAmount > 0) {
+                    seatEl.classList.add('has-due');
+                    arrowEl.innerText = `↓ ₹${seatCurrentDueAmount}`;
+                    arrowEl.style.display = 'block';
+                }
             }
 
             document.getElementById('activeBookingsCount').innerText = activeBookings;
             document.getElementById('totalIncome').innerText = '₹' + totalIncome;
             document.getElementById('totalDue').innerText = '₹' + totalDue;
+        }
+
+        // Render Secure Vault items
+        function updateVaultUI(vaultData) {
+            const container = document.getElementById('vaultListContainer');
+            container.innerHTML = '';
+            Object.keys(vaultData).forEach(key => {
+                const item = vaultData[key];
+                container.innerHTML += `
+                    <div class="vault-item">
+                        <span><strong>Seat ${item.seat}:</strong> ${item.name}</span>
+                        <img src="${item.image}" onclick="window.open(this.src)" title="Click to view raw photo" style="cursor:pointer;">
+                    </div>`;
+            });
         }
 
         function toggleModalShifts(allShiftValue) {
