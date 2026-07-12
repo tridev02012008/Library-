@@ -56,9 +56,13 @@
         .seat.is-booked { background: var(--active-booking-bg) !important; border-color: var(--active-booking-border) !important; }
         .seat.is-allshift { border-color: #eab308 !important; background: #232212 !important; }
         
-        .seat.has-alert { border: 2px dashed var(--warning-alert) !important; animation: mildBlink 2s infinite; }
-        .seat.has-expired { border: 2px dashed var(--danger-color) !important; background: #2d1015 !important; animation: severeBlink 1.5s infinite; }
+        .seat.has-alert { border: 2px dashed var(--warning-alert) !important; }
+        .seat.has-expired { border: 2px dashed var(--danger-color) !important; background: #2d1015 !important; }
         
+        /* Chamakta hua teer (Due Arrow Indicator) */
+        .due-arrow { position: absolute; top: -12px; font-size: 1.4rem; color: #ff3333; display: none; text-shadow: 0 0 8px #ff0000; z-index: 5; animation: arrowBlink 0.8s infinite alternate; }
+        .seat.has-due .due-arrow { display: block; }
+
         .indicators { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; margin-top: 5px; }
         .main-shifts { display: flex; justify-content: center; gap: 3px; width: 100%; }
         
@@ -78,8 +82,7 @@
         .all-shift-indicator.expired { background: var(--danger-color) !important; display: block; animation: blink 1.2s infinite; }
 
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }
-        @keyframes mildBlink { 0% { border-color: var(--warning-alert); } 50% { border-color: transparent; } 100% { border-color: var(--warning-alert); } }
-        @keyframes severeBlink { 0% { border-color: var(--danger-color); } 50% { border-color: transparent; } 100% { border-color: var(--danger-color); } }
+        @keyframes arrowBlink { 0% { transform: translateY(0); opacity: 0.3; } 100% { transform: translateY(-4px); opacity: 1; } }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 100; padding: 15px; }
         .modal-content { background: var(--card-color); padding: 20px; border-radius: 15px; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
@@ -96,6 +99,10 @@
         label { font-size: 0.75rem; color: #64748b; display: block; margin-bottom: 2px; }
         input { width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #233554; background: var(--card-color); color: white; font-size: 0.85rem; }
         
+        .due-row-layout { display: flex; align-items: center; gap: 8px; padding-top: 4px; }
+        .due-row-layout label { display: inline; cursor: pointer; color: #ef4444; font-weight: bold; }
+        .due-row-layout input[type="checkbox"] { width: auto; cursor: pointer; }
+
         .waiting-section { background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
         .waiting-item { display: flex; justify-content: space-between; background: #0b0f19; padding: 10px; border-radius: 6px; margin-bottom: 5px; align-items: center; }
         .modal-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
@@ -127,7 +134,7 @@
         <div class="stat-card income"><div>💰 Total Monthly Collection</div><span id="totalIncome">₹0</span></div>
     </div>
 
-    <input type="text" id="searchBox" class="search-box" placeholder="Search student name, seat number or phone..." oninput="filterSeats()">
+    <input type="text" id="searchBox" class="search-box" placeholder="Search student name, seat number, phone or due status..." oninput="filterSeats()">
 
     <div class="seats-container" id="seatsGrid"></div>
 
@@ -152,7 +159,13 @@
                     <div class="form-group"><label>Phone</label><input type="text" id="phone_all"></div>
                     <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_all"></div>
                 </div>
-                <div class="form-row full"><div class="form-group"><label>Renewal Date</label><input type="date" id="date_all"></div></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_all"></div>
+                    <div class="form-group due-row-layout">
+                        <input type="checkbox" id="due_all">
+                        <label for="due_all">⚠️ Fees Due H?</label>
+                    </div>
+                </div>
             </div>
 
             <p id="orDivider" style="text-align: center; color:#64748b; font-size:0.8rem; margin:10px 0;">— OR USE INDIVIDUAL SHIFTS —</p>
@@ -167,6 +180,7 @@
                     <div class="form-group"><label>Renewal Date</label><input type="date" id="date_m"></div>
                     <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_m"></div>
                 </div>
+                <div class="due-row-layout"><input type="checkbox" id="due_m"><label for="due_m">⚠️ Fees Due H?</label></div>
             </div>
 
             <div class="shift-block normal-shift" id="block_n">
@@ -179,6 +193,7 @@
                     <div class="form-group"><label>Renewal Date</label><input type="date" id="date_n"></div>
                     <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_n"></div>
                 </div>
+                <div class="due-row-layout"><input type="checkbox" id="due_n"><label for="due_n">⚠️ Fees Due H?</label></div>
             </div>
 
             <div class="shift-block normal-shift" id="block_an">
@@ -191,6 +206,7 @@
                     <div class="form-group"><label>Renewal Date</label><input type="date" id="date_an"></div>
                     <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_an"></div>
                 </div>
+                <div class="due-row-layout"><input type="checkbox" id="due_an"><label for="due_an">⚠️ Fees Due H?</label></div>
             </div>
 
             <div class="shift-block normal-shift" id="block_e">
@@ -203,6 +219,7 @@
                     <div class="form-group"><label>Renewal Date</label><input type="date" id="date_e"></div>
                     <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_e"></div>
                 </div>
+                <div class="due-row-layout"><input type="checkbox" id="due_e"><label for="due_e">⚠️ Fees Due H?</label></div>
             </div>
 
             <div class="shift-block night-block" id="block_night">
@@ -215,6 +232,7 @@
                     <div class="form-group"><label>Renewal Date</label><input type="date" id="date_night"></div>
                     <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_night"></div>
                 </div>
+                <div class="due-row-layout"><input type="checkbox" id="due_night"><label for="due_night">⚠️ Fees Due H?</label></div>
             </div>
 
             <div class="modal-actions">
@@ -269,6 +287,7 @@
             const isUR = (i >= 64 && i <= 85);
             el.className = isUR ? 'seat is-unreserved' : 'seat';
             el.innerHTML = `
+                <div class="due-arrow">⬇</div>
                 <span>${i}</span>
                 <div class="indicators">
                     <div class="all-shift-indicator" id="all-ind-${i}"></div>
@@ -326,6 +345,7 @@
                 let hasExpired = false;
                 let hasAlert = false;
                 let seatHasAnyBooking = false;
+                let seatHasAnyDue = false;
 
                 totalIncome += (parseInt(data.fees_all) || 0) + (parseInt(data.fees_m) || 0) + 
                                (parseInt(data.fees_n) || 0) + (parseInt(data.fees_an) || 0) + 
@@ -340,12 +360,14 @@
                     return 'active';
                 }
 
+                // Check Full Day Shift
                 if(data.name_all) {
                     activeBookings++;
                     seatHasAnyBooking = true;
                     allInd.classList.add('active');
                     mainShiftsDiv.style.display = 'none'; 
                     seatEl.classList.add('is-allshift');
+                    if(data.due_all === true) seatHasAnyDue = true;
                     
                     const status = checkStatus(data.date_all);
                     if(status === 'expired') { allInd.classList.add('expired'); hasExpired = true; }
@@ -358,6 +380,7 @@
                             activeBookings++;
                             seatHasAnyBooking = true;
                             dots[idx].classList.add('active');
+                            if(data[`due_${s}`] === true) seatHasAnyDue = true;
                             
                             const status = checkStatus(data[`date_${s}`]);
                             if(status === 'expired') { dots[idx].classList.add('expired'); hasExpired = true; }
@@ -366,10 +389,12 @@
                     });
                 }
 
+                // Check Night Shift
                 if(data.name_night) {
                     activeBookings++;
                     seatHasAnyBooking = true;
                     nightInd.classList.add('active');
+                    if(data.due_night === true) seatHasAnyDue = true;
                     
                     const status = checkStatus(data.date_night);
                     if(status === 'expired') { nightInd.classList.add('expired'); hasExpired = true; }
@@ -379,6 +404,9 @@
                 if(seatHasAnyBooking && !data.name_all) seatEl.classList.add('is-booked');
                 if(hasAlert) seatEl.classList.add('has-alert');
                 if(hasExpired) seatEl.classList.add('has-expired');
+                
+                // Add class if due found to animate the arrow
+                if(seatHasAnyDue) seatEl.classList.add('has-due');
             }
 
             document.getElementById('activeBookingsCount').innerText = activeBookings;
@@ -408,6 +436,7 @@
                 document.getElementById(`phone_${f}`).value = data[`phone_${f}`] || '';
                 document.getElementById(`date_${f}`).value = data[`date_${f}`] || '';
                 document.getElementById(`fees_${f}`).value = data[`fees_${f}`] || 0;
+                document.getElementById(`due_${f}`).checked = data[`due_${f}`] || false;
             });
 
             toggleModalShifts(data['name_all'] || '');
@@ -420,7 +449,6 @@
 
         function closeModal() { document.getElementById('seatModal').style.display = 'none'; }
 
-        // Core Save MultiShift and Open WhatsApp Integration Logic
         function saveMultiShiftData() {
             if(!isAdminVerified) { alert("⚠️ Please verify Admin Number first!"); return; }
 
@@ -428,33 +456,36 @@
             const fields = ['all', 'm', 'n', 'an', 'e', 'night'];
             const isAllShiftActive = document.getElementById('name_all').value.trim() !== "";
 
-            // WhatsApp link redirection ke liye targets store karne ke liye arrays
             let clientPhone = "";
             let clientName = "";
             let clientShift = "";
             let clientDate = "";
+            let isDueActive = false;
 
             fields.forEach(f => {
                 const currentName = document.getElementById(`name_${f}`).value.trim();
                 const currentPhone = document.getElementById(`phone_${f}`).value.trim();
                 const currentDate = document.getElementById(`date_${f}`).value;
+                const currentDue = document.getElementById(`due_${f}`).checked;
 
                 if(isAllShiftActive && ['m', 'n', 'an', 'e'].includes(f)) {
                     update[`name_${f}`] = "";
                     update[`phone_${f}`] = "";
                     update[`date_${f}`] = "";
                     update[`fees_${f}`] = 0;
+                    update[`due_${f}`] = false;
                 } else {
                     update[`name_${f}`] = currentName;
                     update[`phone_${f}`] = currentPhone;
                     update[`date_${f}`] = currentDate;
                     update[`fees_${f}`] = parseInt(document.getElementById(`fees_${f}`).value) || 0;
+                    update[`due_${f}`] = currentDue;
 
-                    // Last valid edited fields check karega redirection link payload ke liye
                     if(currentName !== "" && currentPhone !== "") {
                         clientName = currentName;
                         clientPhone = currentPhone;
                         clientDate = currentDate;
+                        isDueActive = currentDue;
                         clientShift = (f === 'all') ? "Full Day Shift" : (f === 'm') ? "Morning Shift" : (f === 'n') ? "Noon Shift" : (f === 'an') ? "Afternoon Shift" : (f === 'e') ? "Evening Shift" : "Night Shift";
                     }
                 }
@@ -464,14 +495,18 @@
                 .then(() => { 
                     closeModal(); 
                     
-                    // Agar phone aur details filled hain toh WhatsApp redirect karega
                     if(clientPhone !== "" && clientName !== "") {
-                        let cleanPhone = clientPhone.replace(/\D/g, ''); // Non-digits clean up
-                        if(cleanPhone.length === 10) cleanPhone = "91" + cleanPhone; // Default country code fallback
+                        let cleanPhone = clientPhone.replace(/\D/g, ''); 
+                        if(cleanPhone.length === 10) cleanPhone = "91" + cleanPhone; 
                         
-                        const msg = `Hello ${clientName},\nHariom Smart Library mein aapki Seat No. ${activeSeatNumber} (${clientShift}) ke liye data successfully update/confirm ho gaya hai.\nValid Till: ${clientDate || 'N/A'}.\nDhanyawad! 🙏`;
+                        let msg = "";
+                        if(isDueActive) {
+                            msg = `Hello ${clientName},\nHariom Smart Library mein aapki Seat No. ${activeSeatNumber} (${clientShift}) ke fees ka payment DUES (baki) chal raha hai. Kripya jald se jald jama karein.\nDhanyawad! 🙏`;
+                        } else {
+                            msg = `Hello ${clientName},\nHariom Smart Library mein aapki Seat No. ${activeSeatNumber} (${clientShift}) ke liye data confirm/renew ho gaya hai.\nValid Till: ${clientDate || 'N/A'}.\nDhanyawad! 🙏`;
+                        }
+                        
                         const encodedMsg = encodeURIComponent(msg);
-                        
                         window.open(`https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMsg}`, '_blank');
                     }
                 })
@@ -489,6 +524,7 @@
                 update[`phone_${f}`] = "";
                 update[`date_${f}`] = "";
                 update[`fees_${f}`] = 0;
+                update[`due_${f}`] = false;
             });
 
             database.ref('library_v3/seats/' + activeSeatNumber).set(update)
@@ -496,18 +532,12 @@
                 .catch(err => alert("Error vacating seat: " + err));
         }
 
-        // CSV/Excel Data Generation Engine
         function downloadExcelBreakup() {
             let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "Seat No,Shift Type,Student Name,Phone,Fees,Renewal Date\n";
+            csvContent += "Seat No,Shift Type,Student Name,Phone,Fees,Renewal Date,Due Status\n";
 
             const shiftLabels = {
-                'all': 'Full Day Shift',
-                'm': 'Morning Shift',
-                'n': 'Noon Shift',
-                'an': 'Afternoon Shift',
-                'e': 'Evening Shift',
-                'night': 'Night Shift'
+                'all': 'Full Day Shift', 'm': 'Morning Shift', 'n': 'Noon Shift', 'an': 'Afternoon Shift', 'e': 'Evening Shift', 'night': 'Night Shift'
             };
 
             for (let i = 1; i <= TOTAL_SEATS; i++) {
@@ -516,11 +546,12 @@
                 
                 shiftsToCheck.forEach(s => {
                     if(data[`name_${s}`]) {
-                        const name = data[`name_${s}`].replace(/,/g, " "); // Comma injection prevention
+                        const name = data[`name_${s}`].replace(/,/g, " "); 
                         const phone = data[`phone_${s}`] || "";
                         const fees = data[`fees_${s}`] || "0";
                         const date = data[`date_${s}`] || "";
-                        csvContent += `${i},${shiftLabels[s]},${name},${phone},${fees},${date}\n`;
+                        const due = data[`due_${s}`] ? "DUE" : "PAID";
+                        csvContent += `${i},${shiftLabels[s]},${name},${phone},${fees},${date},${due}\n`;
                     }
                 });
             }
@@ -534,7 +565,6 @@
             document.body.removeChild(link);
         }
 
-        // Raw Database JSON Exporter
         function backupJSONData() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(globalLibraryData, null, 4));
             const downloadAnchor = document.createElement('a');
@@ -583,6 +613,12 @@
                 if(!query) { seatEl.style.opacity = '1'; continue; }
                 
                 let match = i.toString() === query;
+                
+                // Specific keyword filter if searching for "due"
+                if(query === 'due' && seatEl.classList.contains('has-due')) {
+                    match = true;
+                }
+
                 if(data) {
                     fields.forEach(f => {
                         if(data[`name_${f}`] && data[`name_${f}`].toLowerCase().includes(query)) {
