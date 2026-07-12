@@ -21,18 +21,21 @@
             
             --active-booking-bg: #1e1b4b; 
             --active-booking-border: #818cf8;
-            --due-blink-color: #ec4899; 
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-color); padding: 15px; }
         .header { background: linear-gradient(135deg, #3b82f6, #8b5cf6); padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
         
-        .admin-section { background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; }
-        .admin-section input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #233554; background: #0b0f19; color: white; }
-        .btn { padding: 10px 20px; border: none; border-radius: 8px; background: var(--primary-color); color: white; cursor: pointer; font-weight: bold; }
+        .admin-section { background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .admin-section input { flex: 1; min-width: 200px; padding: 10px; border-radius: 8px; border: 1px solid #233554; background: #0b0f19; color: white; }
+        
+        .tools-section { background: var(--card-color); padding: 12px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; background: var(--primary-color); color: white; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .btn-danger { background: var(--danger-color); }
         .btn-success { background: var(--success-color); }
-        .btn-whatsapp { background: #25d366; color: white; }
+        .btn-warning { background: var(--warning-color); color: #0b0f19; }
+        .btn:hover { opacity: 0.9; }
         
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
         .stat-card { background: var(--card-color); padding: 12px; border-radius: 10px; text-align: center; border-left: 4px solid var(--primary-color); }
@@ -55,7 +58,6 @@
         
         .seat.has-alert { border: 2px dashed var(--warning-alert) !important; animation: mildBlink 2s infinite; }
         .seat.has-expired { border: 2px dashed var(--danger-color) !important; background: #2d1015 !important; animation: severeBlink 1.5s infinite; }
-        .seat.has-due { border: 2px dashed var(--due-blink-color) !important; animation: dueBlink 3s infinite; }
         
         .indicators { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; margin-top: 5px; }
         .main-shifts { display: flex; justify-content: center; gap: 3px; width: 100%; }
@@ -67,51 +69,56 @@
         
         .night-dot { width: 8px; height: 8px; border-radius: 50%; background: transparent; border: 1px dashed #475569; }
         .night-dot.active { background: var(--night-color); border: none; }
-        
+        .night-dot.alert { background: var(--warning-alert) !important; border: none; animation: blink 1.2s infinite; }
+        .night-dot.expired { background: var(--danger-color) !important; border: none; animation: blink 1.2s infinite; }
+
         .all-shift-indicator { width: 30px; height: 6px; border-radius: 3px; background: #475569; display: none; }
         .all-shift-indicator.active { background: #eab308; display: block; }
+        .all-shift-indicator.alert { background: var(--warning-alert) !important; display: block; animation: blink 1.2s infinite; }
+        .all-shift-indicator.expired { background: var(--danger-color) !important; display: block; animation: blink 1.2s infinite; }
 
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }
         @keyframes mildBlink { 0% { border-color: var(--warning-alert); } 50% { border-color: transparent; } 100% { border-color: var(--warning-alert); } }
         @keyframes severeBlink { 0% { border-color: var(--danger-color); } 50% { border-color: transparent; } 100% { border-color: var(--danger-color); } }
-        @keyframes dueBlink { 0% { border-color: var(--due-blink-color); box-shadow: 0 0 5px var(--due-blink-color); } 50% { border-color: transparent; box-shadow: none; } 100% { border-color: var(--due-blink-color); box-shadow: 0 0 5px var(--due-blink-color); } }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 100; padding: 15px; }
-        .modal-content { background: var(--card-color); padding: 20px; border-radius: 15px; width: 100%; max-width: 440px; max-height: 90vh; overflow-y: auto; }
+        .modal-content { background: var(--card-color); padding: 20px; border-radius: 15px; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
         .modal-content h3 { margin-bottom: 15px; border-bottom: 1px solid #233554; padding-bottom: 10px; text-align: center; }
         
         .shift-block { background: #0b0f19; padding: 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #233554; transition: 0.3s; }
         .shift-block.disabled-block { opacity: 0.25; pointer-events: none; border-color: #ef444433; }
         .shift-block h4 { color: #a855f7; margin-bottom: 8px; font-size: 0.9rem; display: flex; justify-content: space-between; }
+        .shift-block.night-block h4 { color: var(--night-color); }
+        .shift-block.all-block h4 { color: #eab308; }
         
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 6px; }
-        .form-row.three-col { grid-template-columns: 1fr 1fr 1fr; }
         .form-row.full { grid-template-columns: 1fr; }
         label { font-size: 0.75rem; color: #64748b; display: block; margin-bottom: 2px; }
         input { width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #233554; background: var(--card-color); color: white; font-size: 0.85rem; }
         
-        .file-upload-wrapper { background: #1e293b; padding: 8px; border-radius: 6px; border: 1px dashed #475569; text-align: center; position: relative; margin-top: 5px; }
-        .file-upload-wrapper input[type="file"] { opacity: 0; position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; }
-        .upload-btn-text { font-size: 0.8rem; color: #38bdf8; font-weight: bold; }
-        .img-preview-container { margin-top: 8px; display: none; text-align: center; }
-        .img-preview-container img { max-width: 100%; max-height: 120px; border-radius: 6px; border: 1px solid #475569; }
-
         .waiting-section { background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
         .waiting-item { display: flex; justify-content: space-between; background: #0b0f19; padding: 10px; border-radius: 6px; margin-bottom: 5px; align-items: center; }
-        .modal-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
-        .modal-buttons-row { display: flex; justify-content: space-between; gap: 10px; }
+        .modal-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .modal-btn-row { display: flex; justify-content: space-between; gap: 8px; }
+        .modal-btn-row .btn { flex: 1; }
     </style>
 </head>
 <body>
 
     <div class="header">
         <h2>📚 Hariom Smart Library</h2>
-        <p style="font-size: 0.8rem; opacity: 0.8;">Multi-Shift Realtime Control Panel with Live ID Capture</p>
+        <p style="font-size: 0.8rem; opacity: 0.8;">Multi-Shift Realtime Control Panel</p>
     </div>
 
     <div class="admin-section">
         <input type="password" id="adminPhone" placeholder="Enter Admin Mobile Number...">
-        <button class="btn" onclick="verifyAdmin()">Verify</button>
+        <button class="btn" onclick="verifyAdmin()">Verify Admin</button>
+    </div>
+
+    <!-- Data Backup & Excel Panel -->
+    <div class="tools-section">
+        <button class="btn btn-success" onclick="downloadExcelBreakup()">📊 Download Excel Breakup</button>
+        <button class="btn btn-warning" onclick="backupJSONData()">💾 Backup Database (JSON)</button>
     </div>
 
     <div class="stats-grid">
@@ -120,7 +127,7 @@
         <div class="stat-card income"><div>💰 Total Monthly Collection</div><span id="totalIncome">₹0</span></div>
     </div>
 
-    <input type="text" id="searchBox" class="search-box" placeholder="Search student name, seat number or type 'due'..." oninput="filterSeats()">
+    <input type="text" id="searchBox" class="search-box" placeholder="Search student name, seat number or phone..." oninput="filterSeats()">
 
     <div class="seats-container" id="seatsGrid"></div>
 
@@ -138,121 +145,83 @@
         <div class="modal-content">
             <h3 id="modalTitle">Seat Details</h3>
             
-            <!-- Dynamic Shifts Configuration Grid Structure -->
             <div class="shift-block all-block" id="block_all">
                 <h4>Option A: Full Day / All Shift (6 AM - 10 PM)</h4>
                 <div class="form-row full"><div class="form-group"><label>Student Name</label><input type="text" id="name_all" oninput="toggleModalShifts(this.value)"></div></div>
-                <div class="form-row three-col">
+                <div class="form-row">
                     <div class="form-group"><label>Phone</label><input type="text" id="phone_all"></div>
-                    <div class="form-group"><label>Paid (₹)</label><input type="number" id="fees_all"></div>
-                    <div class="form-group"><label>Due (₹)</label><input type="number" id="due_all" value="0"></div>
+                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_all"></div>
                 </div>
-                <div class="form-row"><div class="form-group"><label>Renewal Date</label><input type="date" id="date_all"></div></div>
-                <div class="form-row full">
-                    <div class="form-group">
-                        <label>Identity Proof (Take Photo / Upload)</label>
-                        <div class="file-upload-wrapper">
-                            <span class="upload-btn-text" id="txt_file_all">📷 Click to Capture or Upload Document Image</span>
-                            <input type="file" accept="image/*" capture="environment" onchange="processImageUpload(this, 'all')">
-                        </div>
-                        <div class="img-preview-container" id="prev_container_all"><img id="img_prev_all" src="" alt="Proof Preview"></div>
-                    </div>
-                </div>
+                <div class="form-row full"><div class="form-group"><label>Renewal Date</label><input type="date" id="date_all"></div></div>
             </div>
 
             <p id="orDivider" style="text-align: center; color:#64748b; font-size:0.8rem; margin:10px 0;">— OR USE INDIVIDUAL SHIFTS —</p>
 
-            <!-- Individual Shifts with Embedded Photo Modifiers -->
             <div class="shift-block normal-shift" id="block_m">
                 <h4>1. Morning Shift (6 AM - 10 AM)</h4>
-                <div class="form-row"><div class="form-group"><label>Name</label><input type="text" id="name_m"></div><div class="form-group"><label>Phone</label><input type="text" id="phone_m"></div></div>
-                <div class="form-row three-col">
-                    <div class="form-group"><label>Renewal</label><input type="date" id="date_m"></div>
-                    <div class="form-group"><label>Paid (₹)</label><input type="number" id="fees_m"></div>
-                    <div class="form-group"><label>Due (₹)</label><input type="number" id="due_m" value="0"></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Name</label><input type="text" id="name_m"></div>
+                    <div class="form-group"><label>Phone</label><input type="text" id="phone_m"></div>
                 </div>
-                <div class="form-row full">
-                    <div class="file-upload-wrapper">
-                        <span class="upload-btn-text" id="txt_file_m">📷 Take Identity Proof Photo</span>
-                        <input type="file" accept="image/*" capture="environment" onchange="processImageUpload(this, 'm')">
-                    </div>
-                    <div class="img-preview-container" id="prev_container_m"><img id="img_prev_m" src=""></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_m"></div>
+                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_m"></div>
                 </div>
             </div>
 
             <div class="shift-block normal-shift" id="block_n">
                 <h4>2. Noon Shift (10 AM - 2 PM)</h4>
-                <div class="form-row"><div class="form-group"><label>Name</label><input type="text" id="name_n"></div><div class="form-group"><label>Phone</label><input type="text" id="phone_n"></div></div>
-                <div class="form-row three-col">
-                    <div class="form-group"><label>Renewal</label><input type="date" id="date_n"></div>
-                    <div class="form-group"><label>Paid (₹)</label><input type="number" id="fees_n"></div>
-                    <div class="form-group"><label>Due (₹)</label><input type="number" id="due_n" value="0"></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Name</label><input type="text" id="name_n"></div>
+                    <div class="form-group"><label>Phone</label><input type="text" id="phone_n"></div>
                 </div>
-                <div class="form-row full">
-                    <div class="file-upload-wrapper">
-                        <span class="upload-btn-text" id="txt_file_n">📷 Take Identity Proof Photo</span>
-                        <input type="file" accept="image/*" capture="environment" onchange="processImageUpload(this, 'n')">
-                    </div>
-                    <div class="img-preview-container" id="prev_container_n"><img id="img_prev_n" src=""></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_n"></div>
+                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_n"></div>
                 </div>
             </div>
 
             <div class="shift-block normal-shift" id="block_an">
                 <h4>3. Afternoon Shift (2 PM - 6 PM)</h4>
-                <div class="form-row"><div class="form-group"><label>Name</label><input type="text" id="name_an"></div><div class="form-group"><label>Phone</label><input type="text" id="phone_an"></div></div>
-                <div class="form-row three-col">
-                    <div class="form-group"><label>Renewal</label><input type="date" id="date_an"></div>
-                    <div class="form-group"><label>Paid (₹)</label><input type="number" id="fees_an"></div>
-                    <div class="form-group"><label>Due (₹)</label><input type="number" id="due_an" value="0"></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Name</label><input type="text" id="name_an"></div>
+                    <div class="form-group"><label>Phone</label><input type="text" id="phone_an"></div>
                 </div>
-                <div class="form-row full">
-                    <div class="file-upload-wrapper">
-                        <span class="upload-btn-text" id="txt_file_an">📷 Take Identity Proof Photo</span>
-                        <input type="file" accept="image/*" capture="environment" onchange="processImageUpload(this, 'an')">
-                    </div>
-                    <div class="img-preview-container" id="prev_container_an"><img id="img_prev_an" src=""></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_an"></div>
+                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_an"></div>
                 </div>
             </div>
 
             <div class="shift-block normal-shift" id="block_e">
                 <h4>4. Evening Shift (6 PM - 10 PM)</h4>
-                <div class="form-row"><div class="form-group"><label>Name</label><input type="text" id="name_e"></div><div class="form-group"><label>Phone</label><input type="text" id="phone_e"></div></div>
-                <div class="form-row three-col">
-                    <div class="form-group"><label>Renewal</label><input type="date" id="date_e"></div>
-                    <div class="form-group"><label>Paid (₹)</label><input type="number" id="fees_e"></div>
-                    <div class="form-group"><label>Due (₹)</label><input type="number" id="due_e" value="0"></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Name</label><input type="text" id="name_e"></div>
+                    <div class="form-group"><label>Phone</label><input type="text" id="phone_e"></div>
                 </div>
-                <div class="form-row full">
-                    <div class="file-upload-wrapper">
-                        <span class="upload-btn-text" id="txt_file_e">📷 Take Identity Proof Photo</span>
-                        <input type="file" accept="image/*" capture="environment" onchange="processImageUpload(this, 'e')">
-                    </div>
-                    <div class="img-preview-container" id="prev_container_e"><img id="img_prev_e" src=""></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_e"></div>
+                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_e"></div>
                 </div>
             </div>
 
             <div class="shift-block night-block" id="block_night">
                 <h4>🌙 Extra: Night Shift (10 PM onwards)</h4>
-                <div class="form-row"><div class="form-group"><label>Name</label><input type="text" id="name_night"></div><div class="form-group"><label>Phone</label><input type="text" id="phone_night"></div></div>
-                <div class="form-row three-col">
-                    <div class="form-group"><label>Renewal</label><input type="date" id="date_night"></div>
-                    <div class="form-group"><label>Paid (₹)</label><input type="number" id="fees_night"></div>
-                    <div class="form-group"><label>Due (₹)</label><input type="number" id="due_night" value="0"></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Name</label><input type="text" id="name_night"></div>
+                    <div class="form-group"><label>Phone</label><input type="text" id="phone_night"></div>
                 </div>
-                <div class="form-row full">
-                    <div class="file-upload-wrapper">
-                        <span class="upload-btn-text" id="txt_file_night">📷 Take Identity Proof Photo</span>
-                        <input type="file" accept="image/*" capture="environment" onchange="processImageUpload(this, 'night')">
-                    </div>
-                    <div class="img-preview-container" id="prev_container_night"><img id="img_prev_night" src=""></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_night"></div>
+                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_night"></div>
                 </div>
             </div>
 
             <div class="modal-actions">
-                <button class="btn btn-whatsapp" onclick="sendWhatsAppUpdate()">💬 Send Update & Due Receipt via WhatsApp</button>
-                <div class="modal-buttons-row">
+                <button class="btn btn-warning" onclick="clearEntireSeat()">Vacant Seat (Khali Karein)</button>
+                <div class="modal-btn-row">
                     <button class="btn btn-danger" onclick="closeModal()">Close</button>
-                    <button class="btn btn-success" onclick="saveMultiShiftData()">Save Configuration</button>
+                    <button class="btn" onclick="saveMultiShiftData()">Save Configuration</button>
                 </div>
             </div>
         </div>
@@ -268,7 +237,6 @@
         let activeSeatNumber = null;
         const TOTAL_SEATS = 105;
         let globalLibraryData = {};
-        let localImageBase64Cache = {};
 
         function checkLocalAdmin() {
             const savedAdmin = localStorage.getItem('hariom_saved_admin');
@@ -278,7 +246,9 @@
             }
         }
 
-        window.onload = function() { checkLocalAdmin(); };
+        window.onload = function() {
+            checkLocalAdmin();
+        };
 
         function verifyAdmin() {
             const input = document.getElementById('adminPhone').value.trim();
@@ -324,27 +294,10 @@
             checkLocalAdmin();
         });
 
-        // Safe Image Conversion Utility
-        function processImageUpload(inputElement, shiftKey) {
-            const file = inputElement.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onloadend = function () {
-                const base64String = reader.result;
-                localImageBase64Cache[shiftKey] = base64String;
-                
-                // Show real-time image preview inside the modal UI component
-                const imgPrev = document.getElementById(`img_prev_${shiftKey}`);
-                const container = document.getElementById(`prev_container_${shiftKey}`);
-                const labelText = document.getElementById(`txt_file_${shiftKey}`);
-                
-                imgPrev.src = base64String;
-                container.style.display = "block";
-                labelText.innerText = "✅ Image Loaded Successfully!";
-                labelText.style.color = "#10b981";
-            };
-            reader.readAsDataURL(file);
+        function parseLocalDate(dateStr) {
+            if(!dateStr) return null;
+            const parts = dateStr.split('-');
+            return new Date(parts[0], parts[1] - 1, parts[2]);
         }
 
         function updateUI(seats) {
@@ -372,7 +325,6 @@
 
                 let hasExpired = false;
                 let hasAlert = false;
-                let hasDueAmt = false;
                 let seatHasAnyBooking = false;
 
                 totalIncome += (parseInt(data.fees_all) || 0) + (parseInt(data.fees_m) || 0) + 
@@ -381,19 +333,12 @@
 
                 function checkStatus(dateStr) {
                     if(!dateStr) return 'none';
-                    const targetDate = new Date(dateStr);
-                    targetDate.setHours(0,0,0,0);
+                    const targetDate = parseLocalDate(dateStr);
+                    if(!targetDate) return 'none';
                     if(targetDate <= today) return 'expired';
                     if(targetDate <= threeDaysLater) return 'alert';
                     return 'active';
                 }
-
-                const shiftsToCheck = ['all', 'm', 'n', 'an', 'e', 'night'];
-                shiftsToCheck.forEach(sh => {
-                    if(data[`name_${sh}`] && (parseInt(data[`due_${sh}`]) > 0)) {
-                        hasDueAmt = true;
-                    }
-                });
 
                 if(data.name_all) {
                     activeBookings++;
@@ -432,10 +377,8 @@
                 }
 
                 if(seatHasAnyBooking && !data.name_all) seatEl.classList.add('is-booked');
-                
+                if(hasAlert) seatEl.classList.add('has-alert');
                 if(hasExpired) seatEl.classList.add('has-expired');
-                else if(hasAlert) seatEl.classList.add('has-alert');
-                else if(hasDueAmt) seatEl.classList.add('has-due'); 
             }
 
             document.getElementById('activeBookingsCount').innerText = activeBookings;
@@ -458,7 +401,6 @@
             activeSeatNumber = seatNum;
             document.getElementById('modalTitle').innerText = `Manage Seat - ${seatNum}`;
             const data = globalLibraryData[seatNum] || {};
-            localImageBase64Cache = {}; 
             
             const fields = ['all', 'm', 'n', 'an', 'e', 'night'];
             fields.forEach(f => {
@@ -466,23 +408,6 @@
                 document.getElementById(`phone_${f}`).value = data[`phone_${f}`] || '';
                 document.getElementById(`date_${f}`).value = data[`date_${f}`] || '';
                 document.getElementById(`fees_${f}`).value = data[`fees_${f}`] || 0;
-                document.getElementById(`due_${f}`).value = data[`due_${f}`] || 0;
-                
-                const imgPrev = document.getElementById(`img_prev_${f}`);
-                const container = document.getElementById(`prev_container_${f}`);
-                const labelText = document.getElementById(`txt_file_${f}`);
-
-                if(data[`img_${f}`]) {
-                    imgPrev.src = data[`img_${f}`];
-                    container.style.display = "block";
-                    labelText.innerText = "📸 Proof Image Saved";
-                    labelText.style.color = "#10b981";
-                } else {
-                    imgPrev.src = "";
-                    container.style.display = "none";
-                    labelText.innerText = "📷 Take Identity Proof Photo";
-                    labelText.style.color = "#38bdf8";
-                }
             });
 
             toggleModalShifts(data['name_all'] || '');
@@ -495,74 +420,135 @@
 
         function closeModal() { document.getElementById('seatModal').style.display = 'none'; }
 
+        // Core Save MultiShift and Open WhatsApp Integration Logic
         function saveMultiShiftData() {
             if(!isAdminVerified) { alert("⚠️ Please verify Admin Number first!"); return; }
 
             const update = {};
             const fields = ['all', 'm', 'n', 'an', 'e', 'night'];
             const isAllShiftActive = document.getElementById('name_all').value.trim() !== "";
-            const currentData = globalLibraryData[activeSeatNumber] || {};
+
+            // WhatsApp link redirection ke liye targets store karne ke liye arrays
+            let clientPhone = "";
+            let clientName = "";
+            let clientShift = "";
+            let clientDate = "";
 
             fields.forEach(f => {
+                const currentName = document.getElementById(`name_${f}`).value.trim();
+                const currentPhone = document.getElementById(`phone_${f}`).value.trim();
+                const currentDate = document.getElementById(`date_${f}`).value;
+
                 if(isAllShiftActive && ['m', 'n', 'an', 'e'].includes(f)) {
                     update[`name_${f}`] = "";
                     update[`phone_${f}`] = "";
                     update[`date_${f}`] = "";
                     update[`fees_${f}`] = 0;
-                    update[`due_${f}`] = 0;
-                    update[`img_${f}`] = "";
                 } else {
-                    update[`name_${f}`] = document.getElementById(`name_${f}`).value;
-                    update[`phone_${f}`] = document.getElementById(`phone_${f}`).value;
-                    update[`date_${f}`] = document.getElementById(`date_${f}`).value;
+                    update[`name_${f}`] = currentName;
+                    update[`phone_${f}`] = currentPhone;
+                    update[`date_${f}`] = currentDate;
                     update[`fees_${f}`] = parseInt(document.getElementById(`fees_${f}`).value) || 0;
-                    update[`due_${f}`] = parseInt(document.getElementById(`due_${f}`).value) || 0;
-                    
-                    // Retain old uploaded image if new photo capture wasn't initialized
-                    update[`img_${f}`] = localImageBase64Cache[f] || currentData[`img_${f}`] || "";
+
+                    // Last valid edited fields check karega redirection link payload ke liye
+                    if(currentName !== "" && currentPhone !== "") {
+                        clientName = currentName;
+                        clientPhone = currentPhone;
+                        clientDate = currentDate;
+                        clientShift = (f === 'all') ? "Full Day Shift" : (f === 'm') ? "Morning Shift" : (f === 'n') ? "Noon Shift" : (f === 'an') ? "Afternoon Shift" : (f === 'e') ? "Evening Shift" : "Night Shift";
+                    }
                 }
             });
 
             database.ref('library_v3/seats/' + activeSeatNumber).set(update)
-                .then(() => { closeModal(); })
+                .then(() => { 
+                    closeModal(); 
+                    
+                    // Agar phone aur details filled hain toh WhatsApp redirect karega
+                    if(clientPhone !== "" && clientName !== "") {
+                        let cleanPhone = clientPhone.replace(/\D/g, ''); // Non-digits clean up
+                        if(cleanPhone.length === 10) cleanPhone = "91" + cleanPhone; // Default country code fallback
+                        
+                        const msg = `Hello ${clientName},\nHariom Smart Library mein aapki Seat No. ${activeSeatNumber} (${clientShift}) ke liye data successfully update/confirm ho gaya hai.\nValid Till: ${clientDate || 'N/A'}.\nDhanyawad! 🙏`;
+                        const encodedMsg = encodeURIComponent(msg);
+                        
+                        window.open(`https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMsg}`, '_blank');
+                    }
+                })
                 .catch(err => alert("Error saving data: " + err));
         }
 
-        function sendWhatsAppUpdate() {
+        function clearEntireSeat() {
+            if(!isAdminVerified) { alert("⚠️ Please verify Admin Number first!"); return; }
+            if(!confirm(`Kya aap Seat number ${activeSeatNumber} ko puri tarah khali karna chahte hain?`)) return;
+
+            const update = {};
             const fields = ['all', 'm', 'n', 'an', 'e', 'night'];
-            let targetPhone = "";
-            let textMessage = `*📚 Hariom Smart Library - Smart Invoice *\n\n*Seat Number:* ${activeSeatNumber}\n`;
-
             fields.forEach(f => {
-                const name = document.getElementById(`name_${f}`).value.trim();
-                if(name !== "") {
-                    const phone = document.getElementById(`phone_${f}`).value.trim();
-                    const paid = document.getElementById(`fees_${f}`).value;
-                    const due = document.getElementById(`due_${f}`).value;
-                    const renewal = document.getElementById(`date_${f}`).value;
-                    const hasImg = document.getElementById(`img_prev_${f}`).src !== "" && !document.getElementById(`img_prev_${f}`).src.endsWith('undefined');
-
-                    if(!targetPhone && phone) targetPhone = phone;
-
-                    textMessage += `\n*Shift:* ${f.toUpperCase()}\n👤 *Student:* ${name}\n💰 *Paid Amt:* ₹${paid}\n⚠️ *Due Amt:* ₹${due}\n📅 *Renewal:* ${renewal || 'N/A'}\n🔒 *Identity Proof Doc:* ${hasImg ? '✅ Captured & Saved Securely' : '❌ Pending / Missing'}\n`;
-                }
+                update[`name_${f}`] = "";
+                update[`phone_${f}`] = "";
+                update[`date_${f}`] = "";
+                update[`fees_${f}`] = 0;
             });
 
-            if(!targetPhone) {
-                alert("⚠️ Active student number not found!");
-                return;
+            database.ref('library_v3/seats/' + activeSeatNumber).set(update)
+                .then(() => { closeModal(); })
+                .catch(err => alert("Error vacating seat: " + err));
+        }
+
+        // CSV/Excel Data Generation Engine
+        function downloadExcelBreakup() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Seat No,Shift Type,Student Name,Phone,Fees,Renewal Date\n";
+
+            const shiftLabels = {
+                'all': 'Full Day Shift',
+                'm': 'Morning Shift',
+                'n': 'Noon Shift',
+                'an': 'Afternoon Shift',
+                'e': 'Evening Shift',
+                'night': 'Night Shift'
+            };
+
+            for (let i = 1; i <= TOTAL_SEATS; i++) {
+                const data = globalLibraryData[i] || {};
+                let shiftsToCheck = ['all', 'm', 'n', 'an', 'e', 'night'];
+                
+                shiftsToCheck.forEach(s => {
+                    if(data[`name_${s}`]) {
+                        const name = data[`name_${s}`].replace(/,/g, " "); // Comma injection prevention
+                        const phone = data[`phone_${s}`] || "";
+                        const fees = data[`fees_${s}`] || "0";
+                        const date = data[`date_${s}`] || "";
+                        csvContent += `${i},${shiftLabels[s]},${name},${phone},${fees},${date}\n`;
+                    }
+                });
             }
 
-            textMessage += `\n_Please verify details. Kindly clear outstanding dues as soon as possible._`;
-            
-            const whatsappUrl = `https://api.whatsapp.com/send?phone=${targetPhone}&text=${encodeURIComponent(textMessage)}`;
-            window.open(whatsappUrl, '_blank');
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Hariom_Library_Seat_Breakup.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Raw Database JSON Exporter
+        function backupJSONData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(globalLibraryData, null, 4));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `Hariom_Library_Backup_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            document.body.removeChild(downloadAnchor);
         }
 
         function addWaiting() {
             if(!isAdminVerified) { alert("⚠️ Verify admin status!"); return; }
-            const name = document.getElementById('waitName').value;
-            const phone = document.getElementById('waitPhone').value;
+            const name = document.getElementById('waitName').value.trim();
+            const phone = document.getElementById('waitPhone').value.trim();
             if(!name) return;
             database.ref('library_v3/waiting').push().set({ name, phone }).then(() => {
                 document.getElementById('waitName').value = '';
@@ -589,7 +575,7 @@
         }
 
         function filterSeats() {
-            const query = document.getElementById('searchBox').value.toLowerCase();
+            const query = document.getElementById('searchBox').value.toLowerCase().trim();
             const fields = ['all', 'm', 'n', 'an', 'e', 'night'];
             for(let i=1; i<=TOTAL_SEATS; i++) {
                 const seatEl = document.getElementById(`seat-${i}`);
@@ -597,15 +583,12 @@
                 if(!query) { seatEl.style.opacity = '1'; continue; }
                 
                 let match = i.toString() === query;
-                if(query === 'due' || query === 'diu') {
-                    if(data) {
-                        fields.forEach(f => {
-                            if(data[`due_${f}`] && parseInt(data[`due_${f}`]) > 0) match = true;
-                        });
-                    }
-                } else if(data) {
+                if(data) {
                     fields.forEach(f => {
                         if(data[`name_${f}`] && data[`name_${f}`].toLowerCase().includes(query)) {
+                            match = true;
+                        }
+                        if(data[`phone_${f}`] && data[`phone_${f}`].includes(query)) {
                             match = true;
                         }
                     });
