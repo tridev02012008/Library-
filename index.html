@@ -6,6 +6,8 @@
     <title>Hariom Smart Library - Ultimate Control Panel</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <!-- Excel Backup ke liye SheetJS Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
     <style>
         :root {
             --bg-color: #0b0f19;
@@ -30,6 +32,7 @@
         .admin-section input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #233554; background: #0b0f19; color: white; }
         .btn { padding: 10px 20px; border: none; border-radius: 8px; background: var(--primary-color); color: white; cursor: pointer; font-weight: bold; }
         .btn-danger { background: var(--danger-color); }
+        .btn-success { background: var(--success-color); }
         
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
         .stat-card { background: var(--card-color); padding: 12px; border-radius: 10px; text-align: center; border-left: 4px solid var(--primary-color); }
@@ -53,6 +56,9 @@
         .seat.has-alert { border: 2px dashed var(--warning-alert) !important; animation: mildBlink 2s infinite; }
         .seat.has-expired { border: 2px dashed var(--danger-color) !important; background: #2d1015 !important; animation: severeBlink 1.5s infinite; }
         
+        /* Blinking Due Alert Arrow & Text styling */
+        .due-badge { font-size: 0.7rem; color: #ff4444; background: rgba(255, 68, 68, 0.15); padding: 2px 4px; border-radius: 4px; margin-top: 3px; animation: arrowBlink 1s infinite; font-weight: bold; width: 100%; text-align: center; }
+
         .indicators { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; margin-top: 5px; }
         .main-shifts { display: flex; justify-content: center; gap: 3px; width: 100%; }
         
@@ -72,6 +78,7 @@
         .all-shift-indicator.expired { background: var(--danger-color) !important; display: block; animation: blink 1.2s infinite; }
 
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }
+        @keyframes arrowBlink { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
         @keyframes mildBlink { 0% { border-color: var(--warning-alert); } 50% { border-color: transparent; } 100% { border-color: var(--warning-alert); } }
         @keyframes severeBlink { 0% { border-color: var(--danger-color); } 50% { border-color: transparent; } 100% { border-color: var(--danger-color); } }
 
@@ -88,11 +95,15 @@
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 6px; }
         .form-row.full { grid-template-columns: 1fr; }
         label { font-size: 0.75rem; color: #64748b; display: block; margin-bottom: 2px; }
-        input { width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #233554; background: var(--card-color); color: white; font-size: 0.85rem; }
+        input, textarea, select { width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #233554; background: var(--card-color); color: white; font-size: 0.85rem; }
         
-        .waiting-section { background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
+        .waiting-section, .utility-section { background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
         .waiting-item { display: flex; justify-content: space-between; background: #0b0f19; padding: 10px; border-radius: 6px; margin-bottom: 5px; align-items: center; }
         .modal-actions { display: flex; justify-content: space-between; margin-top: 15px; }
+
+        /* Document Verification Styling */
+        #cameraView { width: 100%; max-width: 320px; height: 240px; border-radius: 8px; background: #000; margin-top: 10px; display: none; }
+        #photoCanvas { display: none; }
     </style>
 </head>
 <body>
@@ -117,6 +128,7 @@
 
     <div class="seats-container" id="seatsGrid"></div>
 
+    <!-- 📋 Waiting List Section -->
     <div class="waiting-section">
         <h3>📋 Waiting List</h3>
         <div style="display: flex; gap: 5px; margin-top: 10px;">
@@ -127,6 +139,36 @@
         <div class="waiting-list" id="waitingListContainer"></div>
     </div>
 
+    <!-- 💬 WhatsApp Student Notification Section -->
+    <div class="utility-section">
+        <h3>💬 WhatsApp Student Notification</h3>
+        <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+            <input type="text" id="whatsappTargetPhone" placeholder="Student WhatsApp Number (e.g., 91XXXXXXXXXX)">
+            <textarea id="whatsappMessageText" rows="3" placeholder="Type notification message here..."></textarea>
+            <button class="btn btn-success" onclick="sendWhatsAppNotification()">Send via WhatsApp</button>
+        </div>
+    </div>
+
+    <!-- 📷 Document Verification Box (Back Camera) -->
+    <div class="utility-section">
+        <h3>📷 Document Verification</h3>
+        <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px; align-items: center;">
+            <button class="btn" id="startCamBtn" onclick="initiateBackCamera()">Open Back Camera</button>
+            <video id="cameraView" autoplay playsinline></video>
+            <canvas id="photoCanvas"></canvas>
+            <button class="btn btn-danger" id="captureBtn" style="display:none;" onclick="captureDocumentSnapshot()">Take Snapshot</button>
+            <div id="snapshotStatus" style="font-size:0.85rem; color:var(--success-color);"></div>
+        </div>
+    </div>
+
+    <!-- 📥 Excel Backup System -->
+    <div class="utility-section" style="text-align: center;">
+        <h3>📥 Database Backup Control</h3>
+        <p style="font-size:0.8rem; color:#64748b; margin: 5px 0 10px 0;">Export entire multi-shift table records directly to Excel format.</p>
+        <button class="btn btn-success" onclick="exportLibraryDataToExcel()">Download Excel Backup (.xlsx)</button>
+    </div>
+
+    <!-- Main Managing Modal -->
     <div class="modal" id="seatModal">
         <div class="modal-content">
             <h3 id="modalTitle">Seat Details</h3>
@@ -238,8 +280,8 @@
         let activeSeatNumber = null;
         const TOTAL_SEATS = 105;
         let globalLibraryData = {};
+        let activeStream = null;
 
-        // Persist Verification State
         function checkLocalAdmin() {
             const savedAdmin = localStorage.getItem('hariom_saved_admin');
             if (savedAdmin && allowedAdmins.includes(savedAdmin)) {
@@ -271,7 +313,7 @@
             const isUR = (i >= 64 && i <= 85);
             el.className = isUR ? 'seat is-unreserved' : 'seat';
             el.innerHTML = `
-                <span>${i}</span>
+                <span id="seat-num-text-${i}">${i}</span>
                 <div class="indicators">
                     <div class="all-shift-indicator" id="all-ind-${i}"></div>
                     <div class="main-shifts" id="main-shifts-${i}">
@@ -282,6 +324,7 @@
                     </div>
                     <div class="night-dot" id="night-ind-${i}" title="Night Shift"></div>
                 </div>
+                <div id="due-box-${i}"></div>
             `;
             el.id = `seat-${i}`;
             el.setAttribute('onclick', `openSeatModal(${i})`);
@@ -293,8 +336,6 @@
             globalLibraryData = data.seats || {};
             updateUI(globalLibraryData);
             updateWaitingUI(data.waiting || {});
-            
-            // Re-enforce verification after Firebase updates UI to avoid loops
             checkLocalAdmin();
         });
 
@@ -309,6 +350,7 @@
 
             for(let i=1; i<=TOTAL_SEATS; i++) {
                 const seatEl = document.getElementById(`seat-${i}`);
+                const dueBox = document.getElementById(`due-box-${i}`);
                 const data = seats[i] || {};
                 
                 const allInd = document.getElementById(`all-ind-${i}`);
@@ -320,10 +362,12 @@
                 nightInd.className = 'night-dot';
                 dots.forEach(d => d.className = 'dot');
                 seatEl.className = (i >= 64 && i <= 85) ? 'seat is-unreserved' : 'seat';
+                dueBox.innerHTML = ''; // Clear old due data
 
                 let hasExpired = false;
                 let hasAlert = false;
                 let seatHasAnyBooking = false;
+                let totalDueAmountOnSeat = 0;
 
                 totalIncome += (parseInt(data.fees_all) || 0) + (parseInt(data.fees_m) || 0) + 
                                (parseInt(data.fees_n) || 0) + (parseInt(data.fees_an) || 0) + 
@@ -346,7 +390,11 @@
                     seatEl.classList.add('is-allshift');
                     
                     const status = checkStatus(data.date_all);
-                    if(status === 'expired') { allInd.classList.add('expired'); hasExpired = true; }
+                    if(status === 'expired') { 
+                        allInd.classList.add('expired'); 
+                        hasExpired = true; 
+                        totalDueAmountOnSeat += (parseInt(data.fees_all) || 0);
+                    }
                     else if(status === 'alert') { allInd.classList.add('alert'); hasAlert = true; }
                 } else {
                     mainShiftsDiv.style.display = 'flex';
@@ -358,7 +406,11 @@
                             dots[idx].classList.add('active');
                             
                             const status = checkStatus(data[`date_${s}`]);
-                            if(status === 'expired') { dots[idx].classList.add('expired'); hasExpired = true; }
+                            if(status === 'expired') { 
+                                dots[idx].classList.add('expired'); 
+                                hasExpired = true; 
+                                totalDueAmountOnSeat += (parseInt(data[`fees_${s}`]) || 0);
+                            }
                             else if(status === 'alert') { dots[idx].classList.add('alert'); hasAlert = true; }
                         }
                     });
@@ -370,13 +422,24 @@
                     nightInd.classList.add('active');
                     
                     const status = checkStatus(data.date_night);
-                    if(status === 'expired') { nightInd.classList.add('expired'); hasExpired = true; }
+                    if(status === 'expired') { 
+                        nightInd.classList.add('expired'); 
+                        hasExpired = true; 
+                        totalDueAmountOnSeat += (parseInt(data.fees_night) || 0);
+                    }
                     else if(status === 'alert') { nightInd.classList.add('alert'); hasAlert = true; }
                 }
 
                 if(seatHasAnyBooking && !data.name_all) seatEl.classList.add('is-booked');
                 if(hasAlert) seatEl.classList.add('has-alert');
-                if(hasExpired) seatEl.classList.add('has-expired');
+                
+                // Agar date expire ho chuki hai, toh Red Border lagao aur arrow (tir) + amount dikhao
+                if(hasExpired) { 
+                    seatEl.classList.add('has-expired'); 
+                    if(totalDueAmountOnSeat > 0) {
+                        dueBox.innerHTML = `<div class="due-badge">↑ ₹${totalDueAmountOnSeat}</div>`;
+                    }
+                }
             }
 
             document.getElementById('activeBookingsCount').innerText = activeBookings;
@@ -494,6 +557,97 @@
                 }
                 seatEl.style.opacity = match ? '1' : '0.1';
             }
+        }
+
+        // 💬 WhatsApp Notification Function
+        function sendWhatsAppNotification() {
+            let phone = document.getElementById('whatsappTargetPhone').value.trim();
+            const msg = encodeURIComponent(document.getElementById('whatsappMessageText').value);
+            if(!phone || !msg) { alert("Please enter both phone number and message!"); return; }
+            if(!phone.startsWith('91') && phone.length === 10) phone = '91' + phone;
+            window.open(`https://api.whatsapp.com/send?phone=${phone}&text=${msg}`, '_blank');
+        }
+
+        // 📷 Document Verification (Back Camera Integration)
+        function initiateBackCamera() {
+            const video = document.getElementById('cameraView');
+            const captureBtn = document.getElementById('captureBtn');
+            
+            const constraints = {
+                video: { facingMode: { exact: "environment" } }
+            };
+
+            navigator.mediaDevices.getUserMedia(constraints)
+                .then((stream) => {
+                    activeStream = stream;
+                    video.srcObject = stream;
+                    video.style.display = "block";
+                    captureBtn.style.display = "inline-block";
+                    document.getElementById('snapshotStatus').innerText = "Back camera loaded successfully.";
+                })
+                .catch((err) => {
+                    navigator.mediaDevices.getUserMedia({ video: true })
+                        .then((stream) => {
+                            activeStream = stream;
+                            video.srcObject = stream;
+                            video.style.display = "block";
+                            captureBtn.style.display = "inline-block";
+                            document.getElementById('snapshotStatus').innerText = "Default camera active.";
+                        })
+                        .catch(e => alert("Camera Access Error: " + e));
+                });
+        }
+
+        function captureDocumentSnapshot() {
+            const video = document.getElementById('cameraView');
+            const canvas = document.getElementById('photoCanvas');
+            const context = canvas.getContext('2d');
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            document.getElementById('snapshotStatus').innerText = "✅ Snapshot verified and recorded locally!";
+            if(activeStream) {
+                activeStream.getTracks().forEach(track => track.stop());
+                video.style.display = "none";
+                document.getElementById('captureBtn').style.display = "none";
+            }
+        }
+
+        // 📥 Multi-Shift Excel Export Logic (SheetJS)
+        function exportLibraryDataToExcel() {
+            const reportData = [];
+            
+            for(let i = 1; i <= TOTAL_SEATS; i++) {
+                const data = globalLibraryData[i] || {};
+                const shifts = ['all', 'm', 'n', 'an', 'e', 'night'];
+                const shiftNames = {
+                    'all': 'Full Day Shift', 'm': 'Morning Shift', 'n': 'Noon Shift', 
+                    'an': 'Afternoon Shift', 'e': 'Evening Shift', 'night': 'Night Shift'
+                };
+
+                shifts.forEach(f => {
+                    if(data[`name_${f}`]) {
+                        reportData.push({
+                            "Seat Number": i,
+                            "Shift Type": shiftNames[f],
+                            "Student Name": data[`name_${f}`] || '',
+                            "Mobile Number": data[`phone_${f}`] || '',
+                            "Fees Paid": data[`fees_${f}`] || 0,
+                            "Renewal Date": data[`date_${f}`] || '',
+                            "Payment Date": data[`paydate_${f}`] || ''
+                        });
+                    }
+                });
+            }
+
+            if(reportData.length === 0) { alert("No active booking data found to export!"); return; }
+
+            const worksheet = XLSX.utils.json_to_sheet(reportData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Library Bookings");
+            XLSX.writeFile(workbook, "Hariom_Library_Backup_V3.xlsx");
         }
     </script>
 </body>
