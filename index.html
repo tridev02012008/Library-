@@ -54,12 +54,10 @@
         .seat.is-booked { background: var(--active-booking-bg) !important; border-color: var(--active-booking-border) !important; }
         .seat.is-allshift { border-color: #eab308 !important; background: #232212 !important; }
         
-        /* Blinking & Due Arrow Layout */
         .seat.has-alert { border: 2px dashed var(--warning-alert) !important; animation: mildBlink 2s infinite; }
         .seat.has-expired { border: 2px dashed var(--danger-color) !important; background: #2d1015 !important; animation: severeBlink 1.5s infinite; }
         .seat.has-due { border: 2px dashed var(--due-color) !important; }
         
-        /* Arrow Indicator Style */
         .due-arrow-indicator { display: none; position: absolute; top: -14px; background: var(--due-color); color: #0b0f19; font-size: 0.65rem; padding: 1px 4px; border-radius: 4px; z-index: 5; animation: arrowBlink 1.2s infinite; font-weight: 800; white-space: nowrap; }
         .due-arrow-indicator::after { content: ''; position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%); border-width: 4px 4px 0; border-style: solid; border-color: var(--due-color) transparent; }
 
@@ -108,12 +106,10 @@
         .waiting-item { display: flex; justify-content: space-between; background: #0b0f19; padding: 10px; border-radius: 6px; margin-bottom: 5px; align-items: center; }
         .modal-actions { display: flex; justify-content: space-between; margin-top: 15px; }
 
-        /* Camera Box Styles */
         .camera-container { display: flex; flex-direction: column; align-items: center; gap: 10px; background: #0b0f19; padding: 10px; border-radius: 8px; margin-top: 10px; border: 1px solid #233554; }
         #video { width: 100%; max-width: 280px; height: 180px; background: #233554; border-radius: 6px; object-fit: cover; }
         #canvas { display: none; }
 
-        /* Aadhaar Card Secure Database Box Layout */
         .secure-vault { width: 100%; margin-top: 15px; background: #111a2e; border: 1px dashed var(--success-color); border-radius: 8px; padding: 10px; }
         .secure-vault h4 { font-size: 0.85rem; color: var(--success-color); margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
         .vault-inputs { display: grid; grid-template-columns: 1fr 2fr; gap: 5px; margin-bottom: 10px; }
@@ -158,9 +154,9 @@
             </div>
             <p id="camStatus" style="font-size: 0.8rem; color: #64748b;">Camera status: Offline</p>
             
-            <!-- Aadhaar / ID Card Safe Vault Storage Box -->
+            <!-- Secure Vault Storage Box -->
             <div class="secure-vault">
-                <h4>🛡️ Aadhaar Card Secure Vault Storage</h4>
+                <h4>🛡️ Secure Document Vault Storage</h4>
                 <div class="vault-inputs">
                     <input type="number" id="vaultSeat" placeholder="Seat No">
                     <input type="text" id="vaultName" placeholder="Student Name / Details">
@@ -196,6 +192,7 @@
                     <div class="form-group"><label>Fees Paid (₹)</label><input type="number" id="fees_all"></div>
                     <div class="form-group"><label style="color:var(--due-color);">Due Amount (₹)</label><input type="number" id="due_all" style="border-color: var(--due-color);"></div>
                 </div>
+                <button class="btn btn-success" style="width:100%; margin-top:8px; font-size:0.8rem;" onclick="sendWhatsAppAlert('all')">💬 Send WhatsApp Reminder</button>
             </div>
 
             <p id="orDivider" style="text-align: center; color:#64748b; font-size:0.8rem; margin:10px 0;">— OR USE INDIVIDUAL SHIFTS —</p>
@@ -213,6 +210,7 @@
                 <div class="form-row full">
                     <div class="form-group"><label style="color:var(--due-color);">Due Amount (₹)</label><input type="number" id="due_m" style="border-color: var(--due-color);"></div>
                 </div>
+                <button class="btn btn-success" style="width:100%; margin-top:4px; font-size:0.75rem;" onclick="sendWhatsAppAlert('m')">💬 Send WhatsApp Reminder</button>
             </div>
 
             <div class="shift-block normal-shift" id="block_n">
@@ -228,6 +226,7 @@
                 <div class="form-row full">
                     <div class="form-group"><label style="color:var(--due-color);">Due Amount (₹)</label><input type="number" id="due_n" style="border-color: var(--due-color);"></div>
                 </div>
+                <button class="btn btn-success" style="width:100%; margin-top:4px; font-size:0.75rem;" onclick="sendWhatsAppAlert('n')">💬 Send WhatsApp Reminder</button>
             </div>
 
             <div class="shift-block normal-shift" id="block_an">
@@ -243,6 +242,7 @@
                 <div class="form-row full">
                     <div class="form-group"><label style="color:var(--due-color);">Due Amount (₹)</label><input type="number" id="due_an" style="border-color: var(--due-color);"></div>
                 </div>
+                <button class="btn btn-success" style="width:100%; margin-top:4px; font-size:0.75rem;" onclick="sendWhatsAppAlert('an')">💬 Send WhatsApp Reminder</button>
             </div>
 
             <div class="shift-block normal-shift" id="block_e">
@@ -258,6 +258,7 @@
                 <div class="form-row full">
                     <div class="form-group"><label style="color:var(--due-color);">Due Amount (₹)</label><input type="number" id="due_e" style="border-color: var(--due-color);"></div>
                 </div>
+                <button class="btn btn-success" style="width:100%; margin-top:4px; font-size:0.75rem;" onclick="sendWhatsAppAlert('e')">💬 Send WhatsApp Reminder</button>
             </div>
 
             <div class="shift-block night-block" id="block_night">
@@ -273,6 +274,7 @@
                 <div class="form-row full">
                     <div class="form-group"><label style="color:var(--due-color);">Due Amount (₹)</label><input type="number" id="due_night" style="border-color: var(--due-color);"></div>
                 </div>
+                <button class="btn btn-success" style="width:100%; margin-top:4px; font-size:0.75rem;" onclick="sendWhatsAppAlert('night')">💬 Send WhatsApp Reminder</button>
             </div>
 
             <div class="modal-actions">
@@ -319,10 +321,10 @@
             }
         }
 
-        // Camera Initialization
+        // Camera Code Repaired & Verified
         function startCamera() {
             const video = document.getElementById('video');
-            navigator.mediaDevices.getUserMedia({ video: true })
+            navigator.mediaDevices.getUserMedia({ video: true, audio: false })
                 .then(stream => {
                     streamRef = stream;
                     video.srcObject = stream;
@@ -332,7 +334,6 @@
                 .catch(err => { alert("Unable to open camera: " + err); });
         }
 
-        // Capture Document and Push to Firebase Secure Vault Storage
         function captureDoc() {
             if (!streamRef) { alert("Please start the camera first."); return; }
             if(!isAdminVerified) { alert("⚠️ Verify admin status first!"); return; }
@@ -363,7 +364,28 @@
             });
         }
 
-        // Excel Export Backup
+        // WhatsApp Custom Message Handler Repaired
+        function sendWhatsAppAlert(shiftCode) {
+            const phone = document.getElementById(`phone_${shiftCode}`).value.trim();
+            const name = document.getElementById(`name_${shiftCode}`).value.trim();
+            const due = document.getElementById(`due_${shiftCode}`).value.trim();
+            const date = document.getElementById(`date_${shiftCode}`).value;
+
+            if(!phone) { alert("Phone number is empty!"); return; }
+            
+            let msg = `Hi ${name}, This is a friendly reminder from Hariom Smart Library regarding your Seat No: ${activeSeatNumber}.`;
+            if(parseInt(due) > 0) {
+                msg += ` You have a pending due amount of Rs. ${due}. Please clear it at your earliest.`;
+            }
+            if(date) {
+                msg += ` Your seat renewal date is ${date}.`;
+            }
+            msg += ` Thank you!`;
+
+            const cleanPhone = phone.startsWith('+') ? phone : (phone.length === 10 ? '91' + phone : phone);
+            window.open(`https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
         function exportToExcel() {
             if (Object.keys(globalLibraryData).length === 0) {
                 alert("No data available to export yet!");
@@ -399,7 +421,6 @@
             document.body.removeChild(link);
         }
 
-        // Generate Seat layout elements with integrated upper arrow div
         const grid = document.getElementById('seatsGrid');
         for(let i=1; i<=TOTAL_SEATS; i++) {
             const el = document.createElement('div');
@@ -424,7 +445,6 @@
             grid.appendChild(el);
         }
 
-        // Live Realtime sync from Firebase
         database.ref('library_v3').on('value', (snapshot) => {
             const data = snapshot.val() || {};
             globalLibraryData = data.seats || {};
@@ -531,7 +551,6 @@
                 if(hasAlert) seatEl.classList.add('has-alert');
                 if(hasExpired) seatEl.classList.add('has-expired');
                 
-                // Trigger Blinking Arrow if Due exists
                 if(seatCurrentDueAmount > 0) {
                     seatEl.classList.add('has-due');
                     arrowEl.innerText = `↓ ₹${seatCurrentDueAmount}`;
@@ -544,7 +563,6 @@
             document.getElementById('totalDue').innerText = '₹' + totalDue;
         }
 
-        // Render Secure Vault items
         function updateVaultUI(vaultData) {
             const container = document.getElementById('vaultListContainer');
             container.innerHTML = '';
