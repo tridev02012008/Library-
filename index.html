@@ -116,6 +116,11 @@
         .vault-list { max-height: 150px; overflow-y: auto; margin-top: 8px; font-size: 0.8rem; }
         .vault-item { background: #0b0f19; padding: 6px; border-radius: 4px; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid var(--success-color); }
         .vault-item img { width: 40px; height: 25px; object-fit: cover; border-radius: 2px; border: 1px solid #475569; }
+
+        /* Custom Vault Image Preview Modal CSS */
+        .img-preview-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; z-index: 200; padding: 20px; }
+        .img-preview-content { max-width: 100%; max-height: 80vh; border-radius: 10px; box-shadow: 0 0 20px rgba(255,255,255,0.2); }
+        .close-preview { position: absolute; top: 20px; right: 20px; background: var(--danger-color); color: white; border: none; padding: 10px 15px; font-weight: bold; border-radius: 8px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -284,6 +289,12 @@
         </div>
     </div>
 
+    <!-- Image Preview Modal Window -->
+    <div id="imgPreviewModal" class="img-preview-modal" onclick="closeImgPreview()">
+        <button class="close-preview" onclick="closeImgPreview()">✕ Close</button>
+        <img id="previewTargetImg" class="img-preview-content" src="">
+    </div>
+
     <script>
         const firebaseConfig = { databaseURL: "https://hariom-library-3c480-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig);
@@ -321,15 +332,10 @@
             }
         }
 
-        // Camera Code Repaired & Verified for Back Camera Initialization
         function startCamera() {
             const video = document.getElementById('video');
-            
-            // Setting facingMode to environment forces the mobile browser to prioritize back camera
             const constraints = { 
-                video: { 
-                    facingMode: "environment"
-                }, 
+                video: { facingMode: "environment" }, 
                 audio: false 
             };
 
@@ -341,7 +347,6 @@
                     document.getElementById('camStatus').style.color = "var(--success-color)";
                 })
                 .catch(err => { 
-                    // Fallback try in case some browsers strict-match object constraints
                     navigator.mediaDevices.getUserMedia({ video: true, audio: false })
                         .then(stream => {
                             streamRef = stream;
@@ -382,7 +387,6 @@
             });
         }
 
-        // WhatsApp Custom Message Handler Repaired
         function sendWhatsAppAlert(shiftCode) {
             const phone = document.getElementById(`phone_${shiftCode}`).value.trim();
             const name = document.getElementById(`name_${shiftCode}`).value.trim();
@@ -587,11 +591,22 @@
             Object.keys(vaultData).forEach(key => {
                 const item = vaultData[key];
                 container.innerHTML += `
-                    <div class="vault-item">
+                    <div class="vault-item" style="cursor: pointer;" onclick="viewVaultImg('${item.image}')">
                         <span><strong>Seat ${item.seat}:</strong> ${item.name}</span>
-                        <img src="${item.image}" onclick="window.open(this.src)" title="Click to view raw photo" style="cursor:pointer;">
+                        <img src="${item.image}" title="Click to view photo" style="border-radius: 2px; border: 1px solid #475569;">
                     </div>`;
             });
+        }
+
+        function viewVaultImg(imgSrc) {
+            const modal = document.getElementById('imgPreviewModal');
+            const targetImg = document.getElementById('previewTargetImg');
+            targetImg.src = imgSrc;
+            modal.style.display = 'flex';
+        }
+
+        function closeImgPreview() {
+            document.getElementById('imgPreviewModal').style.display = 'none';
         }
 
         function toggleModalShifts(allShiftValue) {
