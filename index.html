@@ -6,6 +6,14 @@
     <title>Hariom Smart Library - Ultimate Control Panel</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <!-- PDF Generation Ke Liye Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <!-- Web App Standalone Mode Tags (Home Screen par asli app dikhne ke liye) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+
     <style>
         :root {
             --bg-color: #0b0f19;
@@ -100,15 +108,38 @@
         .waiting-section { background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
         .waiting-item { display: flex; justify-content: space-between; background: #0b0f19; padding: 10px; border-radius: 6px; margin-bottom: 5px; align-items: center; }
         
-        .history-section { margin-top: 15px; background: #0b0f19; padding: 10px; border-radius: 8px; border: 1px solid #233554; max-height: 150px; overflow-y: auto; }
+        .history-section { margin-top: 15px; background: #0b0f19; padding: 10px; border-radius: 8px; border: 1px solid #233554; max-height: 120px; overflow-y: auto; }
         .history-title { font-size: 0.8rem; color: #94a3b8; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
         .history-item { font-size: 0.75rem; color: #64748b; padding: 4px 0; border-bottom: 1px dashed #1e293b; display: flex; justify-content: space-between; }
 
         .whatsapp-btn { padding: 3px 8px; font-size: 0.7rem; background-color: #25d366; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
         .modal-actions { display: flex; justify-content: space-between; margin-top: 15px; gap: 10px; }
+        
+        /* Receipt hidden container template */
+        #receipt-template { display: none; color: #000; padding: 30px; background: #fff; width: 400px; font-family: Arial, sans-serif; }
     </style>
 </head>
 <body>
+
+    <!-- Hidden Receipt Print Box -->
+    <div id="receipt-template">
+        <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:10px; margin-bottom:15px;">
+            <h2>📚 HARIOM SMART LIBRARY</h2>
+            <p style="font-size:0.8rem;">Premium Study Zone | Realtime Digital Slip</p>
+        </div>
+        <p><strong>Receipt Date:</strong> <span id="r_date"></span></p>
+        <p><strong>Seat Number:</strong> <span id="r_seat"></span></p>
+        <p><strong>Shift Allocated:</strong> <span id="r_shift"></span></p>
+        <div style="margin: 15px 0; padding:10px; background:#f3f4f6; border-radius:5px;">
+            <p><strong>Student Name:</strong> <span id="r_name"></span></p>
+            <p><strong>Mobile Number:</strong> <span id="r_phone"></span></p>
+        </div>
+        <p><strong>Fees Received:</strong> <span style="font-size:1.2rem; font-weight:bold;">₹<span id="r_fees"></span></span></p>
+        <p><strong>Valid Upto (Renewal Date):</strong> <span style="color:red; font-weight:bold;" id="r_expiry"></span></p>
+        <div style="margin-top:25px; text-align:center; font-size:0.75rem; color:#555; border-top:1px dashed #ccc; padding-top:10px;">
+            Thank you for studying with us! All the best! 👍
+        </div>
+    </div>
 
     <div class="header">
         <h2>📚 Hariom Smart Library</h2>
@@ -120,19 +151,23 @@
         <button class="btn" onclick="verifyAdmin()">Verify</button>
     </div>
 
-    <!-- Smart Tools Panel (Naya Feature: Filter aur Backup) -->
+    <!-- Smart Tools Panel -->
     <div class="tools-panel">
         <h4>🎛️ Smart Tools Panel</h4>
         <div class="filter-group">
             <button class="btn btn-warning" style="padding:6px 12px; font-size:0.8rem;" onclick="filterByShift('all_shifts')">🔄 All Dashboard</button>
             <button class="btn" style="padding:6px 12px; font-size:0.8rem; background:#eab308; color:black;" onclick="filterByShift('full_day')">☀️ Full Day</button>
-            <button class="btn" style="padding:6px 12px; font-size:0.8rem;" onclick="filterByShift('m')">🌅 Morning Shift</button>
-            <button class="btn" style="padding:6px 12px; font-size:0.8rem;" onclick="filterByShift('n')">🕛 Noon Shift</button>
+            <button class="btn" style="padding:6px 12px; font-size:0.8rem;" onclick="filterByShift('m')">🌅 Morning</button>
+            <button class="btn" style="padding:6px 12px; font-size:0.8rem;" onclick="filterByShift('n')">🕛 Noon</button>
             <button class="btn" style="padding:6px 12px; font-size:0.8rem;" onclick="filterByShift('an')">🌇 Afternoon</button>
-            <button class="btn" style="padding:6px 12px; font-size:0.8rem;" onclick="filterByShift('e')">🌃 Evening Shift</button>
-            <button class="btn" style="padding:6px 12px; font-size:0.8rem; background:var(--night-color); color:black;" onclick="filterByShift('night')">🌙 Night Shift</button>
+            <button class="btn" style="padding:6px 12px; font-size:0.8rem;" onclick="filterByShift('e')">🌃 Evening</button>
+            <button class="btn" style="padding:6px 12px; font-size:0.8rem; background:var(--night-color); color:black;" onclick="filterByShift('night')">🌙 Night</button>
         </div>
-        <button class="btn btn-success" style="width: 100%; margin-top: 5px;" onclick="exportToCSV()">📥 Download Entire Library Excel Backup (CSV)</button>
+        <div style="display:flex; gap:10px; margin-top:8px;">
+            <button class="btn btn-success" style="flex:1;" onclick="exportToCSV()">📥 Download Excel Backup (CSV)</button>
+            <!-- Naya Feature: 2 Din Pehle Ka Auto Filter Reminder Button -->
+            <button class="btn btn-danger" style="flex:1; background:#f97316;" onclick="checkAndSend2DayReminders()">📢 Send Due Reminders (2 Days Left)</button>
+        </div>
     </div>
 
     <div class="stats-grid">
@@ -231,7 +266,6 @@
                 </div>
             </div>
 
-            <!-- History Section (Naya Feature: Past Records Log) -->
             <div class="history-section">
                 <div class="history-title">📜 Past Student History Log</div>
                 <div id="historyLogContainer">No history available for this seat.</div>
@@ -339,7 +373,6 @@
                 let hasAlert = false;
                 let seatHasAnyBooking = false;
 
-                // Dynamic UI match for current shift filters
                 let filterMatch = false;
                 if(currentActiveFilter === 'all_shifts') filterMatch = true;
 
@@ -402,7 +435,6 @@
                 if(hasAlert) seatEl.classList.add('has-alert');
                 if(hasExpired) seatEl.classList.add('has-expired');
 
-                // Apply live shift filter view visibility
                 seatEl.style.display = filterMatch ? 'flex' : 'none';
             }
 
@@ -410,7 +442,6 @@
             document.getElementById('totalIncome').innerText = '₹' + totalIncome;
         }
 
-        // Live Shift Filter Mechanism (Naya Feature)
         function filterByShift(shiftType) {
             currentActiveFilter = shiftType;
             updateUI(globalLibraryData);
@@ -441,15 +472,11 @@
                 document.getElementById(`date_${f}`).value = data[`date_${f}`] || '';
                 document.getElementById(`fees_${f}`).value = data[`fees_${f}`] || 0;
 
-                // Hide/Show WhatsApp button based on student availability
                 document.getElementById(`wa_${f}`).style.display = studentName ? 'inline-block' : 'none';
             });
 
             toggleModalShifts(data['name_all'] || '');
-            
-            // Load History Log (Naya Feature)
             loadHistoryUI(seatNum);
-
             document.getElementById('seatModal').style.display = 'flex';
         }
 
@@ -474,7 +501,6 @@
             });
         }
 
-        // WhatsApp Reminder API Logic (Naya Feature)
         function sendWhatsAppReminder(shiftSuffix) {
             const name = document.getElementById(`name_${shiftSuffix}`).value;
             let phone = document.getElementById(`phone_${shiftSuffix}`).value.trim();
@@ -495,6 +521,77 @@
 
         function closeModal() { document.getElementById('seatModal').style.display = 'none'; }
 
+        // Smart Feature: Naya Student Aane par Auto PDF Download aur Welcome Link
+        function generateReceiptAndWelcome(name, phone, shift, fees, expiryDate) {
+            // Set data in receipt HTML block
+            document.getElementById('r_date').innerText = new Date().toLocaleDateString();
+            document.getElementById('r_seat').innerText = activeSeatNumber;
+            document.getElementById('r_shift').innerText = shift.toUpperCase();
+            document.getElementById('r_name').innerText = name;
+            document.getElementById('r_phone').innerText = phone;
+            document.getElementById('r_fees').innerText = fees;
+            document.getElementById('r_expiry').innerText = expiryDate;
+
+            // Generate PDF logic background
+            const element = document.getElementById('receipt-template');
+            element.style.display = 'block'; // Temporary show for capture
+            
+            const opt = {
+                margin:       10,
+                filename:     `Hariom_Library_Seat_${activeSeatNumber}_Slip.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.style.display = 'none'; // Hide again
+                
+                // Trigger Welcome Message to WhatsApp
+                let waPhone = phone.trim();
+                if(!waPhone.startsWith("91") && waPhone.length === 10) waPhone = "91" + waPhone;
+                
+                const welcomeMsg = `🎉 Welcome ${name} to Hariom Smart Library! 📚\n\nYour Seat No: ${activeSeatNumber}\nAllocated Shift: ${shift.toUpperCase()}\nFees Paid: ₹${fees}\nValid Till: ${expiryDate}\n\nYour official payment receipt/slip has been downloaded to the device. Please keep it safe. Happy Learning!`;
+                
+                window.open(`https://api.whatsapp.com/send?phone=${waPhone}&text=${encodeURIComponent(welcomeMsg)}`, '_blank');
+            });
+        }
+
+        // Naya Feature: pure database ko check karke theek 2 din pehle auto notification pathana
+        function checkAndSend2DayReminders() {
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            
+            const targetDue = new Date(today);
+            targetDue.setDate(today.getDate() + 2); // Exact 2 Days later
+            const targetStr = targetDue.toISOString().split('T')[0];
+
+            const fields = ['all', 'm', 'n', 'an', 'e', 'night'];
+            const shiftLabel = {all: 'Full Day', m: 'Morning', n: 'Noon', an: 'Afternoon', e: 'Evening', night: 'Night'};
+            let totalRemindersFound = 0;
+
+            for(let i=1; i<=TOTAL_SEATS; i++) {
+                const sData = globalLibraryData[i] || {};
+                fields.forEach(f => {
+                    if(sData[`name_${f}`] && sData[`date_${f}`] === targetStr) {
+                        totalRemindersFound++;
+                        let p = sData[`phone_${f}`].trim();
+                        if(!p.startsWith("91") && p.length === 10) p = "91" + p;
+                        
+                        const msg = `⚠️ Urgent Reminder from Hariom Smart Library! Hi ${sData[`name_${f}`]}, your subscription for Seat No. ${i} (${shiftLabel[f]} Shift) expires in exactly 2 Days (${sData[`date_${f}`]}). Kindly deposit the fees soon to lock your seat.`;
+                        
+                        window.open(`https://api.whatsapp.com/send?phone=${p}&text=${encodeURIComponent(msg)}`, '_blank');
+                    }
+                });
+            }
+
+            if(totalRemindersFound === 0) {
+                alert("👍 Sab badhiya hai! Aaj aisa koi student nahi mila jiska subscription theek 2 din baad khatam hone wala ho.");
+            } else {
+                alert(`📢 System ne ${totalRemindersFound} due students ko track karke tabs open kar diye hain.`);
+            }
+        }
+
         function saveMultiShiftData() {
             if(!isAdminVerified) { alert("⚠️ Please verify Admin Number first!"); return; }
 
@@ -510,7 +607,12 @@
                 const newDate = document.getElementById(`date_${f}`).value;
                 const newFees = parseInt(document.getElementById(`fees_${f}`).value) || 0;
 
-                // History Logging Check: Agar student badal raha hai ya fees save ho rhi h
+                // Track if it's a completely NEW entry or renewed seat to fire Auto Slip
+                if(newName && oldData[`name_${f}`] !== newName) {
+                    // Trigger Automatic Receipt Download + Welcome Msg
+                    generateReceiptAndWelcome(newName, newPhone, f, newFees, newDate);
+                }
+
                 if(newName && (oldData[`name_${f}`] !== newName || oldData[`fees_${f}`] !== newFees)) {
                     database.ref(`library_v3/history/${activeSeatNumber}`).push().set({
                         name: newName,
@@ -539,7 +641,6 @@
                 .catch(err => alert("Error saving data: " + err));
         }
 
-        // CSV Export/Backup Logic (Naya Feature)
         function exportToCSV() {
             let csvContent = "data:text/csv;charset=utf-8,Seat Number,Shift Name,Student Name,Phone Number,Renewal Date,Fees Collected\n";
             const shiftKeys = ['all', 'm', 'n', 'an', 'e', 'night'];
