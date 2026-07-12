@@ -15,7 +15,6 @@
             --danger-color: #ef4444;
             --warning-color: #f59e0b;
             --warning-alert: #f97316; 
-            --due-color: #eab308;
             --night-color: #38bdf8;
             --unreserved-color: #334155;
             --text-color: #f8fafc;
@@ -27,18 +26,15 @@
         body { background-color: var(--bg-color); color: var(--text-color); padding: 15px; }
         .header { background: linear-gradient(135deg, #3b82f6, #8b5cf6); padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
         
-        .admin-section { background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-        .admin-section input { flex: 1; min-width: 200px; padding: 10px; border-radius: 8px; border: 1px solid #233554; background: #0b0f19; color: white; }
+        .admin-section { background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; }
+        .admin-section input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #233554; background: #0b0f19; color: white; }
         .btn { padding: 10px 20px; border: none; border-radius: 8px; background: var(--primary-color); color: white; cursor: pointer; font-weight: bold; }
         .btn-danger { background: var(--danger-color); }
-        .btn-success { background: var(--success-color); }
-        .btn-warning { background: var(--warning-color); color: #0b0f19; }
         
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
         .stat-card { background: var(--card-color); padding: 12px; border-radius: 10px; text-align: center; border-left: 4px solid var(--primary-color); }
         .stat-card.vacant { border-left-color: var(--success-color); }
-        .stat-card.income { border-left-color: #ec4899; }
-        .stat-card.due-stat { border-left-color: var(--due-color); }
+        .stat-card.income { grid-column: span 2; font-size: 1.1rem; border-left-color: #ec4899; }
         .stat-card div { font-size: 0.8rem; color: #64748b; text-transform: uppercase; }
         .stat-card span { font-size: 1.4rem; font-weight: bold; display: block; margin-top: 5px; }
 
@@ -46,7 +42,7 @@
         
         .seats-container { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 30px; }
         
-        .seat { background: #1e293b; padding: 8px 4px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; font-weight: bold; font-size: 1rem; cursor: pointer; color: white; transition: 0.2s; min-height: 85px; position: relative; border: 1px solid #475569; }
+        .seat { background: #1e293b; padding: 8px 4px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; font-weight: bold; font-size: 1rem; cursor: pointer; color: white; transition: 0.2s; min-height: 75px; position: relative; border: 1px solid #475569; }
         
         .seat.is-unreserved { background: #1a2333; border-color: #475569; position: relative; }
         .seat.is-unreserved::after { content: 'UR'; position: absolute; top: 2px; right: 4px; font-size: 0.6rem; color: #94a3b8; background: rgba(255,255,255,0.07); padding: 1px 3px; border-radius: 3px; }
@@ -56,11 +52,7 @@
         
         .seat.has-alert { border: 2px dashed var(--warning-alert) !important; animation: mildBlink 2s infinite; }
         .seat.has-expired { border: 2px dashed var(--danger-color) !important; background: #2d1015 !important; animation: severeBlink 1.5s infinite; }
-        .seat.has-due { border: 2px dashed var(--due-color) !important; }
         
-        .due-arrow-indicator { display: none; position: absolute; top: -14px; background: var(--due-color); color: #0b0f19; font-size: 0.65rem; padding: 1px 4px; border-radius: 4px; z-index: 5; animation: arrowBlink 1.2s infinite; font-weight: 800; white-space: nowrap; }
-        .due-arrow-indicator::after { content: ''; position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%); border-width: 4px 4px 0; border-style: solid; border-color: var(--due-color) transparent; }
-
         .indicators { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; margin-top: 5px; }
         .main-shifts { display: flex; justify-content: center; gap: 3px; width: 100%; }
         
@@ -68,22 +60,18 @@
         .dot.active { background: var(--success-color); }
         .dot.alert { background: var(--warning-alert) !important; animation: blink 1.2s infinite; }
         .dot.expired { background: var(--danger-color) !important; animation: blink 1.2s infinite; }
-        .dot.due { background: var(--due-color) !important; }
         
         .night-dot { width: 8px; height: 8px; border-radius: 50%; background: transparent; border: 1px dashed #475569; }
         .night-dot.active { background: var(--night-color); border: none; }
         .night-dot.alert { background: var(--warning-alert) !important; border: none; animation: blink 1.2s infinite; }
         .night-dot.expired { background: var(--danger-color) !important; border: none; animation: blink 1.2s infinite; }
-        .night-dot.due { background: var(--due-color) !important; border: none; }
 
         .all-shift-indicator { width: 30px; height: 6px; border-radius: 3px; background: #475569; display: none; }
         .all-shift-indicator.active { background: #eab308; display: block; }
         .all-shift-indicator.alert { background: var(--warning-alert) !important; display: block; animation: blink 1.2s infinite; }
         .all-shift-indicator.expired { background: var(--danger-color) !important; display: block; animation: blink 1.2s infinite; }
-        .all-shift-indicator.due { background: var(--due-color) !important; display: block; }
 
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }
-        @keyframes arrowBlink { 0% { transform: translateY(0); opacity: 1; } 50% { transform: translateY(-3px); opacity: 0.4; } 100% { transform: translateY(0); opacity: 1; } }
         @keyframes mildBlink { 0% { border-color: var(--warning-alert); } 50% { border-color: transparent; } 100% { border-color: var(--warning-alert); } }
         @keyframes severeBlink { 0% { border-color: var(--danger-color); } 50% { border-color: transparent; } 100% { border-color: var(--danger-color); } }
 
@@ -102,25 +90,9 @@
         label { font-size: 0.75rem; color: #64748b; display: block; margin-bottom: 2px; }
         input { width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #233554; background: var(--card-color); color: white; font-size: 0.85rem; }
         
-        .panel-section { background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
+        .waiting-section { background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
         .waiting-item { display: flex; justify-content: space-between; background: #0b0f19; padding: 10px; border-radius: 6px; margin-bottom: 5px; align-items: center; }
         .modal-actions { display: flex; justify-content: space-between; margin-top: 15px; }
-
-        .camera-container { display: flex; flex-direction: column; align-items: center; gap: 10px; background: #0b0f19; padding: 10px; border-radius: 8px; margin-top: 10px; border: 1px solid #233554; }
-        #video { width: 100%; max-width: 280px; height: 180px; background: #233554; border-radius: 6px; object-fit: cover; }
-        #canvas { display: none; }
-
-        .secure-vault { width: 100%; margin-top: 15px; background: #111a2e; border: 1px dashed var(--success-color); border-radius: 8px; padding: 10px; }
-        .secure-vault h4 { font-size: 0.85rem; color: var(--success-color); margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
-        .vault-inputs { display: grid; grid-template-columns: 1fr 2fr; gap: 5px; margin-bottom: 10px; }
-        .vault-list { max-height: 150px; overflow-y: auto; margin-top: 8px; font-size: 0.8rem; }
-        .vault-item { background: #0b0f19; padding: 6px; border-radius: 4px; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid var(--success-color); }
-        .vault-item img { width: 40px; height: 25px; object-fit: cover; border-radius: 2px; border: 1px solid #475569; }
-
-        /* Custom Vault Image Preview Modal CSS */
-        .img-preview-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; z-index: 200; padding: 20px; }
-        .img-preview-content { max-width: 100%; max-height: 80vh; border-radius: 10px; box-shadow: 0 0 20px rgba(255,255,255,0.2); }
-        .close-preview { position: absolute; top: 20px; right: 20px; background: var(--danger-color); color: white; border: none; padding: 10px 15px; font-weight: bold; border-radius: 8px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -133,45 +105,19 @@
     <div class="admin-section">
         <input type="password" id="adminPhone" placeholder="Enter Admin Mobile Number...">
         <button class="btn" onclick="verifyAdmin()">Verify</button>
-        <button class="btn btn-warning" onclick="exportToExcel()">📥 Excel Backup</button>
     </div>
 
     <div class="stats-grid">
         <div class="stat-card vacant"><div>Total Seats</div><span>105</span></div>
         <div class="stat-card"><div>Active Bookings</div><span id="activeBookingsCount">0</span></div>
         <div class="stat-card income"><div>💰 Total Monthly Collection</div><span id="totalIncome">₹0</span></div>
-        <div class="stat-card due-stat"><div>⚠️ Total Pending Due</div><span id="totalDue">₹0</span></div>
     </div>
 
     <input type="text" id="searchBox" class="search-box" placeholder="Search student name or seat number..." oninput="filterSeats()">
 
     <div class="seats-container" id="seatsGrid"></div>
 
-    <!-- Document Verification Camera Section -->
-    <div class="panel-section">
-        <h3>📷 Documents Verification Box</h3>
-        <div class="camera-container">
-            <video id="video" autoplay playsinline></video>
-            <canvas id="canvas" width="320" height="240"></canvas>
-            <div style="display: flex; gap: 8px; width: 100%; max-width: 280px;">
-                <button class="btn" style="flex: 1; padding: 6px;" onclick="startCamera()">Start Cam</button>
-                <button class="btn btn-success" style="flex: 1; padding: 6px;" onclick="captureDoc()">Verify & Save</button>
-            </div>
-            <p id="camStatus" style="font-size: 0.8rem; color: #64748b;">Camera status: Offline</p>
-            
-            <!-- Secure Vault Storage Box -->
-            <div class="secure-vault">
-                <h4>🛡️ Secure Document Vault Storage</h4>
-                <div class="vault-inputs">
-                    <input type="number" id="vaultSeat" placeholder="Seat No">
-                    <input type="text" id="vaultName" placeholder="Student Name / Details">
-                </div>
-                <div class="vault-list" id="vaultListContainer"></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="panel-section">
+    <div class="waiting-section">
         <h3>📋 Waiting List</h3>
         <div style="display: flex; gap: 5px; margin-top: 10px;">
             <input type="text" id="waitName" placeholder="Student Name" style="flex:1; padding:8px; border-radius:6px; background:#0b0f19; color:white; border:1px solid #233554;">
@@ -181,7 +127,6 @@
         <div class="waiting-list" id="waitingListContainer"></div>
     </div>
 
-    <!-- Multi-shift Booking Management Modal -->
     <div class="modal" id="seatModal">
         <div class="modal-content">
             <h3 id="modalTitle">Seat Details</h3>
@@ -191,13 +136,12 @@
                 <div class="form-row full"><div class="form-group"><label>Student Name</label><input type="text" id="name_all" oninput="toggleModalShifts(this.value)"></div></div>
                 <div class="form-row">
                     <div class="form-group"><label>Phone</label><input type="text" id="phone_all"></div>
-                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_all"></div>
+                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_all"></div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group"><label>Fees Paid (₹)</label><input type="number" id="fees_all"></div>
-                    <div class="form-group"><label style="color:var(--due-color);">Due Amount (₹)</label><input type="number" id="due_all" style="border-color: var(--due-color);"></div>
+                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_all"></div>
+                    <div class="form-group"><label>Payment Date</label><input type="date" id="paydate_all"></div>
                 </div>
-                <button class="btn btn-success" style="width:100%; margin-top:8px; font-size:0.8rem;" onclick="sendWhatsAppAlert('all')">💬 Send WhatsApp Reminder</button>
             </div>
 
             <p id="orDivider" style="text-align: center; color:#64748b; font-size:0.8rem; margin:10px 0;">— OR USE INDIVIDUAL SHIFTS —</p>
@@ -210,12 +154,11 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group"><label>Renewal Date</label><input type="date" id="date_m"></div>
-                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_m"></div>
+                    <div class="form-group"><label>Payment Date</label><input type="date" id="paydate_m"></div>
                 </div>
                 <div class="form-row full">
-                    <div class="form-group"><label style="color:var(--due-color);">Due Amount (₹)</label><input type="number" id="due_m" style="border-color: var(--due-color);"></div>
+                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_m"></div>
                 </div>
-                <button class="btn btn-success" style="width:100%; margin-top:4px; font-size:0.75rem;" onclick="sendWhatsAppAlert('m')">💬 Send WhatsApp Reminder</button>
             </div>
 
             <div class="shift-block normal-shift" id="block_n">
@@ -226,12 +169,11 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group"><label>Renewal Date</label><input type="date" id="date_n"></div>
-                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_n"></div>
+                    <div class="form-group"><label>Payment Date</label><input type="date" id="paydate_n"></div>
                 </div>
                 <div class="form-row full">
-                    <div class="form-group"><label style="color:var(--due-color);">Due Amount (₹)</label><input type="number" id="due_n" style="border-color: var(--due-color);"></div>
+                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_n"></div>
                 </div>
-                <button class="btn btn-success" style="width:100%; margin-top:4px; font-size:0.75rem;" onclick="sendWhatsAppAlert('n')">💬 Send WhatsApp Reminder</button>
             </div>
 
             <div class="shift-block normal-shift" id="block_an">
@@ -242,12 +184,11 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group"><label>Renewal Date</label><input type="date" id="date_an"></div>
-                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_an"></div>
+                    <div class="form-group"><label>Payment Date</label><input type="date" id="paydate_an"></div>
                 </div>
                 <div class="form-row full">
-                    <div class="form-group"><label style="color:var(--due-color);">Due Amount (₹)</label><input type="number" id="due_an" style="border-color: var(--due-color);"></div>
+                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_an"></div>
                 </div>
-                <button class="btn btn-success" style="width:100%; margin-top:4px; font-size:0.75rem;" onclick="sendWhatsAppAlert('an')">💬 Send WhatsApp Reminder</button>
             </div>
 
             <div class="shift-block normal-shift" id="block_e">
@@ -258,12 +199,11 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group"><label>Renewal Date</label><input type="date" id="date_e"></div>
-                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_e"></div>
+                    <div class="form-group"><label>Payment Date</label><input type="date" id="paydate_e"></div>
                 </div>
                 <div class="form-row full">
-                    <div class="form-group"><label style="color:var(--due-color);">Due Amount (₹)</label><input type="number" id="due_e" style="border-color: var(--due-color);"></div>
+                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_e"></div>
                 </div>
-                <button class="btn btn-success" style="width:100%; margin-top:4px; font-size:0.75rem;" onclick="sendWhatsAppAlert('e')">💬 Send WhatsApp Reminder</button>
             </div>
 
             <div class="shift-block night-block" id="block_night">
@@ -274,12 +214,11 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group"><label>Renewal Date</label><input type="date" id="date_night"></div>
-                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_night"></div>
+                    <div class="form-group"><label>Payment Date</label><input type="date" id="paydate_night"></div>
                 </div>
                 <div class="form-row full">
-                    <div class="form-group"><label style="color:var(--due-color);">Due Amount (₹)</label><input type="number" id="due_night" style="border-color: var(--due-color);"></div>
+                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_night"></div>
                 </div>
-                <button class="btn btn-success" style="width:100%; margin-top:4px; font-size:0.75rem;" onclick="sendWhatsAppAlert('night')">💬 Send WhatsApp Reminder</button>
             </div>
 
             <div class="modal-actions">
@@ -287,12 +226,6 @@
                 <button class="btn" onclick="saveMultiShiftData()">Save Configuration</button>
             </div>
         </div>
-    </div>
-
-    <!-- Image Preview Modal Window -->
-    <div id="imgPreviewModal" class="img-preview-modal" onclick="closeImgPreview()">
-        <button class="close-preview" onclick="closeImgPreview()">✕ Close</button>
-        <img id="previewTargetImg" class="img-preview-content" src="">
     </div>
 
     <script>
@@ -305,8 +238,8 @@
         let activeSeatNumber = null;
         const TOTAL_SEATS = 105;
         let globalLibraryData = {};
-        let streamRef = null;
 
+        // Persist Verification State
         function checkLocalAdmin() {
             const savedAdmin = localStorage.getItem('hariom_saved_admin');
             if (savedAdmin && allowedAdmins.includes(savedAdmin)) {
@@ -332,124 +265,12 @@
             }
         }
 
-        function startCamera() {
-            const video = document.getElementById('video');
-            const constraints = { 
-                video: { facingMode: "environment" }, 
-                audio: false 
-            };
-
-            navigator.mediaDevices.getUserMedia(constraints)
-                .then(stream => {
-                    streamRef = stream;
-                    video.srcObject = stream;
-                    document.getElementById('camStatus').innerText = "Camera status: Active Back-Cam Streaming";
-                    document.getElementById('camStatus').style.color = "var(--success-color)";
-                })
-                .catch(err => { 
-                    navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-                        .then(stream => {
-                            streamRef = stream;
-                            video.srcObject = stream;
-                            document.getElementById('camStatus').innerText = "Camera status: Active Streaming (Fallback)";
-                        })
-                        .catch(e => { alert("Unable to open camera: " + e); });
-                });
-        }
-
-        function captureDoc() {
-            if (!streamRef) { alert("Please start the camera first."); return; }
-            if(!isAdminVerified) { alert("⚠️ Verify admin status first!"); return; }
-            
-            const seatNo = document.getElementById('vaultSeat').value.trim();
-            const studName = document.getElementById('vaultName').value.trim();
-            
-            if(!seatNo || !studName) {
-                alert("Please fill Seat No and Student Name in Vault boxes before capturing document photo!");
-                return;
-            }
-
-            const canvas = document.getElementById('canvas');
-            const video = document.getElementById('video');
-            const context = canvas.getContext('2d');
-            context.drawImage(video, 0, 0, 320, 240);
-            const dataUrl = canvas.toDataURL('image/jpeg');
-
-            database.ref('library_v3/secured_docs').push().set({
-                seat: seatNo,
-                name: studName,
-                image: dataUrl,
-                timestamp: new Date().toLocaleString()
-            }).then(() => {
-                alert(`📸 Document photo securely vaulted for Seat ${seatNo}!`);
-                document.getElementById('vaultSeat').value = '';
-                document.getElementById('vaultName').value = '';
-            });
-        }
-
-        function sendWhatsAppAlert(shiftCode) {
-            const phone = document.getElementById(`phone_${shiftCode}`).value.trim();
-            const name = document.getElementById(`name_${shiftCode}`).value.trim();
-            const due = document.getElementById(`due_${shiftCode}`).value.trim();
-            const date = document.getElementById(`date_${shiftCode}`).value;
-
-            if(!phone) { alert("Phone number is empty!"); return; }
-            
-            let msg = `Hi ${name}, This is a friendly reminder from Hariom Smart Library regarding your Seat No: ${activeSeatNumber}.`;
-            if(parseInt(due) > 0) {
-                msg += ` You have a pending due amount of Rs. ${due}. Please clear it at your earliest.`;
-            }
-            if(date) {
-                msg += ` Your seat renewal date is ${date}.`;
-            }
-            msg += ` Thank you!`;
-
-            const cleanPhone = phone.startsWith('+') ? phone : (phone.length === 10 ? '91' + phone : phone);
-            window.open(`https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(msg)}`, '_blank');
-        }
-
-        function exportToExcel() {
-            if (Object.keys(globalLibraryData).length === 0) {
-                alert("No data available to export yet!");
-                return;
-            }
-            let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "Seat Number,Shift Type,Student Name,Mobile Number,Renewal Date,Fees,Due Amount\n";
-
-            for (let i = 1; i <= TOTAL_SEATS; i++) {
-                const data = globalLibraryData[i] || {};
-                const shifts = ['all', 'm', 'n', 'an', 'e', 'night'];
-                shifts.forEach(s => {
-                    if (data[`name_${s}`]) {
-                        let row = [
-                            i,
-                            s.toUpperCase(),
-                            `"${data[`name_${s}`]}"`,
-                            `"${data[`phone_${s}`] || ''}"`,
-                            `"${data[`date_${s}`] || ''}"`,
-                            data[`fees_${s}`] || 0,
-                            data[`due_${s}`] || 0
-                        ];
-                        csvContent += row.join(",") + "\n";
-                    }
-                });
-            }
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `Hariom_Library_Backup_${new Date().toISOString().split('T')[0]}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
         const grid = document.getElementById('seatsGrid');
         for(let i=1; i<=TOTAL_SEATS; i++) {
             const el = document.createElement('div');
             const isUR = (i >= 64 && i <= 85);
             el.className = isUR ? 'seat is-unreserved' : 'seat';
             el.innerHTML = `
-                <div class="due-arrow-indicator" id="arrow-ind-${i}">↓ ₹0</div>
                 <span>${i}</span>
                 <div class="indicators">
                     <div class="all-shift-indicator" id="all-ind-${i}"></div>
@@ -472,13 +293,13 @@
             globalLibraryData = data.seats || {};
             updateUI(globalLibraryData);
             updateWaitingUI(data.waiting || {});
-            updateVaultUI(data.secured_docs || {});
+            
+            // Re-enforce verification after Firebase updates UI to avoid loops
             checkLocalAdmin();
         });
 
         function updateUI(seats) {
             let totalIncome = 0;
-            let totalDue = 0;
             let activeBookings = 0;
             
             const today = new Date();
@@ -488,7 +309,6 @@
 
             for(let i=1; i<=TOTAL_SEATS; i++) {
                 const seatEl = document.getElementById(`seat-${i}`);
-                const arrowEl = document.getElementById(`arrow-ind-${i}`);
                 const data = seats[i] || {};
                 
                 const allInd = document.getElementById(`all-ind-${i}`);
@@ -500,23 +320,14 @@
                 nightInd.className = 'night-dot';
                 dots.forEach(d => d.className = 'dot');
                 seatEl.className = (i >= 64 && i <= 85) ? 'seat is-unreserved' : 'seat';
-                
-                arrowEl.style.display = 'none';
 
                 let hasExpired = false;
                 let hasAlert = false;
                 let seatHasAnyBooking = false;
-                let seatCurrentDueAmount = 0;
 
                 totalIncome += (parseInt(data.fees_all) || 0) + (parseInt(data.fees_m) || 0) + 
                                (parseInt(data.fees_n) || 0) + (parseInt(data.fees_an) || 0) + 
                                (parseInt(data.fees_e) || 0) + (parseInt(data.fees_night) || 0);
-
-                seatCurrentDueAmount += (parseInt(data.due_all) || 0) + (parseInt(data.due_m) || 0) + 
-                                       (parseInt(data.due_n) || 0) + (parseInt(data.due_an) || 0) + 
-                                       (parseInt(data.due_e) || 0) + (parseInt(data.due_night) || 0);
-                
-                totalDue += seatCurrentDueAmount;
 
                 function checkStatus(dateStr) {
                     if(!dateStr) return 'none';
@@ -537,8 +348,6 @@
                     const status = checkStatus(data.date_all);
                     if(status === 'expired') { allInd.classList.add('expired'); hasExpired = true; }
                     else if(status === 'alert') { allInd.classList.add('alert'); hasAlert = true; }
-                    
-                    if(parseInt(data.due_all) > 0) { allInd.classList.add('due'); }
                 } else {
                     mainShiftsDiv.style.display = 'flex';
                     const shifts = ['m', 'n', 'an', 'e'];
@@ -551,8 +360,6 @@
                             const status = checkStatus(data[`date_${s}`]);
                             if(status === 'expired') { dots[idx].classList.add('expired'); hasExpired = true; }
                             else if(status === 'alert') { dots[idx].classList.add('alert'); hasAlert = true; }
-                            
-                            if(parseInt(data[`due_${s}`]) > 0) { dots[idx].classList.add('due'); }
                         }
                     });
                 }
@@ -565,48 +372,15 @@
                     const status = checkStatus(data.date_night);
                     if(status === 'expired') { nightInd.classList.add('expired'); hasExpired = true; }
                     else if(status === 'alert') { nightInd.classList.add('alert'); hasAlert = true; }
-                    
-                    if(parseInt(data.due_night) > 0) { nightInd.classList.add('due'); }
                 }
 
                 if(seatHasAnyBooking && !data.name_all) seatEl.classList.add('is-booked');
                 if(hasAlert) seatEl.classList.add('has-alert');
                 if(hasExpired) seatEl.classList.add('has-expired');
-                
-                if(seatCurrentDueAmount > 0) {
-                    seatEl.classList.add('has-due');
-                    arrowEl.innerText = `↓ ₹${seatCurrentDueAmount}`;
-                    arrowEl.style.display = 'block';
-                }
             }
 
             document.getElementById('activeBookingsCount').innerText = activeBookings;
             document.getElementById('totalIncome').innerText = '₹' + totalIncome;
-            document.getElementById('totalDue').innerText = '₹' + totalDue;
-        }
-
-        function updateVaultUI(vaultData) {
-            const container = document.getElementById('vaultListContainer');
-            container.innerHTML = '';
-            Object.keys(vaultData).forEach(key => {
-                const item = vaultData[key];
-                container.innerHTML += `
-                    <div class="vault-item" style="cursor: pointer;" onclick="viewVaultImg('${item.image}')">
-                        <span><strong>Seat ${item.seat}:</strong> ${item.name}</span>
-                        <img src="${item.image}" title="Click to view photo" style="border-radius: 2px; border: 1px solid #475569;">
-                    </div>`;
-            });
-        }
-
-        function viewVaultImg(imgSrc) {
-            const modal = document.getElementById('imgPreviewModal');
-            const targetImg = document.getElementById('previewTargetImg');
-            targetImg.src = imgSrc;
-            modal.style.display = 'flex';
-        }
-
-        function closeImgPreview() {
-            document.getElementById('imgPreviewModal').style.display = 'none';
         }
 
         function toggleModalShifts(allShiftValue) {
@@ -631,8 +405,8 @@
                 document.getElementById(`name_${f}`).value = data[`name_${f}`] || '';
                 document.getElementById(`phone_${f}`).value = data[`phone_${f}`] || '';
                 document.getElementById(`date_${f}`).value = data[`date_${f}`] || '';
+                document.getElementById(`paydate_${f}`).value = data[`paydate_${f}`] || '';
                 document.getElementById(`fees_${f}`).value = data[`fees_${f}`] || 0;
-                document.getElementById(`due_${f}`).value = data[`due_${f}`] || 0;
             });
 
             toggleModalShifts(data['name_all'] || '');
@@ -657,14 +431,14 @@
                     update[`name_${f}`] = "";
                     update[`phone_${f}`] = "";
                     update[`date_${f}`] = "";
+                    update[`paydate_${f}`] = "";
                     update[`fees_${f}`] = 0;
-                    update[`due_${f}`] = 0;
                 } else {
                     update[`name_${f}`] = document.getElementById(`name_${f}`).value;
                     update[`phone_${f}`] = document.getElementById(`phone_${f}`).value;
                     update[`date_${f}`] = document.getElementById(`date_${f}`).value;
+                    update[`paydate_${f}`] = document.getElementById(`paydate_${f}`).value;
                     update[`fees_${f}`] = parseInt(document.getElementById(`fees_${f}`).value) || 0;
-                    update[`due_${f}`] = parseInt(document.getElementById(`due_${f}`).value) || 0;
                 }
             });
 
