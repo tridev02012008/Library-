@@ -321,17 +321,35 @@
             }
         }
 
-        // Camera Code Repaired & Verified
+        // Camera Code Repaired & Verified for Back Camera Initialization
         function startCamera() {
             const video = document.getElementById('video');
-            navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+            
+            // Setting facingMode to environment forces the mobile browser to prioritize back camera
+            const constraints = { 
+                video: { 
+                    facingMode: "environment"
+                }, 
+                audio: false 
+            };
+
+            navigator.mediaDevices.getUserMedia(constraints)
                 .then(stream => {
                     streamRef = stream;
                     video.srcObject = stream;
-                    document.getElementById('camStatus').innerText = "Camera status: Active Streaming";
+                    document.getElementById('camStatus').innerText = "Camera status: Active Back-Cam Streaming";
                     document.getElementById('camStatus').style.color = "var(--success-color)";
                 })
-                .catch(err => { alert("Unable to open camera: " + err); });
+                .catch(err => { 
+                    // Fallback try in case some browsers strict-match object constraints
+                    navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+                        .then(stream => {
+                            streamRef = stream;
+                            video.srcObject = stream;
+                            document.getElementById('camStatus').innerText = "Camera status: Active Streaming (Fallback)";
+                        })
+                        .catch(e => { alert("Unable to open camera: " + e); });
+                });
         }
 
         function captureDoc() {
