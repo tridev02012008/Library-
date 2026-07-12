@@ -78,7 +78,7 @@
         .all-shift-indicator.expired { background: var(--danger-color) !important; display: block; animation: blink 1.2s infinite; }
 
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }
-        @keyframes arrowBlink { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
+        @keyframes arrowBlink { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
         @keyframes mildBlink { 0% { border-color: var(--warning-alert); } 50% { border-color: transparent; } 100% { border-color: var(--warning-alert); } }
         @keyframes severeBlink { 0% { border-color: var(--danger-color); } 50% { border-color: transparent; } 100% { border-color: var(--danger-color); } }
 
@@ -93,6 +93,7 @@
         .shift-block.all-block h4 { color: #eab308; }
         
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 6px; }
+        .form-row.three-col { grid-template-columns: 1fr 1fr 1fr; }
         .form-row.full { grid-template-columns: 1fr; }
         label { font-size: 0.75rem; color: #64748b; display: block; margin-bottom: 2px; }
         input, textarea, select { width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #233554; background: var(--card-color); color: white; font-size: 0.85rem; }
@@ -101,7 +102,6 @@
         .waiting-item { display: flex; justify-content: space-between; background: #0b0f19; padding: 10px; border-radius: 6px; margin-bottom: 5px; align-items: center; }
         .modal-actions { display: flex; justify-content: space-between; margin-top: 15px; }
 
-        /* Document Verification Styling */
         #cameraView { width: 100%; max-width: 320px; height: 240px; border-radius: 8px; background: #000; margin-top: 10px; display: none; }
         #photoCanvas { display: none; }
     </style>
@@ -166,9 +166,10 @@
             <div class="shift-block all-block" id="block_all">
                 <h4>Option A: Full Day / All Shift (6 AM - 10 PM)</h4>
                 <div class="form-row full"><div class="form-group"><label>Student Name</label><input type="text" id="name_all" oninput="toggleModalShifts(this.value)"></div></div>
-                <div class="form-row">
+                <div class="form-row three-col">
                     <div class="form-group"><label>Phone</label><input type="text" id="phone_all"></div>
-                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_all"></div>
+                    <div class="form-group"><label>Fees Paid (₹)</label><input type="number" id="fees_all"></div>
+                    <div class="form-group"><label style="color:#ff4444; font-weight:bold;">Due Amt (₹)</label><input type="number" id="due_all" style="border-color:#ff444455;"></div>
                 </div>
                 <div class="form-row">
                     <div class="form-group"><label>Renewal Date</label><input type="date" id="date_all"></div>
@@ -184,12 +185,13 @@
                     <div class="form-group"><label>Name</label><input type="text" id="name_m"></div>
                     <div class="form-group"><label>Phone</label><input type="text" id="phone_m"></div>
                 </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_m"></div>
+                <div class="form-row three-col">
+                    <div class="form-group"><label>Fees Paid (₹)</label><input type="number" id="fees_m"></div>
+                    <div class="form-group"><label style="color:#ff4444; font-weight:bold;">Due (₹)</label><input type="number" id="due_m" style="border-color:#ff444455;"></div>
                     <div class="form-group"><label>Payment Date</label><input type="date" id="paydate_m"></div>
                 </div>
                 <div class="form-row full">
-                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_m"></div>
+                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_m"></div>
                 </div>
             </div>
 
@@ -199,12 +201,13 @@
                     <div class="form-group"><label>Name</label><input type="text" id="name_n"></div>
                     <div class="form-group"><label>Phone</label><input type="text" id="phone_n"></div>
                 </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_n"></div>
+                <div class="form-row three-col">
+                    <div class="form-group"><label>Fees Paid (₹)</label><input type="number" id="fees_n"></div>
+                    <div class="form-group"><label style="color:#ff4444; font-weight:bold;">Due (₹)</label><input type="number" id="due_n" style="border-color:#ff444455;"></div>
                     <div class="form-group"><label>Payment Date</label><input type="date" id="paydate_n"></div>
                 </div>
                 <div class="form-row full">
-                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_n"></div>
+                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_n"></div>
                 </div>
             </div>
 
@@ -214,12 +217,13 @@
                     <div class="form-group"><label>Name</label><input type="text" id="name_an"></div>
                     <div class="form-group"><label>Phone</label><input type="text" id="phone_an"></div>
                 </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_an"></div>
+                <div class="form-row three-col">
+                    <div class="form-group"><label>Fees Paid (₹)</label><input type="number" id="fees_an"></div>
+                    <div class="form-group"><label style="color:#ff4444; font-weight:bold;">Due (₹)</label><input type="number" id="due_an" style="border-color:#ff444455;"></div>
                     <div class="form-group"><label>Payment Date</label><input type="date" id="paydate_an"></div>
                 </div>
                 <div class="form-row full">
-                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_an"></div>
+                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_an"></div>
                 </div>
             </div>
 
@@ -229,12 +233,13 @@
                     <div class="form-group"><label>Name</label><input type="text" id="name_e"></div>
                     <div class="form-group"><label>Phone</label><input type="text" id="phone_e"></div>
                 </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_e"></div>
+                <div class="form-row three-col">
+                    <div class="form-group"><label>Fees Paid (₹)</label><input type="number" id="fees_e"></div>
+                    <div class="form-group"><label style="color:#ff4444; font-weight:bold;">Due (₹)</label><input type="number" id="due_e" style="border-color:#ff444455;"></div>
                     <div class="form-group"><label>Payment Date</label><input type="date" id="paydate_e"></div>
                 </div>
                 <div class="form-row full">
-                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_e"></div>
+                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_e"></div>
                 </div>
             </div>
 
@@ -244,12 +249,13 @@
                     <div class="form-group"><label>Name</label><input type="text" id="name_night"></div>
                     <div class="form-group"><label>Phone</label><input type="text" id="phone_night"></div>
                 </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_night"></div>
+                <div class="form-row three-col">
+                    <div class="form-group"><label>Fees Paid (₹)</label><input type="number" id="fees_night"></div>
+                    <div class="form-group"><label style="color:#ff4444; font-weight:bold;">Due (₹)</label><input type="number" id="due_night" style="border-color:#ff444455;"></div>
                     <div class="form-group"><label>Payment Date</label><input type="date" id="paydate_night"></div>
                 </div>
                 <div class="form-row full">
-                    <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_night"></div>
+                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_night"></div>
                 </div>
             </div>
 
@@ -372,6 +378,16 @@
                     return 'active';
                 }
 
+                // Calculate Pending Due from Fields
+                if(data.name_all) {
+                    totalDueAmountOnSeat += (parseInt(data.due_all) || 0);
+                } else {
+                    ['m', 'n', 'an', 'e'].forEach(s => {
+                        if(data[`name_${s}`]) totalDueAmountOnSeat += (parseInt(data[`due_${s}`]) || 0);
+                    });
+                }
+                if(data.name_night) totalDueAmountOnSeat += (parseInt(data[`due_night`]) || 0);
+
                 if(data.name_all) {
                     activeBookings++;
                     seatHasAnyBooking = true;
@@ -380,11 +396,7 @@
                     seatEl.classList.add('is-allshift');
                     
                     const status = checkStatus(data.date_all);
-                    if(status === 'expired') { 
-                        allInd.classList.add('expired'); 
-                        hasExpired = true; 
-                        totalDueAmountOnSeat += (parseInt(data.fees_all) || 0);
-                    }
+                    if(status === 'expired') { allInd.classList.add('expired'); hasExpired = true; }
                     else if(status === 'alert') { allInd.classList.add('alert'); hasAlert = true; }
                 } else {
                     mainShiftsDiv.style.display = 'flex';
@@ -396,11 +408,7 @@
                             dots[idx].classList.add('active');
                             
                             const status = checkStatus(data[`date_${s}`]);
-                            if(status === 'expired') { 
-                                dots[idx].classList.add('expired'); 
-                                hasExpired = true; 
-                                totalDueAmountOnSeat += (parseInt(data[`fees_${s}`]) || 0);
-                            }
+                            if(status === 'expired') { dots[idx].classList.add('expired'); hasExpired = true; }
                             else if(status === 'alert') { dots[idx].classList.add('alert'); hasAlert = true; }
                         }
                     });
@@ -412,23 +420,17 @@
                     nightInd.classList.add('active');
                     
                     const status = checkStatus(data.date_night);
-                    if(status === 'expired') { 
-                        nightInd.classList.add('expired'); 
-                        hasExpired = true; 
-                        totalDueAmountOnSeat += (parseInt(data.fees_night) || 0);
-                    }
+                    if(status === 'expired') { nightInd.classList.add('expired'); hasExpired = true; }
                     else if(status === 'alert') { nightInd.classList.add('alert'); hasAlert = true; }
                 }
 
                 if(seatHasAnyBooking && !data.name_all) seatEl.classList.add('is-booked');
                 if(hasAlert) seatEl.classList.add('has-alert');
-                
-                // Red Border aur Tir (↑) with Blinking Amount
-                if(hasExpired) { 
-                    seatEl.classList.add('has-expired'); 
-                    if(totalDueAmountOnSeat > 0) {
-                        dueBox.innerHTML = `<div class="due-badge">↑ ₹${totalDueAmountOnSeat}</div>`;
-                    }
+                if(hasExpired) seatEl.classList.add('has-expired'); 
+
+                // 🎯 Blinking Arrow Logic: Agar pure seat par 0 se zyada Due Amount bachega toh Tir blink karega!
+                if(totalDueAmountOnSeat > 0) {
+                    dueBox.innerHTML = `<div class="due-badge">↑ ₹${totalDueAmountOnSeat}</div>`;
                 }
             }
 
@@ -460,6 +462,7 @@
                 document.getElementById(`date_${f}`).value = data[`date_${f}`] || '';
                 document.getElementById(`paydate_${f}`).value = data[`paydate_${f}`] || '';
                 document.getElementById(`fees_${f}`).value = data[`fees_${f}`] || 0;
+                document.getElementById(`due_${f}`).value = data[`due_${f}`] || 0;
             });
 
             toggleModalShifts(data['name_all'] || '');
@@ -472,7 +475,6 @@
 
         function closeModal() { document.getElementById('seatModal').style.display = 'none'; }
 
-        // 🚀 NEW AUTOMATIC MULTI-SHIFT WHATSAPP SAVE LOGIC
         function saveMultiShiftData() {
             if(!isAdminVerified) { alert("⚠️ Please verify Admin Number first!"); return; }
 
@@ -490,16 +492,14 @@
 
             fields.forEach(f => {
                 if(isAllShiftActive && ['m', 'n', 'an', 'e'].includes(f)) {
-                    update[`name_${f}`] = "";
-                    update[`phone_${f}`] = "";
-                    update[`date_${f}`] = "";
-                    update[`paydate_${f}`] = "";
-                    update[`fees_${f}`] = 0;
+                    update[`name_${f}`] = ""; update[`phone_${f}`] = ""; update[`date_${f}`] = "";
+                    update[`paydate_${f}`] = ""; update[`fees_${f}`] = 0; update[`due_${f}`] = 0;
                 } else {
                     const newName = document.getElementById(`name_${f}`).value.trim();
                     const newPhone = document.getElementById(`phone_${f}`).value.trim();
                     const newDate = document.getElementById(`date_${f}`).value;
                     const newFees = parseInt(document.getElementById(`fees_${f}`).value) || 0;
+                    const newDue = parseInt(document.getElementById(`due_${f}`).value) || 0;
                     const newPayDate = document.getElementById(`paydate_${f}`).value;
 
                     update[`name_${f}`] = newName;
@@ -507,15 +507,12 @@
                     update[`date_${f}`] = newDate;
                     update[`paydate_${f}`] = newPayDate;
                     update[`fees_${f}`] = newFees;
+                    update[`due_${f}`] = newDue;
 
-                    // Trigger check: Agar naya student add hua ho ya phone number change hua ho
                     if(newName !== "" && newName !== oldData[`name_${f}`] && newPhone !== "") {
                         whatsappTriggers.push({
-                            name: newName,
-                            phone: newPhone,
-                            shift: shiftNamesHindi[f],
-                            renewal: newDate || 'Not Set',
-                            fees: newFees
+                            name: newName, phone: newPhone, shift: shiftNamesHindi[f],
+                            renewal: newDate || 'Not Set', fees: newFees, due: newDue
                         });
                     }
                 }
@@ -524,19 +521,21 @@
             database.ref('library_v3/seats/' + activeSeatNumber).set(update)
                 .then(() => { 
                     closeModal(); 
-                    
-                    // Ek ke baad ek tab me automatic WhatsApp open hoga pure 4 ya jitne bhi extra shifts triggers hain
                     if(whatsappTriggers.length > 0) {
-                        alert(`🎉 Data Saved! Now opening WhatsApp Welcome notification for ${whatsappTriggers.length} student(s) one-by-one.`);
+                        alert(`🎉 Data Saved! Opening WhatsApp for ${whatsappTriggers.length} student(s).`);
                         whatsappTriggers.forEach((student, index) => {
                             setTimeout(() => {
                                 let formattedPhone = student.phone;
                                 if(!formattedPhone.startsWith('91') && formattedPhone.length === 10) {
                                     formattedPhone = '91' + formattedPhone;
                                 }
-                                const message = `*Hello ${student.name}*, 👋\n\n*Welcome to Hariom Smart Library!* 📚✨\n\nAapka admission confirm ho gaya hai.\n\n*Seat No:* ${activeSeatNumber}\n*Shift:* ${student.shift}\n*Fees Paid:* ₹${student.fees}\n*Renewal Date:* ${student.renewal}\n\nThank you for choosing us! Keep Studying. 📖`;
-                                window.open(`https://api.whatsapp.com/send?phone=${formattedPhone}&text=${encodeURIComponent(message)}`, '_blank');
-                            }, index * 1200); // 1.2 second ka pause safety ke liye taaki browsers tab block na karein
+                                let msg = `*Hello ${student.name}*, 👋\n\n*Welcome to Hariom Smart Library!* 📚✨\n\nAapka admission confirm ho gaya hai.\n\n*Seat No:* ${activeSeatNumber}\n*Shift:* ${student.shift}\n*Fees Paid:* ₹${student.fees}`;
+                                if(student.due > 0) {
+                                    msg += `\n*Due Amount:* ₹${student.due} ⚠️`;
+                                }
+                                msg += `\n*Renewal Date:* ${student.renewal}\n\nThank you for choosing us! Keep Studying. 📖`;
+                                window.open(`https://api.whatsapp.com/send?phone=${formattedPhone}&text=${encodeURIComponent(msg)}`, '_blank');
+                            }, index * 1200);
                         });
                     }
                 })
@@ -592,30 +591,22 @@
             }
         }
 
-        // 📷 Document Verification (Back Camera Integration)
         function initiateBackCamera() {
             const video = document.getElementById('cameraView');
             const captureBtn = document.getElementById('captureBtn');
-            
-            const constraints = {
-                video: { facingMode: { exact: "environment" } }
-            };
+            const constraints = { video: { facingMode: { exact: "environment" } } };
 
             navigator.mediaDevices.getUserMedia(constraints)
                 .then((stream) => {
-                    activeStream = stream;
-                    video.srcObject = stream;
-                    video.style.display = "block";
-                    captureBtn.style.display = "inline-block";
+                    activeStream = stream; video.srcObject = stream;
+                    video.style.display = "block"; captureBtn.style.display = "inline-block";
                     document.getElementById('snapshotStatus').innerText = "Back camera loaded successfully.";
                 })
                 .catch((err) => {
                     navigator.mediaDevices.getUserMedia({ video: true })
                         .then((stream) => {
-                            activeStream = stream;
-                            video.srcObject = stream;
-                            video.style.display = "block";
-                            captureBtn.style.display = "inline-block";
+                            activeStream = stream; video.srcObject = stream;
+                            video.style.display = "block"; captureBtn.style.display = "inline-block";
                             document.getElementById('snapshotStatus').innerText = "Default camera active.";
                         })
                         .catch(e => alert("Camera Access Error: " + e));
@@ -627,22 +618,18 @@
             const canvas = document.getElementById('photoCanvas');
             const context = canvas.getContext('2d');
 
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
+            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
             document.getElementById('snapshotStatus').innerText = "✅ Snapshot verified and recorded locally!";
             if(activeStream) {
                 activeStream.getTracks().forEach(track => track.stop());
-                video.style.display = "none";
-                document.getElementById('captureBtn').style.display = "none";
+                video.style.display = "none"; document.getElementById('captureBtn').style.display = "none";
             }
         }
 
-        // 📥 Multi-Shift Excel Export Logic (SheetJS)
         function exportLibraryDataToExcel() {
             const reportData = [];
-            
             for(let i = 1; i <= TOTAL_SEATS; i++) {
                 const data = globalLibraryData[i] || {};
                 const shifts = ['all', 'm', 'n', 'an', 'e', 'night'];
@@ -659,6 +646,7 @@
                             "Student Name": data[`name_${f}`] || '',
                             "Mobile Number": data[`phone_${f}`] || '',
                             "Fees Paid": data[`fees_${f}`] || 0,
+                            "Due Amount": data[`due_${f}`] || 0,
                             "Renewal Date": data[`date_${f}`] || '',
                             "Payment Date": data[`paydate_${f}`] || ''
                         });
@@ -667,7 +655,6 @@
             }
 
             if(reportData.length === 0) { alert("No active booking data found to export!"); return; }
-
             const worksheet = XLSX.utils.json_to_sheet(reportData);
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Library Bookings");
