@@ -45,7 +45,7 @@
         
         .seats-container { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 30px; }
         
-        .seat { background: #1e293b; padding: 8px 4px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; font-weight: bold; font-size: 1rem; cursor: pointer; color: white; transition: 0.2s; min-height: 75px; position: relative; border: 1px solid #475569; }
+        .seat { background: #1e293b; padding: 8px 4px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; font-weight: bold; font-size: 1rem; cursor: pointer; color: white; transition: 0.2s; min-height: 85px; position: relative; border: 1px solid #475569; }
         
         .seat.is-unreserved { background: #1a2333; border-color: #475569; position: relative; }
         .seat.is-unreserved::after { content: 'UR'; position: absolute; top: 2px; right: 4px; font-size: 0.6rem; color: #94a3b8; background: rgba(255,255,255,0.07); padding: 1px 3px; border-radius: 3px; }
@@ -57,7 +57,7 @@
         .seat.has-expired { border: 2px dashed var(--danger-color) !important; background: #2d1015 !important; animation: severeBlink 1.5s infinite; }
         
         /* Blinking Due Alert Arrow & Text styling */
-        .due-badge { font-size: 0.7rem; color: #ff4444; background: rgba(255, 68, 68, 0.15); padding: 2px 4px; border-radius: 4px; margin-top: 3px; animation: arrowBlink 1s infinite; font-weight: bold; width: 100%; text-align: center; }
+        .due-badge { font-size: 0.7rem; color: #ff4444; background: rgba(255, 68, 68, 0.2); padding: 2px 4px; border-radius: 4px; margin-top: 3px; animation: arrowBlink 1s infinite; font-weight: bold; width: 100%; text-align: center; border: 1px solid #ff444444; }
 
         .indicators { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; margin-top: 5px; }
         .main-shifts { display: flex; justify-content: center; gap: 3px; width: 100%; }
@@ -78,7 +78,7 @@
         .all-shift-indicator.expired { background: var(--danger-color) !important; display: block; animation: blink 1.2s infinite; }
 
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }
-        @keyframes arrowBlink { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
+        @keyframes arrowBlink { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
         @keyframes mildBlink { 0% { border-color: var(--warning-alert); } 50% { border-color: transparent; } 100% { border-color: var(--warning-alert); } }
         @keyframes severeBlink { 0% { border-color: var(--danger-color); } 50% { border-color: transparent; } 100% { border-color: var(--danger-color); } }
 
@@ -137,16 +137,6 @@
             <button class="btn" onclick="addWaiting()">Add</button>
         </div>
         <div class="waiting-list" id="waitingListContainer"></div>
-    </div>
-
-    <!-- 💬 WhatsApp Student Notification Section -->
-    <div class="utility-section">
-        <h3>💬 WhatsApp Student Notification</h3>
-        <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
-            <input type="text" id="whatsappTargetPhone" placeholder="Student WhatsApp Number (e.g., 91XXXXXXXXXX)">
-            <textarea id="whatsappMessageText" rows="3" placeholder="Type notification message here..."></textarea>
-            <button class="btn btn-success" onclick="sendWhatsAppNotification()">Send via WhatsApp</button>
-        </div>
     </div>
 
     <!-- 📷 Document Verification Box (Back Camera) -->
@@ -362,7 +352,7 @@
                 nightInd.className = 'night-dot';
                 dots.forEach(d => d.className = 'dot');
                 seatEl.className = (i >= 64 && i <= 85) ? 'seat is-unreserved' : 'seat';
-                dueBox.innerHTML = ''; // Clear old due data
+                dueBox.innerHTML = ''; 
 
                 let hasExpired = false;
                 let hasAlert = false;
@@ -433,7 +423,7 @@
                 if(seatHasAnyBooking && !data.name_all) seatEl.classList.add('is-booked');
                 if(hasAlert) seatEl.classList.add('has-alert');
                 
-                // Agar date expire ho chuki hai, toh Red Border lagao aur arrow (tir) + amount dikhao
+                // Red Border aur Tir (↑) with Blinking Amount
                 if(hasExpired) { 
                     seatEl.classList.add('has-expired'); 
                     if(totalDueAmountOnSeat > 0) {
@@ -482,12 +472,21 @@
 
         function closeModal() { document.getElementById('seatModal').style.display = 'none'; }
 
+        // 🚀 NEW AUTOMATIC MULTI-SHIFT WHATSAPP SAVE LOGIC
         function saveMultiShiftData() {
             if(!isAdminVerified) { alert("⚠️ Please verify Admin Number first!"); return; }
 
+            const oldData = globalLibraryData[activeSeatNumber] || {};
             const update = {};
             const fields = ['all', 'm', 'n', 'an', 'e', 'night'];
             const isAllShiftActive = document.getElementById('name_all').value.trim() !== "";
+
+            const shiftNamesHindi = {
+                'all': 'Full Day (6 AM - 10 PM)', 'm': 'Morning (6 AM - 10 AM)', 'n': 'Noon (10 AM - 2 PM)',
+                'an': 'Afternoon (2 PM - 6 PM)', 'e': 'Evening (6 PM - 10 PM)', 'night': 'Night Shift'
+            };
+
+            const whatsappTriggers = [];
 
             fields.forEach(f => {
                 if(isAllShiftActive && ['m', 'n', 'an', 'e'].includes(f)) {
@@ -497,16 +496,50 @@
                     update[`paydate_${f}`] = "";
                     update[`fees_${f}`] = 0;
                 } else {
-                    update[`name_${f}`] = document.getElementById(`name_${f}`).value;
-                    update[`phone_${f}`] = document.getElementById(`phone_${f}`).value;
-                    update[`date_${f}`] = document.getElementById(`date_${f}`).value;
-                    update[`paydate_${f}`] = document.getElementById(`paydate_${f}`).value;
-                    update[`fees_${f}`] = parseInt(document.getElementById(`fees_${f}`).value) || 0;
+                    const newName = document.getElementById(`name_${f}`).value.trim();
+                    const newPhone = document.getElementById(`phone_${f}`).value.trim();
+                    const newDate = document.getElementById(`date_${f}`).value;
+                    const newFees = parseInt(document.getElementById(`fees_${f}`).value) || 0;
+                    const newPayDate = document.getElementById(`paydate_${f}`).value;
+
+                    update[`name_${f}`] = newName;
+                    update[`phone_${f}`] = newPhone;
+                    update[`date_${f}`] = newDate;
+                    update[`paydate_${f}`] = newPayDate;
+                    update[`fees_${f}`] = newFees;
+
+                    // Trigger check: Agar naya student add hua ho ya phone number change hua ho
+                    if(newName !== "" && newName !== oldData[`name_${f}`] && newPhone !== "") {
+                        whatsappTriggers.push({
+                            name: newName,
+                            phone: newPhone,
+                            shift: shiftNamesHindi[f],
+                            renewal: newDate || 'Not Set',
+                            fees: newFees
+                        });
+                    }
                 }
             });
 
             database.ref('library_v3/seats/' + activeSeatNumber).set(update)
-                .then(() => { closeModal(); })
+                .then(() => { 
+                    closeModal(); 
+                    
+                    // Ek ke baad ek tab me automatic WhatsApp open hoga pure 4 ya jitne bhi extra shifts triggers hain
+                    if(whatsappTriggers.length > 0) {
+                        alert(`🎉 Data Saved! Now opening WhatsApp Welcome notification for ${whatsappTriggers.length} student(s) one-by-one.`);
+                        whatsappTriggers.forEach((student, index) => {
+                            setTimeout(() => {
+                                let formattedPhone = student.phone;
+                                if(!formattedPhone.startsWith('91') && formattedPhone.length === 10) {
+                                    formattedPhone = '91' + formattedPhone;
+                                }
+                                const message = `*Hello ${student.name}*, 👋\n\n*Welcome to Hariom Smart Library!* 📚✨\n\nAapka admission confirm ho gaya hai.\n\n*Seat No:* ${activeSeatNumber}\n*Shift:* ${student.shift}\n*Fees Paid:* ₹${student.fees}\n*Renewal Date:* ${student.renewal}\n\nThank you for choosing us! Keep Studying. 📖`;
+                                window.open(`https://api.whatsapp.com/send?phone=${formattedPhone}&text=${encodeURIComponent(message)}`, '_blank');
+                            }, index * 1200); // 1.2 second ka pause safety ke liye taaki browsers tab block na karein
+                        });
+                    }
+                })
                 .catch(err => alert("Error saving data: " + err));
         }
 
@@ -557,15 +590,6 @@
                 }
                 seatEl.style.opacity = match ? '1' : '0.1';
             }
-        }
-
-        // 💬 WhatsApp Notification Function
-        function sendWhatsAppNotification() {
-            let phone = document.getElementById('whatsappTargetPhone').value.trim();
-            const msg = encodeURIComponent(document.getElementById('whatsappMessageText').value);
-            if(!phone || !msg) { alert("Please enter both phone number and message!"); return; }
-            if(!phone.startsWith('91') && phone.length === 10) phone = '91' + phone;
-            window.open(`https://api.whatsapp.com/send?phone=${phone}&text=${msg}`, '_blank');
         }
 
         // 📷 Document Verification (Back Camera Integration)
