@@ -16,7 +16,7 @@
             --warning-color: #f59e0b;
             --warning-alert: #f97316; 
             --night-color: #38bdf8;
-            --unreserved-color: #ffffff; /* White Color for Unreserved Seats */
+            --unreserved-color: #334155;
             --text-color: #f8fafc;
             
             --active-booking-bg: #1e1b4b; 
@@ -26,10 +26,17 @@
         body { background-color: var(--bg-color); color: var(--text-color); padding: 15px; }
         .header { background: linear-gradient(135deg, #3b82f6, #8b5cf6); padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
         
-        .admin-section { background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; }
-        .admin-section input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #233554; background: #0b0f19; color: white; }
-        .btn { padding: 10px 20px; border: none; border-radius: 8px; background: var(--primary-color); color: white; cursor: pointer; font-weight: bold; }
+        .admin-section { background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .admin-section input { flex: 1; min-width: 200px; padding: 10px; border-radius: 8px; border: 1px solid #233554; background: #0b0f19; color: white; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; background: var(--primary-color); color: white; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn:hover { opacity: 0.9; }
         .btn-danger { background: var(--danger-color); }
+        .btn-success { background: var(--success-color); }
+        .btn-warning { background: var(--warning-color); color: #0b0f19; }
+        
+        .tools-panel { background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; border-top: 4px solid var(--night-color); }
+        .tools-panel h4 { margin-bottom: 10px; font-size: 0.9rem; color: #94a3b8; text-transform: uppercase; }
+        .filter-group { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
         
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
         .stat-card { background: var(--card-color); padding: 12px; border-radius: 10px; text-align: center; border-left: 4px solid var(--primary-color); }
@@ -44,27 +51,24 @@
         
         .seat { background: #1e293b; padding: 8px 4px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; font-weight: bold; font-size: 1rem; cursor: pointer; color: white; transition: 0.2s; min-height: 75px; position: relative; border: 1px solid #475569; }
         
-        /* Highlighted White Unreserved Seat Styling */
-        .seat.is-unreserved { background: var(--unreserved-color) !important; border-color: #cbd5e1 !important; color: #0b0f19 !important; position: relative; }
-        .seat.is-unreserved::after { content: 'UR'; position: absolute; top: 2px; right: 4px; font-size: 0.6rem; color: #475569; background: rgba(0,0,0,0.08); padding: 1px 3px; border-radius: 3px; }
+        .seat.is-unreserved { background: #1a2333; border-color: #475569; position: relative; }
+        .seat.is-unreserved::after { content: 'UR'; position: absolute; top: 2px; right: 4px; font-size: 0.6rem; color: #94a3b8; background: rgba(255,255,255,0.07); padding: 1px 3px; border-radius: 3px; }
 
-        .seat.is-booked { background: var(--active-booking-bg) !important; border-color: var(--active-booking-border) !important; color: white !important; }
-        .seat.is-allshift { border-color: #eab308 !important; background: #232212 !important; color: white !important; }
+        .seat.is-booked { background: var(--active-booking-bg) !important; border-color: var(--active-booking-border) !important; }
+        .seat.is-allshift { border-color: #eab308 !important; background: #232212 !important; }
         
         .seat.has-alert { border: 2px dashed var(--warning-alert) !important; animation: mildBlink 2s infinite; }
-        .seat.has-expired { border: 2px dashed var(--danger-color) !important; background: #2d1015 !important; color: white !important; animation: severeBlink 1.5s infinite; }
+        .seat.has-expired { border: 2px dashed var(--danger-color) !important; background: #2d1015 !important; animation: severeBlink 1.5s infinite; }
         
         .indicators { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; margin-top: 5px; }
         .main-shifts { display: flex; justify-content: center; gap: 3px; width: 100%; }
         
         .dot { width: 6px; height: 6px; border-radius: 50%; background: #475569; transition: 0.2s; }
-        .seat.is-unreserved .dot { background: #94a3b8; } /* Lighter dots for white background readability */
         .dot.active { background: var(--success-color); }
         .dot.alert { background: var(--warning-alert) !important; animation: blink 1.2s infinite; }
         .dot.expired { background: var(--danger-color) !important; animation: blink 1.2s infinite; }
         
         .night-dot { width: 8px; height: 8px; border-radius: 50%; background: transparent; border: 1px dashed #475569; }
-        .seat.is-unreserved .night-dot { border-color: #94a3b8; }
         .night-dot.active { background: var(--night-color); border: none; }
         .night-dot.alert { background: var(--warning-alert) !important; border: none; animation: blink 1.2s infinite; }
         .night-dot.expired { background: var(--danger-color) !important; border: none; animation: blink 1.2s infinite; }
@@ -79,12 +83,12 @@
         @keyframes severeBlink { 0% { border-color: var(--danger-color); } 50% { border-color: transparent; } 100% { border-color: var(--danger-color); } }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 100; padding: 15px; }
-        .modal-content { background: var(--card-color); padding: 20px; border-radius: 15px; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
+        .modal-content { background: var(--card-color); padding: 20px; border-radius: 15px; width: 100%; max-width: 450px; max-height: 90vh; overflow-y: auto; }
         .modal-content h3 { margin-bottom: 15px; border-bottom: 1px solid #233554; padding-bottom: 10px; text-align: center; }
         
-        .shift-block { background: #0b0f19; padding: 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #233554; transition: 0.3s; }
+        .shift-block { background: #0b0f19; padding: 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #233554; transition: 0.3s; position: relative; }
         .shift-block.disabled-block { opacity: 0.25; pointer-events: none; border-color: #ef444433; }
-        .shift-block h4 { color: #a855f7; margin-bottom: 8px; font-size: 0.9rem; display: flex; justify-content: space-between; }
+        .shift-block h4 { color: #a855f7; margin-bottom: 8px; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; }
         .shift-block.night-block h4 { color: var(--night-color); }
         .shift-block.all-block h4 { color: #eab308; }
         
@@ -95,7 +99,13 @@
         
         .waiting-section { background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
         .waiting-item { display: flex; justify-content: space-between; background: #0b0f19; padding: 10px; border-radius: 6px; margin-bottom: 5px; align-items: center; }
-        .modal-actions { display: flex; justify-content: space-between; margin-top: 15px; }
+        
+        .history-section { margin-top: 15px; background: #0b0f19; padding: 10px; border-radius: 8px; border: 1px solid #233554; max-height: 150px; overflow-y: auto; }
+        .history-title { font-size: 0.8rem; color: #94a3b8; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
+        .history-item { font-size: 0.75rem; color: #64748b; padding: 4px 0; border-bottom: 1px dashed #1e293b; display: flex; justify-content: space-between; }
+
+        .whatsapp-btn { padding: 3px 8px; font-size: 0.7rem; background-color: #25d366; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .modal-actions { display: flex; justify-content: space-between; margin-top: 15px; gap: 10px; }
     </style>
 </head>
 <body>
@@ -108,6 +118,21 @@
     <div class="admin-section">
         <input type="password" id="adminPhone" placeholder="Enter Admin Mobile Number...">
         <button class="btn" onclick="verifyAdmin()">Verify</button>
+    </div>
+
+    <!-- Smart Tools Panel (Naya Feature: Filter aur Backup) -->
+    <div class="tools-panel">
+        <h4>🎛️ Smart Tools Panel</h4>
+        <div class="filter-group">
+            <button class="btn btn-warning" style="padding:6px 12px; font-size:0.8rem;" onclick="filterByShift('all_shifts')">🔄 All Dashboard</button>
+            <button class="btn" style="padding:6px 12px; font-size:0.8rem; background:#eab308; color:black;" onclick="filterByShift('full_day')">☀️ Full Day</button>
+            <button class="btn" style="padding:6px 12px; font-size:0.8rem;" onclick="filterByShift('m')">🌅 Morning Shift</button>
+            <button class="btn" style="padding:6px 12px; font-size:0.8rem;" onclick="filterByShift('n')">🕛 Noon Shift</button>
+            <button class="btn" style="padding:6px 12px; font-size:0.8rem;" onclick="filterByShift('an')">🌇 Afternoon</button>
+            <button class="btn" style="padding:6px 12px; font-size:0.8rem;" onclick="filterByShift('e')">🌃 Evening Shift</button>
+            <button class="btn" style="padding:6px 12px; font-size:0.8rem; background:var(--night-color); color:black;" onclick="filterByShift('night')">🌙 Night Shift</button>
+        </div>
+        <button class="btn btn-success" style="width: 100%; margin-top: 5px;" onclick="exportToCSV()">📥 Download Entire Library Excel Backup (CSV)</button>
     </div>
 
     <div class="stats-grid">
@@ -135,7 +160,7 @@
             <h3 id="modalTitle">Seat Details</h3>
             
             <div class="shift-block all-block" id="block_all">
-                <h4>Option A: Full Day / All Shift (6 AM - 10 PM)</h4>
+                <h4>Option A: Full Day (6 AM - 10 PM) <button class="whatsapp-btn" id="wa_all" onclick="sendWhatsAppReminder('all')">💬 Remind</button></h4>
                 <div class="form-row full"><div class="form-group"><label>Student Name</label><input type="text" id="name_all" oninput="toggleModalShifts(this.value)"></div></div>
                 <div class="form-row">
                     <div class="form-group"><label>Phone</label><input type="text" id="phone_all"></div>
@@ -147,7 +172,7 @@
             <p id="orDivider" style="text-align: center; color:#64748b; font-size:0.8rem; margin:10px 0;">— OR USE INDIVIDUAL SHIFTS —</p>
 
             <div class="shift-block normal-shift" id="block_m">
-                <h4>1. Morning Shift (6 AM - 10 AM)</h4>
+                <h4>1. Morning Shift (6 AM - 10 AM) <button class="whatsapp-btn" id="wa_m" onclick="sendWhatsAppReminder('m')">💬 Remind</button></h4>
                 <div class="form-row">
                     <div class="form-group"><label>Name</label><input type="text" id="name_m"></div>
                     <div class="form-group"><label>Phone</label><input type="text" id="phone_m"></div>
@@ -159,7 +184,7 @@
             </div>
 
             <div class="shift-block normal-shift" id="block_n">
-                <h4>2. Noon Shift (10 AM - 2 PM)</h4>
+                <h4>2. Noon Shift (10 AM - 2 PM) <button class="whatsapp-btn" id="wa_n" onclick="sendWhatsAppReminder('n')">💬 Remind</button></h4>
                 <div class="form-row">
                     <div class="form-group"><label>Name</label><input type="text" id="name_n"></div>
                     <div class="form-group"><label>Phone</label><input type="text" id="phone_n"></div>
@@ -171,7 +196,7 @@
             </div>
 
             <div class="shift-block normal-shift" id="block_an">
-                <h4>3. Afternoon Shift (2 PM - 6 PM)</h4>
+                <h4>3. Afternoon Shift (2 PM - 6 PM) <button class="whatsapp-btn" id="wa_an" onclick="sendWhatsAppReminder('an')">💬 Remind</button></h4>
                 <div class="form-row">
                     <div class="form-group"><label>Name</label><input type="text" id="name_an"></div>
                     <div class="form-group"><label>Phone</label><input type="text" id="phone_an"></div>
@@ -183,7 +208,7 @@
             </div>
 
             <div class="shift-block normal-shift" id="block_e">
-                <h4>4. Evening Shift (6 PM - 10 PM)</h4>
+                <h4>4. Evening Shift (6 PM - 10 PM) <button class="whatsapp-btn" id="wa_e" onclick="sendWhatsAppReminder('e')">💬 Remind</button></h4>
                 <div class="form-row">
                     <div class="form-group"><label>Name</label><input type="text" id="name_e"></div>
                     <div class="form-group"><label>Phone</label><input type="text" id="phone_e"></div>
@@ -195,7 +220,7 @@
             </div>
 
             <div class="shift-block night-block" id="block_night">
-                <h4>🌙 Extra: Night Shift (10 PM onwards)</h4>
+                <h4>🌙 Extra: Night Shift (10 PM onwards) <button class="whatsapp-btn" id="wa_night" onclick="sendWhatsAppReminder('night')">💬 Remind</button></h4>
                 <div class="form-row">
                     <div class="form-group"><label>Name</label><input type="text" id="name_night"></div>
                     <div class="form-group"><label>Phone</label><input type="text" id="phone_night"></div>
@@ -204,6 +229,12 @@
                     <div class="form-group"><label>Renewal Date</label><input type="date" id="date_night"></div>
                     <div class="form-group"><label>Fees (₹)</label><input type="number" id="fees_night"></div>
                 </div>
+            </div>
+
+            <!-- History Section (Naya Feature: Past Records Log) -->
+            <div class="history-section">
+                <div class="history-title">📜 Past Student History Log</div>
+                <div id="historyLogContainer">No history available for this seat.</div>
             </div>
 
             <div class="modal-actions">
@@ -223,6 +254,7 @@
         let activeSeatNumber = null;
         const TOTAL_SEATS = 105;
         let globalLibraryData = {};
+        let currentActiveFilter = 'all_shifts';
 
         function checkLocalAdmin() {
             const savedAdmin = localStorage.getItem('hariom_saved_admin');
@@ -301,13 +333,15 @@
                 allInd.className = 'all-shift-indicator';
                 nightInd.className = 'night-dot';
                 dots.forEach(d => d.className = 'dot');
-                
-                // Keep the structural unreserved class intact
                 seatEl.className = (i >= 64 && i <= 85) ? 'seat is-unreserved' : 'seat';
 
                 let hasExpired = false;
                 let hasAlert = false;
                 let seatHasAnyBooking = false;
+
+                // Dynamic UI match for current shift filters
+                let filterMatch = false;
+                if(currentActiveFilter === 'all_shifts') filterMatch = true;
 
                 totalIncome += (parseInt(data.fees_all) || 0) + (parseInt(data.fees_m) || 0) + 
                                (parseInt(data.fees_n) || 0) + (parseInt(data.fees_an) || 0) + 
@@ -329,6 +363,8 @@
                     mainShiftsDiv.style.display = 'none'; 
                     seatEl.classList.add('is-allshift');
                     
+                    if(currentActiveFilter === 'full_day') filterMatch = true;
+
                     const status = checkStatus(data.date_all);
                     if(status === 'expired') { allInd.classList.add('expired'); hasExpired = true; }
                     else if(status === 'alert') { allInd.classList.add('alert'); hasAlert = true; }
@@ -341,6 +377,8 @@
                             seatHasAnyBooking = true;
                             dots[idx].classList.add('active');
                             
+                            if(currentActiveFilter === s) filterMatch = true;
+
                             const status = checkStatus(data[`date_${s}`]);
                             if(status === 'expired') { dots[idx].classList.add('expired'); hasExpired = true; }
                             else if(status === 'alert') { dots[idx].classList.add('alert'); hasAlert = true; }
@@ -353,6 +391,8 @@
                     seatHasAnyBooking = true;
                     nightInd.classList.add('active');
                     
+                    if(currentActiveFilter === 'night') filterMatch = true;
+
                     const status = checkStatus(data.date_night);
                     if(status === 'expired') { nightInd.classList.add('expired'); hasExpired = true; }
                     else if(status === 'alert') { nightInd.classList.add('alert'); hasAlert = true; }
@@ -361,10 +401,19 @@
                 if(seatHasAnyBooking && !data.name_all) seatEl.classList.add('is-booked');
                 if(hasAlert) seatEl.classList.add('has-alert');
                 if(hasExpired) seatEl.classList.add('has-expired');
+
+                // Apply live shift filter view visibility
+                seatEl.style.display = filterMatch ? 'flex' : 'none';
             }
 
             document.getElementById('activeBookingsCount').innerText = activeBookings;
             document.getElementById('totalIncome').innerText = '₹' + totalIncome;
+        }
+
+        // Live Shift Filter Mechanism (Naya Feature)
+        function filterByShift(shiftType) {
+            currentActiveFilter = shiftType;
+            updateUI(globalLibraryData);
         }
 
         function toggleModalShifts(allShiftValue) {
@@ -386,14 +435,58 @@
             
             const fields = ['all', 'm', 'n', 'an', 'e', 'night'];
             fields.forEach(f => {
-                document.getElementById(`name_${f}`).value = data[`name_${f}`] || '';
+                const studentName = data[`name_${f}`] || '';
+                document.getElementById(`name_${f}`).value = studentName;
                 document.getElementById(`phone_${f}`).value = data[`phone_${f}`] || '';
                 document.getElementById(`date_${f}`).value = data[`date_${f}`] || '';
                 document.getElementById(`fees_${f}`).value = data[`fees_${f}`] || 0;
+
+                // Hide/Show WhatsApp button based on student availability
+                document.getElementById(`wa_${f}`).style.display = studentName ? 'inline-block' : 'none';
             });
 
             toggleModalShifts(data['name_all'] || '');
+            
+            // Load History Log (Naya Feature)
+            loadHistoryUI(seatNum);
+
             document.getElementById('seatModal').style.display = 'flex';
+        }
+
+        function loadHistoryUI(seatNum) {
+            const container = document.getElementById('historyLogContainer');
+            database.ref(`library_v3/history/${seatNum}`).limitToLast(10).once('value', (snapshot) => {
+                const histData = snapshot.val();
+                if(!histData) {
+                    container.innerHTML = 'No archive logs found for this seat.';
+                    return;
+                }
+                container.innerHTML = '';
+                Object.keys(histData).reverse().forEach(key => {
+                    const h = histData[key];
+                    container.innerHTML += `
+                        <div class="history-item">
+                            <span>👤 <strong>${h.name}</strong> (${h.shift})</span>
+                            <span>📅 ${h.date} | 💰 ₹${h.fees}</span>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        // WhatsApp Reminder API Logic (Naya Feature)
+        function sendWhatsAppReminder(shiftSuffix) {
+            const name = document.getElementById(`name_${shiftSuffix}`).value;
+            let phone = document.getElementById(`phone_${shiftSuffix}`).value.trim();
+            const date = document.getElementById(`date_${shiftSuffix}`).value;
+            
+            if(!name || !phone) { alert("Student detail or phone missing!"); return; }
+            if(!phone.startsWith("91") && phone.length === 10) phone = "91" + phone;
+
+            const shiftNames = {all: 'Full Day', m: 'Morning', n: 'Noon', an: 'Afternoon', e: 'Evening', night: 'Night'};
+            const msg = `Hi ${name}, Your Hariom Smart Library fee for Seat No. ${activeSeatNumber} (${shiftNames[shiftSuffix]} Shift) renewal date is ${date}. Please renew it to secure your seat. Thank you!`;
+            
+            window.open(`https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msg)}`, '_blank');
         }
 
         document.getElementById('seatModal').addEventListener('click', function(e) {
@@ -408,24 +501,81 @@
             const update = {};
             const fields = ['all', 'm', 'n', 'an', 'e', 'night'];
             const isAllShiftActive = document.getElementById('name_all').value.trim() !== "";
+            const oldData = globalLibraryData[activeSeatNumber] || {};
+            const timestamp = new Date().toLocaleDateString();
 
             fields.forEach(f => {
+                const newName = document.getElementById(`name_${f}`).value;
+                const newPhone = document.getElementById(`phone_${f}`).value;
+                const newDate = document.getElementById(`date_${f}`).value;
+                const newFees = parseInt(document.getElementById(`fees_${f}`).value) || 0;
+
+                // History Logging Check: Agar student badal raha hai ya fees save ho rhi h
+                if(newName && (oldData[`name_${f}`] !== newName || oldData[`fees_${f}`] !== newFees)) {
+                    database.ref(`library_v3/history/${activeSeatNumber}`).push().set({
+                        name: newName,
+                        phone: newPhone,
+                        shift: f.toUpperCase(),
+                        fees: newFees,
+                        date: timestamp
+                    });
+                }
+
                 if(isAllShiftActive && ['m', 'n', 'an', 'e'].includes(f)) {
                     update[`name_${f}`] = "";
                     update[`phone_${f}`] = "";
                     update[`date_${f}`] = "";
                     update[`fees_${f}`] = 0;
                 } else {
-                    update[`name_${f}`] = document.getElementById(`name_${f}`).value;
-                    update[`phone_${f}`] = document.getElementById(`phone_${f}`).value;
-                    update[`date_${f}`] = document.getElementById(`date_${f}`).value;
-                    update[`fees_${f}`] = parseInt(document.getElementById(`fees_${f}`).value) || 0;
+                    update[`name_${f}`] = newName;
+                    update[`phone_${f}`] = newPhone;
+                    update[`date_${f}`] = newDate;
+                    update[`fees_${f}`] = newFees;
                 }
             });
 
             database.ref('library_v3/seats/' + activeSeatNumber).set(update)
                 .then(() => { closeModal(); })
                 .catch(err => alert("Error saving data: " + err));
+        }
+
+        // CSV Export/Backup Logic (Naya Feature)
+        function exportToCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,Seat Number,Shift Name,Student Name,Phone Number,Renewal Date,Fees Collected\n";
+            const shiftKeys = ['all', 'm', 'n', 'an', 'e', 'night'];
+            const shiftLabel = {all: 'Full Day', m: 'Morning', n: 'Noon', an: 'Afternoon', e: 'Evening', night: 'Night'};
+
+            for(let i=1; i<=TOTAL_SEATS; i++) {
+                const sData = globalLibraryData[i] || {};
+                let rawHasData = false;
+                
+                shiftKeys.forEach(k => {
+                    if(sData[`name_${k}`]) {
+                        rawHasData = true;
+                        const row = [
+                            i,
+                            shiftLabel[k],
+                            `"${sData[`name_${k}`].replace(/"/g, '""')}"`,
+                            `"${sData[`phone_${k}`] || ''}"`,
+                            sData[`date_${k}`] || '',
+                            sData[`fees_${k}`] || 0
+                        ];
+                        csvContent += row.join(",") + "\n";
+                    }
+                });
+
+                if(!rawHasData) {
+                    csvContent += `${i},Vacant,-,-,-,0\n`;
+                }
+            }
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Hariom_Library_Backup_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         function addWaiting() {
