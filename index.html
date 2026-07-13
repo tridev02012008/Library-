@@ -204,7 +204,7 @@
                 <div class="form-row three-col">
                     <div class="form-group"><label>Fees Paid (₹)</label><input type="number" id="fees_n"></div>
                     <div class="form-group"><label style="color:#ff4444; font-weight:bold;">Due (₹)</label><input type="number" id="due_n" style="border-color:#ff444455;"></div>
-                    <div class="form-group"><label>Payment Date</label><input type="date" id="paydate_n"></div>
+                    <div class="form-group"><label>Payment Date</label><input type="date" id="paydate_m"></div>
                 </div>
                 <div class="form-row full">
                     <div class="form-group"><label>Renewal Date</label><input type="date" id="date_n"></div>
@@ -340,9 +340,22 @@
             let activeBookings = 0;
             
             const today = new Date();
+            const currentMonth = today.getMonth(); // 0 = Jan, 6 = July etc.
+            const currentYear = today.getFullYear();
+
             today.setHours(0,0,0,0);
             const threeDaysLater = new Date(today);
             threeDaysLater.setDate(today.getDate() + 3);
+
+            // Function to filter fees strictly by current active month and year
+            function getFilteredFees(feesValue, payDateStr) {
+                if(!payDateStr || !feesValue) return 0;
+                const pDate = new Date(payDateStr);
+                if(pDate.getMonth() === currentMonth && pDate.getFullYear() === currentYear) {
+                    return parseInt(feesValue) || 0;
+                }
+                return 0;
+            }
 
             for(let i=1; i<=TOTAL_SEATS; i++) {
                 const seatEl = document.getElementById(`seat-${i}`);
@@ -365,9 +378,13 @@
                 let seatHasAnyBooking = false;
                 let totalDueAmountOnSeat = 0;
 
-                totalIncome += (parseInt(data.fees_all) || 0) + (parseInt(data.fees_m) || 0) + 
-                               (parseInt(data.fees_n) || 0) + (parseInt(data.fees_an) || 0) + 
-                               (parseInt(data.fees_e) || 0) + (parseInt(data.fees_night) || 0);
+                // Total Collection logic adjusted to verify Payment Date matching Current Month
+                totalIncome += getFilteredFees(data.fees_all, data.paydate_all) + 
+                               getFilteredFees(data.fees_m, data.paydate_m) + 
+                               getFilteredFees(data.fees_n, data.paydate_n) + 
+                               getFilteredFees(data.fees_an, data.paydate_an) + 
+                               getFilteredFees(data.fees_e, data.paydate_e) + 
+                               getFilteredFees(data.fees_night, data.paydate_night);
 
                 function checkStatus(dateStr) {
                     if(!dateStr) return 'none';
@@ -507,6 +524,7 @@
                     update[`date_${f}`] = newDate;
                     update[`paydate_${f}`] = newPayDate;
                     update[`fees_${f}`] = newFees;
+                    update[`update_${f}`] = newDue; // dynamic map safe tracking
                     update[`due_${f}`] = newDue;
 
                     if(newName !== "" && newName !== oldData[`name_${f}`] && newPhone !== "") {
