@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hariom Smart Library - Ultimate Control Panel</title>
+    <title>Hariom Smart Library - Dynamic Control Panel</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <!-- Excel Backup ke liye SheetJS Library -->
@@ -127,7 +127,7 @@
 
     <div class="seats-container" id="seatsGrid"></div>
 
-    <!-- 📋 Waiting List Section -->
+    <!-- Waiting List Section -->
     <div class="waiting-section">
         <h3>📋 Waiting List</h3>
         <div style="display: flex; gap: 5px; margin-top: 10px;">
@@ -138,7 +138,7 @@
         <div class="waiting-list" id="waitingListContainer"></div>
     </div>
 
-    <!-- 📷 Document Verification Box (Back Camera) -->
+    <!-- Document Verification Box -->
     <div class="utility-section">
         <h3>📷 Document Verification</h3>
         <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px; align-items: center;">
@@ -150,7 +150,7 @@
         </div>
     </div>
 
-    <!-- 📥 Excel Backup System -->
+    <!-- Excel Backup System -->
     <div class="utility-section" style="text-align: center;">
         <h3>📥 Database Backup Control</h3>
         <p style="font-size:0.8rem; color:#64748b; margin: 5px 0 10px 0;">Export entire multi-shift table records directly to Excel format.</p>
@@ -338,32 +338,30 @@
             let totalIncome = 0;
             let activeBookings = 0;
             
+            // AUTOMATIC LIVE DATE DETECTOR (Kayi saal tak bina code badle chalega)
             const today = new Date();
-            const currentMonth = today.getMonth(); // Live dynamic month nikalega (0-11)
-            const currentYear = today.getFullYear();
+            const currentMonth = today.getMonth(); // Auto Month Number (0 to 11)
+            const currentYear = today.getFullYear(); // Auto Live Year (e.g. 2026)
 
             const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            document.getElementById('collectionLabel').innerHTML = `💰 Total Collection (${monthNames[currentMonth]})`;
+            document.getElementById('collectionLabel').innerHTML = `💰 Total Collection (${monthNames[currentMonth]} ${currentYear})`;
 
             today.setHours(0,0,0,0);
             const threeDaysLater = new Date(today);
             threeDaysLater.setDate(today.getDate() + 3);
 
-            // Dynamic 1st to 30th/31st Date Range Filter
-            function getFilteredFees(feesValue, payDateStr, renewalDateStr) {
+            // strictly payment date filter for total calculation
+            function getFilteredFees(feesValue, payDateStr) {
                 const amount = parseInt(feesValue, 10) || 0;
-                if (amount <= 0) return 0;
+                if (amount <= 0 || !payDateStr) return 0;
                 
-                // Pehle Payment Date, fir fallback me Renewal Date check karega
-                const activeDateString = payDateStr || renewalDateStr;
-                if(!activeDateString) return 0; 
-                
-                const parts = activeDateString.split('-');
+                // Pure Dynamic Payment Date Check
+                const parts = payDateStr.split('-');
                 if(parts.length === 3) {
                     const yearInput = parseInt(parts[0], 10);
-                    const monthInput = parseInt(parts[1], 10) - 1; // Input month index banega
+                    const monthInput = parseInt(parts[1], 10) - 1; // Month index sync
                     
-                    // Strict Check: Sirf current month ke saal aur chal rahe month ki 1 se 30/31 tarikh tak jodega
+                    // Agar payment isi dynamic mahine aur saal ki hai tabhi judega
                     if(monthInput === currentMonth && yearInput === currentYear) {
                         return amount;
                     }
@@ -392,13 +390,13 @@
                 let seatHasAnyBooking = false;
                 let totalDueAmountOnSeat = 0;
 
-                // Automatic Collection Calculations
-                totalIncome += getFilteredFees(data.fees_all, data.paydate_all, data.date_all) + 
-                               getFilteredFees(data.fees_m, data.paydate_m, data.date_m) + 
-                               getFilteredFees(data.fees_n, data.paydate_n, data.date_n) + 
-                               getFilteredFees(data.fees_an, data.paydate_an, data.date_an) + 
-                               getFilteredFees(data.fees_e, data.paydate_e, data.date_e) + 
-                               getFilteredFees(data.fees_night, data.paydate_night, data.date_night);
+                // 100% accurate live month strict calculator
+                totalIncome += getFilteredFees(data.fees_all, data.paydate_all) + 
+                               getFilteredFees(data.fees_m, data.paydate_m) + 
+                               getFilteredFees(data.fees_n, data.paydate_n) + 
+                               getFilteredFees(data.fees_an, data.paydate_an) + 
+                               getFilteredFees(data.fees_e, data.paydate_e) + 
+                               getFilteredFees(data.fees_night, data.paydate_night);
 
                 function checkStatus(dateStr) {
                     if(!dateStr) return 'none';
@@ -687,7 +685,7 @@
             const worksheet = XLSX.utils.json_to_sheet(reportData);
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Library Bookings");
-            XLSX.writeFile(workbook, "Hariom_Library_Backup_V3.xlsx");
+            XLSX.writeFile(workbook, "Hariom_Library_Backup_V4.xlsx");
         }
     </script>
 </body>
