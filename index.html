@@ -204,7 +204,8 @@
                 <div class="form-row three-col">
                     <div class="form-group"><label>Fees Paid (₹)</label><input type="number" id="fees_n"></div>
                     <div class="form-group"><label style="color:#ff4444; font-weight:bold;">Due (₹)</label><input type="number" id="due_n" style="border-color:#ff444455;"></div>
-                    <div class="form-group"><label>Payment Date</label><input type="date" id="paydate_m"></div>
+                    <!-- Fix Typo here: paydate_m to paydate_n -->
+                    <div class="form-group"><label>Payment Date</label><input type="date" id="paydate_n"></div>
                 </div>
                 <div class="form-row full">
                     <div class="form-group"><label>Renewal Date</label><input type="date" id="date_n"></div>
@@ -347,12 +348,19 @@
             const threeDaysLater = new Date(today);
             threeDaysLater.setDate(today.getDate() + 3);
 
-            // Function to filter fees strictly by current active month and year
+            // Strict checking filter: returns fee value ONLY if the payment date matches this current month & year
             function getFilteredFees(feesValue, payDateStr) {
                 if(!payDateStr || !feesValue) return 0;
-                const pDate = new Date(payDateStr);
-                if(pDate.getMonth() === currentMonth && pDate.getFullYear() === currentYear) {
-                    return parseInt(feesValue) || 0;
+                
+                // Input elements send yyyy-mm-dd format. Split and check to ensure safe local timezone validation.
+                const parts = payDateStr.split('-');
+                if(parts.length === 3) {
+                    const yearInput = parseInt(parts[0]);
+                    const monthInput = parseInt(parts[1]) - 1; // JS Month starts at 0
+                    
+                    if(monthInput === currentMonth && yearInput === currentYear) {
+                        return parseInt(feesValue) || 0;
+                    }
                 }
                 return 0;
             }
@@ -378,7 +386,7 @@
                 let seatHasAnyBooking = false;
                 let totalDueAmountOnSeat = 0;
 
-                // Total Collection logic adjusted to verify Payment Date matching Current Month
+                // Sum up monthly collections only if payment matches the current month
                 totalIncome += getFilteredFees(data.fees_all, data.paydate_all) + 
                                getFilteredFees(data.fees_m, data.paydate_m) + 
                                getFilteredFees(data.fees_n, data.paydate_n) + 
@@ -445,7 +453,7 @@
                 if(hasAlert) seatEl.classList.add('has-alert');
                 if(hasExpired) seatEl.classList.add('has-expired'); 
 
-                // 🎯 Blinking Arrow Logic: Agar pure seat par 0 se zyada Due Amount bachega toh Tir blink karega!
+                // 🎯 Blinking Arrow Logic
                 if(totalDueAmountOnSeat > 0) {
                     dueBox.innerHTML = `<div class="due-badge">↑ ₹${totalDueAmountOnSeat}</div>`;
                 }
@@ -524,7 +532,6 @@
                     update[`date_${f}`] = newDate;
                     update[`paydate_${f}`] = newPayDate;
                     update[`fees_${f}`] = newFees;
-                    update[`update_${f}`] = newDue; // dynamic map safe tracking
                     update[`due_${f}`] = newDue;
 
                     if(newName !== "" && newName !== oldData[`name_${f}`] && newPhone !== "") {
