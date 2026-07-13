@@ -339,10 +339,9 @@
             let activeBookings = 0;
             
             const today = new Date();
-            const currentMonth = today.getMonth(); // July is 6
+            const currentMonth = today.getMonth(); // Live dynamic month nikalega (0-11)
             const currentYear = today.getFullYear();
 
-            // Set current month text dynamically on UI
             const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             document.getElementById('collectionLabel').innerHTML = `💰 Total Collection (${monthNames[currentMonth]})`;
 
@@ -350,17 +349,23 @@
             const threeDaysLater = new Date(today);
             threeDaysLater.setDate(today.getDate() + 3);
 
-            // Strict Filter: Counts amount only if month & year matches strictly
-            function getFilteredFees(feesValue, payDateStr) {
-                if(!payDateStr || !feesValue) return 0;
+            // Dynamic 1st to 30th/31st Date Range Filter
+            function getFilteredFees(feesValue, payDateStr, renewalDateStr) {
+                const amount = parseInt(feesValue, 10) || 0;
+                if (amount <= 0) return 0;
                 
-                const parts = payDateStr.split('-');
+                // Pehle Payment Date, fir fallback me Renewal Date check karega
+                const activeDateString = payDateStr || renewalDateStr;
+                if(!activeDateString) return 0; 
+                
+                const parts = activeDateString.split('-');
                 if(parts.length === 3) {
                     const yearInput = parseInt(parts[0], 10);
-                    const monthInput = parseInt(parts[1], 10) - 1; 
+                    const monthInput = parseInt(parts[1], 10) - 1; // Input month index banega
                     
+                    // Strict Check: Sirf current month ke saal aur chal rahe month ki 1 se 30/31 tarikh tak jodega
                     if(monthInput === currentMonth && yearInput === currentYear) {
-                        return parseInt(feesValue, 10) || 0;
+                        return amount;
                     }
                 }
                 return 0;
@@ -387,13 +392,13 @@
                 let seatHasAnyBooking = false;
                 let totalDueAmountOnSeat = 0;
 
-                // Safe strict addition
-                totalIncome += getFilteredFees(data.fees_all, data.paydate_all) + 
-                               getFilteredFees(data.fees_m, data.paydate_m) + 
-                               getFilteredFees(data.fees_n, data.paydate_n) + 
-                               getFilteredFees(data.fees_an, data.paydate_an) + 
-                               getFilteredFees(data.fees_e, data.paydate_e) + 
-                               getFilteredFees(data.fees_night, data.paydate_night);
+                // Automatic Collection Calculations
+                totalIncome += getFilteredFees(data.fees_all, data.paydate_all, data.date_all) + 
+                               getFilteredFees(data.fees_m, data.paydate_m, data.date_m) + 
+                               getFilteredFees(data.fees_n, data.paydate_n, data.date_n) + 
+                               getFilteredFees(data.fees_an, data.paydate_an, data.date_an) + 
+                               getFilteredFees(data.fees_e, data.paydate_e, data.date_e) + 
+                               getFilteredFees(data.fees_night, data.paydate_night, data.date_night);
 
                 function checkStatus(dateStr) {
                     if(!dateStr) return 'none';
