@@ -8,8 +8,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <!-- Excel Backup ke liye SheetJS Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
-    <!-- PDF Generation ke liye html2pdf / html2canvas -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
             --bg-color: #0b0f19;
@@ -35,7 +33,6 @@
         .btn { padding: 10px 20px; border: none; border-radius: 8px; background: var(--primary-color); color: white; cursor: pointer; font-weight: bold; }
         .btn-danger { background: var(--danger-color); }
         .btn-success { background: var(--success-color); }
-        .btn-warning { background: #eab308; color: #000; }
         
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
         .stat-card { background: var(--card-color); padding: 12px; border-radius: 10px; text-align: center; border-left: 4px solid var(--primary-color); }
@@ -102,62 +99,10 @@
         
         .waiting-section, .utility-section { background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
         .waiting-item { display: flex; justify-content: space-between; background: #0b0f19; padding: 10px; border-radius: 6px; margin-bottom: 5px; align-items: center; }
-        .modal-actions { display: flex; justify-content: space-between; margin-top: 15px; gap: 8px; }
+        .modal-actions { display: flex; justify-content: space-between; margin-top: 15px; }
 
-        #cameraView { width: 100%; max-width: 320px; height: 240px; border-radius: 8px; background: #000; margin-top: 10px; display: none; object-fit: cover; }
+        #cameraView { width: 100%; max-width: 320px; height: 240px; border-radius: 8px; background: #000; margin-top: 10px; display: none; }
         #photoCanvas { display: none; }
-        #capturedPreview { width: 60px; height: 60px; border-radius: 6px; object-fit: cover; border: 1px solid #475569; display: none; margin-top: 5px; }
-
-        /* ID Card & Receipt Generation Styles (Hidden Container for Rendering) */
-        #printContainer { position: absolute; left: -9999px; top: -9999px; }
-        
-        /* Takshila ID Card Replica Style */
-        .id-card-preview {
-            width: 400px;
-            background: #111827;
-            border-radius: 16px;
-            border: 1px solid #374151;
-            padding: 20px;
-            color: #f3f4f6;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
-        .id-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #374151;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-        }
-        .id-card-title { font-size: 1.1rem; font-weight: bold; color: #38bdf8; letter-spacing: 0.5px; }
-        .id-card-subtitle { font-size: 0.65rem; color: #34d399; font-weight: bold; letter-spacing: 1px; }
-        .id-card-body { display: flex; gap: 15px; align-items: center; }
-        .id-card-img { width: 90px; height: 110px; border-radius: 8px; object-fit: cover; border: 2px solid #38bdf8; background: #1f2937; }
-        .id-card-details { display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; }
-        .id-card-details span b { color: #9ca3af; font-weight: normal; }
-        .id-card-footer { margin-top: 15px; text-align: right; font-size: 0.7rem; color: #9ca3af; font-style: italic; border-top: 1px dashed #374151; padding-top: 8px; }
-
-        /* Takshila Receipt Replica Style */
-        .receipt-preview {
-            width: 450px;
-            background: #fef08a;
-            color: #1c1917;
-            padding: 25px;
-            border: 2px dashed #ca8a04;
-            font-family: 'Courier New', Courier, monospace;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
-        .receipt-header { text-align: center; margin-bottom: 15px; border-bottom: 2px solid #1c1917; padding-bottom: 10px; }
-        .receipt-header h2 { font-size: 1.4rem; font-weight: bold; margin-bottom: 4px; }
-        .receipt-header p { font-size: 0.75rem; }
-        .receipt-meta { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 15px; font-weight: bold; }
-        .receipt-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 0.85rem; }
-        .receipt-table th, .receipt-table td { border: 1px solid #1c1917; padding: 6px 8px; text-align: left; }
-        .receipt-table th { background: #fde047; }
-        .receipt-total { text-align: right; font-size: 0.95rem; font-weight: bold; border-top: 1px dashed #1c1917; padding-top: 8px; margin-bottom: 25px; }
-        .receipt-sign { display: flex; justify-content: space-between; align-items: flex-end; font-size: 0.85rem; }
-        .receipt-sign-line { border-top: 1px dashed #1c1917; width: 150px; text-align: center; padding-top: 4px; font-style: italic; }
     </style>
 </head>
 <body>
@@ -193,15 +138,14 @@
         <div class="waiting-list" id="waitingListContainer"></div>
     </div>
 
-    <!-- Document & Photo Verification Box -->
+    <!-- Document Verification Box -->
     <div class="utility-section">
-        <h3>📷 Student Photo & Document Capture</h3>
+        <h3>📷 Document Verification</h3>
         <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px; align-items: center;">
-            <button class="btn" id="startCamBtn" onclick="initiateBackCamera()">Open Camera for ID Photo</button>
+            <button class="btn" id="startCamBtn" onclick="initiateBackCamera()">Open Back Camera</button>
             <video id="cameraView" autoplay playsinline></video>
             <canvas id="photoCanvas"></canvas>
-            <button class="btn btn-danger" id="captureBtn" style="display:none;" onclick="captureDocumentSnapshot()">Capture Snapshot</button>
-            <img id="capturedPreview" alt="Captured Photo Preview">
+            <button class="btn btn-danger" id="captureBtn" style="display:none;" onclick="captureDocumentSnapshot()">Take Snapshot</button>
             <div id="snapshotStatus" style="font-size:0.85rem; color:var(--success-color);"></div>
         </div>
     </div>
@@ -314,98 +258,9 @@
                 </div>
             </div>
 
-            <!-- Slip & ID Card Action Buttons Inside Modal -->
-            <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-                <button class="btn btn-warning" style="flex:1; font-size:0.8rem;" onclick="downloadIDCard()">🪪 Download ID Card</button>
-                <button class="btn btn-success" style="flex:1; font-size:0.8rem;" onclick="downloadReceipt()">🧾 Download Slip</button>
-            </div>
-
             <div class="modal-actions">
                 <button class="btn btn-danger" onclick="closeModal()">Close</button>
                 <button class="btn" onclick="saveMultiShiftData()">Save Configuration</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Hidden Container for Dynamic Rendering of ID Card and Fee Receipt -->
-    <div id="printContainer">
-        <!-- Takshila Membership ID Card Template -->
-        <div id="idCardNode" class="id-card-preview">
-            <div class="id-card-header">
-                <div class="id-card-title">TAKSHILA LIBRARY</div>
-                <div class="id-card-subtitle">MEMBERSHIP CARD</div>
-            </div>
-            <div class="id-card-body">
-                <img id="printCardPhoto" class="id-card-img" src="" alt="Student Photo">
-                <div class="id-card-details">
-                    <span><b>Name:</b> <strong id="printCardName" style="color:#ffffff;">-</strong></span>
-                    <span><b>Seat No:</b> <strong id="printCardSeat" style="color:#38bdf8;">-#</strong></span>
-                    <span><b>Shift:</b> <strong id="printCardShift" style="color:#ffffff;">-</strong></span>
-                    <span><b>Mob:</b> <strong id="printCardMob" style="color:#ffffff;">-</strong></span>
-                    <span><b>Valid Till:</b> <strong id="printCardValid" style="color:#34d399;">-</strong></span>
-                </div>
-            </div>
-            <div class="id-card-footer">Manali Chowk, Bhagalpur</div>
-        </div>
-
-        <!-- Takshila Fee Receipt Template -->
-        <div id="receiptNode" class="receipt-preview">
-            <div class="receipt-header">
-                <h2>तक्षशिला लाइब्रेरी</h2>
-                <p>पता - मनाली चौक, छोटी खंजरपुर, भागलपुर</p>
-                <p style="margin-top:2px;">Mob.- 6207479929, 7634993778</p>
-            </div>
-            <div class="receipt-meta">
-                <span id="printReceiptNo">No. TSL-00-0000</span>
-                <span id="printReceiptDate">Date: YYYY-MM-DD</span>
-            </div>
-            <div style="font-size:0.85rem; margin-bottom:8px;">
-                <span><b>Name:</b> <span id="printReceiptName">-</span></span>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:12px; font-weight:bold;">
-                <span>Seat No: <span id="printReceiptSeat" style="color:#b45309;">-#</span></span>
-                <span>Shift: <span id="printReceiptShift">-</span></span>
-            </div>
-            <table class="receipt-table">
-                <thead>
-                    <tr>
-                        <th style="width:40px;">S.N.</th>
-                        <th>Particular</th>
-                        <th>Amount</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1.</td>
-                        <td>Monthly Fee</td>
-                        <td id="printReceiptFee">₹0</td>
-                    </tr>
-                    <tr>
-                        <td>2.</td>
-                        <td>Receipt Date</td>
-                        <td id="printReceiptPayDate">-</td>
-                    </tr>
-                    <tr>
-                        <td>3.</td>
-                        <td>Next Payment Date</td>
-                        <td id="printReceiptRenewalDate">-</td>
-                    </tr>
-                    <tr>
-                        <td>4.</td>
-                        <td>Dues</td>
-                        <td id="printReceiptDue" style="color:#dc2626; font-weight:bold;">₹0</td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="receipt-total">
-                Total Paid: <span id="printReceiptTotalPaid">₹0</span> (UPI/Cash)
-            </div>
-            <div class="receipt-sign">
-                <span id="printReceiptMobFooter">Mob: -</span>
-                <div>
-                    <div class="receipt-sign-line">Chandan</div>
-                    <div style="font-size:0.7rem; text-align:center; margin-top:2px;">Authorized Sig.</div>
-                </div>
             </div>
         </div>
     </div>
@@ -421,7 +276,6 @@
         const TOTAL_SEATS = 105;
         let globalLibraryData = {};
         let activeStream = null;
-        let currentStudentPhotoBase64 = "";
 
         function checkLocalAdmin() {
             const savedAdmin = localStorage.getItem('hariom_saved_admin');
@@ -433,7 +287,6 @@
 
         window.onload = function() {
             checkLocalAdmin();
-            fetchDatabaseRecords();
         };
 
         function verifyAdmin() {
@@ -457,455 +310,382 @@
             el.innerHTML = `
                 <span id="seat-num-text-${i}">${i}</span>
                 <div class="indicators">
-                    <div class="main-shifts">
-                        <div class="dot" id="dot-${i}-m" title="Morning"></div>
-                        <div class="dot" id="dot-${i}-n" title="Noon"></div>
-                        <div class="dot" id="dot-${i}-an" title="Afternoon"></div>
-                        <div class="dot" id="dot-${i}-e" title="Evening"></div>
-                        <div class="night-dot" id="dot-${i}-night" title="Night"></div>
+                    <div class="all-shift-indicator" id="all-ind-${i}"></div>
+                    <div class="main-shifts" id="main-shifts-${i}">
+                        <span class="dot" title="Morning"></span>
+                        <span class="dot" title="Noon"></span>
+                        <span class="dot" title="Afternoon"></span>
+                        <span class="dot" title="Evening"></span>
                     </div>
-                    <div class="all-shift-indicator" id="all-ind-${i}" title="Full Day / All Shift"></div>
+                    <div class="night-dot" id="night-ind-${i}" title="Night Shift"></div>
                 </div>
-                <div id="due-badge-${i}" style="display:none;" class="due-badge">DUE</div>
+                <div id="due-box-${i}"></div>
             `;
-            el.onclick = () => openSeatModal(i);
+            el.id = `seat-${i}`;
+            el.setAttribute('onclick', `openSeatModal(${i})`);
             grid.appendChild(el);
         }
 
-        function fetchDatabaseRecords() {
-            database.ref('library_seats').on('value', (snapshot) => {
-                globalLibraryData = snapshot.val() || {};
-                updateDashboardVisuals();
-            });
-            database.ref('waiting_list').on('value', (snapshot) => {
-                renderWaitingList(snapshot.val() || {});
-            });
-        }
+        database.ref('library_v3').on('value', (snapshot) => {
+            const data = snapshot.val() || {};
+            globalLibraryData = data.seats || {};
+            updateUI(globalLibraryData);
+            updateWaitingUI(data.waiting || {});
+            checkLocalAdmin();
+        });
 
-        function parseDateObj(dateStr) {
-            if(!dateStr) return null;
-            const parts = dateStr.split('-');
-            if(parts.length !== 3) return new Date(dateStr);
-            return new Date(parts[0], parts[1] - 1, parts[2]);
-        }
-
-        function getShiftStatus(shiftData) {
-            if(!shiftData || (!shiftData.name && !shiftData.phone)) return 'empty';
-            const renewalDateStr = shiftData.date;
-            if(!renewalDateStr) return 'active';
-            
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            const renewalDate = parseDateObj(renewalDateStr);
-            renewalDate.setHours(0,0,0,0);
-
-            const diffTime = renewalDate - today;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-            if(diffDays < 0) return 'expired';
-            if(diffDays <= 3) return 'alert';
-            return 'active';
-        }
-
-        function updateDashboardVisuals() {
+        function updateUI(seats) {
+            let totalIncome = 0;
             let activeBookings = 0;
-            let totalIncomeVal = 0;
+            
+            // AUTOMATIC LIVE DATE DETECTOR (Kayi saal tak bina code badle chalega)
             const today = new Date();
+            const currentMonth = today.getMonth(); // Auto Month Number (0 to 11)
+            const currentYear = today.getFullYear(); // Auto Live Year (e.g. 2026)
+
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            document.getElementById('collectionLabel').innerHTML = `💰 Total Collection (${monthNames[currentMonth]} ${currentYear})`;
+
             today.setHours(0,0,0,0);
+            const threeDaysLater = new Date(today);
+            threeDaysLater.setDate(today.getDate() + 3);
+
+            // strictly payment date filter for total calculation
+            function getFilteredFees(feesValue, payDateStr) {
+                const amount = parseInt(feesValue, 10) || 0;
+                if (amount <= 0 || !payDateStr) return 0;
+                
+                // Pure Dynamic Payment Date Check
+                const parts = payDateStr.split('-');
+                if(parts.length === 3) {
+                    const yearInput = parseInt(parts[0], 10);
+                    const monthInput = parseInt(parts[1], 10) - 1; // Month index sync
+                    
+                    // Agar payment isi dynamic mahine aur saal ki hai tabhi judega
+                    if(monthInput === currentMonth && yearInput === currentYear) {
+                        return amount;
+                    }
+                }
+                return 0;
+            }
 
             for(let i=1; i<=TOTAL_SEATS; i++) {
-                const seatData = globalLibraryData[i] || {};
-                let hasAnyActive = false;
-                let hasAnyAlert = false;
-                let hasAnyExpired = false;
-                let hasAnyDue = false;
-
-                const shifts = ['m', 'n', 'an', 'e', 'night', 'all'];
+                const seatEl = document.getElementById(`seat-${i}`);
+                const dueBox = document.getElementById(`due-box-${i}`);
+                const data = seats[i] || {};
                 
-                shifts.forEach(s => {
-                    const sd = seatData[s];
-                    if(sd && (sd.name || sd.phone)) {
-                        hasAnyActive = true;
-                        const st = getShiftStatus(sd);
-                        if(st === 'alert') hasAnyAlert = true;
-                        if(st === 'expired') hasAnyExpired = true;
-                        if(sd.due && Number(sd.due) > 0) hasAnyDue = true;
-                        if(sd.fees) totalIncomeVal += Number(sd.fees);
-                    }
-                });
-
-                const seatEl = grid.children[i-1];
-                seatEl.className = (i >= 64 && i <= 85) ? 'seat is-unreserved' : 'seat';
-
-                if(seatData.all && (seatData.all.name || seatData.all.phone)) {
-                    seatEl.classList.add('is-allshift');
-                } else if(hasAnyActive) {
-                    seatEl.classList.add('is-booked');
-                }
-
-                if(hasAnyExpired) {
-                    seatEl.classList.add('has-expired');
-                } else if(hasAnyAlert) {
-                    seatEl.classList.add('has-alert');
-                }
-
-                if(hasAnyActive) activeBookings++;
-
-                // Indicators update
-                ['m', 'n', 'an', 'e'].forEach(s => {
-                    const dot = document.getElementById(`dot-${i}-${s}`);
-                    dot.className = 'dot';
-                    const sd = seatData[s];
-                    if(sd && (sd.name || sd.phone)) {
-                        const st = getShiftStatus(sd);
-                        dot.classList.add(st === 'active' ? 'active' : st);
-                    }
-                });
-
-                const nightDot = document.getElementById(`dot-${i}-night`);
-                nightDot.className = 'night-dot';
-                const nd = seatData['night'];
-                if(nd && (nd.name || nd.phone)) {
-                    const st = getShiftStatus(nd);
-                    nightDot.classList.add(st === 'active' ? 'active' : st);
-                }
-
                 const allInd = document.getElementById(`all-ind-${i}`);
+                const mainShiftsDiv = document.getElementById(`main-shifts-${i}`);
+                const nightInd = document.getElementById(`night-ind-${i}`);
+                const dots = mainShiftsDiv.querySelectorAll('.dot');
+
                 allInd.className = 'all-shift-indicator';
-                const ad = seatData['all'];
-                if(ad && (ad.name || ad.phone)) {
-                    const st = getShiftStatus(ad);
-                    allInd.classList.add('active');
-                    if(st !== 'active') allInd.classList.add(st);
+                nightInd.className = 'night-dot';
+                dots.forEach(d => d.className = 'dot');
+                seatEl.className = (i >= 64 && i <= 85) ? 'seat is-unreserved' : 'seat';
+                dueBox.innerHTML = ''; 
+
+                let hasExpired = false;
+                let hasAlert = false;
+                let seatHasAnyBooking = false;
+                let totalDueAmountOnSeat = 0;
+
+                // 100% accurate live month strict calculator
+                totalIncome += getFilteredFees(data.fees_all, data.paydate_all) + 
+                               getFilteredFees(data.fees_m, data.paydate_m) + 
+                               getFilteredFees(data.fees_n, data.paydate_n) + 
+                               getFilteredFees(data.fees_an, data.paydate_an) + 
+                               getFilteredFees(data.fees_e, data.paydate_e) + 
+                               getFilteredFees(data.fees_night, data.paydate_night);
+
+                function checkStatus(dateStr) {
+                    if(!dateStr) return 'none';
+                    const targetDate = new Date(dateStr);
+                    targetDate.setHours(0,0,0,0);
+                    if(targetDate <= today) return 'expired';
+                    if(targetDate <= threeDaysLater) return 'alert';
+                    return 'active';
                 }
 
-                const dueBadge = document.getElementById(`due-badge-${i}`);
-                if(hasAnyDue) {
-                    dueBadge.style.display = 'block';
+                if(data.name_all) {
+                    totalDueAmountOnSeat += (parseInt(data.due_all, 10) || 0);
                 } else {
-                    dueBadge.style.display = 'none';
+                    ['m', 'n', 'an', 'e'].forEach(s => {
+                        if(data[`name_${s}`]) totalDueAmountOnSeat += (parseInt(data[`due_${s}`], 10) || 0);
+                    });
+                }
+                if(data.name_night) totalDueAmountOnSeat += (parseInt(data[`due_night`], 10) || 0);
+
+                if(data.name_all) {
+                    activeBookings++;
+                    seatHasAnyBooking = true;
+                    allInd.classList.add('active');
+                    mainShiftsDiv.style.display = 'none'; 
+                    seatEl.classList.add('is-allshift');
+                    
+                    const status = checkStatus(data.date_all);
+                    if(status === 'expired') { allInd.classList.add('expired'); hasExpired = true; }
+                    else if(status === 'alert') { allInd.classList.add('alert'); hasAlert = true; }
+                } else {
+                    mainShiftsDiv.style.display = 'flex';
+                    const shifts = ['m', 'n', 'an', 'e'];
+                    shifts.forEach((s, idx) => {
+                        if(data[`name_${s}`]) {
+                            activeBookings++;
+                            seatHasAnyBooking = true;
+                            dots[idx].classList.add('active');
+                            
+                            const status = checkStatus(data[`date_${s}`]);
+                            if(status === 'expired') { dots[idx].classList.add('expired'); hasExpired = true; }
+                            else if(status === 'alert') { dots[idx].classList.add('alert'); hasAlert = true; }
+                        }
+                    });
+                }
+
+                if(data.name_night) {
+                    activeBookings++;
+                    seatHasAnyBooking = true;
+                    nightInd.classList.add('active');
+                    
+                    const status = checkStatus(data.date_night);
+                    if(status === 'expired') { nightInd.classList.add('expired'); hasExpired = true; }
+                    else if(status === 'alert') { nightInd.classList.add('alert'); hasAlert = true; }
+                }
+
+                if(seatHasAnyBooking && !data.name_all) seatEl.classList.add('is-booked');
+                if(hasAlert) seatEl.classList.add('has-alert');
+                if(hasExpired) seatEl.classList.add('has-expired'); 
+
+                if(totalDueAmountOnSeat > 0) {
+                    dueBox.innerHTML = `<div class="due-badge">↑ ₹${totalDueAmountOnSeat}</div>`;
                 }
             }
 
             document.getElementById('activeBookingsCount').innerText = activeBookings;
-            document.getElementById('totalIncome').innerText = '₹' + totalIncomeVal;
+            document.getElementById('totalIncome').innerText = '₹' + totalIncome;
+        }
+
+        function toggleModalShifts(allShiftValue) {
+            const normalBlocks = document.querySelectorAll('.normal-shift');
+            const divider = document.getElementById('orDivider');
+            if(allShiftValue.trim() !== "") {
+                normalBlocks.forEach(b => b.classList.add('disabled-block'));
+                divider.style.opacity = '0.2';
+            } else {
+                normalBlocks.forEach(b => b.classList.remove('disabled-block'));
+                divider.style.opacity = '1';
+            }
         }
 
         function openSeatModal(seatNum) {
-            if(!isAdminVerified) {
-                alert("⚠️ Please verify admin mobile number first!");
-                return;
-            }
             activeSeatNumber = seatNum;
-            document.getElementById('modalTitle').innerText = `Seat Number #${seatNum} Configuration`;
-            document.getElementById('seatModal').style.display = 'flex';
-
-            const seatData = globalLibraryData[seatNum] || {};
-            const shifts = ['all', 'm', 'n', 'an', 'e', 'night'];
-
-            shifts.forEach(s => {
-                const sd = seatData[s] || {};
-                document.getElementById(`name_${s}`).value = sd.name || '';
-                document.getElementById(`phone_${s}`).value = sd.phone || '';
-                document.getElementById(`fees_${s}`).value = sd.fees || '';
-                document.getElementById(`due_${s}`).value = sd.due || '';
-                document.getElementById(`date_${s}`).value = sd.date || '';
-                document.getElementById(`paydate_${s}`).value = sd.paydate || '';
+            document.getElementById('modalTitle').innerText = `Manage Seat - ${seatNum}`;
+            const data = globalLibraryData[seatNum] || {};
+            
+            const fields = ['all', 'm', 'n', 'an', 'e', 'night'];
+            fields.forEach(f => {
+                document.getElementById(`name_${f}`).value = data[`name_${f}`] || '';
+                document.getElementById(`phone_${f}`).value = data[`phone_${f}`] || '';
+                document.getElementById(`date_${f}`).value = data[`date_${f}`] || '';
+                document.getElementById(`paydate_${f}`).value = data[`paydate_${f}`] || '';
+                document.getElementById(`fees_${f}`).value = data[`fees_${f}`] || 0;
+                document.getElementById(`due_${f}`).value = data[`due_${f}`] || 0;
             });
 
-            currentStudentPhotoBase64 = seatData.photo || "";
-            const previewImg = document.getElementById('capturedPreview');
-            if(currentStudentPhotoBase64) {
-                previewImg.src = currentStudentPhotoBase64;
-                previewImg.style.display = 'block';
-                document.getElementById('snapshotStatus').innerText = "✅ Student photo loaded from record.";
-            } else {
-                previewImg.style.display = 'none';
-                document.getElementById('snapshotStatus').innerText = "";
-            }
-
-            toggleModalShifts(document.getElementById('name_all').value);
+            toggleModalShifts(data['name_all'] || '');
+            document.getElementById('seatModal').style.display = 'flex';
         }
 
-        function closeModal() {
-            document.getElementById('seatModal').style.display = 'none';
-            if(activeStream) {
-                activeStream.getTracks().forEach(track => track.stop());
-                activeStream = null;
-                document.getElementById('cameraView').style.display = 'none';
-                document.getElementById('captureBtn').style.display = 'none';
-            }
-        }
+        document.getElementById('seatModal').addEventListener('click', function(e) {
+            if(e.target === this) closeModal();
+        });
 
-        function toggleModalShifts(allVal) {
-            const normalShifts = ['m', 'n', 'an', 'e', 'night'];
-            if(allVal && allVal.trim() !== '') {
-                normalShifts.forEach(s => {
-                    document.getElementById(`block_${s}`).classList.add('disabled-block');
-                });
-                document.getElementById('orDivider').style.opacity = '0.3';
-            } else {
-                normalShifts.forEach(s => {
-                    document.getElementById(`block_${s}`).classList.remove('disabled-block');
-                });
-                document.getElementById('orDivider').style.opacity = '1';
-            }
-        }
+        function closeModal() { document.getElementById('seatModal').style.display = 'none'; }
 
         function saveMultiShiftData() {
-            if(!isAdminVerified) {
-                alert("Unauthorized action!");
-                return;
-            }
+            if(!isAdminVerified) { alert("⚠️ Please verify Admin Number first!"); return; }
 
-            const seatData = {
-                photo: currentStudentPhotoBase64
+            const oldData = globalLibraryData[activeSeatNumber] || {};
+            const update = {};
+            const fields = ['all', 'm', 'n', 'an', 'e', 'night'];
+            const isAllShiftActive = document.getElementById('name_all').value.trim() !== "";
+
+            const shiftNamesHindi = {
+                'all': 'Full Day (6 AM - 10 PM)', 'm': 'Morning (6 AM - 10 AM)', 'n': 'Noon (10 AM - 2 PM)',
+                'an': 'Afternoon (2 PM - 6 PM)', 'e': 'Evening (6 PM - 10 PM)', 'night': 'Night Shift'
             };
-            const shifts = ['all', 'm', 'n', 'an', 'e', 'night'];
 
-            shifts.forEach(s => {
-                seatData[s] = {
-                    name: document.getElementById(`name_${s}`).value.trim(),
-                    phone: document.getElementById(`phone_${s}`).value.trim(),
-                    fees: document.getElementById(`fees_${s}`).value.trim(),
-                    due: document.getElementById(`due_${s}`).value.trim(),
-                    date: document.getElementById(`date_${s}`).value.trim(),
-                    paydate: document.getElementById(`paydate_${s}`).value.trim()
-                };
+            const whatsappTriggers = [];
+
+            fields.forEach(f => {
+                if(isAllShiftActive && ['m', 'n', 'an', 'e'].includes(f)) {
+                    update[`name_${f}`] = ""; update[`phone_${f}`] = ""; update[`date_${f}`] = "";
+                    update[`paydate_${f}`] = ""; update[`fees_${f}`] = 0; update[`due_${f}`] = 0;
+                } else {
+                    const newName = document.getElementById(`name_${f}`).value.trim();
+                    const newPhone = document.getElementById(`phone_${f}`).value.trim();
+                    const newDate = document.getElementById(`date_${f}`).value;
+                    const newFees = parseInt(document.getElementById(`fees_${f}`).value, 10) || 0;
+                    const newDue = parseInt(document.getElementById(`due_${f}`).value, 10) || 0;
+                    const newPayDate = document.getElementById(`paydate_${f}`).value;
+
+                    update[`name_${f}`] = newName;
+                    update[`phone_${f}`] = newPhone;
+                    update[`date_${f}`] = newDate;
+                    update[`paydate_${f}`] = newPayDate;
+                    update[`fees_${f}`] = newFees;
+                    update[`due_${f}`] = newDue;
+
+                    if(newName !== "" && newName !== oldData[`name_${f}`] && newPhone !== "") {
+                        whatsappTriggers.push({
+                            name: newName, phone: newPhone, shift: shiftNamesHindi[f],
+                            renewal: newDate || 'Not Set', fees: newFees, due: newDue
+                        });
+                    }
+                }
             });
 
-            database.ref(`library_seats/${activeSeatNumber}`).set(seatData, (error) => {
-                if(error) {
-                    alert("❌ Failed to save: " + error.message);
-                } else {
-                    alert("✅ Seat configuration saved successfully!");
-                    closeModal();
-                }
+            database.ref('library_v3/seats/' + activeSeatNumber).set(update)
+                .then(() => { 
+                    closeModal(); 
+                    if(whatsappTriggers.length > 0) {
+                        alert(`🎉 Data Saved! Opening WhatsApp for ${whatsappTriggers.length} student(s).`);
+                        whatsappTriggers.forEach((student, index) => {
+                            setTimeout(() => {
+                                let formattedPhone = student.phone;
+                                if(!formattedPhone.startsWith('91') && formattedPhone.length === 10) {
+                                    formattedPhone = '91' + formattedPhone;
+                                }
+                                let msg = `*Hello ${student.name}*, 👋\n\n*Welcome to Hariom Smart Library!* 📚✨\n\nAapka admission confirm ho gaya hai.\n\n*Seat No:* ${activeSeatNumber}\n*Shift:* ${student.shift}\n*Fees Paid:* ₹${student.fees}`;
+                                if(student.due > 0) {
+                                    msg += `\n*Due Amount:* ₹${student.due} ⚠️`;
+                                }
+                                msg += `\n*Renewal Date:* ${student.renewal}\n\nThank you for choosing us! Keep Studying. 📖`;
+                                window.open(`https://api.whatsapp.com/send?phone=${formattedPhone}&text=${encodeURIComponent(msg)}`, '_blank');
+                            }, index * 1200);
+                        });
+                    }
+                })
+                .catch(err => alert("Error saving data: " + err));
+        }
+
+        function addWaiting() {
+            if(!isAdminVerified) { alert("⚠️ Verify admin status!"); return; }
+            const name = document.getElementById('waitName').value;
+            const phone = document.getElementById('waitPhone').value;
+            if(!name) return;
+            database.ref('library_v3/waiting').push().set({ name, phone }).then(() => {
+                document.getElementById('waitName').value = '';
+                document.getElementById('waitPhone').value = '';
+            });
+        }
+        
+        function removeWaiting(key) {
+            if(!isAdminVerified) { alert("⚠️ Verify admin status!"); return; }
+            database.ref('library_v3/waiting/' + key).remove();
+        }
+        
+        function updateWaitingUI(waitingData) {
+            const container = document.getElementById('waitingListContainer');
+            container.innerHTML = '';
+            Object.keys(waitingData).forEach((key, idx) => {
+                const item = waitingData[key];
+                container.innerHTML += `
+                    <div class="waiting-item">
+                        <span><strong>#${idx+1}</strong> ${item.name} (${item.phone})</span>
+                        <button class="btn btn-danger" style="padding:4px 10px; font-size:0.75rem;" onclick="removeWaiting('${key}')">Remove</button>
+                    </div>`;
             });
         }
 
-        // Camera Initialization for Student ID Photo
+        function filterSeats() {
+            const query = document.getElementById('searchBox').value.toLowerCase();
+            const fields = ['all', 'm', 'n', 'an', 'e', 'night'];
+            for(let i=1; i<=TOTAL_SEATS; i++) {
+                const seatEl = document.getElementById(`seat-${i}`);
+                const data = globalLibraryData[i];
+                if(!query) { seatEl.style.opacity = '1'; continue; }
+                
+                let match = i.toString() === query;
+                if(data) {
+                    fields.forEach(f => {
+                        if(data[`name_${f}`] && data[`name_${f}`].toLowerCase().includes(query)) {
+                            match = true;
+                        }
+                    });
+                }
+                seatEl.style.opacity = match ? '1' : '0.1';
+            }
+        }
+
         function initiateBackCamera() {
             const video = document.getElementById('cameraView');
             const captureBtn = document.getElementById('captureBtn');
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" } } })
-                .then(stream => {
-                    activeStream = stream;
-                    video.srcObject = stream;
-                    video.style.display = 'block';
-                    captureBtn.style.display = 'block';
-                    document.getElementById('snapshotStatus').innerText = "Camera active. Frame student face/ID.";
+            const constraints = { video: { facingMode: { exact: "environment" } } };
+
+            navigator.mediaDevices.getUserMedia(constraints)
+                .then((stream) => {
+                    activeStream = stream; video.srcObject = stream;
+                    video.style.display = "block"; captureBtn.style.display = "inline-block";
+                    document.getElementById('snapshotStatus').innerText = "Back camera loaded successfully.";
                 })
-                .catch(err => {
-                    alert("Camera access error: " + err);
+                .catch((err) => {
+                    navigator.mediaDevices.getUserMedia({ video: true })
+                        .then((stream) => {
+                            activeStream = stream; video.srcObject = stream;
+                            video.style.display = "block"; captureBtn.style.display = "inline-block";
+                            document.getElementById('snapshotStatus').innerText = "Default camera active.";
+                        })
+                        .catch(e => alert("Camera Access Error: " + e));
                 });
         }
 
         function captureDocumentSnapshot() {
             const video = document.getElementById('cameraView');
             const canvas = document.getElementById('photoCanvas');
-            const previewImg = document.getElementById('capturedPreview');
-            
-            canvas.width = video.videoWidth || 320;
-            canvas.height = video.videoHeight || 240;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            
-            currentStudentPhotoBase64 = canvas.toDataURL('image/png');
-            previewImg.src = currentStudentPhotoBase64;
-            previewImg.style.display = 'block';
-            document.getElementById('snapshotStatus').innerText = "✅ Snapshot captured successfully!";
+            const context = canvas.getContext('2d');
 
+            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            document.getElementById('snapshotStatus').innerText = "✅ Snapshot verified and recorded locally!";
             if(activeStream) {
                 activeStream.getTracks().forEach(track => track.stop());
-                activeStream = null;
-                video.style.display = 'none';
-                document.getElementById('captureBtn').style.display = 'none';
+                video.style.display = "none"; document.getElementById('captureBtn').style.display = "none";
             }
         }
 
-        // ID Card & Receipt Download Handlers
-        function getActiveStudentDetailsForPrint() {
-            const shifts = ['all', 'm', 'n', 'an', 'e', 'night'];
-            const shiftNamesMap = {
-                all: 'Full Day / All Shift',
-                m: 'Morning',
-                n: 'Noon',
-                an: 'Afternoon',
-                e: 'Evening',
-                night: 'Night'
-            };
-
-            for(let s of shifts) {
-                const name = document.getElementById(`name_${s}`).value.trim();
-                if(name) {
-                    return {
-                        name: name,
-                        phone: document.getElementById(`phone_${s}`).value.trim() || 'N/A',
-                        fees: document.getElementById(`fees_${s}`).value.trim() || '0',
-                        due: document.getElementById(`due_${s}`).value.trim() || '0',
-                        date: document.getElementById(`date_${s}`).value.trim() || 'N/A',
-                        paydate: document.getElementById(`paydate_${s}`).value.trim() || new Date().toISOString().split('T')[0],
-                        shiftKey: s,
-                        shiftName: shiftNamesMap[s]
-                    };
-                }
-            }
-            return null;
-        }
-
-        function downloadIDCard() {
-            const student = getActiveStudentDetailsForPrint();
-            if(!student) {
-                alert("⚠️ Please enter student details in at least one shift before generating ID Card!");
-                return;
-            }
-
-            document.getElementById('printCardName').innerText = student.name;
-            document.getElementById('printCardSeat').innerText = '#' + activeSeatNumber;
-            document.getElementById('printCardShift').innerText = student.shiftName;
-            document.getElementById('printCardMob').innerText = student.phone;
-            document.getElementById('printCardValid').innerText = student.date;
-            
-            const cardImg = document.getElementById('printCardPhoto');
-            if(currentStudentPhotoBase64) {
-                cardImg.src = currentStudentPhotoBase64;
-            } else {
-                cardImg.src = 'https://via.placeholder.com/90x110?text=No+Photo';
-            }
-
-            const node = document.getElementById('idCardNode');
-            html2canvas(node, { scale: 2 }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `Takshila_ID_Card_${student.name.replace(/\s+/g, '_')}_Seat_${activeSeatNumber}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            });
-        }
-
-        function downloadReceipt() {
-            const student = getActiveStudentDetailsForPrint();
-            if(!student) {
-                alert("⚠️ Please enter student details in at least one shift before generating Receipt!");
-                return;
-            }
-
-            const receiptNo = `TSL-${activeSeatNumber}-${Math.floor(1000 + Math.random() * 9000)}`;
-            document.getElementById('printReceiptNo').innerText = `No. ${receiptNo}`;
-            document.getElementById('printReceiptDate').innerText = `Date: ${new Date().toISOString().split('T')[0]}`;
-            document.getElementById('printReceiptName').innerText = student.name;
-            document.getElementById('printReceiptSeat').innerText = `#${activeSeatNumber}`;
-            document.getElementById('printReceiptShift').innerText = student.shiftName;
-            document.getElementById('printReceiptFee').innerText = `₹${student.fees}`;
-            document.getElementById('printReceiptPayDate').innerText = student.paydate;
-            document.getElementById('printReceiptRenewalDate').innerText = student.date;
-            document.getElementById('printReceiptDue').innerText = `₹${student.due}`;
-            document.getElementById('printReceiptTotalPaid').innerText = `₹${student.fees}`;
-            document.getElementById('printReceiptMobFooter').innerText = `Mob: ${student.phone}`;
-
-            const node = document.getElementById('receiptNode');
-            html2canvas(node, { scale: 2 }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `Takshila_Receipt_${student.name.replace(/\s+/g, '_')}_Seat_${activeSeatNumber}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            });
-        }
-
-        // Waiting List Functions
-        function addWaiting() {
-            const name = document.getElementById('waitName').value.trim();
-            const phone = document.getElementById('waitPhone').value.trim();
-            if(!name) { alert("Enter name"); return; }
-            database.ref('waiting_list').push({ name, phone, timestamp: Date.now() });
-            document.getElementById('waitName').value = '';
-            document.getElementById('waitPhone').value = '';
-        }
-
-        function removeWaiting(key) {
-            database.ref(`waiting_list/${key}`).remove();
-        }
-
-        function renderWaitingList(listObj) {
-            const container = document.getElementById('waitingListContainer');
-            container.innerHTML = '';
-            const keys = Object.keys(listObj);
-            if(keys.length === 0) {
-                container.innerHTML = '<div style="font-size:0.8rem; color:#64748b; text-align:center; padding:5px;">No students in waiting list.</div>';
-                return;
-            }
-            keys.forEach(key => {
-                const item = listObj[key];
-                const div = document.createElement('div');
-                div.className = 'waiting-item';
-                div.innerHTML = `
-                    <div><strong>${item.name}</strong> <span style="font-size:0.75rem; color:#94a3b8;">(${item.phone || 'No phone'})</span></div>
-                    <button class="btn btn-danger" style="padding:4px 8px; font-size:0.75rem;" onclick="removeWaiting('${key}')">Remove</button>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        // Excel Backup Export
         function exportLibraryDataToExcel() {
-            let excelRows = [];
-            for(let i=1; i<=TOTAL_SEATS; i++) {
-                const sd = globalLibraryData[i] || {};
+            const reportData = [];
+            for(let i = 1; i <= TOTAL_SEATS; i++) {
+                const data = globalLibraryData[i] || {};
                 const shifts = ['all', 'm', 'n', 'an', 'e', 'night'];
-                shifts.forEach(shiftKey => {
-                    const shiftData = sd[shiftKey];
-                    if(shiftData && (shiftData.name || shiftData.phone)) {
-                        excelRows.push({
+                const shiftNames = {
+                    'all': 'Full Day Shift', 'm': 'Morning Shift', 'n': 'Noon Shift', 
+                    'an': 'Afternoon Shift', 'e': 'Evening Shift', 'night': 'Night Shift'
+                };
+
+                shifts.forEach(f => {
+                    if(data[`name_${f}`]) {
+                        reportData.push({
                             "Seat Number": i,
-                            "Shift": shiftKey.toUpperCase(),
-                            "Student Name": shiftData.name || "",
-                            "Phone": shiftData.phone || "",
-                            "Fees Paid (₹)": shiftData.fees || 0,
-                            "Due (₹)": shiftData.due || 0,
-                            "Payment Date": shiftData.paydate || "",
-                            "Renewal Date": shiftData.date || ""
+                            "Shift Type": shiftNames[f],
+                            "Student Name": data[`name_${f}`] || '',
+                            "Mobile Number": data[`phone_${f}`] || '',
+                            "Fees Paid": data[`fees_${f}`] || 0,
+                            "Due Amount": data[`due_${f}`] || 0,
+                            "Renewal Date": data[`date_${f}`] || '',
+                            "Payment Date": data[`paydate_${f}`] || ''
                         });
                     }
                 });
             }
 
-            if(excelRows.length === 0) {
-                alert("No active bookings found to export!");
-                return;
-            }
-
-            const worksheet = XLSX.utils.json_to_sheet(excelRows);
+            if(reportData.length === 0) { alert("No active booking data found to export!"); return; }
+            const worksheet = XLSX.utils.json_to_sheet(reportData);
             const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Active Library Records");
-            XLSX.writeFile(workbook, "Hariom_Library_Backup_" + new Date().toISOString().split('T')[0] + ".xlsx");
-        }
-
-        function filterSeats() {
-            const query = document.getElementById('searchBox').value.toLowerCase().trim();
-            for(let i=1; i<=TOTAL_SEATS; i++) {
-                const seatEl = grid.children[i-1];
-                if(!query) {
-                    seatEl.style.display = 'flex';
-                    continue;
-                }
-                
-                if(i.toString() === query) {
-                    seatEl.style.display = 'flex';
-                    continue;
-                }
-
-                const seatData = globalLibraryData[i] || {};
-                let found = false;
-                const shifts = ['all', 'm', 'n', 'an', 'e', 'night'];
-                shifts.forEach(s => {
-                    const sd = seatData[s];
-                    if(sd && ((sd.name && sd.name.toLowerCase().includes(query)) || (sd.phone && sd.phone.includes(query)))) {
-                        found = true;
-                    }
-                });
-
-                seatEl.style.display = found ? 'flex' : 'none';
-            }
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Library Bookings");
+            XLSX.writeFile(workbook, "Hariom_Library_Backup_V4.xlsx");
         }
     </script>
 </body>
