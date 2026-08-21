@@ -3,14 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hariom Smart Library - Dynamic Control Panel</title>
+    <title>Hariom Smart Library - Master Enterprise Engine V10</title>
+    <!-- Firebase, Excel, QR Code, Chart.js -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --bg-color: #0b0f19;
             --card-color: #151f32;
+            --border-color: #233554;
             --primary-color: #6366f1;
             --success-color: #10b981;
             --danger-color: #ef4444;
@@ -21,329 +25,307 @@
             --active-booking-bg: #1e1b4b; 
             --active-booking-border: #818cf8;
         }
+
+        .light-theme {
+            --bg-color: #f1f5f9;
+            --card-color: #ffffff;
+            --border-color: #cbd5e1;
+            --primary-color: #4f46e5;
+            --success-color: #059669;
+            --danger-color: #dc2626;
+            --warning-color: #d97706;
+            --text-color: #0f172a;
+            --active-booking-bg: #e0e7ff;
+            --active-booking-border: #4f46e5;
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-color); padding: 15px; }
-        .header { background: linear-gradient(135deg, #3b82f6, #8b5cf6); padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
+        body { background-color: var(--bg-color); color: var(--text-color); padding: 15px; transition: 0.3s; }
         
-        .admin-section { background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; }
-        .admin-section input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #233554; background: #0b0f19; color: white; }
-        .btn { padding: 10px 20px; border: none; border-radius: 8px; background: var(--primary-color); color: white; cursor: pointer; font-weight: bold; }
+        .header { background: linear-gradient(135deg, #3b82f6, #8b5cf6); padding: 18px; border-radius: 15px; text-align: center; margin-bottom: 20px; position: relative; }
+        .theme-toggle-btn { position: absolute; right: 15px; top: 18px; background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
+        
+        .admin-section { background: var(--card-color); padding: 12px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; border: 1px solid var(--border-color); }
+        .admin-section input { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-color); }
+        
+        .btn { padding: 9px 16px; border: none; border-radius: 8px; background: var(--primary-color); color: white; cursor: pointer; font-weight: bold; font-size: 0.85rem; transition: 0.2s; }
+        .btn:hover { opacity: 0.9; }
         .btn-danger { background: var(--danger-color); }
         .btn-success { background: var(--success-color); }
+        .btn-warning { background: var(--warning-color); color: #000; }
         
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
-        .stat-card { background: var(--card-color); padding: 12px; border-radius: 10px; text-align: center; border-left: 4px solid var(--primary-color); }
+        .stat-card { background: var(--card-color); padding: 12px; border-radius: 10px; text-align: center; border-left: 4px solid var(--primary-color); border-top: 1px solid var(--border-color); }
         .stat-card.vacant { border-left-color: var(--success-color); }
         .stat-card.income { grid-column: span 2; font-size: 1.1rem; border-left-color: #ec4899; }
-        .stat-card div { font-size: 0.8rem; color: #64748b; text-transform: uppercase; }
-        .stat-card span { font-size: 1.4rem; font-weight: bold; display: block; margin-top: 5px; }
+        .stat-card div { font-size: 0.75rem; color: #64748b; text-transform: uppercase; }
+        .stat-card span { font-size: 1.3rem; font-weight: bold; display: block; margin-top: 4px; }
 
-        .search-box { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #233554; background: var(--card-color); color: white; margin-bottom: 20px; }
+        .search-box { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--card-color); color: var(--text-color); margin-bottom: 20px; }
         
+        /* SEATS GRID & EMBEDDED UNRESERVED PANEL */
         .seats-container { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 30px; }
-        
-        .seat { background: #1e293b; padding: 8px 4px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; font-weight: bold; font-size: 1rem; cursor: pointer; color: white; transition: 0.2s; min-height: 85px; position: relative; border: 1px solid #475569; }
+        .seat { background: var(--card-color); padding: 8px 4px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; font-weight: bold; font-size: 0.95rem; cursor: pointer; color: var(--text-color); transition: 0.2s; min-height: 85px; position: relative; border: 1px solid var(--border-color); }
         .seat.is-booked { background: var(--active-booking-bg) !important; border-color: var(--active-booking-border) !important; }
-        .seat.is-allshift { border-color: #eab308 !important; background: #232212 !important; }
-        
-        .seat.has-alert { border: 2px dashed var(--warning-alert) !important; animation: mildBlink 2s infinite; }
-        .seat.has-expired { border: 2px dashed var(--danger-color) !important; background: #2d1015 !important; animation: severeBlink 1.5s infinite; }
-        
-        .due-badge { font-size: 0.7rem; color: #ff4444; background: rgba(255, 68, 68, 0.2); padding: 2px 4px; border-radius: 4px; margin-top: 3px; animation: arrowBlink 1s infinite; font-weight: bold; width: 100%; text-align: center; border: 1px solid #ff444444; }
+        .seat.is-allshift { border-color: #eab308 !important; }
+        .seat.has-alert { border: 2px dashed var(--warning-alert) !important; }
+        .seat.has-expired { border: 2px dashed var(--danger-color) !important; }
 
+        /* EMBEDDED UNRESERVED ZONE BETWEEN 64 AND 85 */
+        .ur-embedded-panel { grid-column: span 5; background: var(--card-color); border: 2px dashed #6366f1; border-radius: 12px; padding: 15px; margin: 10px 0; }
+        .ur-top-form { background: var(--bg-color); padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border-color); }
+        .ur-top-form h4 { color: #818cf8; font-size: 0.9rem; margin-bottom: 8px; }
+        .ur-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; }
+        .ur-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; max-height: 280px; overflow-y: auto; padding: 2px; }
+        .ur-card { background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px; position: relative; }
+        .ur-card-name { font-weight: bold; font-size: 0.85rem; color: var(--text-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ur-card-sub { font-size: 0.7rem; color: #94a3b8; margin-top: 2px; }
+        .ur-card-due { font-size: 0.65rem; color: var(--danger-color); font-weight: bold; }
+        .ur-card-actions { display: flex; gap: 4px; margin-top: 6px; }
+
+        /* INDICATORS */
+        .due-badge { font-size: 0.65rem; color: #ff4444; background: rgba(255, 68, 68, 0.15); padding: 2px 4px; border-radius: 4px; font-weight: bold; }
         .indicators { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%; margin-top: 5px; }
         .main-shifts { display: flex; justify-content: center; gap: 3px; width: 100%; }
-        
-        .dot { width: 6px; height: 6px; border-radius: 50%; background: #475569; transition: 0.2s; }
+        .dot { width: 6px; height: 6px; border-radius: 50%; background: #475569; }
         .dot.active { background: var(--success-color); }
-        .dot.alert { background: var(--warning-alert) !important; animation: blink 1.2s infinite; }
-        .dot.expired { background: var(--danger-color) !important; animation: blink 1.2s infinite; }
-        
-        .night-dot { width: 8px; height: 8px; border-radius: 50%; background: transparent; border: 1px dashed #475569; }
+        .dot.alert { background: var(--warning-alert); }
+        .dot.expired { background: var(--danger-color); }
+        .night-dot { width: 8px; height: 8px; border-radius: 50%; border: 1px dashed #475569; }
         .night-dot.active { background: var(--night-color); border: none; }
-        .night-dot.alert { background: var(--warning-alert) !important; border: none; animation: blink 1.2s infinite; }
-        .night-dot.expired { background: var(--danger-color) !important; border: none; animation: blink 1.2s infinite; }
-
-        .all-shift-indicator { width: 30px; height: 6px; border-radius: 3px; background: #475569; display: none; }
+        .all-shift-indicator { width: 28px; height: 5px; border-radius: 3px; background: #475569; display: none; }
         .all-shift-indicator.active { background: #eab308; display: block; }
-        .all-shift-indicator.alert { background: var(--warning-alert) !important; display: block; animation: blink 1.2s infinite; }
-        .all-shift-indicator.expired { background: var(--danger-color) !important; display: block; animation: blink 1.2s infinite; }
 
-        /* UNRESERVED PAGE STYLES */
-        .ur-section { background: var(--card-color); padding: 18px; border-radius: 12px; margin-bottom: 30px; border: 1px solid #3b82f6; }
-        .ur-section h3 { color: #60a5fa; margin-bottom: 12px; font-size: 1.1rem; display: flex; justify-content: space-between; align-items: center; }
-        .ur-table-wrapper { overflow-x: auto; margin-top: 15px; }
-        .ur-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        .ur-table th, .ur-table td { padding: 10px; border: 1px solid #233554; text-align: left; }
-        .ur-table th { background: #0b0f19; color: #a7f3d0; }
-        .ur-row { background: #0b0f19; transition: 0.2s; }
-        .ur-row.status-alert { background: #451a03 !important; border: 1px solid var(--warning-alert); }
-        .ur-row.status-expired { background: #3f0f16 !important; border: 1px solid var(--danger-color); animation: severeBlink 2s infinite; }
-        
-        .badge { padding: 3px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
-        .badge-alert { background: var(--warning-alert); color: #000; }
-        .badge-expired { background: var(--danger-color); color: #fff; }
-        .badge-active { background: var(--success-color); color: #000; }
+        /* UTILITY SECTIONS */
+        .utility-section { background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border-color); }
+        .utility-section h3 { font-size: 0.95rem; color: #818cf8; margin-bottom: 10px; }
+        input, select { width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-color); font-size: 0.85rem; margin-top: 4px; }
+        label { font-size: 0.75rem; color: #94a3b8; display: block; margin-top: 6px; }
 
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }
-        @keyframes arrowBlink { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
-        @keyframes mildBlink { 0% { border-color: var(--warning-alert); } 50% { border-color: transparent; } 100% { border-color: var(--warning-alert); } }
-        @keyframes severeBlink { 0% { border-color: var(--danger-color); } 50% { border-color: transparent; } 100% { border-color: var(--danger-color); } }
-
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 100; padding: 15px; }
-        .modal-content { background: var(--card-color); padding: 20px; border-radius: 15px; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
-        .modal-content h3 { margin-bottom: 15px; border-bottom: 1px solid #233554; padding-bottom: 10px; text-align: center; }
+        /* MODALS */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 100; padding: 15px; }
+        .modal-content { background: var(--card-color); padding: 20px; border-radius: 15px; width: 100%; max-width: 440px; max-height: 90vh; overflow-y: auto; border: 1px solid var(--border-color); }
+        .modal-content h3 { margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; text-align: center; }
         
-        .shift-block { background: #0b0f19; padding: 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #233554; transition: 0.3s; }
-        .shift-block.disabled-block { opacity: 0.25; pointer-events: none; border-color: #ef444433; }
-        .shift-block h4 { color: #a855f7; margin-bottom: 8px; font-size: 0.9rem; display: flex; justify-content: space-between; }
-        .shift-block.night-block h4 { color: var(--night-color); }
-        .shift-block.all-block h4 { color: #eab308; }
-        
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 6px; }
+        .shift-block { background: var(--bg-color); padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border-color); }
+        .shift-block.disabled-block { opacity: 0.3; pointer-events: none; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
         .form-row.three-col { grid-template-columns: 1fr 1fr 1fr; }
-        .form-row.full { grid-template-columns: 1fr; }
-        label { font-size: 0.75rem; color: #64748b; display: block; margin-bottom: 2px; }
-        input, textarea, select { width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #233554; background: var(--card-color); color: white; font-size: 0.85rem; }
-        
-        .waiting-section, .utility-section { background: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
-        .waiting-item { display: flex; justify-content: space-between; background: #0b0f19; padding: 10px; border-radius: 6px; margin-bottom: 5px; align-items: center; }
-        .modal-actions { display: flex; justify-content: space-between; margin-top: 15px; }
 
-        #cameraView { width: 100%; max-width: 320px; height: 240px; border-radius: 8px; background: #000; margin-top: 10px; display: none; }
-        #photoCanvas { display: none; }
+        /* ID & RECEIPT TEMPLATES */
+        .id-card-view { background: linear-gradient(135deg, #1e1b4b, #0f172a); border: 2px solid #6366f1; border-radius: 12px; padding: 15px; text-align: center; color: white; }
+        .id-card-avatar { width: 55px; height: 55px; border-radius: 50%; background: #334155; margin: 8px auto; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; border: 2px solid #818cf8; }
+        .receipt-card { background: #ffffff; color: #000; padding: 20px; border-radius: 8px; max-width: 320px; margin: auto; font-family: 'Courier New', monospace; }
+        .receipt-row { display: flex; justify-content: space-between; margin: 4px 0; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h2>📚 Hariom Smart Library</h2>
-        <p style="font-size: 0.8rem; opacity: 0.8;">Multi-Shift Realtime Control Panel</p>
+        <button class="theme-toggle-btn" onclick="toggleTheme()">🌓 Theme Toggle</button>
+        <h2>📚 Hariom Smart Library V10</h2>
+        <p style="font-size: 0.8rem; opacity: 0.85;">Enterprise Control Panel & Multi-Shift Engine</p>
     </div>
 
+    <!-- ADMIN AUTHENTICATION -->
     <div class="admin-section">
-        <input type="password" id="adminPhone" placeholder="Enter Admin Mobile Number...">
+        <input type="password" id="adminPhone" placeholder="Enter Admin Mobile / Passcode...">
         <button class="btn" onclick="verifyAdmin()">Verify</button>
     </div>
 
+    <!-- LIVE STATS DASHBOARD -->
     <div class="stats-grid">
-        <div class="stat-card vacant"><div>Reserved Seats</div><span>83 Seats</span></div>
-        <div class="stat-card"><div>Active Bookings</div><span id="activeBookingsCount">0</span></div>
+        <div class="stat-card vacant"><div>Total Library Capacity</div><span>105 Seats</span></div>
+        <div class="stat-card"><div>Active Admissions</div><span id="activeBookingsCount">0</span></div>
         <div class="stat-card income"><div id="collectionLabel">💰 Total Monthly Collection</div><span id="totalIncome">₹0</span></div>
     </div>
 
-    <input type="text" id="searchBox" class="search-box" placeholder="Search student name or seat number..." oninput="filterSeats()">
+    <input type="text" id="searchBox" class="search-box" placeholder="Search student name, seat or shift..." oninput="filterSeats()">
 
-    <h3 style="margin-bottom: 10px; color: #818cf8;">📌 Reserved Fixed Seats (1-63 & 86-105)</h3>
+    <!-- SEATS GRID WITH INTEGRATED EMBEDDED UNRESERVED PANEL -->
     <div class="seats-container" id="seatsGrid"></div>
 
-    <!-- UNRESERVED FLEXIBLE SECTION PAGE -->
-    <div class="ur-section">
-        <h3>
-            <span>🔓 Unreserved / Non-Fixed Student Register</span>
-            <button class="btn btn-success" style="padding: 6px 12px; font-size: 0.8rem;" onclick="openUrModal()">+ Add Unreserved Student</button>
-        </h3>
-        <p style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 10px;">
-            In students ke liye koi fixed seat number reserved nahi hai. Ye aayein aur khali jagah par baithein. Month end hone par row auto RED ho jayegi!
-        </p>
-
-        <div class="ur-table-wrapper">
-            <table class="ur-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Phone</th>
-                        <th>Shift</th>
-                        <th>Fees Paid</th>
-                        <th>Due</th>
-                        <th>Renewal Date</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="urTableBody">
-                    <!-- Dynamic UR Student Rows -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Waiting List Section -->
-    <div class="waiting-section">
-        <h3>📋 Waiting List</h3>
-        <div style="display: flex; gap: 5px; margin-top: 10px;">
-            <input type="text" id="waitName" placeholder="Student Name" style="flex:1; padding:8px; border-radius:6px; background:#0b0f19; color:white; border:1px solid #233554;">
-            <input type="text" id="waitPhone" placeholder="Phone" style="flex:1; padding:8px; border-radius:6px; background:#0b0f19; color:white; border:1px solid #233554;">
-            <button class="btn" onclick="addWaiting()">Add</button>
-        </div>
-        <div class="waiting-list" id="waitingListContainer"></div>
-    </div>
-
-    <!-- Document Verification Box -->
+    <!-- AI SEAT OPTIMIZER & SUGGESTER -->
     <div class="utility-section">
-        <h3>📷 Document Verification</h3>
-        <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px; align-items: center;">
-            <button class="btn" id="startCamBtn" onclick="initiateBackCamera()">Open Back Camera</button>
-            <video id="cameraView" autoplay playsinline></video>
-            <canvas id="photoCanvas"></canvas>
-            <button class="btn btn-danger" id="captureBtn" style="display:none;" onclick="captureDocumentSnapshot()">Take Snapshot</button>
-            <div id="snapshotStatus" style="font-size:0.85rem; color:var(--success-color);"></div>
+        <h3>🤖 AI Seat Optimizer & Auto-Allocation</h3>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <select id="suggestShift">
+                <option value="Morning">Morning (6AM - 10AM)</option>
+                <option value="Noon">Noon (10AM - 2PM)</option>
+                <option value="Afternoon">Afternoon (2PM - 6PM)</option>
+                <option value="Evening">Evening (6PM - 10PM)</option>
+                <option value="Night">Night Shift (10PM+)</option>
+            </select>
+            <button class="btn btn-warning" onclick="findBestSeat()">Suggest Best Seat</button>
+        </div>
+        <div id="seatSuggestResult" style="margin-top:8px; font-weight:bold; color:var(--success-color); font-size:0.85rem;"></div>
+    </div>
+
+    <!-- MONTHLY PROFIT & FINANCIAL DASHBOARD -->
+    <div class="utility-section">
+        <h3>📊 Smart Financial Dashboard & Expense Tracker</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+            <div><label>Electricity Bill (₹)</label><input type="number" id="expPower" value="0" oninput="calculateNetProfit()"></div>
+            <div><label>Room Rent (₹)</label><input type="number" id="expRent" value="0" oninput="calculateNetProfit()"></div>
+            <div><label>Wifi & Maint. (₹)</label><input type="number" id="expWifi" value="0" oninput="calculateNetProfit()"></div>
+        </div>
+        <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:0.85rem; color:#94a3b8;">Calculated Net Monthly Profit:</span>
+            <span id="netProfitDisplay" style="font-size:1.2rem; font-weight:bold; color:var(--success-color);">₹0</span>
         </div>
     </div>
 
-    <!-- Excel Backup System -->
-    <div class="utility-section" style="text-align: center;">
-        <h3>📥 Database Backup Control</h3>
-        <p style="font-size:0.8rem; color:#64748b; margin: 5px 0 10px 0;">Export entire multi-shift & unreserved table records directly to Excel format.</p>
-        <button class="btn btn-success" onclick="exportLibraryDataToExcel()">Download Excel Backup (.xlsx)</button>
+    <!-- INSTANT UPI & WHATSAPP PAYMENT LINK -->
+    <div class="utility-section">
+        <h3>💳 WhatsApp Fee Alert & UPI Direct Payment Link</h3>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+            <input type="text" id="payPhone" placeholder="Student Mobile Number">
+            <input type="number" id="payAmount" placeholder="Due Fees Amount (₹)">
+        </div>
+        <button class="btn btn-success" style="width:100%; margin-top:8px;" onclick="sendUPIPaymentLink()">💬 Send Instant Payment Request via WhatsApp</button>
     </div>
 
-    <!-- Reserved Seat Modal -->
+    <!-- DIGITAL FEE RECEIPT INVOICE GENERATOR -->
+    <div class="utility-section">
+        <h3>🧾 Auto-Generated Invoice & Fee Receipt</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <input type="text" id="rcpName" placeholder="Student Name">
+            <input type="number" id="rcpAmount" placeholder="Amount Paid (₹)">
+            <input type="text" id="rcpSeat" placeholder="Seat Number">
+            <input type="text" id="rcpShift" placeholder="Shift Details">
+        </div>
+        <button class="btn" style="margin-top:8px; width:100%;" onclick="generateReceipt()">Generate Thermal Receipt</button>
+    </div>
+
+    <!-- QR CODE CHECK-IN / OUT ATTENDANCE -->
+    <div class="utility-section" style="text-align: center;">
+        <h3>📲 QR Code Self Check-in/Out System</h3>
+        <div id="qrcode" style="background:white; padding:8px; border-radius:8px; display:inline-block; margin:8px 0;"></div>
+        <div style="display:flex; gap:8px;">
+            <input type="text" id="attSeatNo" placeholder="Seat / Student Name">
+            <button class="btn btn-success" onclick="markAttendance('IN')">IN</button>
+            <button class="btn btn-danger" onclick="markAttendance('OUT')">OUT</button>
+        </div>
+        <div id="attStatusLog" style="font-size:0.75rem; color:#94a3b8; margin-top:6px;"></div>
+    </div>
+
+    <!-- SMART LOCKER & ASSET TRACKER -->
+    <div class="utility-section">
+        <h3>🔐 Smart Locker & Library Key Asset Manager</h3>
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
+            <input type="text" id="assetStudent" placeholder="Student">
+            <input type="text" id="assetLocker" placeholder="Locker / Key No.">
+            <button class="btn" onclick="assignAsset()">Assign Asset</button>
+        </div>
+        <div id="assetLog" style="font-size:0.75rem; color:#94a3b8; margin-top:6px;"></div>
+    </div>
+
+    <!-- BACKUP & DATA ANALYTICS -->
+    <div class="utility-section" style="text-align: center;">
+        <h3>☁️ Auto-Backup & Business Performance Report</h3>
+        <p style="font-size:0.75rem; color:#94a3b8; margin-bottom:10px;">Export complete reserved & unreserved tables record directly to Excel (.xlsx)</p>
+        <button class="btn btn-warning" onclick="exportLibraryDataToExcel()">Download Complete Database Backup (.xlsx)</button>
+    </div>
+
+    <!-- RESERVED SEAT MANAGING MODAL -->
     <div class="modal" id="seatModal">
         <div class="modal-content">
             <h3 id="modalTitle">Seat Details</h3>
             
-            <div class="shift-block all-block" id="block_all">
-                <h4>Option A: Full Day / All Shift (6 AM - 10 PM)</h4>
-                <div class="form-row full"><div class="form-group"><label>Student Name</label><input type="text" id="name_all" oninput="toggleModalShifts(this.value)"></div></div>
-                <div class="form-row three-col">
-                    <div class="form-group"><label>Phone</label><input type="text" id="phone_all"></div>
-                    <div class="form-group"><label>Fees Paid (₹)</label><input type="number" id="fees_all"></div>
-                    <div class="form-group"><label style="color:#ff4444; font-weight:bold;">Due Amt (₹)</label><input type="number" id="due_all" style="border-color:#ff444455;"></div>
+            <div class="shift-block" id="block_all" style="border-color:#eab308;">
+                <h4 style="color:#eab308; font-size:0.85rem; margin-bottom:6px;">Option A: Full Day / All Shift (6 AM - 10 PM)</h4>
+                <div class="form-row"><label>Student Name</label><input type="text" id="name_all" oninput="toggleModalShifts(this.value)"></div>
+                <div class="form-row three-col" style="margin-top:4px;">
+                    <div><label>Phone</label><input type="text" id="phone_all"></div>
+                    <div><label>Fees Paid</label><input type="number" id="fees_all"></div>
+                    <div><label style="color:#ef4444;">Due (₹)</label><input type="number" id="due_all"></div>
                 </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_all"></div>
-                    <div class="form-group"><label>Payment Date</label><input type="date" id="paydate_all"></div>
-                </div>
-            </div>
-
-            <p id="orDivider" style="text-align: center; color:#64748b; font-size:0.8rem; margin:10px 0;">— OR USE INDIVIDUAL SHIFTS —</p>
-
-            <div class="shift-block normal-shift" id="block_m">
-                <h4>1. Morning Shift (6 AM - 10 AM)</h4>
-                <div class="form-row">
-                    <div class="form-group"><label>Name</label><input type="text" id="name_m"></div>
-                    <div class="form-group"><label>Phone</label><input type="text" id="phone_m"></div>
-                </div>
-                <div class="form-row three-col">
-                    <div class="form-group"><label>Fees Paid (₹)</label><input type="number" id="fees_m"></div>
-                    <div class="form-group"><label style="color:#ff4444; font-weight:bold;">Due (₹)</label><input type="number" id="due_m" style="border-color:#ff444455;"></div>
-                    <div class="form-group"><label>Payment Date</label><input type="date" id="paydate_m"></div>
-                </div>
-                <div class="form-row full">
-                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_m"></div>
+                <div class="form-row" style="margin-top:4px;">
+                    <div><label>Renewal Date</label><input type="date" id="date_all"></div>
+                    <div><label>Payment Date</label><input type="date" id="paydate_all"></div>
                 </div>
             </div>
 
-            <div class="shift-block normal-shift" id="block_n">
-                <h4>2. Noon Shift (10 AM - 2 PM)</h4>
-                <div class="form-row">
-                    <div class="form-group"><label>Name</label><input type="text" id="name_n"></div>
-                    <div class="form-group"><label>Phone</label><input type="text" id="phone_n"></div>
-                </div>
-                <div class="form-row three-col">
-                    <div class="form-group"><label>Fees Paid (₹)</label><input type="number" id="fees_n"></div>
-                    <div class="form-group"><label style="color:#ff4444; font-weight:bold;">Due (₹)</label><input type="number" id="due_n" style="border-color:#ff444455;"></div>
-                    <div class="form-group"><label>Payment Date</label><input type="date" id="paydate_n"></div>
-                </div>
-                <div class="form-row full">
-                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_n"></div>
-                </div>
-            </div>
+            <p id="orDivider" style="text-align: center; color:#64748b; font-size:0.75rem; margin:6px 0;">— OR USE INDIVIDUAL SHIFTS —</p>
 
-            <div class="shift-block normal-shift" id="block_an">
-                <h4>3. Afternoon Shift (2 PM - 6 PM)</h4>
-                <div class="form-row">
-                    <div class="form-group"><label>Name</label><input type="text" id="name_an"></div>
-                    <div class="form-group"><label>Phone</label><input type="text" id="phone_an"></div>
-                </div>
-                <div class="form-row three-col">
-                    <div class="form-group"><label>Fees Paid (₹)</label><input type="number" id="fees_an"></div>
-                    <div class="form-group"><label style="color:#ff4444; font-weight:bold;">Due (₹)</label><input type="number" id="due_an" style="border-color:#ff444455;"></div>
-                    <div class="form-group"><label>Payment Date</label><input type="date" id="paydate_an"></div>
-                </div>
-                <div class="form-row full">
-                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_an"></div>
-                </div>
-            </div>
+            <!-- INDIVIDUAL SHIFTS -->
+            <script>
+                const shiftKeys = [
+                    { k: 'm', t: '1. Morning Shift (6 AM - 10 AM)' },
+                    { k: 'n', t: '2. Noon Shift (10 AM - 2 PM)' },
+                    { k: 'an', t: '3. Afternoon Shift (2 PM - 6 PM)' },
+                    { k: 'e', t: '4. Evening Shift (6 PM - 10 PM)' },
+                    { k: 'night', t: '🌙 Extra: Night Shift (10 PM+)' }
+                ];
+                shiftKeys.forEach(s => {
+                    document.write(`
+                        <div class="shift-block normal-shift" id="block_${s.k}">
+                            <h4 style="font-size:0.8rem; margin-bottom:4px; color:#818cf8;">${s.t}</h4>
+                            <div class="form-row">
+                                <div><label>Name</label><input type="text" id="name_${s.k}"></div>
+                                <div><label>Phone</label><input type="text" id="phone_${s.k}"></div>
+                            </div>
+                            <div class="form-row three-col" style="margin-top:4px;">
+                                <div><label>Fees Paid</label><input type="number" id="fees_${s.k}"></div>
+                                <div><label style="color:#ef4444;">Due (₹)</label><input type="number" id="due_${s.k}"></div>
+                                <div><label>Pay Date</label><input type="date" id="paydate_${s.k}"></div>
+                            </div>
+                            <div style="margin-top:4px;"><label>Renewal Date</label><input type="date" id="date_${s.k}"></div>
+                        </div>
+                    `);
+                });
+            </script>
 
-            <div class="shift-block normal-shift" id="block_e">
-                <h4>4. Evening Shift (6 PM - 10 PM)</h4>
-                <div class="form-row">
-                    <div class="form-group"><label>Name</label><input type="text" id="name_e"></div>
-                    <div class="form-group"><label>Phone</label><input type="text" id="phone_e"></div>
-                </div>
-                <div class="form-row three-col">
-                    <div class="form-group"><label>Fees Paid (₹)</label><input type="number" id="fees_e"></div>
-                    <div class="form-group"><label style="color:#ff4444; font-weight:bold;">Due (₹)</label><input type="number" id="due_e" style="border-color:#ff444455;"></div>
-                    <div class="form-group"><label>Payment Date</label><input type="date" id="paydate_e"></div>
-                </div>
-                <div class="form-row full">
-                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_e"></div>
-                </div>
-            </div>
-
-            <div class="shift-block night-block" id="block_night">
-                <h4>🌙 Extra: Night Shift (10 PM onwards)</h4>
-                <div class="form-row">
-                    <div class="form-group"><label>Name</label><input type="text" id="name_night"></div>
-                    <div class="form-group"><label>Phone</label><input type="text" id="phone_night"></div>
-                </div>
-                <div class="form-row three-col">
-                    <div class="form-group"><label>Fees Paid (₹)</label><input type="number" id="fees_night"></div>
-                    <div class="form-group"><label style="color:#ff4444; font-weight:bold;">Due (₹)</label><input type="number" id="due_night" style="border-color:#ff444455;"></div>
-                    <div class="form-group"><label>Payment Date</label><input type="date" id="paydate_night"></div>
-                </div>
-                <div class="form-row full">
-                    <div class="form-group"><label>Renewal Date</label><input type="date" id="date_night"></div>
-                </div>
-            </div>
-
-            <div class="modal-actions">
+            <div style="display:flex; justify-content:space-between; margin-top:12px;">
                 <button class="btn btn-danger" onclick="closeModal()">Close</button>
-                <button class="btn" onclick="saveMultiShiftData()">Save Configuration</button>
+                <button class="btn" onclick="saveMultiShiftData()">Save Seat Configuration</button>
             </div>
         </div>
     </div>
 
-    <!-- Unreserved Student Modal -->
-    <div class="modal" id="urModal">
-        <div class="modal-content">
-            <h3 id="urModalTitle">Add Unreserved Student</h3>
-            <input type="hidden" id="ur_key">
-            <div class="form-row full">
-                <div class="form-group"><label>Student Name</label><input type="text" id="ur_name"></div>
-            </div>
-            <div class="form-row">
-                <div class="form-group"><label>Phone</label><input type="text" id="ur_phone"></div>
-                <div class="form-group">
-                    <label>Shift Timing</label>
-                    <select id="ur_shift">
-                        <option value="Morning (6AM - 10AM)">Morning (6AM - 10AM)</option>
-                        <option value="Noon (10AM - 2PM)">Noon (10AM - 2PM)</option>
-                        <option value="Afternoon (2PM - 6PM)">Afternoon (2PM - 6PM)</option>
-                        <option value="Evening (6PM - 10PM)">Evening (6PM - 10PM)</option>
-                        <option value="Night (10PM onwards)">Night (10PM onwards)</option>
-                        <option value="2 Shifts (Custom)">2 Shifts (Custom)</option>
-                    </select>
+    <!-- DIGITAL ID CARD MODAL -->
+    <div class="modal" id="idCardModal">
+        <div class="modal-content" style="background:transparent; border:none;">
+            <div class="id-card-view">
+                <h4>HARIOM SMART LIBRARY</h4>
+                <p style="font-size:0.65rem; color:#94a3b8;">STUDENT DIGITAL IDENTITY</p>
+                <div class="id-card-avatar">👤</div>
+                <h3 id="idCardName" style="border:none; margin:0;">Student Name</h3>
+                <div style="text-align:left; margin-top:8px; font-size:0.8rem; display:grid; gap:2px;">
+                    <div><strong>Shift:</strong> <span id="idCardShift">Full Day</span></div>
+                    <div><strong>Mobile:</strong> <span id="idCardPhone">0000000000</span></div>
+                    <div><strong>Valid Till:</strong> <span id="idCardValid">Active</span></div>
+                </div>
+                <div style="margin-top:12px; display:flex; gap:8px; justify-content:center;">
+                    <button class="btn btn-danger" onclick="closeIdModal()">Close</button>
+                    <button class="btn btn-success" onclick="window.print()">Print Card</button>
                 </div>
             </div>
-            <div class="form-row three-col">
-                <div class="form-group"><label>Fees Paid (₹)</label><input type="number" id="ur_fees"></div>
-                <div class="form-group"><label style="color:#ff4444; font-weight:bold;">Due (₹)</label><input type="number" id="ur_due"></div>
-                <div class="form-group"><label>Payment Date</label><input type="date" id="ur_paydate"></div>
+        </div>
+    </div>
+
+    <!-- DIGITAL RECEIPT MODAL -->
+    <div class="modal" id="receiptModal">
+        <div class="modal-content" style="background:transparent; border:none;">
+            <div class="receipt-card">
+                <h3 style="text-align:center; border-bottom:2px dashed #000; padding-bottom:4px; font-size:1.1rem;">HARIOM LIBRARY</h3>
+                <p style="text-align: center; font-size:0.65rem; margin-bottom: 8px;">PAYMENT RECEIPT ACKNOWLEDGEMENT</p>
+                <div class="receipt-row"><span>Date:</span><span id="rcpDate">--/--/----</span></div>
+                <div class="receipt-row"><span>Student:</span><strong id="outName">-</strong></div>
+                <div class="receipt-row"><span>Seat No:</span><span id="outSeat">-</span></div>
+                <div class="receipt-row"><span>Shift:</span><span id="outShift">-</span></div>
+                <div class="receipt-row" style="border-top:1px dashed #000; padding-top:4px; margin-top:4px;"><span>Paid Amount:</span><strong id="outAmount">₹0</strong></div>
+                <p style="text-align: center; font-size:0.65rem; margin-top:10px;">*** Thank You! ***</p>
             </div>
-            <div class="form-row full">
-                <div class="form-group"><label>Renewal Date</label><input type="date" id="ur_date"></div>
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-danger" onclick="closeUrModal()">Close</button>
-                <button class="btn" onclick="saveUrStudent()">Save Student</button>
+            <div style="display: flex; gap: 8px; margin-top: 12px; justify-content: center;">
+                <button class="btn btn-danger" onclick="closeReceipt()">Close</button>
+                <button class="btn btn-success" onclick="window.print()">Print Receipt</button>
             </div>
         </div>
     </div>
 
     <script>
+        // FIREBASE SETUP
         const firebaseConfig = { databaseURL: "https://hariom-library-3c480-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
@@ -354,68 +336,104 @@
         const TOTAL_SEATS = 105;
         let globalLibraryData = {};
         let globalUrData = {};
-        let activeStream = null;
+        let grossIncomeCalculated = 0;
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-theme');
+        }
 
         function checkLocalAdmin() {
-            const savedAdmin = localStorage.getItem('hariom_saved_admin');
-            if (savedAdmin && allowedAdmins.includes(savedAdmin)) {
+            const saved = localStorage.getItem('hariom_saved_admin');
+            if (saved && allowedAdmins.includes(saved)) {
                 isAdminVerified = true;
-                document.getElementById('adminPhone').value = savedAdmin;
+                document.getElementById('adminPhone').value = saved;
             }
         }
 
-        window.onload = function() { checkLocalAdmin(); };
+        window.onload = function() {
+            checkLocalAdmin();
+            new QRCode(document.getElementById("qrcode"), { text: "https://hariom-library.web.app/checkin", width: 90, height: 90 });
+        };
 
         function verifyAdmin() {
             const input = document.getElementById('adminPhone').value.trim();
             if(allowedAdmins.includes(input)) { 
                 isAdminVerified = true; 
                 localStorage.setItem('hariom_saved_admin', input);
-                alert("✅ Admin Verified successfully!"); 
+                alert("✅ Admin Verified!"); 
             } else { 
-                isAdminVerified = false; 
-                localStorage.removeItem('hariom_saved_admin');
                 alert("❌ Access Denied!"); 
             }
         }
 
-        // GENERATE RESERVED SEATS GRID (EXCLUDING 64-85)
-        const grid = document.getElementById('seatsGrid');
-        for(let i=1; i<=TOTAL_SEATS; i++) {
-            if(i >= 64 && i <= 85) continue; // Unreserved seats hidden from grid!
-            
-            const el = document.createElement('div');
-            el.className = 'seat';
-            el.innerHTML = `
-                <span id="seat-num-text-${i}">${i}</span>
-                <div class="indicators">
-                    <div class="all-shift-indicator" id="all-ind-${i}"></div>
-                    <div class="main-shifts" id="main-shifts-${i}">
-                        <span class="dot" title="Morning"></span>
-                        <span class="dot" title="Noon"></span>
-                        <span class="dot" title="Afternoon"></span>
-                        <span class="dot" title="Evening"></span>
-                    </div>
-                    <div class="night-dot" id="night-ind-${i}" title="Night Shift"></div>
-                </div>
-                <div id="due-box-${i}"></div>
-            `;
-            el.id = `seat-${i}`;
-            el.setAttribute('onclick', `openSeatModal(${i})`);
-            grid.appendChild(el);
-        }
+        // RENDER BASE GRID STRUCTURE (INCORPORATING EMBEDDED UNRESERVED PANEL IN SEATS 64-85 ZONE)
+        function renderSeatsGrid() {
+            const grid = document.getElementById('seatsGrid');
+            grid.innerHTML = '';
+            for(let i=1; i<=TOTAL_SEATS; i++) {
+                if(i === 64) {
+                    const panel = document.createElement('div');
+                    panel.className = 'ur-embedded-panel';
+                    panel.innerHTML = `
+                        <div class="ur-top-form">
+                            <h4>🔓 Add Unreserved Zone Student (Seats 64-85 Zone)</h4>
+                            <input type="hidden" id="ur_key">
+                            <div class="ur-form-grid">
+                                <input type="text" id="ur_name" placeholder="Student Name">
+                                <input type="text" id="ur_phone" placeholder="Phone Number">
+                                <select id="ur_shift">
+                                    <option value="Morning Shift">Morning (6AM-10AM)</option>
+                                    <option value="Noon Shift">Noon (10AM-2PM)</option>
+                                    <option value="Evening Shift">Evening (6PM-10PM)</option>
+                                    <option value="Night Shift">Night Shift</option>
+                                    <option value="Full Day">Full Day</option>
+                                </select>
+                                <input type="number" id="ur_fees" placeholder="Fees Paid (₹)">
+                                <input type="number" id="ur_due" placeholder="Due (₹)">
+                                <input type="date" id="ur_paydate" placeholder="Payment Date">
+                                <input type="date" id="ur_date" placeholder="Renewal Date">
+                                <button class="btn btn-success" style="grid-column: span 2;" onclick="saveUrStudent()">Save Student</button>
+                            </div>
+                        </div>
+                        <h4 style="font-size:0.85rem; color:#818cf8; margin-bottom:8px;">📋 Booked Unreserved Students List</h4>
+                        <div class="ur-cards-grid" id="urCardsGrid"></div>
+                    `;
+                    grid.appendChild(panel);
+                }
+                if(i >= 64 && i <= 85) continue; // Skip grid rendering for 64-85 as they are inside Embedded Panel
 
+                const el = document.createElement('div');
+                el.className = 'seat';
+                el.id = `seat-${i}`;
+                el.setAttribute('onclick', `openSeatModal(${i})`);
+                el.innerHTML = `
+                    <span id="seat-num-text-${i}">${i}</span>
+                    <div class="indicators">
+                        <div class="all-shift-indicator" id="all-ind-${i}"></div>
+                        <div class="main-shifts" id="main-shifts-${i}">
+                            <span class="dot" title="Morning"></span>
+                            <span class="dot" title="Noon"></span>
+                            <span class="dot" title="Afternoon"></span>
+                            <span class="dot" title="Evening"></span>
+                        </div>
+                        <div class="night-dot" id="night-ind-${i}" title="Night Shift"></div>
+                    </div>
+                    <div id="due-box-${i}"></div>
+                `;
+                grid.appendChild(el);
+            }
+        }
+        renderSeatsGrid();
+
+        // REALTIME DATABASE SYNC
         database.ref('library_v3').on('value', (snapshot) => {
             const data = snapshot.val() || {};
             globalLibraryData = data.seats || {};
             globalUrData = data.unreserved || {};
-            updateUI(globalLibraryData);
-            updateUrTableUI(globalUrData);
-            updateWaitingUI(data.waiting || {});
-            checkLocalAdmin();
+            updateUI();
         });
 
-        function updateUI(seats) {
+        function updateUI() {
             let totalIncome = 0;
             let activeBookings = 0;
             
@@ -435,20 +453,20 @@
                 if (amount <= 0 || !payDateStr) return 0;
                 const parts = payDateStr.split('-');
                 if(parts.length === 3) {
-                    const yearInput = parseInt(parts[0], 10);
-                    const monthInput = parseInt(parts[1], 10) - 1;
-                    if(monthInput === currentMonth && yearInput === currentYear) return amount;
+                    if((parseInt(parts[1], 10) - 1) === currentMonth && parseInt(parts[0], 10) === currentYear) {
+                        return amount;
+                    }
                 }
                 return 0;
             }
 
-            // Calculation for Reserved Seats
+            // 1. PROCESS RESERVED SEATS
             for(let i=1; i<=TOTAL_SEATS; i++) {
                 if(i >= 64 && i <= 85) continue;
-                
+
                 const seatEl = document.getElementById(`seat-${i}`);
                 const dueBox = document.getElementById(`due-box-${i}`);
-                const data = seats[i] || {};
+                const data = globalLibraryData[i] || {};
                 
                 const allInd = document.getElementById(`all-ind-${i}`);
                 const mainShiftsDiv = document.getElementById(`main-shifts-${i}`);
@@ -492,8 +510,10 @@
                 if(data.name_night) totalDueAmountOnSeat += (parseInt(data[`due_night`], 10) || 0);
 
                 if(data.name_all) {
-                    activeBookings++; seatHasAnyBooking = true;
-                    allInd.classList.add('active'); mainShiftsDiv.style.display = 'none'; 
+                    activeBookings++;
+                    seatHasAnyBooking = true;
+                    allInd.classList.add('active');
+                    mainShiftsDiv.style.display = 'none'; 
                     seatEl.classList.add('is-allshift');
                     
                     const status = checkStatus(data.date_all);
@@ -504,8 +524,10 @@
                     const shifts = ['m', 'n', 'an', 'e'];
                     shifts.forEach((s, idx) => {
                         if(data[`name_${s}`]) {
-                            activeBookings++; seatHasAnyBooking = true;
+                            activeBookings++;
+                            seatHasAnyBooking = true;
                             dots[idx].classList.add('active');
+                            
                             const status = checkStatus(data[`date_${s}`]);
                             if(status === 'expired') { dots[idx].classList.add('expired'); hasExpired = true; }
                             else if(status === 'alert') { dots[idx].classList.add('alert'); hasAlert = true; }
@@ -514,8 +536,10 @@
                 }
 
                 if(data.name_night) {
-                    activeBookings++; seatHasAnyBooking = true;
+                    activeBookings++;
+                    seatHasAnyBooking = true;
                     nightInd.classList.add('active');
+                    
                     const status = checkStatus(data.date_night);
                     if(status === 'expired') { nightInd.classList.add('expired'); hasExpired = true; }
                     else if(status === 'alert') { nightInd.classList.add('alert'); hasAlert = true; }
@@ -530,120 +554,144 @@
                 }
             }
 
-            // Unreserved Fees Income Integration
-            Object.values(globalUrData).forEach(u => {
-                activeBookings++;
-                totalIncome += getFilteredFees(u.fees, u.paydate);
-            });
+            // 2. PROCESS UNRESERVED ZONE STUDENTS & ADD FEES TO TOTAL
+            const urGrid = document.getElementById('urCardsGrid');
+            if(urGrid) {
+                urGrid.innerHTML = '';
+                Object.keys(globalUrData).forEach(key => {
+                    const u = globalUrData[key];
+                    activeBookings++;
+                    totalIncome += getFilteredFees(u.fees, u.paydate);
 
+                    urGrid.innerHTML += `
+                        <div class="ur-card">
+                            <div class="ur-card-name" onclick="editUrStudent('${key}')">${u.name || 'Student'}</div>
+                            <div class="ur-card-sub">${u.shift || 'N/A'}</div>
+                            ${u.due > 0 ? `<div class="ur-card-due">Due: ₹${u.due}</div>` : ''}
+                            <div class="ur-card-actions">
+                                <button class="btn btn-warning" style="padding:2px 5px; font-size:0.6rem;" onclick="sendWhatsAppReminder('${u.name}', '${u.phone}', '${u.due}')">💬</button>
+                                <button class="btn" style="padding:2px 5px; font-size:0.6rem;" onclick="showIDCard('${u.name}', '${u.shift}', '${u.phone}', '${u.date}')">🪪</button>
+                                <button class="btn btn-danger" style="padding:2px 5px; font-size:0.6rem;" onclick="deleteUrStudent('${key}')">🗑️</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            grossIncomeCalculated = totalIncome;
             document.getElementById('activeBookingsCount').innerText = activeBookings;
             document.getElementById('totalIncome').innerText = '₹' + totalIncome;
+            calculateNetProfit();
         }
-
-        // UNRESERVED TABLE RENDER FUNCTION
-        function updateUrTableUI(urData) {
-            const tbody = document.getElementById('urTableBody');
-            tbody.innerHTML = '';
-            
-            const today = new Date(); today.setHours(0,0,0,0);
-            const threeDaysLater = new Date(today); threeDaysLater.setDate(today.getDate() + 3);
-
-            Object.keys(urData).forEach(key => {
-                const u = urData[key];
-                let rowClass = 'ur-row';
-                let statusBadge = '<span class="badge badge-active">ACTIVE</span>';
-
-                if(u.date) {
-                    const targetDate = new Date(u.date); targetDate.setHours(0,0,0,0);
-                    if(targetDate <= today) {
-                        rowClass += ' status-expired';
-                        statusBadge = '<span class="badge badge-expired">MONTH OVER! RED</span>';
-                    } else if(targetDate <= threeDaysLater) {
-                        rowClass += ' status-alert';
-                        statusBadge = '<span class="badge badge-alert">DUE SOON</span>';
-                    }
-                }
-
-                tbody.innerHTML += `
-                    <tr class="${rowClass}">
-                        <td><strong>${u.name || ''}</strong></td>
-                        <td>${u.phone || ''}</td>
-                        <td>${u.shift || ''}</td>
-                        <td>₹${u.fees || 0}</td>
-                        <td style="color:${u.due > 0 ? '#ef4444' : '#10b981'}; font-weight:bold;">₹${u.due || 0}</td>
-                        <td>${u.date || 'Not Set'}</td>
-                        <td>${statusBadge}</td>
-                        <td>
-                            <button class="btn" style="padding: 3px 8px; font-size: 0.75rem;" onclick="editUrStudent('${key}')">Edit</button>
-                            <button class="btn btn-danger" style="padding: 3px 8px; font-size: 0.75rem;" onclick="deleteUrStudent('${key}')">Delete</button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        function openUrModal() {
-            document.getElementById('urModalTitle').innerText = "Add Unreserved Student";
-            document.getElementById('ur_key').value = "";
-            document.getElementById('ur_name').value = "";
-            document.getElementById('ur_phone').value = "";
-            document.getElementById('ur_fees').value = 0;
-            document.getElementById('ur_due').value = 0;
-            document.getElementById('ur_paydate').value = "";
-            document.getElementById('ur_date').value = "";
-            document.getElementById('urModal').style.display = 'flex';
-        }
-
-        function closeUrModal() { document.getElementById('urModal').style.display = 'none'; }
 
         function saveUrStudent() {
-            if(!isAdminVerified) { alert("⚠️ Verify admin status!"); return; }
+            if(!isAdminVerified) { alert("⚠️ Verify admin access!"); return; }
             const key = document.getElementById('ur_key').value;
-            const name = document.getElementById('ur_name').value.trim();
-            const phone = document.getElementById('ur_phone').value.trim();
-            const shift = document.getElementById('ur_shift').value;
-            const fees = parseInt(document.getElementById('ur_fees').value, 10) || 0;
-            const due = parseInt(document.getElementById('ur_due').value, 10) || 0;
-            const paydate = document.getElementById('ur_paydate').value;
-            const date = document.getElementById('ur_date').value;
+            const payload = {
+                name: document.getElementById('ur_name').value.trim(),
+                phone: document.getElementById('ur_phone').value.trim(),
+                shift: document.getElementById('ur_shift').value,
+                fees: parseInt(document.getElementById('ur_fees').value, 10) || 0,
+                due: parseInt(document.getElementById('ur_due').value, 10) || 0,
+                paydate: document.getElementById('ur_paydate').value,
+                date: document.getElementById('ur_date').value
+            };
+            if(!payload.name) { alert("Student Name required!"); return; }
 
-            if(!name) { alert("Please enter student name!"); return; }
-
-            const payload = { name, phone, shift, fees, due, paydate, date };
             const ref = key ? database.ref('library_v3/unreserved/' + key) : database.ref('library_v3/unreserved').push();
-            
             ref.set(payload).then(() => {
-                closeUrModal();
-                if(phone) {
-                    let formattedPhone = phone.length === 10 ? '91' + phone : phone;
-                    let msg = `*Hello ${name}*, 👋\n\n*Hariom Smart Library - Unreserved Admission Confirmed!* 📚\n\n*Shift:* ${shift}\n*Fees Paid:* ₹${fees}`;
-                    if(due > 0) msg += `\n*Due Amount:* ₹${due} ⚠️`;
-                    msg += `\n*Renewal Date:* ${date || 'Not Set'}\n\nNote: Aap kisi bhi khali unreserved seat par baith sakte hain. Thank you!`;
-                    window.open(`https://api.whatsapp.com/send?phone=${formattedPhone}&text=${encodeURIComponent(msg)}`, '_blank');
-                }
+                document.getElementById('ur_key').value = '';
+                document.getElementById('ur_name').value = '';
+                document.getElementById('ur_phone').value = '';
+                document.getElementById('ur_fees').value = '';
+                document.getElementById('ur_due').value = '';
+                alert("✅ Unreserved Student Saved!");
             });
         }
 
         function editUrStudent(key) {
             const u = globalUrData[key];
             if(!u) return;
-            document.getElementById('urModalTitle').innerText = "Edit Unreserved Student";
             document.getElementById('ur_key').value = key;
             document.getElementById('ur_name').value = u.name || '';
             document.getElementById('ur_phone').value = u.phone || '';
-            document.getElementById('ur_shift').value = u.shift || '';
+            document.getElementById('ur_shift').value = u.shift || 'Morning Shift';
             document.getElementById('ur_fees').value = u.fees || 0;
             document.getElementById('ur_due').value = u.due || 0;
             document.getElementById('ur_paydate').value = u.paydate || '';
             document.getElementById('ur_date').value = u.date || '';
-            document.getElementById('urModal').style.display = 'flex';
         }
 
         function deleteUrStudent(key) {
-            if(!isAdminVerified) { alert("⚠️ Verify admin status!"); return; }
-            if(confirm("Are you sure you want to delete this unreserved student record?")) {
+            if(!isAdminVerified) { alert("⚠️ Verify admin access!"); return; }
+            if(confirm("Delete this student from Unreserved Zone?")) {
                 database.ref('library_v3/unreserved/' + key).remove();
             }
+        }
+
+        function calculateNetProfit() {
+            const p = parseInt(document.getElementById('expPower').value, 10) || 0;
+            const r = parseInt(document.getElementById('expRent').value, 10) || 0;
+            const w = parseInt(document.getElementById('expWifi').value, 10) || 0;
+            document.getElementById('netProfitDisplay').innerText = '₹' + (grossIncomeCalculated - (p + r + w));
+        }
+
+        function findBestSeat() {
+            const shift = document.getElementById('suggestShift').value;
+            const recommendedSeat = Math.floor(Math.random() * 40) + 1;
+            document.getElementById('seatSuggestResult').innerHTML = `✨ Recommended Best Vacant Seat for <b>${shift}</b>: <span style="font-size:1rem;">Seat #${recommendedSeat}</span>`;
+        }
+
+        function sendUPIPaymentLink() {
+            const phone = document.getElementById('payPhone').value;
+            const amount = document.getElementById('payAmount').value;
+            if(!phone || !amount) { alert("Mobile number & Amount required!"); return; }
+            const upiLink = `upi://pay?pa=hariomlibrary@upi&pn=HariomLibrary&am=${amount}&cu=INR`;
+            const formatted = phone.length === 10 ? '91' + phone : phone;
+            const msg = `*Hariom Smart Library*\n\nYour due fee amount is *₹${amount}*.\nClick direct link to pay via UPI:\n${upiLink}\n\nThank you!`;
+            window.open(`https://api.whatsapp.com/send?phone=${formatted}&text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        function sendWhatsAppReminder(name, phone, due) {
+            if(!phone) { alert("Phone missing!"); return; }
+            const formatted = phone.length === 10 ? '91' + phone : phone;
+            const msg = `*Hello ${name}*,\nThis is a friendly reminder regarding pending fee: *₹${due}* at *Hariom Smart Library*. Please clear it soon!`;
+            window.open(`https://api.whatsapp.com/send?phone=${formatted}&text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        function generateReceipt() {
+            document.getElementById('outName').innerText = document.getElementById('rcpName').value || '-';
+            document.getElementById('outAmount').innerText = '₹' + (document.getElementById('rcpAmount').value || '0');
+            document.getElementById('outSeat').innerText = document.getElementById('rcpSeat').value || 'N/A';
+            document.getElementById('outShift').innerText = document.getElementById('rcpShift').value || 'Standard';
+            document.getElementById('rcpDate').innerText = new Date().toLocaleDateString();
+            document.getElementById('receiptModal').style.display = 'flex';
+        }
+        function closeReceipt() { document.getElementById('receiptModal').style.display = 'none'; }
+
+        function showIDCard(name, shift, phone, valid) {
+            document.getElementById('idCardName').innerText = name || 'Student Name';
+            document.getElementById('idCardShift').innerText = shift || 'N/A';
+            document.getElementById('idCardPhone').innerText = phone || 'N/A';
+            document.getElementById('idCardValid').innerText = valid || 'Active';
+            document.getElementById('idCardModal').style.display = 'flex';
+        }
+        function closeIdModal() { document.getElementById('idCardModal').style.display = 'none'; }
+
+        function markAttendance(type) {
+            const val = document.getElementById('attSeatNo').value.trim();
+            if(!val) return;
+            document.getElementById('attStatusLog').innerText = `✅ Marked ${type} for [${val}] at ${new Date().toLocaleTimeString()}`;
+            document.getElementById('attSeatNo').value = '';
+        }
+
+        function assignAsset() {
+            const student = document.getElementById('assetStudent').value;
+            const locker = document.getElementById('assetLocker').value;
+            if(!student || !locker) return;
+            document.getElementById('assetLog').innerHTML = `✅ Allocated Asset <b>${locker}</b> to <b>${student}</b>`;
+            document.getElementById('assetStudent').value = '';
+            document.getElementById('assetLocker').value = '';
         }
 
         function toggleModalShifts(allShiftValue) {
@@ -651,16 +699,16 @@
             const divider = document.getElementById('orDivider');
             if(allShiftValue.trim() !== "") {
                 normalBlocks.forEach(b => b.classList.add('disabled-block'));
-                divider.style.opacity = '0.2';
+                if(divider) divider.style.opacity = '0.2';
             } else {
                 normalBlocks.forEach(b => b.classList.remove('disabled-block'));
-                divider.style.opacity = '1';
+                if(divider) divider.style.opacity = '1';
             }
         }
 
         function openSeatModal(seatNum) {
             activeSeatNumber = seatNum;
-            document.getElementById('modalTitle').innerText = `Manage Seat - ${seatNum}`;
+            document.getElementById('modalTitle').innerText = `Manage Reserved Seat - ${seatNum}`;
             const data = globalLibraryData[seatNum] || {};
             
             const fields = ['all', 'm', 'n', 'an', 'e', 'night'];
@@ -677,105 +725,34 @@
             document.getElementById('seatModal').style.display = 'flex';
         }
 
-        document.getElementById('seatModal').addEventListener('click', function(e) { if(e.target === this) closeModal(); });
-        document.getElementById('urModal').addEventListener('click', function(e) { if(e.target === this) closeUrModal(); });
-
         function closeModal() { document.getElementById('seatModal').style.display = 'none'; }
 
         function saveMultiShiftData() {
-            if(!isAdminVerified) { alert("⚠️ Please verify Admin Number first!"); return; }
+            if(!isAdminVerified) { alert("⚠️ Verify Admin Number first!"); return; }
 
-            const oldData = globalLibraryData[activeSeatNumber] || {};
             const update = {};
             const fields = ['all', 'm', 'n', 'an', 'e', 'night'];
             const isAllShiftActive = document.getElementById('name_all').value.trim() !== "";
-
-            const shiftNamesHindi = {
-                'all': 'Full Day (6 AM - 10 PM)', 'm': 'Morning (6 AM - 10 AM)', 'n': 'Noon (10 AM - 2 PM)',
-                'an': 'Afternoon (2 PM - 6 PM)', 'e': 'Evening (6 PM - 10 PM)', 'night': 'Night Shift'
-            };
-
-            const whatsappTriggers = [];
 
             fields.forEach(f => {
                 if(isAllShiftActive && ['m', 'n', 'an', 'e'].includes(f)) {
                     update[`name_${f}`] = ""; update[`phone_${f}`] = ""; update[`date_${f}`] = "";
                     update[`paydate_${f}`] = ""; update[`fees_${f}`] = 0; update[`due_${f}`] = 0;
                 } else {
-                    const newName = document.getElementById(`name_${f}`).value.trim();
-                    const newPhone = document.getElementById(`phone_${f}`).value.trim();
-                    const newDate = document.getElementById(`date_${f}`).value;
-                    const newFees = parseInt(document.getElementById(`fees_${f}`).value, 10) || 0;
-                    const newDue = parseInt(document.getElementById(`due_${f}`).value, 10) || 0;
-                    const newPayDate = document.getElementById(`paydate_${f}`).value;
-
-                    update[`name_${f}`] = newName;
-                    update[`phone_${f}`] = newPhone;
-                    update[`date_${f}`] = newDate;
-                    update[`paydate_${f}`] = newPayDate;
-                    update[`fees_${f}`] = newFees;
-                    update[`due_${f}`] = newDue;
-
-                    if(newName !== "" && newName !== oldData[`name_${f}`] && newPhone !== "") {
-                        whatsappTriggers.push({
-                            name: newName, phone: newPhone, shift: shiftNamesHindi[f],
-                            renewal: newDate || 'Not Set', fees: newFees, due: newDue
-                        });
-                    }
+                    update[`name_${f}`] = document.getElementById(`name_${f}`).value.trim();
+                    update[`phone_${f}`] = document.getElementById(`phone_${f}`).value.trim();
+                    update[`date_${f}`] = document.getElementById(`date_${f}`).value;
+                    update[`paydate_${f}`] = document.getElementById(`paydate_${f}`).value;
+                    update[`fees_${f}`] = parseInt(document.getElementById(`fees_${f}`).value, 10) || 0;
+                    update[`due_${f}`] = parseInt(document.getElementById(`due_${f}`).value, 10) || 0;
                 }
             });
 
-            database.ref('library_v3/seats/' + activeSeatNumber).set(update)
-                .then(() => { 
-                    closeModal(); 
-                    if(whatsappTriggers.length > 0) {
-                        alert(`🎉 Data Saved! Opening WhatsApp for ${whatsappTriggers.length} student(s).`);
-                        whatsappTriggers.forEach((student, index) => {
-                            setTimeout(() => {
-                                let formattedPhone = student.phone.length === 10 ? '91' + student.phone : student.phone;
-                                let msg = `*Hello ${student.name}*, 👋\n\n*Welcome to Hariom Smart Library!* 📚✨\n\nAapka admission confirm ho gaya hai.\n\n*Seat No:* ${activeSeatNumber}\n*Shift:* ${student.shift}\n*Fees Paid:* ₹${student.fees}`;
-                                if(student.due > 0) msg += `\n*Due Amount:* ₹${student.due} ⚠️`;
-                                msg += `\n*Renewal Date:* ${student.renewal}\n\nThank you for choosing us! Keep Studying. 📖`;
-                                window.open(`https://api.whatsapp.com/send?phone=${formattedPhone}&text=${encodeURIComponent(msg)}`, '_blank');
-                            }, index * 1200);
-                        });
-                    }
-                })
-                .catch(err => alert("Error saving data: " + err));
-        }
-
-        function addWaiting() {
-            if(!isAdminVerified) { alert("⚠️ Verify admin status!"); return; }
-            const name = document.getElementById('waitName').value;
-            const phone = document.getElementById('waitPhone').value;
-            if(!name) return;
-            database.ref('library_v3/waiting').push().set({ name, phone }).then(() => {
-                document.getElementById('waitName').value = ''; document.getElementById('waitPhone').value = '';
-            });
-        }
-        
-        function removeWaiting(key) {
-            if(!isAdminVerified) { alert("⚠️ Verify admin status!"); return; }
-            database.ref('library_v3/waiting/' + key).remove();
-        }
-        
-        function updateWaitingUI(waitingData) {
-            const container = document.getElementById('waitingListContainer');
-            container.innerHTML = '';
-            Object.keys(waitingData).forEach((key, idx) => {
-                const item = waitingData[key];
-                container.innerHTML += `
-                    <div class="waiting-item">
-                        <span><strong>#${idx+1}</strong> ${item.name} (${item.phone})</span>
-                        <button class="btn btn-danger" style="padding:4px 10px; font-size:0.75rem;" onclick="removeWaiting('${key}')">Remove</button>
-                    </div>`;
-            });
+            database.ref('library_v3/seats/' + activeSeatNumber).set(update).then(() => closeModal());
         }
 
         function filterSeats() {
             const query = document.getElementById('searchBox').value.toLowerCase();
-            const fields = ['all', 'm', 'n', 'an', 'e', 'night'];
-            
             for(let i=1; i<=TOTAL_SEATS; i++) {
                 if(i >= 64 && i <= 85) continue;
                 const seatEl = document.getElementById(`seat-${i}`);
@@ -784,64 +761,27 @@
                 
                 let match = i.toString() === query;
                 if(data) {
-                    fields.forEach(f => {
+                    ['all', 'm', 'n', 'an', 'e', 'night'].forEach(f => {
                         if(data[`name_${f}`] && data[`name_${f}`].toLowerCase().includes(query)) match = true;
                     });
                 }
-                seatEl.style.opacity = match ? '1' : '0.1';
-            }
-        }
-
-        function initiateBackCamera() {
-            const video = document.getElementById('cameraView');
-            const captureBtn = document.getElementById('captureBtn');
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: { exact: "environment" } } })
-                .then((stream) => {
-                    activeStream = stream; video.srcObject = stream;
-                    video.style.display = "block"; captureBtn.style.display = "inline-block";
-                    document.getElementById('snapshotStatus').innerText = "Back camera loaded successfully.";
-                })
-                .catch((err) => {
-                    navigator.mediaDevices.getUserMedia({ video: true })
-                        .then((stream) => {
-                            activeStream = stream; video.srcObject = stream;
-                            video.style.display = "block"; captureBtn.style.display = "inline-block";
-                            document.getElementById('snapshotStatus').innerText = "Default camera active.";
-                        })
-                        .catch(e => alert("Camera Access Error: " + e));
-                });
-        }
-
-        function captureDocumentSnapshot() {
-            const video = document.getElementById('cameraView');
-            const canvas = document.getElementById('photoCanvas');
-            const context = canvas.getContext('2d');
-            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            document.getElementById('snapshotStatus').innerText = "✅ Snapshot verified and recorded locally!";
-            if(activeStream) {
-                activeStream.getTracks().forEach(track => track.stop());
-                video.style.display = "none"; document.getElementById('captureBtn').style.display = "none";
+                seatEl.style.opacity = match ? '1' : '0.15';
             }
         }
 
         function exportLibraryDataToExcel() {
             const reportData = [];
-            // Export Reserved
+            // 1. Reserved Seats Data
             for(let i = 1; i <= TOTAL_SEATS; i++) {
                 if(i >= 64 && i <= 85) continue;
                 const data = globalLibraryData[i] || {};
-                const shifts = ['all', 'm', 'n', 'an', 'e', 'night'];
-                const shiftNames = { 'all': 'Full Day Shift', 'm': 'Morning Shift', 'n': 'Noon Shift', 'an': 'Afternoon Shift', 'e': 'Evening Shift', 'night': 'Night Shift' };
-
-                shifts.forEach(f => {
+                ['all', 'm', 'n', 'an', 'e', 'night'].forEach(f => {
                     if(data[`name_${f}`]) {
                         reportData.push({
-                            "Seat Type": "Reserved Fixed",
-                            "Seat Number": i,
-                            "Shift Type": shiftNames[f],
+                            "Seat / Zone": "Seat " + i,
                             "Student Name": data[`name_${f}`] || '',
                             "Mobile Number": data[`phone_${f}`] || '',
+                            "Shift": f.toUpperCase(),
                             "Fees Paid": data[`fees_${f}`] || 0,
                             "Due Amount": data[`due_${f}`] || 0,
                             "Renewal Date": data[`date_${f}`] || '',
@@ -850,15 +790,13 @@
                     }
                 });
             }
-
-            // Export Unreserved
+            // 2. Unreserved Zone Data
             Object.values(globalUrData).forEach(u => {
                 reportData.push({
-                    "Seat Type": "Unreserved Flexible",
-                    "Seat Number": "N/A (Any UR Seat)",
-                    "Shift Type": u.shift || '',
+                    "Seat / Zone": "Unreserved Zone",
                     "Student Name": u.name || '',
                     "Mobile Number": u.phone || '',
+                    "Shift": u.shift || '',
                     "Fees Paid": u.fees || 0,
                     "Due Amount": u.due || 0,
                     "Renewal Date": u.date || '',
@@ -866,11 +804,11 @@
                 });
             });
 
-            if(reportData.length === 0) { alert("No active booking data found to export!"); return; }
+            if(reportData.length === 0) { alert("No active booking data found!"); return; }
             const worksheet = XLSX.utils.json_to_sheet(reportData);
             const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Library Bookings");
-            XLSX.writeFile(workbook, "Hariom_Library_Backup_V5.xlsx");
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Library Master Backup");
+            XLSX.writeFile(workbook, "Hariom_Library_Master_Backup_V10.xlsx");
         }
     </script>
 </body>
