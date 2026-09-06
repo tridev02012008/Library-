@@ -6601,3 +6601,676 @@ document.addEventListener(
 ========================================================= */
 
 </script>
+   <!-- =========================================================
+     HARIOM SMART LIBRARY - PART 4
+     FINAL APP SYSTEM, LOADER & SAFETY FEATURES
+========================================================= -->
+
+<script>
+
+/* =========================================================
+   PART 4 - FINAL APPLICATION SYSTEM
+========================================================= */
+
+
+/* =========================================================
+   APP LOADER FIX
+========================================================= */
+
+window.addEventListener("load", function(){
+
+    setTimeout(function(){
+
+        const loader =
+            document.getElementById("appLoader");
+
+        if(loader){
+
+            loader.style.transition =
+                "opacity .5s ease, visibility .5s ease";
+
+            loader.style.opacity = "0";
+
+            setTimeout(function(){
+
+                loader.style.display = "none";
+
+            }, 500);
+
+        }
+
+    }, 800);
+
+});
+
+
+/* Emergency loader backup */
+
+setTimeout(function(){
+
+    const loader =
+        document.getElementById("appLoader");
+
+    if(loader){
+
+        loader.style.opacity = "0";
+
+        setTimeout(function(){
+
+            loader.style.display = "none";
+
+        }, 400);
+
+    }
+
+}, 5000);
+
+
+
+/* =========================================================
+   SAFE INITIALIZATION
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        console.log(
+            "Hariom Smart Library Part 4 Loaded Successfully"
+        );
+
+
+        /* =============================================
+           RESTORE DARK MODE
+        ============================================= */
+
+        const savedTheme =
+            localStorage.getItem(
+                "hariom_library_theme"
+            );
+
+        if(savedTheme === "dark"){
+
+            document.body.classList.add(
+                "dark"
+            );
+
+        }
+
+
+        /* =============================================
+           AUTO SAVE ADMIN SESSION
+        ============================================= */
+
+        const savedAdmin =
+            localStorage.getItem(
+                "hariom_saved_admin"
+            );
+
+        if(savedAdmin){
+
+            window.isAdminVerified = true;
+
+        }
+
+
+        /* =============================================
+           REMOVE LOADER IF DOM IS READY
+        ============================================= */
+
+        setTimeout(function(){
+
+            const loader =
+                document.getElementById(
+                    "appLoader"
+                );
+
+            if(loader){
+
+                loader.style.display =
+                    "none";
+
+            }
+
+        }, 1500);
+
+
+        /* =============================================
+           INSTALL PWA STYLE APP FEEL
+        ============================================= */
+
+        document.body.classList.add(
+            "app-ready"
+        );
+
+    }
+);
+
+
+
+/* =========================================================
+   DARK MODE SYSTEM
+========================================================= */
+
+window.toggleHariomTheme =
+function(){
+
+    document.body.classList.toggle(
+        "dark"
+    );
+
+    if(
+        document.body.classList.contains(
+            "dark"
+        )
+    ){
+
+        localStorage.setItem(
+            "hariom_library_theme",
+            "dark"
+        );
+
+        if(window.showSmartToast){
+
+            window.showSmartToast(
+                "Dark mode enabled",
+                "info"
+            );
+
+        }
+
+    }
+
+    else{
+
+        localStorage.setItem(
+            "hariom_library_theme",
+            "light"
+        );
+
+        if(window.showSmartToast){
+
+            window.showSmartToast(
+                "Light mode enabled",
+                "info"
+            );
+
+        }
+
+    }
+
+};
+
+
+
+/* =========================================================
+   NETWORK STATUS SYSTEM
+========================================================= */
+
+function updateNetworkStatus(){
+
+    let status =
+        document.getElementById(
+            "networkStatus"
+        );
+
+    if(!status){
+
+        status =
+            document.createElement(
+                "div"
+            );
+
+        status.id =
+            "networkStatus";
+
+        status.style.cssText = `
+            position:fixed;
+            bottom:85px;
+            left:50%;
+            transform:translateX(-50%);
+            padding:8px 15px;
+            border-radius:20px;
+            color:white;
+            font-size:12px;
+            font-weight:bold;
+            z-index:99999;
+            display:none;
+            box-shadow:0 8px 30px rgba(0,0,0,.25);
+        `;
+
+        document.body.appendChild(
+            status
+        );
+
+    }
+
+
+    if(navigator.onLine){
+
+        status.style.background =
+            "#16a34a";
+
+        status.innerHTML =
+            "● Internet Connected";
+
+        status.style.display =
+            "block";
+
+
+        setTimeout(function(){
+
+            status.style.display =
+                "none";
+
+        }, 2500);
+
+    }
+
+    else{
+
+        status.style.background =
+            "#dc2626";
+
+        status.innerHTML =
+            "● No Internet Connection";
+
+        status.style.display =
+            "block";
+
+    }
+
+}
+
+
+window.addEventListener(
+    "online",
+    updateNetworkStatus
+);
+
+window.addEventListener(
+    "offline",
+    updateNetworkStatus
+);
+
+
+
+/* =========================================================
+   APP REFRESH SYSTEM
+========================================================= */
+
+window.refreshHariomApp =
+function(){
+
+    if(window.showLoading){
+
+        window.showLoading(
+            "Refreshing Library Data..."
+        );
+
+    }
+
+
+    setTimeout(function(){
+
+        window.location.reload();
+
+    }, 700);
+
+};
+
+
+
+/* =========================================================
+   SCROLL TO TOP BUTTON
+========================================================= */
+
+(function(){
+
+    const button =
+        document.createElement(
+            "button"
+        );
+
+
+    button.innerHTML =
+        "↑";
+
+
+    button.id =
+        "scrollTopButton";
+
+
+    button.style.cssText = `
+
+        position:fixed;
+        right:18px;
+        bottom:95px;
+
+        width:45px;
+        height:45px;
+
+        border:none;
+        border-radius:50%;
+
+        background:linear-gradient(
+            135deg,
+            #5b5ce2,
+            #8b5cf6
+        );
+
+        color:white;
+
+        font-size:22px;
+        font-weight:bold;
+
+        box-shadow:
+            0 8px 25px
+            rgba(91,92,226,.4);
+
+        cursor:pointer;
+
+        display:none;
+
+        z-index:999;
+
+    `;
+
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function(){
+
+            document.body.appendChild(
+                button
+            );
+
+        }
+    );
+
+
+    window.addEventListener(
+        "scroll",
+        function(){
+
+            if(
+                window.scrollY > 500
+            ){
+
+                button.style.display =
+                    "block";
+
+            }
+
+            else{
+
+                button.style.display =
+                    "none";
+
+            }
+
+        }
+    );
+
+
+    button.onclick =
+    function(){
+
+        window.scrollTo({
+
+            top:0,
+
+            behavior:"smooth"
+
+        });
+
+    };
+
+})();
+
+
+
+/* =========================================================
+   SAFE ERROR HANDLING
+========================================================= */
+
+window.addEventListener(
+    "error",
+    function(event){
+
+        console.log(
+            "Hariom Library handled error:",
+            event.message
+        );
+
+    }
+);
+
+
+
+/* =========================================================
+   COPY PHONE NUMBER SYSTEM
+========================================================= */
+
+window.copyHariomNumber =
+function(number){
+
+    if(!number){
+
+        return;
+
+    }
+
+
+    navigator.clipboard.writeText(
+        number
+    )
+    .then(function(){
+
+        if(window.showSmartToast){
+
+            window.showSmartToast(
+                "Mobile number copied",
+                "success"
+            );
+
+        }
+
+    })
+    .catch(function(){
+
+        if(window.showSmartToast){
+
+            window.showSmartToast(
+                "Unable to copy number",
+                "error"
+            );
+
+        }
+
+    });
+
+};
+
+
+
+/* =========================================================
+   WHATSAPP HELPER
+========================================================= */
+
+window.openHariomWhatsApp =
+function(phone, message){
+
+    if(!phone){
+
+        if(window.showSmartToast){
+
+            window.showSmartToast(
+                "Phone number not available",
+                "warning"
+            );
+
+        }
+
+        return;
+
+    }
+
+
+    let cleanPhone =
+        String(phone)
+        .replace(/\D/g, "");
+
+
+    if(
+        cleanPhone.length === 10
+    ){
+
+        cleanPhone =
+            "91" +
+            cleanPhone;
+
+    }
+
+
+    const url =
+        "https://wa.me/" +
+        cleanPhone +
+        "?text=" +
+        encodeURIComponent(
+            message || ""
+        );
+
+
+    window.open(
+        url,
+        "_blank"
+    );
+
+};
+
+
+
+/* =========================================================
+   AUTO SESSION PROTECTION
+========================================================= */
+
+window.addEventListener(
+    "beforeunload",
+    function(){
+
+        localStorage.setItem(
+            "hariom_last_visit",
+            new Date().toISOString()
+        );
+
+    }
+);
+
+
+
+/* =========================================================
+   MOBILE APP TOUCH IMPROVEMENT
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        const buttons =
+            document.querySelectorAll(
+                "button"
+            );
+
+
+        buttons.forEach(
+            function(button){
+
+                button.addEventListener(
+                    "touchstart",
+                    function(){
+
+                        button.style.transform =
+                            "scale(.96)";
+
+                    },
+                    {
+                        passive:true
+                    }
+                );
+
+
+                button.addEventListener(
+                    "touchend",
+                    function(){
+
+                        setTimeout(function(){
+
+                            button.style.transform =
+                                "";
+
+                        },150);
+
+                    },
+                    {
+                        passive:true
+                    }
+                );
+
+            }
+        );
+
+    }
+);
+
+
+
+/* =========================================================
+   PREVENT DOUBLE CLICK ISSUE
+========================================================= */
+
+document.addEventListener(
+    "dblclick",
+    function(event){
+
+        if(
+            event.target.tagName === "BUTTON"
+        ){
+
+            event.preventDefault();
+
+        }
+
+    }
+);
+
+
+
+/* =========================================================
+   FINAL APP READY SIGNAL
+========================================================= */
+
+window.addEventListener(
+    "load",
+    function(){
+
+        console.log(
+            "Hariom Smart Library Application Ready"
+        );
+
+
+        document.body.classList.add(
+            "application-loaded"
+        );
+
+    }
+);
+
+
+/* =========================================================
+   PART 4 COMPLETE
+========================================================= */
+
+</script>
+</body>
+</html>
