@@ -87,7 +87,7 @@
         
         .shift-block { background: #0b0f19; padding: 12px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #233554; transition: 0.3s; }
         .shift-block.disabled-block { opacity: 0.25; pointer-events: none; border-color: #ef444433; }
-        .shift-block h4 { color: #a855f7; margin-bottom: 8px; font-size: 0.9rem; display: flex; justify-content: space-between; }
+        .shift-block h4 { color: #a855f7; margin-bottom: 8px; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; }
         .shift-block.night-block h4 { color: var(--night-color); }
         .shift-block.all-block h4 { color: #eab308; }
         
@@ -163,7 +163,7 @@
             <h3 id="modalTitle">Seat Details</h3>
             
             <div class="shift-block all-block" id="block_all">
-                <h4>Option A: Full Day / All Shift (6 AM - 10 PM)</h4>
+                <h4>Option A: Full Day / All Shift (6 AM - 10 PM) <button type="button" class="btn btn-danger" style="padding:2px 8px; font-size:0.65rem;" onclick="clearShiftFields('all')">Clear Shift</button></h4>
                 <div class="form-row full"><div class="form-group"><label>Student Name</label><input type="text" id="name_all" oninput="toggleModalShifts(this.value)"></div></div>
                 <div class="form-row three-col">
                     <div class="form-group"><label>Phone</label><input type="text" id="phone_all"></div>
@@ -179,7 +179,7 @@
             <p id="orDivider" style="text-align: center; color:#64748b; font-size:0.8rem; margin:10px 0;">— OR USE INDIVIDUAL SHIFTS —</p>
 
             <div class="shift-block normal-shift" id="block_m">
-                <h4>1. Morning Shift (6 AM - 10 AM)</h4>
+                <h4>1. Morning Shift (6 AM - 10 AM) <button type="button" class="btn btn-danger" style="padding:2px 8px; font-size:0.65rem;" onclick="clearShiftFields('m')">Clear Shift</button></h4>
                 <div class="form-row">
                     <div class="form-group"><label>Name</label><input type="text" id="name_m"></div>
                     <div class="form-group"><label>Phone</label><input type="text" id="phone_m"></div>
@@ -195,7 +195,7 @@
             </div>
 
             <div class="shift-block normal-shift" id="block_n">
-                <h4>2. Noon Shift (10 AM - 2 PM)</h4>
+                <h4>2. Noon Shift (10 AM - 2 PM) <button type="button" class="btn btn-danger" style="padding:2px 8px; font-size:0.65rem;" onclick="clearShiftFields('n')">Clear Shift</button></h4>
                 <div class="form-row">
                     <div class="form-group"><label>Name</label><input type="text" id="name_n"></div>
                     <div class="form-group"><label>Phone</label><input type="text" id="phone_n"></div>
@@ -211,7 +211,7 @@
             </div>
 
             <div class="shift-block normal-shift" id="block_an">
-                <h4>3. Afternoon Shift (2 PM - 6 PM)</h4>
+                <h4>3. Afternoon Shift (2 PM - 6 PM) <button type="button" class="btn btn-danger" style="padding:2px 8px; font-size:0.65rem;" onclick="clearShiftFields('an')">Clear Shift</button></h4>
                 <div class="form-row">
                     <div class="form-group"><label>Name</label><input type="text" id="name_an"></div>
                     <div class="form-group"><label>Phone</label><input type="text" id="phone_an"></div>
@@ -227,7 +227,7 @@
             </div>
 
             <div class="shift-block normal-shift" id="block_e">
-                <h4>4. Evening Shift (6 PM - 10 PM)</h4>
+                <h4>4. Evening Shift (6 PM - 10 PM) <button type="button" class="btn btn-danger" style="padding:2px 8px; font-size:0.65rem;" onclick="clearShiftFields('e')">Clear Shift</button></h4>
                 <div class="form-row">
                     <div class="form-group"><label>Name</label><input type="text" id="name_e"></div>
                     <div class="form-group"><label>Phone</label><input type="text" id="phone_e"></div>
@@ -243,7 +243,7 @@
             </div>
 
             <div class="shift-block night-block" id="block_night">
-                <h4>🌙 Extra: Night Shift (10 PM onwards)</h4>
+                <h4>🌙 Extra: Night Shift (10 PM onwards) <button type="button" class="btn btn-danger" style="padding:2px 8px; font-size:0.65rem;" onclick="clearShiftFields('night')">Clear Shift</button></h4>
                 <div class="form-row">
                     <div class="form-group"><label>Name</label><input type="text" id="name_night"></div>
                     <div class="form-group"><label>Phone</label><input type="text" id="phone_night"></div>
@@ -497,6 +497,19 @@
 
         function closeModal() { document.getElementById('seatModal').style.display = 'none'; }
 
+        function clearShiftFields(shiftKey) {
+            document.getElementById(`name_${shiftKey}`).value = '';
+            document.getElementById(`phone_${shiftKey}`).value = '';
+            document.getElementById(`date_${shiftKey}`).value = '';
+            document.getElementById(`paydate_${shiftKey}`).value = '';
+            document.getElementById(`fees_${shiftKey}`).value = '0';
+            document.getElementById(`due_${shiftKey}`).value = '0';
+            
+            if(shiftKey === 'all') {
+                toggleModalShifts('');
+            }
+        }
+
         function saveMultiShiftData() {
             if(!isAdminVerified) { alert("⚠️ Please verify Admin Number first!"); return; }
 
@@ -519,7 +532,6 @@
                 } else {
                     const newName = document.getElementById(`name_${f}`).value.trim();
                     
-                    // Fix: Agar naam hata diya hai toh date aur baaki sabhi fields bhi blank/zero ho jayengi
                     if(newName === "") {
                         update[`name_${f}`] = "";
                         update[`phone_${f}`] = "";
