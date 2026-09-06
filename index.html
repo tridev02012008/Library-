@@ -2,1138 +2,803 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#5b5ce2">
+<meta name="description" content="Hariom Smart Library Management System">
 
-<meta name="theme-color" content="#4f46e5">
+<title>Hariom Smart Library PRO MAX</title>
 
-<title>Hariom Smart Library Pro</title>
-
-<!-- Firebase -->
+<!-- Firebase Existing Database -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <!-- Excel -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
+<!-- QR Code -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<!-- Icons -->
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
 <style>
 
+/* =====================================================
+   HARIOM SMART LIBRARY PRO MAX
+   PREMIUM APP STYLE DESIGN
+===================================================== */
+
 :root{
+    --primary:#5b5ce2;
+    --primary-light:#7475ff;
+    --secondary:#8b5cf6;
+    --success:#16c784;
+    --danger:#ff5c5c;
+    --warning:#ffae42;
+    --info:#38bdf8;
 
---bg:#f4f7fb;
---card:#ffffff;
---text:#172033;
---muted:#718096;
+    --bg:#f4f6fb;
+    --card:#ffffff;
+    --text:#172033;
+    --muted:#718096;
+    --border:#e8ebf3;
 
---primary:#4f46e5;
---primary2:#7c3aed;
+    --shadow:0 8px 30px rgba(25,35,70,.08);
+    --radius:20px;
 
---success:#16a34a;
---danger:#dc2626;
---warning:#f59e0b;
---night:#0284c7;
-
---border:#e5e7eb;
-
---shadow:0 8px 25px rgba(0,0,0,.08);
-
+    --nav-height:70px;
 }
 
 body.dark{
-
---bg:#0b1120;
---card:#111827;
---text:#f8fafc;
---muted:#94a3b8;
---border:#263244;
-
+    --bg:#0d1220;
+    --card:#171e30;
+    --text:#f5f7ff;
+    --muted:#9ca7bd;
+    --border:#293249;
+    --shadow:0 8px 30px rgba(0,0,0,.25);
 }
 
 *{
-box-sizing:border-box;
-margin:0;
-padding:0;
-font-family:Arial,Helvetica,sans-serif;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+html{
+    scroll-behavior:smooth;
 }
 
 body{
-
-background:var(--bg);
-color:var(--text);
-padding-bottom:85px;
-
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    padding-bottom:90px;
+    transition:.3s;
 }
 
-button,input,select{
-
-font-family:inherit;
-
+button,input,select,textarea{
+    font-family:inherit;
 }
 
-/* APP HEADER */
+/* =====================================================
+   APP LOADER
+===================================================== */
 
-.app-header{
-
-position:sticky;
-top:0;
-
-z-index:50;
-
-background:linear-gradient(
-135deg,
-var(--primary),
-var(--primary2)
-);
-
-padding:18px 16px;
-
-color:white;
-
-box-shadow:0 5px 20px rgba(0,0,0,.15);
-
+#appLoader{
+    position:fixed;
+    inset:0;
+    background:linear-gradient(135deg,#5b5ce2,#8b5cf6);
+    z-index:99999;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    color:white;
 }
 
-.header-row{
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
+.loaderLogo{
+    width:90px;
+    height:90px;
+    border-radius:28px;
+    background:white;
+    color:#5b5ce2;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:40px;
+    margin-bottom:20px;
+    box-shadow:0 15px 40px rgba(0,0,0,.2);
 }
 
-.logo-area{
-
-display:flex;
-
-align-items:center;
-
-gap:12px;
-
+.loaderBar{
+    width:180px;
+    height:5px;
+    background:rgba(255,255,255,.25);
+    border-radius:20px;
+    overflow:hidden;
+    margin-top:15px;
 }
 
-.logo{
-
-width:46px;
-height:46px;
-
-border-radius:14px;
-
-background:white;
-
-color:var(--primary);
-
-display:flex;
-
-align-items:center;
-
-justify-content:center;
-
-font-size:24px;
-
+.loaderBar span{
+    display:block;
+    width:50%;
+    height:100%;
+    background:white;
+    border-radius:20px;
+    animation:loading 1.2s infinite ease-in-out;
 }
 
-.logo-area h2{
-
-font-size:18px;
-
+@keyframes loading{
+    0%{transform:translateX(-100%)}
+    100%{transform:translateX(300%)}
 }
 
-.logo-area p{
+/* =====================================================
+   TOP HEADER
+===================================================== */
 
-font-size:11px;
-
-opacity:.8;
-
-margin-top:3px;
-
+.appHeader{
+    position:sticky;
+    top:0;
+    z-index:1000;
+    background:rgba(255,255,255,.92);
+    backdrop-filter:blur(20px);
+    border-bottom:1px solid var(--border);
+    padding:12px 16px;
 }
 
-.header-actions{
-
-display:flex;
-
-gap:8px;
-
+body.dark .appHeader{
+    background:rgba(13,18,32,.92);
 }
 
-.icon-btn{
-
-width:38px;
-height:38px;
-
-border:none;
-
-border-radius:12px;
-
-background:rgba(255,255,255,.18);
-
-color:white;
-
-font-size:18px;
-
-cursor:pointer;
-
+.headerRow{
+    max-width:1100px;
+    margin:auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
 }
 
-/* MAIN */
-
-.main{
-
-padding:15px;
-
-max-width:900px;
-
-margin:auto;
-
+.brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
 }
 
-/* LOGIN CARD */
-
-.admin-card{
-
-background:var(--card);
-
-border-radius:18px;
-
-padding:15px;
-
-box-shadow:var(--shadow);
-
-margin-bottom:15px;
-
+.brandIcon{
+    width:42px;
+    height:42px;
+    border-radius:14px;
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:20px;
+    box-shadow:0 6px 18px rgba(91,92,226,.3);
 }
 
-.admin-title{
-
-font-size:14px;
-
-font-weight:bold;
-
-margin-bottom:10px;
-
+.brandText h2{
+    font-size:16px;
 }
 
-.admin-row{
-
-display:flex;
-
-gap:8px;
-
+.brandText p{
+    font-size:10px;
+    color:var(--muted);
+    margin-top:2px;
 }
 
-.admin-row input{
-
-flex:1;
-
-padding:12px;
-
-border-radius:10px;
-
-border:1px solid var(--border);
-
-background:var(--bg);
-
-color:var(--text);
-
+.headerActions{
+    display:flex;
+    gap:8px;
 }
+
+.iconBtn{
+    width:40px;
+    height:40px;
+    border:none;
+    border-radius:13px;
+    background:var(--card);
+    color:var(--text);
+    border:1px solid var(--border);
+    cursor:pointer;
+    font-size:16px;
+    transition:.2s;
+}
+
+.iconBtn:active{
+    transform:scale(.92);
+}
+
+/* =====================================================
+   MAIN APP
+===================================================== */
+
+.appContainer{
+    max-width:1100px;
+    margin:auto;
+    padding:16px;
+}
+
+.page{
+    display:none;
+    animation:pageFade .3s ease;
+}
+
+.page.active{
+    display:block;
+}
+
+@keyframes pageFade{
+    from{
+        opacity:0;
+        transform:translateY(10px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* =====================================================
+   WELCOME CARD
+===================================================== */
+
+.welcomeCard{
+    background:linear-gradient(135deg,#5b5ce2,#8b5cf6);
+    border-radius:25px;
+    padding:22px;
+    color:white;
+    position:relative;
+    overflow:hidden;
+    margin-bottom:16px;
+    box-shadow:0 12px 30px rgba(91,92,226,.25);
+}
+
+.welcomeCard:before{
+    content:"";
+    position:absolute;
+    width:180px;
+    height:180px;
+    background:rgba(255,255,255,.1);
+    border-radius:50%;
+    right:-60px;
+    top:-80px;
+}
+
+.welcomeCard h1{
+    font-size:23px;
+    position:relative;
+}
+
+.welcomeCard p{
+    margin-top:7px;
+    font-size:13px;
+    opacity:.9;
+    position:relative;
+}
+
+.liveStatus{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    margin-top:15px;
+    padding:7px 12px;
+    background:rgba(255,255,255,.18);
+    border-radius:30px;
+    font-size:12px;
+    position:relative;
+}
+
+.statusDot{
+    width:8px;
+    height:8px;
+    background:#2cff8f;
+    border-radius:50%;
+    box-shadow:0 0 10px #2cff8f;
+}
+
+.clockBox{
+    position:absolute;
+    right:18px;
+    bottom:15px;
+    text-align:right;
+    font-size:12px;
+}
+
+/* =====================================================
+   SECTION TITLE
+===================================================== */
+
+.sectionHeader{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin:20px 0 12px;
+}
+
+.sectionHeader h3{
+    font-size:16px;
+}
+
+.sectionHeader button{
+    border:none;
+    background:none;
+    color:var(--primary);
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* =====================================================
+   STAT CARDS
+===================================================== */
+
+.statsGrid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+}
+
+.statCard{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:15px;
+    box-shadow:var(--shadow);
+    position:relative;
+    overflow:hidden;
+}
+
+.statIcon{
+    width:38px;
+    height:38px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:10px;
+    font-size:16px;
+}
+
+.statCard h4{
+    font-size:20px;
+}
+
+.statCard p{
+    color:var(--muted);
+    font-size:11px;
+    margin-top:4px;
+}
+
+.purple{background:#eeeaff;color:#665df5}
+.green{background:#ddfff1;color:#16a66f}
+.orange{background:#fff2dc;color:#e69524}
+.red{background:#ffe4e4;color:#e84b4b}
+.blue{background:#e1f4ff;color:#2499d6}
+.pink{background:#ffe5f2;color:#e74893}
+
+.wideStat{
+    grid-column:span 2;
+}
+
+/* =====================================================
+   QUICK ACTIONS
+===================================================== */
+
+.quickGrid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+}
+
+.quickAction{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:17px;
+    padding:13px 5px;
+    text-align:center;
+    cursor:pointer;
+    box-shadow:var(--shadow);
+    transition:.2s;
+}
+
+.quickAction:active{
+    transform:scale(.95);
+}
+
+.quickAction i{
+    width:36px;
+    height:36px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:12px;
+    margin:auto;
+    margin-bottom:6px;
+}
+
+.quickAction span{
+    font-size:10px;
+    display:block;
+}
+
+/* =====================================================
+   CARDS
+===================================================== */
+
+.appCard{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:16px;
+    box-shadow:var(--shadow);
+    margin-bottom:14px;
+}
+
+.cardTitle{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:12px;
+}
+
+.cardTitle h3{
+    font-size:15px;
+}
+
+/* =====================================================
+   ALERT LIST
+===================================================== */
+
+.alertItem{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:12px 0;
+    border-bottom:1px solid var(--border);
+}
+
+.alertItem:last-child{
+    border-bottom:none;
+}
+
+.alertIcon{
+    width:40px;
+    height:40px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.alertInfo{
+    flex:1;
+}
+
+.alertInfo h4{
+    font-size:13px;
+}
+
+.alertInfo p{
+    font-size:11px;
+    color:var(--muted);
+    margin-top:3px;
+}
+
+/* =====================================================
+   BOTTOM NAVIGATION
+===================================================== */
+
+.bottomNav{
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    height:76px;
+    background:var(--card);
+    border-top:1px solid var(--border);
+    display:flex;
+    justify-content:center;
+    z-index:5000;
+    padding-bottom:5px;
+}
+
+.navInner{
+    width:100%;
+    max-width:700px;
+    display:flex;
+    justify-content:space-around;
+}
+
+.navItem{
+    flex:1;
+    border:none;
+    background:transparent;
+    color:var(--muted);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:4px;
+    cursor:pointer;
+    font-size:10px;
+    transition:.2s;
+}
+
+.navItem i{
+    font-size:18px;
+}
+
+.navItem.active{
+    color:var(--primary);
+}
+
+.navItem.active i{
+    background:#ecebff;
+    padding:8px 14px;
+    border-radius:14px;
+}
+
+/* =====================================================
+   BUTTONS
+===================================================== */
 
 .btn{
-
-border:none;
-
-padding:12px 16px;
-
-border-radius:10px;
-
-background:var(--primary);
-
-color:white;
-
-font-weight:bold;
-
-cursor:pointer;
-
+    border:none;
+    border-radius:13px;
+    padding:12px 16px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:.2s;
 }
 
 .btn:active{
-
-transform:scale(.97);
-
+    transform:scale(.96);
 }
 
-.btn-success{
-
-background:var(--success);
-
+.btnPrimary{
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
+    color:white;
 }
 
-.btn-danger{
-
-background:var(--danger);
-
+.btnSuccess{
+    background:var(--success);
+    color:white;
 }
 
-.btn-warning{
-
-background:var(--warning);
-
+.btnDanger{
+    background:var(--danger);
+    color:white;
 }
 
-/* WELCOME */
-
-.welcome{
-
-margin:8px 0 18px;
-
+.btnWarning{
+    background:var(--warning);
+    color:white;
 }
 
-.welcome h2{
-
-font-size:20px;
-
+.btnOutline{
+    background:transparent;
+    color:var(--primary);
+    border:1px solid var(--primary);
 }
 
-.welcome p{
-
-font-size:13px;
-
-color:var(--muted);
-
-margin-top:4px;
-
+.fullBtn{
+    width:100%;
 }
 
-/* DASHBOARD */
+/* =====================================================
+   FORM
+===================================================== */
 
-.stats-grid{
-
-display:grid;
-
-grid-template-columns:repeat(2,1fr);
-
-gap:12px;
-
+.formGroup{
+    margin-bottom:12px;
 }
 
-.stat-card{
-
-background:var(--card);
-
-padding:15px;
-
-border-radius:18px;
-
-box-shadow:var(--shadow);
-
-position:relative;
-
-overflow:hidden;
-
+.formGroup label{
+    display:block;
+    font-size:11px;
+    color:var(--muted);
+    margin-bottom:6px;
 }
 
-.stat-card.big{
-
-grid-column:span 2;
-
+.formControl{
+    width:100%;
+    border:1px solid var(--border);
+    background:var(--bg);
+    color:var(--text);
+    border-radius:12px;
+    padding:12px;
+    outline:none;
 }
 
-.stat-icon{
-
-font-size:23px;
-
-margin-bottom:8px;
-
+.formControl:focus{
+    border-color:var(--primary);
 }
 
-.stat-title{
-
-font-size:12px;
-
-color:var(--muted);
-
+.formRow{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
 }
 
-.stat-value{
-
-font-size:23px;
-
-font-weight:bold;
-
-margin-top:5px;
-
-}
-
-.blue-border{
-
-border-left:5px solid var(--primary);
-
-}
-
-.green-border{
-
-border-left:5px solid var(--success);
-
-}
-
-.orange-border{
-
-border-left:5px solid var(--warning);
-
-}
-
-.red-border{
-
-border-left:5px solid var(--danger);
-
-}
-
-/* ALERT */
-
-.alert-section{
-
-margin-top:18px;
-
-}
-
-.section-title{
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-margin-bottom:10px;
-
-}
-
-.section-title h3{
-
-font-size:16px;
-
-}
-
-.alert-list{
-
-background:var(--card);
-
-border-radius:16px;
-
-box-shadow:var(--shadow);
-
-overflow:hidden;
-
-}
-
-.alert-item{
-
-padding:13px;
-
-border-bottom:1px solid var(--border);
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-font-size:13px;
-
-}
-
-.alert-item:last-child{
-
-border-bottom:none;
-
-}
-
-/* SEARCH */
-
-.search-wrap{
-
-margin-bottom:15px;
-
-}
-
-.search-wrap input{
-
-width:100%;
-
-padding:14px;
-
-border-radius:14px;
-
-border:1px solid var(--border);
-
-background:var(--card);
-
-color:var(--text);
-
-font-size:14px;
-
-}
-
-/* LEGEND */
-
-.legend{
-
-display:flex;
-
-gap:10px;
-
-flex-wrap:wrap;
-
-margin-bottom:15px;
-
-font-size:11px;
-
-color:var(--muted);
-
-}
-
-.legend-item{
-
-display:flex;
-
-align-items:center;
-
-gap:5px;
-
-}
-
-.legend-dot{
-
-width:10px;
-
-height:10px;
-
-border-radius:50%;
-
-}
-
-.available{
-
-background:#64748b;
-
-}
-
-.booked{
-
-background:var(--success);
-
-}
-
-.expired{
-
-background:var(--danger);
-
-}
-
-.warning{
-
-background:var(--warning);
-
-}
-
-/* SEATS */
-
-.seats-grid{
-
-display:grid;
-
-grid-template-columns:repeat(5,1fr);
-
-gap:9px;
-
-}
-
-.seat{
-
-min-height:95px;
-
-background:var(--card);
-
-border:1px solid var(--border);
-
-border-radius:15px;
-
-padding:7px;
-
-display:flex;
-
-flex-direction:column;
-
-justify-content:space-between;
-
-align-items:center;
-
-cursor:pointer;
-
-box-shadow:0 3px 10px rgba(0,0,0,.05);
-
-transition:.2s;
-
-position:relative;
-
-}
-
-.seat:active{
-
-transform:scale(.95);
-
-}
-
-.seat-number{
-
-font-weight:bold;
-
-font-size:16px;
-
-}
-
-.student-name{
-
-font-size:9px;
-
-text-align:center;
-
-color:var(--muted);
-
-width:100%;
-
-white-space:nowrap;
-
-overflow:hidden;
-
-text-overflow:ellipsis;
-
-}
-
-.shift-dots{
-
-display:flex;
-
-gap:3px;
-
-}
-
-.dot{
-
-width:7px;
-
-height:7px;
-
-border-radius:50%;
-
-background:#cbd5e1;
-
-}
-
-.dot.active{
-
-background:var(--success);
-
-}
-
-.dot.alert{
-
-background:var(--warning);
-
-animation:blink 1s infinite;
-
-}
-
-.dot.expired{
-
-background:var(--danger);
-
-animation:blink 1s infinite;
-
-}
-
-.seat.booked-seat{
-
-border:2px solid var(--primary);
-
-}
-
-.seat.allshift-seat{
-
-border:2px solid #eab308;
-
-background:linear-gradient(
-135deg,
-rgba(234,179,8,.12),
-var(--card)
-);
-
-}
-
-.seat.unreserved-seat{
-
-border-style:dashed;
-
-}
-
-.ur{
-
-position:absolute;
-
-right:5px;
-
-top:5px;
-
-font-size:8px;
-
-background:#64748b;
-
-color:white;
-
-padding:2px 4px;
-
-border-radius:4px;
-
-}
-
-.due-badge{
-
-font-size:9px;
-
-background:#fee2e2;
-
-color:#dc2626;
-
-padding:3px 5px;
-
-border-radius:5px;
-
-font-weight:bold;
-
-}
-
-/* SECTIONS */
-
-.app-section{
-
-display:none;
-
-}
-
-.app-section.active{
-
-display:block;
-
-}
-
-/* STUDENT LIST */
-
-.student-card{
-
-background:var(--card);
-
-border-radius:16px;
-
-padding:14px;
-
-box-shadow:var(--shadow);
-
-margin-bottom:10px;
-
-}
-
-.student-top{
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-}
-
-.student-name-big{
-
-font-weight:bold;
-
-font-size:16px;
-
-}
-
-.student-info{
-
-font-size:12px;
-
-color:var(--muted);
-
-margin-top:6px;
-
-line-height:1.7;
-
-}
-
-/* WAITING */
-
-.wait-form{
-
-display:grid;
-
-grid-template-columns:1fr 1fr;
-
-gap:8px;
-
-margin-bottom:12px;
-
-}
-
-.wait-form input{
-
-padding:12px;
-
-border:1px solid var(--border);
-
-background:var(--card);
-
-color:var(--text);
-
-border-radius:10px;
-
-}
-
-.waiting-card{
-
-background:var(--card);
-
-padding:13px;
-
-border-radius:14px;
-
-margin-bottom:8px;
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-box-shadow:var(--shadow);
-
-}
-
-/* MODAL */
+/* =====================================================
+   MODAL
+===================================================== */
 
 .modal{
-
-display:none;
-
-position:fixed;
-
-inset:0;
-
-background:rgba(0,0,0,.65);
-
-z-index:100;
-
-align-items:flex-end;
-
-justify-content:center;
-
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.55);
+    backdrop-filter:blur(4px);
+    z-index:10000;
+    display:none;
+    align-items:flex-end;
 }
 
 .modal.show{
-
-display:flex;
-
+    display:flex;
 }
 
-.modal-content{
-
-background:var(--card);
-
-width:100%;
-
-max-width:650px;
-
-max-height:92vh;
-
-overflow-y:auto;
-
-border-radius:25px 25px 0 0;
-
-padding:20px;
-
+.modalBox{
+    background:var(--card);
+    width:100%;
+    max-height:92vh;
+    overflow-y:auto;
+    border-radius:28px 28px 0 0;
+    padding:20px;
+    animation:modalUp .3s ease;
 }
 
-.modal-header{
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-margin-bottom:15px;
-
+@keyframes modalUp{
+    from{transform:translateY(100%)}
+    to{transform:translateY(0)}
 }
 
-.modal-header h2{
-
-font-size:18px;
-
+.modalHandle{
+    width:45px;
+    height:5px;
+    background:var(--border);
+    border-radius:20px;
+    margin:0 auto 18px;
 }
 
-.close-btn{
-
-border:none;
-
-background:var(--danger);
-
-color:white;
-
-width:35px;
-
-height:35px;
-
-border-radius:50%;
-
-font-size:18px;
-
+.modalHeader{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
 }
 
-.shift-card{
-
-background:var(--bg);
-
-border:1px solid var(--border);
-
-border-radius:15px;
-
-padding:13px;
-
-margin-bottom:12px;
-
+.modalHeader h2{
+    font-size:18px;
 }
 
-.shift-card h4{
-
-font-size:14px;
-
-margin-bottom:10px;
-
-color:var(--primary);
-
+.closeModal{
+    width:35px;
+    height:35px;
+    border:none;
+    border-radius:10px;
+    background:var(--bg);
+    color:var(--text);
+    cursor:pointer;
 }
 
-.shift-card.all{
+/* =====================================================
+   TOAST
+===================================================== */
 
-border-color:#eab308;
-
+#toast{
+    position:fixed;
+    top:80px;
+    left:50%;
+    transform:translateX(-50%) translateY(-30px);
+    background:#20263a;
+    color:white;
+    padding:12px 18px;
+    border-radius:14px;
+    z-index:999999;
+    opacity:0;
+    pointer-events:none;
+    transition:.3s;
+    font-size:13px;
+    box-shadow:0 10px 30px rgba(0,0,0,.25);
 }
 
-.shift-card.night{
-
-border-color:var(--night);
-
+#toast.show{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
 }
 
-.form-grid{
+/* =====================================================
+   ADMIN LOGIN
+===================================================== */
 
-display:grid;
-
-grid-template-columns:1fr 1fr;
-
-gap:8px;
-
+.loginCard{
+    max-width:450px;
+    margin:35px auto;
 }
 
-.form-grid.three{
-
-grid-template-columns:1fr 1fr 1fr;
-
+.loginLogo{
+    width:80px;
+    height:80px;
+    border-radius:25px;
+    margin:0 auto 15px;
+    background:linear-gradient(135deg,var(--primary),var(--secondary));
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:32px;
+    box-shadow:0 15px 30px rgba(91,92,226,.25);
 }
 
-.form-full{
-
-grid-column:span 2;
-
+.loginCard h2{
+    text-align:center;
 }
 
-.field label{
-
-font-size:10px;
-
-color:var(--muted);
-
-display:block;
-
-margin-bottom:4px;
-
+.loginCard p{
+    text-align:center;
+    color:var(--muted);
+    font-size:12px;
+    margin:8px 0 25px;
 }
 
-.field input{
-
-width:100%;
-
-padding:10px;
-
-border-radius:9px;
-
-border:1px solid var(--border);
-
-background:var(--card);
-
-color:var(--text);
-
+.adminStatus{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:11px;
+    color:var(--muted);
+    margin-top:12px;
 }
 
-.modal-buttons{
+/* =====================================================
+   EMPTY STATE
+===================================================== */
 
-display:flex;
-
-gap:10px;
-
-margin-top:15px;
-
+.emptyState{
+    text-align:center;
+    padding:35px 15px;
+    color:var(--muted);
 }
 
-.modal-buttons button{
-
-flex:1;
-
+.emptyState i{
+    font-size:40px;
+    margin-bottom:12px;
+    opacity:.5;
 }
 
-/* BOTTOM NAV */
-
-.bottom-nav{
-
-position:fixed;
-
-bottom:0;
-
-left:0;
-
-width:100%;
-
-height:70px;
-
-background:var(--card);
-
-border-top:1px solid var(--border);
-
-display:flex;
-
-justify-content:space-around;
-
-align-items:center;
-
-z-index:80;
-
-}
-
-.nav-item{
-
-border:none;
-
-background:transparent;
-
-color:var(--muted);
-
-font-size:10px;
-
-display:flex;
-
-flex-direction:column;
-
-align-items:center;
-
-gap:4px;
-
-cursor:pointer;
-
-min-width:55px;
-
-}
-
-.nav-icon{
-
-font-size:21px;
-
-}
-
-.nav-item.active{
-
-color:var(--primary);
-
-font-weight:bold;
-
-}
-
-/* TOAST */
-
-.toast{
-
-position:fixed;
-
-top:80px;
-
-left:50%;
-
-transform:translateX(-50%);
-
-background:#111827;
-
-color:white;
-
-padding:12px 18px;
-
-border-radius:12px;
-
-z-index:200;
-
-display:none;
-
-font-size:13px;
-
-box-shadow:var(--shadow);
-
-}
-
-.toast.show{
-
-display:block;
-
-}
-
-/* LOADING */
-
-.loader{
-
-text-align:center;
-
-padding:30px;
-
-color:var(--muted);
-
-}
-
-@keyframes blink{
-
-50%{
-opacity:.3;
-}
-
-}
+/* =====================================================
+   RESPONSIVE
+===================================================== */
 
 @media(min-width:700px){
 
-.seats-grid{
+    .statsGrid{
+        grid-template-columns:repeat(4,1fr);
+    }
 
-grid-template-columns:repeat(8,1fr);
+    .wideStat{
+        grid-column:span 2;
+    }
 
-}
+    .quickGrid{
+        grid-template-columns:repeat(6,1fr);
+    }
 
+    .modal{
+        align-items:center;
+        justify-content:center;
+    }
+
+    .modalBox{
+        max-width:600px;
+        border-radius:25px;
+        max-height:85vh;
+    }
 }
 
 </style>
@@ -1141,2612 +806,5798 @@ grid-template-columns:repeat(8,1fr);
 
 <body>
 
+<!-- APP LOADER -->
+
+<div id="appLoader">
+
+    <div class="loaderLogo">
+        <i class="fa-solid fa-book-open"></i>
+    </div>
+
+    <h2>Hariom Smart Library</h2>
+
+    <p style="font-size:12px;margin-top:6px;opacity:.8">
+        Loading Smart Management System...
+    </p>
+
+    <div class="loaderBar">
+        <span></span>
+    </div>
+
+</div>
+
+
 <!-- HEADER -->
 
-<header class="app-header">
+<header class="appHeader">
 
-<div class="header-row">
+    <div class="headerRow">
 
-<div class="logo-area">
+        <div class="brand">
 
-<div class="logo">📚</div>
+            <div class="brandIcon">
+                <i class="fa-solid fa-book-open"></i>
+            </div>
 
-<div>
+            <div class="brandText">
+                <h2>Hariom Library</h2>
+                <p>Smart Management System PRO</p>
+            </div>
 
-<h2>Hariom Library</h2>
+        </div>
 
-<p>Smart Management System Pro</p>
+        <div class="headerActions">
 
-</div>
+            <button class="iconBtn" onclick="toggleTheme()" title="Dark Mode">
+                <i id="themeIcon" class="fa-solid fa-moon"></i>
+            </button>
 
-</div>
+            <button class="iconBtn" onclick="openNotifications()" title="Notifications">
+                <i class="fa-solid fa-bell"></i>
+            </button>
 
-<div class="header-actions">
+        </div>
 
-<button class="icon-btn" onclick="toggleTheme()">🌙</button>
-
-<button class="icon-btn" onclick="logoutAdmin()">🔐</button>
-
-</div>
-
-</div>
+    </div>
 
 </header>
 
 
-<div class="main">
+<!-- MAIN APPLICATION -->
 
-<!-- ADMIN -->
-
-<div class="admin-card" id="adminCard">
-
-<div class="admin-title">
-🔐 Admin Verification
-</div>
-
-<div class="admin-row">
-
-<input
-type="tel"
-id="adminPhone"
-placeholder="Enter Admin Mobile Number"
-inputmode="numeric"
-maxlength="10">
-
-<button class="btn" onclick="verifyAdmin()">
-Login
-</button>
-
-</div>
-
-</div>
+<main class="appContainer">
 
 
-<!-- HOME -->
+<!-- =================================================
+     HOME / DASHBOARD PAGE
+================================================= -->
 
-<section id="homeSection" class="app-section active">
-
-<div class="welcome">
-
-<h2 id="welcomeText">
-Welcome to Hariom Library 👋
-</h2>
-
-<p id="todayDate"></p>
-
-</div>
+<section id="page-home" class="page active">
 
 
-<div class="stats-grid">
+<div class="welcomeCard">
 
-<div class="stat-card blue-border">
+    <h1 id="welcomeText">Good Morning, Admin 👋</h1>
 
-<div class="stat-icon">💺</div>
+    <p>
+        Welcome to Hariom Smart Library Management System
+    </p>
 
-<div class="stat-title">
-TOTAL SEATS
-</div>
 
-<div class="stat-value">
-105
-</div>
+    <div class="liveStatus">
+
+        <span class="statusDot"></span>
+
+        <span id="libraryStatusText">
+            Checking Library Status...
+        </span>
+
+    </div>
+
+
+    <div class="clockBox">
+
+        <div id="liveTime">00:00:00</div>
+
+        <div id="liveDate">Loading...</div>
+
+    </div>
 
 </div>
 
 
-<div class="stat-card green-border">
+<!-- DASHBOARD STATISTICS -->
 
-<div class="stat-icon">📚</div>
+<div class="sectionHeader">
 
-<div class="stat-title">
-ACTIVE BOOKINGS
-</div>
+    <h3>📊 Library Overview</h3>
 
-<div class="stat-value"
-id="activeBookings">
-0
-</div>
+    <button onclick="refreshDashboard()">
+        <i class="fa-solid fa-rotate"></i>
+    </button>
 
 </div>
 
 
-<div class="stat-card orange-border">
-
-<div class="stat-icon">🟢</div>
-
-<div class="stat-title">
-VACANT SEATS
-</div>
-
-<div class="stat-value"
-id="vacantSeats">
-105
-</div>
-
-</div>
+<div class="statsGrid">
 
 
-<div class="stat-card red-border">
+<div class="statCard">
 
-<div class="stat-icon">⚠️</div>
+    <div class="statIcon purple">
+        <i class="fa-solid fa-chair"></i>
+    </div>
 
-<div class="stat-title">
-TOTAL DUE
-</div>
+    <h4 id="totalSeatsCount">105</h4>
 
-<div class="stat-value"
-id="totalDue">
-₹0
-</div>
+    <p>Total Seats</p>
 
 </div>
 
 
-<div class="stat-card big blue-border">
+<div class="statCard">
 
-<div class="stat-icon">💰</div>
+    <div class="statIcon green">
+        <i class="fa-solid fa-circle-check"></i>
+    </div>
 
-<div class="stat-title"
-id="collectionLabel">
-MONTHLY COLLECTION
-</div>
+    <h4 id="availableSeatsCount">105</h4>
 
-<div class="stat-value"
-id="monthlyCollection">
-₹0
-</div>
-
-</div>
+    <p>Available Seats</p>
 
 </div>
 
 
-<div class="alert-section">
+<div class="statCard">
 
-<div class="section-title">
+    <div class="statIcon blue">
+        <i class="fa-solid fa-users"></i>
+    </div>
 
-<h3>🔔 Important Alerts</h3>
+    <h4 id="occupiedSeatsCount">0</h4>
 
-</div>
-
-<div class="alert-list"
-id="alertList">
-
-<div class="alert-item">
-
-<span>Loading alerts...</span>
+    <p>Occupied Seats</p>
 
 </div>
 
-</div>
+
+<div class="statCard">
+
+    <div class="statIcon orange">
+        <i class="fa-solid fa-clock"></i>
+    </div>
+
+    <h4 id="renewalDueCount">0</h4>
+
+    <p>Renewal Soon</p>
 
 </div>
+
+
+<div class="statCard wideStat">
+
+    <div class="statIcon pink">
+        <i class="fa-solid fa-indian-rupee-sign"></i>
+    </div>
+
+    <h4 id="monthlyCollection">₹0</h4>
+
+    <p>Monthly Collection</p>
+
+</div>
+
+
+<div class="statCard">
+
+    <div class="statIcon red">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+    </div>
+
+    <h4 id="expiredCount">0</h4>
+
+    <p>Expired</p>
+
+</div>
+
+
+<div class="statCard">
+
+    <div class="statIcon orange">
+        <i class="fa-solid fa-money-bill-wave"></i>
+    </div>
+
+    <h4 id="totalDueAmount">₹0</h4>
+
+    <p>Total Due</p>
+
+</div>
+
+
+</div>
+
+
+<!-- QUICK ACTIONS -->
+
+<div class="sectionHeader">
+
+    <h3>⚡ Quick Actions</h3>
+
+</div>
+
+
+<div class="quickGrid">
+
+
+<div class="quickAction" onclick="openAddStudent()">
+
+    <i class="fa-solid fa-user-plus purple"></i>
+
+    <span>Add Student</span>
+
+</div>
+
+
+<div class="quickAction" onclick="showPage('seats')">
+
+    <i class="fa-solid fa-chair green"></i>
+
+    <span>Find Seat</span>
+
+</div>
+
+
+<div class="quickAction" onclick="openPaymentModal()">
+
+    <i class="fa-solid fa-wallet orange"></i>
+
+    <span>Payment</span>
+
+</div>
+
+
+<div class="quickAction" onclick="showPage('attendance')">
+
+    <i class="fa-solid fa-qrcode blue"></i>
+
+    <span>Attendance</span>
+
+</div>
+
+
+<div class="quickAction" onclick="openWhatsAppCenter()">
+
+    <i class="fa-brands fa-whatsapp green"></i>
+
+    <span>WhatsApp</span>
+
+</div>
+
+
+<div class="quickAction" onclick="showPage('reports')">
+
+    <i class="fa-solid fa-chart-line pink"></i>
+
+    <span>Reports</span>
+
+</div>
+
+
+<div class="quickAction" onclick="showPage('notice')">
+
+    <i class="fa-solid fa-bullhorn orange"></i>
+
+    <span>Notice</span>
+
+</div>
+
+
+<div class="quickAction" onclick="showPage('more')">
+
+    <i class="fa-solid fa-ellipsis purple"></i>
+
+    <span>More</span>
+
+</div>
+
+
+</div>
+
+
+<!-- UPCOMING ALERTS -->
+
+<div class="sectionHeader">
+
+    <h3>🔔 Important Alerts</h3>
+
+    <button onclick="showPage('alerts')">
+        View All
+    </button>
+
+</div>
+
+
+<div class="appCard" id="dashboardAlerts">
+
+    <div class="emptyState">
+
+        <i class="fa-solid fa-bell"></i>
+
+        <p>No important alerts right now</p>
+
+    </div>
+
+</div>
+
+
+<!-- RECENT ACTIVITY -->
+
+<div class="sectionHeader">
+
+    <h3>⚡ Recent Activity</h3>
+
+    <button onclick="showPage('activity')">
+        View All
+    </button>
+
+</div>
+
+
+<div class="appCard" id="recentActivityContainer">
+
+    <div class="emptyState">
+
+        <i class="fa-solid fa-clock-rotate-left"></i>
+
+        <p>No activity yet</p>
+
+    </div>
+
+</div>
+
 
 </section>
 
 
-<!-- SEATS -->
 
-<section id="seatsSection"
-class="app-section">
+<!-- =================================================
+     SEATS PAGE
+================================================= -->
 
-<div class="section-title">
+<section id="page-seats" class="page">
 
-<h3>💺 Seat Management</h3>
+    <div class="sectionHeader">
 
-</div>
+        <h3>💺 Smart Seat Management</h3>
 
+        <button onclick="suggestBestSeat()">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            Find Best
+        </button>
 
-<div class="search-wrap">
-
-<input
-id="searchBox"
-type="text"
-placeholder="Search name or seat number..."
-oninput="filterSeats()">
-
-</div>
+    </div>
 
 
-<div class="legend">
+    <div class="appCard">
 
-<div class="legend-item">
+        <input
+        id="seatSearch"
+        class="formControl"
+        type="text"
+        placeholder="Search seat, student name or phone..."
+        oninput="filterSeatsAdvanced()">
 
-<div class="legend-dot available"></div>
-
-Available
-
-</div>
-
-<div class="legend-item">
-
-<div class="legend-dot booked"></div>
-
-Booked
-
-</div>
-
-<div class="legend-item">
-
-<div class="legend-dot warning"></div>
-
-Renewal Soon
-
-</div>
-
-<div class="legend-item">
-
-<div class="legend-dot expired"></div>
-
-Expired
-
-</div>
-
-</div>
+    </div>
 
 
-<div class="seats-grid"
-id="seatsGrid">
+    <div class="appCard">
 
-</div>
+        <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px">
+
+            <button class="btn btnPrimary" onclick="filterSeatStatus('all')">
+                All
+            </button>
+
+            <button class="btn btnOutline" onclick="filterSeatStatus('available')">
+                Available
+            </button>
+
+            <button class="btn btnOutline" onclick="filterSeatStatus('occupied')">
+                Booked
+            </button>
+
+            <button class="btn btnOutline" onclick="filterSeatStatus('due')">
+                Due
+            </button>
+
+            <button class="btn btnOutline" onclick="filterSeatStatus('expired')">
+                Expired
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- Seat Grid Part 2 me aayega -->
+
+    <div id="premiumSeatsGrid"></div>
+
 
 </section>
 
 
-<!-- STUDENTS -->
 
-<section id="studentsSection"
-class="app-section">
+<!-- =================================================
+     STUDENTS PAGE
+================================================= -->
 
-<div class="section-title">
+<section id="page-students" class="page">
 
-<h3>👨‍🎓 Active Students</h3>
+    <div class="sectionHeader">
 
-</div>
+        <h3>👨‍🎓 Students</h3>
 
-<div id="studentsList">
+        <button onclick="openAddStudent()">
+            <i class="fa-solid fa-plus"></i>
+            Add
+        </button>
 
-</div>
+    </div>
+
+
+    <div class="appCard">
+
+        <input
+        id="studentSearch"
+        class="formControl"
+        placeholder="Search student name or mobile..."
+        oninput="searchStudents()">
+
+    </div>
+
+
+    <div id="studentsListContainer">
+
+        <div class="emptyState">
+
+            <i class="fa-solid fa-users"></i>
+
+            <p>Loading students...</p>
+
+        </div>
+
+    </div>
+
 
 </section>
 
 
-<!-- REPORT -->
 
-<section id="reportSection"
-class="app-section">
+<!-- =================================================
+     ATTENDANCE PAGE
+================================================= -->
 
-<div class="section-title">
+<section id="page-attendance" class="page">
 
-<h3>📊 Reports & Backup</h3>
+    <div class="sectionHeader">
 
-</div>
+        <h3>📷 Smart Attendance</h3>
 
+        <button onclick="openAttendanceHistory()">
+            History
+        </button>
 
-<div class="student-card">
-
-<div class="student-name-big">
-💾 Database Backup
-</div>
-
-<div class="student-info">
-
-Download complete active student database in Excel format.
-
-</div>
-
-<br>
-
-<button
-class="btn btn-success"
-onclick="exportLibraryDataToExcel()">
-
-Download Excel Backup
-
-</button>
-
-</div>
+    </div>
 
 
-<div class="student-card">
+    <div class="appCard">
 
-<div class="student-name-big">
-📋 Waiting List
-</div>
+        <div style="text-align:center;padding:15px">
 
-<div class="student-info">
+            <div class="loginLogo">
 
-Add students who are waiting for available seats.
+                <i class="fa-solid fa-qrcode"></i>
 
-</div>
+            </div>
 
-</div>
+            <h3>QR Attendance System</h3>
 
+            <p style="font-size:12px;color:var(--muted);margin:8px 0 18px">
 
-<div class="wait-form">
+                Scan Student QR Code for Entry & Exit
 
-<input
-id="waitName"
-placeholder="Student Name">
-
-<input
-id="waitPhone"
-placeholder="Mobile Number">
-
-</div>
+            </p>
 
 
-<button
-class="btn"
-style="width:100%;margin-bottom:15px;"
-onclick="addWaiting()">
+            <button class="btn btnPrimary fullBtn"
+            onclick="startQRScanner()">
 
-+ Add To Waiting List
+                <i class="fa-solid fa-camera"></i>
 
-</button>
+                Start QR Scanner
+
+            </button>
 
 
-<div id="waitingList">
+            <button class="btn btnOutline fullBtn"
+            style="margin-top:10px"
+            onclick="manualAttendance()">
 
-</div>
+                Manual Attendance
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="statsGrid">
+
+        <div class="statCard">
+
+            <div class="statIcon green">
+                <i class="fa-solid fa-right-to-bracket"></i>
+            </div>
+
+            <h4 id="todayPresentCount">0</h4>
+
+            <p>Present Today</p>
+
+        </div>
+
+
+        <div class="statCard">
+
+            <div class="statIcon red">
+                <i class="fa-solid fa-user-xmark"></i>
+            </div>
+
+            <h4 id="todayAbsentCount">0</h4>
+
+            <p>Not Checked In</p>
+
+        </div>
+
+    </div>
+
 
 </section>
 
 
-<!-- SETTINGS -->
 
-<section id="settingsSection"
-class="app-section">
+<!-- =================================================
+     PAYMENTS PAGE
+================================================= -->
 
-<div class="section-title">
+<section id="page-payments" class="page">
 
-<h3>⚙️ Settings</h3>
+    <div class="sectionHeader">
+
+        <h3>💰 Payments</h3>
+
+        <button onclick="openPaymentModal()">
+            <i class="fa-solid fa-plus"></i>
+            Payment
+        </button>
+
+    </div>
+
+
+    <div class="statsGrid">
+
+        <div class="statCard">
+
+            <div class="statIcon green">
+                <i class="fa-solid fa-calendar-day"></i>
+            </div>
+
+            <h4 id="todayCollection">₹0</h4>
+
+            <p>Today's Collection</p>
+
+        </div>
+
+
+        <div class="statCard">
+
+            <div class="statIcon purple">
+                <i class="fa-solid fa-calendar"></i>
+            </div>
+
+            <h4 id="paymentMonthlyCollection">₹0</h4>
+
+            <p>This Month</p>
+
+        </div>
+
+    </div>
+
+
+    <div class="appCard">
+
+        <div class="cardTitle">
+
+            <h3>Recent Payments</h3>
+
+            <button class="btn btnOutline"
+            onclick="exportPaymentsExcel()">
+
+                Excel
+
+            </button>
+
+        </div>
+
+
+        <div id="paymentHistoryContainer">
+
+            <div class="emptyState">
+
+                <i class="fa-solid fa-receipt"></i>
+
+                <p>No payment history</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =================================================
+     REPORTS PAGE
+================================================= -->
+
+<section id="page-reports" class="page">
+
+    <div class="sectionHeader">
+
+        <h3>📊 Reports & Analytics</h3>
+
+    </div>
+
+
+    <div class="appCard">
+
+        <h3 style="margin-bottom:15px">
+            Library Performance
+        </h3>
+
+
+        <div class="alertItem">
+
+            <div class="alertIcon purple">
+                <i class="fa-solid fa-users"></i>
+            </div>
+
+            <div class="alertInfo">
+
+                <h4>Total Active Students</h4>
+
+                <p id="reportActiveStudents">0 Students</p>
+
+            </div>
+
+        </div>
+
+
+        <div class="alertItem">
+
+            <div class="alertIcon green">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+
+            <div class="alertInfo">
+
+                <h4>Seat Occupancy</h4>
+
+                <p id="occupancyPercentage">0%</p>
+
+            </div>
+
+        </div>
+
+
+        <div class="alertItem">
+
+            <div class="alertIcon orange">
+                <i class="fa-solid fa-indian-rupee-sign"></i>
+            </div>
+
+            <div class="alertInfo">
+
+                <h4>Monthly Revenue</h4>
+
+                <p id="reportRevenue">₹0</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <button class="btn btnSuccess fullBtn"
+    onclick="exportFullLibraryBackup()">
+
+        <i class="fa-solid fa-file-excel"></i>
+
+        Download Complete Excel Backup
+
+    </button>
+
+
+</section>
+
+
+
+<!-- =================================================
+     NOTICE PAGE
+================================================= -->
+
+<section id="page-notice" class="page">
+
+    <div class="sectionHeader">
+
+        <h3>📢 Notice Board</h3>
+
+        <button onclick="openAddNotice()">
+
+            <i class="fa-solid fa-plus"></i>
+
+            Add Notice
+
+        </button>
+
+    </div>
+
+
+    <div id="noticeContainer">
+
+        <div class="emptyState">
+
+            <i class="fa-solid fa-bullhorn"></i>
+
+            <p>No notices available</p>
+
+        </div>
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =================================================
+     MORE PAGE
+================================================= -->
+
+<section id="page-more" class="page">
+
+    <div class="sectionHeader">
+
+        <h3>⚙️ More Features</h3>
+
+    </div>
+
+
+    <div class="appCard">
+
+        <div class="alertItem"
+        onclick="showPage('complaints')"
+        style="cursor:pointer">
+
+            <div class="alertIcon red">
+
+                <i class="fa-solid fa-comment-dots"></i>
+
+            </div>
+
+            <div class="alertInfo">
+
+                <h4>Complaints</h4>
+
+                <p>Manage student complaints</p>
+
+            </div>
+
+            <i class="fa-solid fa-chevron-right"></i>
+
+        </div>
+
+
+        <div class="alertItem"
+        onclick="showPage('lostfound')"
+        style="cursor:pointer">
+
+            <div class="alertIcon orange">
+
+                <i class="fa-solid fa-magnifying-glass"></i>
+
+            </div>
+
+            <div class="alertInfo">
+
+                <h4>Lost & Found</h4>
+
+                <p>Manage found items</p>
+
+            </div>
+
+            <i class="fa-solid fa-chevron-right"></i>
+
+        </div>
+
+
+        <div class="alertItem"
+        onclick="showPage('waiting')"
+        style="cursor:pointer">
+
+            <div class="alertIcon purple">
+
+                <i class="fa-solid fa-list-ol"></i>
+
+            </div>
+
+            <div class="alertInfo">
+
+                <h4>Waiting List</h4>
+
+                <p>Students waiting for seats</p>
+
+            </div>
+
+            <i class="fa-solid fa-chevron-right"></i>
+
+        </div>
+
+
+        <div class="alertItem"
+        onclick="showPage('birthdays')"
+        style="cursor:pointer">
+
+            <div class="alertIcon pink">
+
+                <i class="fa-solid fa-cake-candles"></i>
+
+            </div>
+
+            <div class="alertInfo">
+
+                <h4>Birthdays</h4>
+
+                <p>Upcoming student birthdays</p>
+
+            </div>
+
+            <i class="fa-solid fa-chevron-right"></i>
+
+        </div>
+
+
+        <div class="alertItem"
+        onclick="showPage('activity')"
+        style="cursor:pointer">
+
+            <div class="alertIcon blue">
+
+                <i class="fa-solid fa-clock-rotate-left"></i>
+
+            </div>
+
+            <div class="alertInfo">
+
+                <h4>Activity Log</h4>
+
+                <p>Track system activity</p>
+
+            </div>
+
+            <i class="fa-solid fa-chevron-right"></i>
+
+        </div>
+
+
+        <div class="alertItem"
+        onclick="openSettings()"
+        style="cursor:pointer">
+
+            <div class="alertIcon green">
+
+                <i class="fa-solid fa-gear"></i>
+
+            </div>
+
+            <div class="alertInfo">
+
+                <h4>Settings</h4>
+
+                <p>App & Library settings</p>
+
+            </div>
+
+            <i class="fa-solid fa-chevron-right"></i>
+
+        </div>
+
+
+    </div>
+
+
+</section>
+<!-- =====================================================
+     HARIOM SMART LIBRARY - PART 2
+     PREMIUM 105 SEAT MANAGEMENT SYSTEM
+     CONTINUES DIRECTLY FROM PART 1
+===================================================== -->
+
+<!-- ================= PREMIUM SEATS PAGE ================= -->
+
+<section class="page-section" id="page-seats">
+
+    <div class="page-top">
+        <div>
+            <h2>Seat Management</h2>
+            <p>Live seat status and student management</p>
+        </div>
+
+        <button class="primary-btn" onclick="refreshSeats()">
+            <i class="fa-solid fa-rotate"></i>
+            Refresh
+        </button>
+    </div>
+
+
+    <!-- Seat Statistics -->
+
+    <div class="seat-stat-grid">
+
+        <div class="seat-stat-card total-seat-card">
+            <div class="seat-stat-icon">
+                <i class="fa-solid fa-chair"></i>
+            </div>
+
+            <div>
+                <span>Total Seats</span>
+                <h3 id="seatTotalCount">105</h3>
+            </div>
+        </div>
+
+
+        <div class="seat-stat-card available-seat-card">
+
+            <div class="seat-stat-icon">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+
+            <div>
+                <span>Available</span>
+                <h3 id="availableSeatCount">105</h3>
+            </div>
+
+        </div>
+
+
+        <div class="seat-stat-card occupied-seat-card">
+
+            <div class="seat-stat-icon">
+                <i class="fa-solid fa-user-group"></i>
+            </div>
+
+            <div>
+                <span>Occupied</span>
+                <h3 id="occupiedSeatCount">0</h3>
+            </div>
+
+        </div>
+
+
+        <div class="seat-stat-card expiring-seat-card">
+
+            <div class="seat-stat-icon">
+                <i class="fa-solid fa-clock"></i>
+            </div>
+
+            <div>
+                <span>Expiring Soon</span>
+                <h3 id="expiringSeatCount">0</h3>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Seat Search -->
+
+    <div class="seat-search-panel">
+
+        <div class="search-input-wrapper">
+
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <input
+                type="text"
+                id="seatSearchInput"
+                placeholder="Search seat number or student name..."
+                oninput="searchPremiumSeats()"
+            >
+
+            <button
+                class="clear-search-btn"
+                onclick="clearSeatSearch()"
+                id="clearSeatSearchBtn"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- Seat Filters -->
+
+    <div class="seat-filter-row">
+
+        <button
+            class="seat-filter active"
+            onclick="filterSeats('all',this)"
+        >
+            All Seats
+        </button>
+
+
+        <button
+            class="seat-filter"
+            onclick="filterSeats('available',this)"
+        >
+            Available
+        </button>
+
+
+        <button
+            class="seat-filter"
+            onclick="filterSeats('occupied',this)"
+        >
+            Occupied
+        </button>
+
+
+        <button
+            class="seat-filter"
+            onclick="filterSeats('expiring',this)"
+        >
+            Expiring
+        </button>
+
+
+        <button
+            class="seat-filter"
+            onclick="filterSeats('unreserved',this)"
+        >
+            Unreserved
+        </button>
+
+    </div>
+
+
+    <!-- Seat Legend -->
+
+    <div class="seat-legend">
+
+        <div class="legend-item">
+            <span class="legend-dot available"></span>
+            Available
+        </div>
+
+
+        <div class="legend-item">
+            <span class="legend-dot occupied"></span>
+            Booked
+        </div>
+
+
+        <div class="legend-item">
+            <span class="legend-dot expiring"></span>
+            Renewal Soon
+        </div>
+
+
+        <div class="legend-item">
+            <span class="legend-dot expired"></span>
+            Expired
+        </div>
+
+
+        <div class="legend-item">
+            <span class="legend-dot unreserved"></span>
+            Unreserved
+        </div>
+
+    </div>
+
+
+    <!-- Premium Seats Grid -->
+
+    <div
+        class="premium-seats-grid"
+        id="premiumSeatsGrid"
+    >
+    </div>
+
+
+</section>
+
+
+<!-- =====================================================
+     SEAT DETAILS MODAL
+===================================================== -->
+
+<div class="premium-modal" id="seatDetailsModal">
+
+    <div
+        class="modal-overlay"
+        onclick="closeSeatModal()"
+    ></div>
+
+
+    <div class="premium-modal-box">
+
+
+        <!-- Modal Header -->
+
+        <div class="modal-header">
+
+            <div>
+
+                <span class="modal-small-title">
+                    HARIOM SMART LIBRARY
+                </span>
+
+                <h2 id="seatModalTitle">
+                    Seat Details
+                </h2>
+
+            </div>
+
+
+            <button
+                class="modal-close-btn"
+                onclick="closeSeatModal()"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+        <!-- Seat Number Hero -->
+
+        <div class="seat-modal-hero">
+
+            <div class="seat-hero-number">
+                <span>SEAT</span>
+                <strong id="modalSeatNumber">
+                    1
+                </strong>
+            </div>
+
+
+            <div class="seat-hero-status">
+
+                <span id="modalSeatStatusBadge">
+                    Available
+                </span>
+
+                <p id="modalSeatStatusText">
+                    This seat is currently available.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= ALL SHIFT ================= -->
+
+        <div
+            class="shift-form-card all-shift-card"
+            id="allShiftFormCard"
+        >
+
+            <div class="shift-card-header">
+
+                <div>
+
+                    <i class="fa-solid fa-sun"></i>
+
+                    <div>
+                        <h3>Full Day / All Shift</h3>
+                        <p>6 AM - 10 PM</p>
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="small-clear-btn"
+                    onclick="clearSeatShift('all')"
+                >
+                    Clear
+                </button>
+
+            </div>
+
+
+            <div class="form-grid single">
+
+                <div class="form-group">
+
+                    <label>
+                        Student Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="seat_name_all"
+                        placeholder="Enter student name"
+                        oninput="checkAllShiftMode()"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid two">
+
+                <div class="form-group">
+
+                    <label>
+                        Mobile Number
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="seat_phone_all"
+                        placeholder="10 digit mobile"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Fees Paid ₹
+                    </label>
+
+                    <input
+                        type="number"
+                        id="seat_fees_all"
+                        placeholder="0"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid two">
+
+                <div class="form-group">
+
+                    <label>
+                        Due Amount ₹
+                    </label>
+
+                    <input
+                        type="number"
+                        id="seat_due_all"
+                        placeholder="0"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Renewal Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="seat_date_all"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid single">
+
+                <div class="form-group">
+
+                    <label>
+                        Payment Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="seat_paydate_all"
+                    >
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Individual Shift Title -->
+
+        <div
+            class="individual-shift-divider"
+            id="individualShiftDivider"
+        >
+
+            <span>
+                OR MANAGE INDIVIDUAL SHIFTS
+            </span>
+
+        </div>
+
+
+        <!-- ================= MORNING SHIFT ================= -->
+
+        <div
+            class="shift-form-card normal-shift-form"
+            id="shiftCard_m"
+        >
+
+            <div class="shift-card-header">
+
+                <div class="shift-title-group">
+
+                    <div class="shift-number">
+                        1
+                    </div>
+
+                    <div>
+
+                        <h3>Morning Shift</h3>
+
+                        <p>
+                            6 AM - 10 AM
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="small-clear-btn"
+                    onclick="clearSeatShift('m')"
+                >
+                    Clear
+                </button>
+
+            </div>
+
+
+            <div class="form-grid two">
+
+                <div class="form-group">
+
+                    <label>Name</label>
+
+                    <input
+                        type="text"
+                        id="seat_name_m"
+                        placeholder="Student name"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Phone</label>
+
+                    <input
+                        type="tel"
+                        id="seat_phone_m"
+                        placeholder="Mobile number"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid two">
+
+                <div class="form-group">
+
+                    <label>Fees ₹</label>
+
+                    <input
+                        type="number"
+                        id="seat_fees_m"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Due ₹</label>
+
+                    <input
+                        type="number"
+                        id="seat_due_m"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid two">
+
+                <div class="form-group">
+
+                    <label>Renewal Date</label>
+
+                    <input
+                        type="date"
+                        id="seat_date_m"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Payment Date</label>
+
+                    <input
+                        type="date"
+                        id="seat_paydate_m"
+                    >
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= NOON SHIFT ================= -->
+
+        <div
+            class="shift-form-card normal-shift-form"
+            id="shiftCard_n"
+        >
+
+            <div class="shift-card-header">
+
+                <div class="shift-title-group">
+
+                    <div class="shift-number">
+                        2
+                    </div>
+
+                    <div>
+
+                        <h3>Noon Shift</h3>
+
+                        <p>
+                            10 AM - 2 PM
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="small-clear-btn"
+                    onclick="clearSeatShift('n')"
+                >
+                    Clear
+                </button>
+
+            </div>
+
+
+            <div class="form-grid two">
+
+                <div class="form-group">
+
+                    <label>Name</label>
+
+                    <input
+                        type="text"
+                        id="seat_name_n"
+                        placeholder="Student name"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Phone</label>
+
+                    <input
+                        type="tel"
+                        id="seat_phone_n"
+                        placeholder="Mobile number"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid two">
+
+                <div class="form-group">
+
+                    <label>Fees ₹</label>
+
+                    <input
+                        type="number"
+                        id="seat_fees_n"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Due ₹</label>
+
+                    <input
+                        type="number"
+                        id="seat_due_n"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid two">
+
+                <div class="form-group">
+
+                    <label>Renewal Date</label>
+
+                    <input
+                        type="date"
+                        id="seat_date_n"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Payment Date</label>
+
+                    <input
+                        type="date"
+                        id="seat_paydate_n"
+                    >
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= AFTERNOON SHIFT ================= -->
+
+        <div
+            class="shift-form-card normal-shift-form"
+            id="shiftCard_an"
+        >
+
+            <div class="shift-card-header">
+
+                <div class="shift-title-group">
+
+                    <div class="shift-number">
+                        3
+                    </div>
+
+                    <div>
+
+                        <h3>Afternoon Shift</h3>
+
+                        <p>
+                            2 PM - 6 PM
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="small-clear-btn"
+                    onclick="clearSeatShift('an')"
+                >
+                    Clear
+                </button>
+
+            </div>
+
+
+            <div class="form-grid two">
+
+                <div class="form-group">
+
+                    <label>Name</label>
+
+                    <input
+                        type="text"
+                        id="seat_name_an"
+                        placeholder="Student name"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Phone</label>
+
+                    <input
+                        type="tel"
+                        id="seat_phone_an"
+                        placeholder="Mobile number"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid two">
+
+                <div class="form-group">
+
+                    <label>Fees ₹</label>
+
+                    <input
+                        type="number"
+                        id="seat_fees_an"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Due ₹</label>
+
+                    <input
+                        type="number"
+                        id="seat_due_an"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid two">
+
+                <div class="form-group">
+
+                    <label>Renewal Date</label>
+
+                    <input
+                        type="date"
+                        id="seat_date_an"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Payment Date</label>
+
+                    <input
+                        type="date"
+                        id="seat_paydate_an"
+                    >
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= EVENING SHIFT ================= -->
+
+        <div
+            class="shift-form-card normal-shift-form"
+            id="shiftCard_e"
+        >
+
+            <div class="shift-card-header">
+
+                <div class="shift-title-group">
+
+                    <div class="shift-number">
+                        4
+                    </div>
+
+                    <div>
+
+                        <h3>Evening Shift</h3>
+
+                        <p>
+                            6 PM - 10 PM
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="small-clear-btn"
+                    onclick="clearSeatShift('e')"
+                >
+                    Clear
+                </button>
+
+            </div>
+
+
+            <div class="form-grid two">
+
+                <div class="form-group">
+
+                    <label>Name</label>
+
+                    <input
+                        type="text"
+                        id="seat_name_e"
+                        placeholder="Student name"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Phone</label>
+
+                    <input
+                        type="tel"
+                        id="seat_phone_e"
+                        placeholder="Mobile number"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid two">
+
+                <div class="form-group">
+
+                    <label>Fees ₹</label>
+
+                    <input
+                        type="number"
+                        id="seat_fees_e"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Due ₹</label>
+
+                    <input
+                        type="number"
+                        id="seat_due_e"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid two">
+
+                <div class="form-group">
+
+                    <label>Renewal Date</label>
+
+                    <input
+                        type="date"
+                        id="seat_date_e"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Payment Date</label>
+
+                    <input
+                        type="date"
+                        id="seat_paydate_e"
+                    >
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= NIGHT SHIFT ================= -->
+
+        <div
+            class="shift-form-card night-shift-form"
+            id="shiftCard_night"
+        >
+
+            <div class="shift-card-header">
+
+                <div class="shift-title-group">
+
+                    <div class="night-icon">
+                        <i class="fa-solid fa-moon"></i>
+                    </div>
+
+                    <div>
+
+                        <h3>Night Shift</h3>
+
+                        <p>
+                            10 PM - 6 AM
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="small-clear-btn"
+                    onclick="clearSeatShift('night')"
+                >
+                    Clear
+                </button>
+
+            </div>
+
+
+            <div class="form-grid two">
+
+                <div class="form-group">
+
+                    <label>Name</label>
+
+                    <input
+                        type="text"
+                        id="seat_name_night"
+                        placeholder="Student name"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Phone</label>
+
+                    <input
+                        type="tel"
+                        id="seat_phone_night"
+                        placeholder="Mobile number"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid two">
+
+                <div class="form-group">
+
+                    <label>Fees ₹</label>
+
+                    <input
+                        type="number"
+                        id="seat_fees_night"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Due ₹</label>
+
+                    <input
+                        type="number"
+                        id="seat_due_night"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid two">
+
+                <div class="form-group">
+
+                    <label>Renewal Date</label>
+
+                    <input
+                        type="date"
+                        id="seat_date_night"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Payment Date</label>
+
+                    <input
+                        type="date"
+                        id="seat_paydate_night"
+                    >
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Modal Action Buttons -->
+
+        <div class="seat-modal-actions">
+
+            <button
+                class="secondary-btn"
+                onclick="closeSeatModal()"
+            >
+                <i class="fa-solid fa-xmark"></i>
+                Cancel
+            </button>
+
+
+            <button
+                class="danger-btn"
+                onclick="deleteEntireSeat()"
+            >
+                <i class="fa-solid fa-trash"></i>
+                Remove
+            </button>
+
+
+            <button
+                class="primary-btn save-seat-btn"
+                onclick="savePremiumSeat()"
+            >
+                <i class="fa-solid fa-floppy-disk"></i>
+                Save Seat
+            </button>
+
+        </div>
+
+    </div>
 
 </div>
 
 
-<div class="student-card">
 
-<div class="student-name-big">
-🌙 Appearance
-</div>
-
-<div class="student-info">
-
-Change application theme.
-
-</div>
-
-<br>
-
-<button
-class="btn"
-onclick="toggleTheme()">
-
-Toggle Dark / Light Mode
-
-</button>
-
-</div>
-
-
-<div class="student-card">
-
-<div class="student-name-big">
-🔐 Admin Status
-</div>
+<!-- =====================================================
+     QUICK STUDENT PROFILE MODAL
+===================================================== -->
 
 <div
-class="student-info"
-id="adminStatus">
+    class="student-profile-modal"
+    id="studentProfileModal"
+>
 
-Not Verified
-
-</div>
-
-<br>
-
-<button
-class="btn btn-danger"
-onclick="logoutAdmin()">
-
-Logout Admin
-
-</button>
-
-</div>
+    <div
+        class="modal-overlay"
+        onclick="closeStudentProfile()"
+    ></div>
 
 
-<div class="student-card">
+    <div class="student-profile-box">
 
-<div class="student-name-big">
-📱 Hariom Smart Library Pro
-
-</div>
-
-<div class="student-info">
-
-Version 5.0
-
-<br>
-
-Realtime Firebase Database Connected
-
-<br>
-
-105 Smart Seats Management System
-
-</div>
-
-</div>
-
-</section>
-
-</div>
+        <button
+            class="modal-close-btn profile-close"
+            onclick="closeStudentProfile()"
+        >
+            <i class="fa-solid fa-xmark"></i>
+        </button>
 
 
-<!-- BOTTOM NAV -->
+        <div class="student-profile-top">
 
-<nav class="bottom-nav">
-
-<button
-class="nav-item active"
-onclick="showSection('home')"
-id="nav-home">
-
-<span class="nav-icon">🏠</span>
-
-Home
-
-</button>
+            <div class="student-avatar-large">
+                <i class="fa-solid fa-user"></i>
+            </div>
 
 
-<button
-class="nav-item"
-onclick="showSection('seats')"
-id="nav-seats">
-
-<span class="nav-icon">💺</span>
-
-Seats
-
-</button>
+            <h2 id="profileStudentName">
+                Student Name
+            </h2>
 
 
-<button
-class="nav-item"
-onclick="showSection('students')"
-id="nav-students">
+            <p id="profileStudentSeat">
+                Seat No. 1
+            </p>
 
-<span class="nav-icon">👨‍🎓</span>
-
-Students
-
-</button>
+        </div>
 
 
-<button
-class="nav-item"
-onclick="showSection('report')"
-id="nav-report">
+        <div
+            class="profile-info-list"
+            id="profileInfoList"
+        >
+        </div>
 
-<span class="nav-icon">📊</span>
-
-Reports
-
-</button>
-
-
-<button
-class="nav-item"
-onclick="showSection('settings')"
-id="nav-settings">
-
-<span class="nav-icon">⚙️</span>
-
-Settings
-
-</button>
-
-</nav>
-
-
-<!-- SEAT MODAL -->
-
-<div class="modal"
-id="seatModal">
-
-<div class="modal-content">
-
-<div class="modal-header">
-
-<h2 id="modalTitle">
-Manage Seat
-</h2>
-
-<button
-class="close-btn"
-onclick="closeModal()">
-
-×
-</button>
+    </div>
 
 </div>
 
 
-<!-- ALL SHIFT -->
 
-<div class="shift-card all">
-
-<h4>
-⭐ Full Day / All Shift
-(6 AM - 10 PM)
-</h4>
-
-<div class="form-grid">
-
-<div class="field form-full">
-
-<label>Student Name</label>
-
-<input
-id="name_all"
-type="text"
-oninput="toggleIndividualShifts()">
-
-</div>
-
-
-<div class="field">
-
-<label>Phone</label>
-
-<input id="phone_all">
-
-</div>
-
-
-<div class="field">
-
-<label>Fees Paid</label>
-
-<input
-id="fees_all"
-type="number">
-
-</div>
-
-
-<div class="field">
-
-<label>Due Amount</label>
-
-<input
-id="due_all"
-type="number">
-
-</div>
-
-
-<div class="field">
-
-<label>Renewal Date</label>
-
-<input
-id="date_all"
-type="date">
-
-</div>
-
-
-<div class="field">
-
-<label>Payment Date</label>
-
-<input
-id="paydate_all"
-type="date">
-
-</div>
-
-</div>
-
-</div>
-
-
-<!-- INDIVIDUAL SHIFTS -->
-
-<div id="individualShiftArea">
-
-<div class="shift-card">
-
-<h4>
-1️⃣ Morning (6 AM - 10 AM)
-</h4>
-
-<div class="form-grid">
-
-<div class="field">
-
-<label>Name</label>
-
-<input id="name_m">
-
-</div>
-
-<div class="field">
-
-<label>Phone</label>
-
-<input id="phone_m">
-
-</div>
-
-<div class="field">
-
-<label>Fees</label>
-
-<input id="fees_m" type="number">
-
-</div>
-
-<div class="field">
-
-<label>Due</label>
-
-<input id="due_m" type="number">
-
-</div>
-
-<div class="field">
-
-<label>Renewal</label>
-
-<input id="date_m" type="date">
-
-</div>
-
-<div class="field">
-
-<label>Payment Date</label>
-
-<input id="paydate_m" type="date">
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="shift-card">
-
-<h4>
-2️⃣ Noon (10 AM - 2 PM)
-</h4>
-
-<div class="form-grid">
-
-<div class="field">
-
-<label>Name</label>
-
-<input id="name_n">
-
-</div>
-
-<div class="field">
-
-<label>Phone</label>
-
-<input id="phone_n">
-
-</div>
-
-<div class="field">
-
-<label>Fees</label>
-
-<input id="fees_n" type="number">
-
-</div>
-
-<div class="field">
-
-<label>Due</label>
-
-<input id="due_n" type="number">
-
-</div>
-
-<div class="field">
-
-<label>Renewal</label>
-
-<input id="date_n" type="date">
-
-</div>
-
-<div class="field">
-
-<label>Payment Date</label>
-
-<input id="paydate_n" type="date">
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="shift-card">
-
-<h4>
-3️⃣ Afternoon (2 PM - 6 PM)
-</h4>
-
-<div class="form-grid">
-
-<div class="field">
-
-<label>Name</label>
-
-<input id="name_an">
-
-</div>
-
-<div class="field">
-
-<label>Phone</label>
-
-<input id="phone_an">
-
-</div>
-
-<div class="field">
-
-<label>Fees</label>
-
-<input id="fees_an" type="number">
-
-</div>
-
-<div class="field">
-
-<label>Due</label>
-
-<input id="due_an" type="number">
-
-</div>
-
-<div class="field">
-
-<label>Renewal</label>
-
-<input id="date_an" type="date">
-
-</div>
-
-<div class="field">
-
-<label>Payment Date</label>
-
-<input id="paydate_an" type="date">
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="shift-card">
-
-<h4>
-4️⃣ Evening (6 PM - 10 PM)
-</h4>
-
-<div class="form-grid">
-
-<div class="field">
-
-<label>Name</label>
-
-<input id="name_e">
-
-</div>
-
-<div class="field">
-
-<label>Phone</label>
-
-<input id="phone_e">
-
-</div>
-
-<div class="field">
-
-<label>Fees</label>
-
-<input id="fees_e" type="number">
-
-</div>
-
-<div class="field">
-
-<label>Due</label>
-
-<input id="due_e" type="number">
-
-</div>
-
-<div class="field">
-
-<label>Renewal</label>
-
-<input id="date_e" type="date">
-
-</div>
-
-<div class="field">
-
-<label>Payment Date</label>
-
-<input id="paydate_e" type="date">
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-
-<!-- NIGHT SHIFT -->
-
-<div class="shift-card night">
-
-<h4>
-🌙 Night Shift (10 PM - 6 AM)
-</h4>
-
-<div class="form-grid">
-
-<div class="field">
-
-<label>Name</label>
-
-<input id="name_night">
-
-</div>
-
-<div class="field">
-
-<label>Phone</label>
-
-<input id="phone_night">
-
-</div>
-
-<div class="field">
-
-<label>Fees</label>
-
-<input id="fees_night" type="number">
-
-</div>
-
-<div class="field">
-
-<label>Due</label>
-
-<input id="due_night" type="number">
-
-</div>
-
-<div class="field">
-
-<label>Renewal</label>
-
-<input id="date_night" type="date">
-
-</div>
-
-<div class="field">
-
-<label>Payment Date</label>
-
-<input id="paydate_night" type="date">
-
-</div>
-
-</div>
-
-</div>
-
-
-<div class="modal-buttons">
-
-<button
-class="btn btn-danger"
-onclick="clearSeatData()">
-
-Clear Seat
-
-</button>
-
-
-<button
-class="btn btn-success"
-onclick="saveSeatData()">
-
-Save Student
-
-</button>
-
-</div>
-
-</div>
-
-</div>
-
+<!-- =====================================================
+     TOAST NOTIFICATION SYSTEM
+===================================================== -->
 
 <div
-class="toast"
-id="toast">
+    class="toast-container"
+    id="toastContainer"
+>
+</div>
+
+
+
+<!-- =====================================================
+     CONFIRM MODAL
+===================================================== -->
+
+<div
+    class="confirm-modal"
+    id="confirmModal"
+>
+
+    <div class="modal-overlay"></div>
+
+
+    <div class="confirm-box">
+
+        <div class="confirm-icon">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+
+
+        <h3 id="confirmTitle">
+            Are you sure?
+        </h3>
+
+
+        <p id="confirmMessage">
+            This action cannot be undone.
+        </p>
+
+
+        <div class="confirm-actions">
+
+            <button
+                class="secondary-btn"
+                onclick="closeConfirmModal()"
+            >
+                Cancel
+            </button>
+
+
+            <button
+                class="danger-btn"
+                id="confirmActionButton"
+            >
+                Confirm
+            </button>
+
+        </div>
+
+    </div>
 
 </div>
 
+
+
+<!-- =====================================================
+     JAVASCRIPT PART 2 STARTS HERE
+     FIREBASE + SEAT MANAGEMENT SYSTEM
+===================================================== -->
 
 <script>
 
-/* FIREBASE CONFIG */
 
-const firebaseConfig = {
-
-databaseURL:
-"https://hariom-library-3c480-default-rtdb.firebaseio.com/"
-
-};
-
-firebase.initializeApp(firebaseConfig);
-
-const database = firebase.database();
+/* =====================================================
+   HARIOM SMART LIBRARY
+   PART 2 JAVASCRIPT
+===================================================== */
 
 
-/* IMPORTANT DATA PATH
+/* ================= GLOBAL VARIABLES ================= */
 
-Old data remains safe because same path is used:
+const TOTAL_LIBRARY_SEATS = 105;
 
-library_v3/seats
+let currentSeatNumber = null;
 
-library_v3/waiting
+let currentSeatFilter = 'all';
 
+let premiumLibrarySeats = {};
+
+let selectedSeatStudent = null;
+
+
+/* Old Firebase Database Path
+   IMPORTANT:
+   Existing data will remain safe.
 */
 
-
-const TOTAL_SEATS = 105;
-
-
-const allowedAdmins = [
-
-"9815761696",
-"7631427170",
-"6207479929",
-"9155435099",
-"7488038058"
-
-];
+const LIBRARY_DATABASE_PATH = 'library_v3';
 
 
-let isAdminVerified = false;
+/* ================= FIREBASE SAFETY ================= */
 
-let activeSeatNumber = null;
+function getLibraryDatabase() {
 
-let globalLibraryData = {};
+    try {
 
-let globalWaitingData = {};
+        if (
+            typeof firebase !== 'undefined' &&
+            firebase.apps &&
+            firebase.apps.length > 0
+        ) {
 
+            return firebase.database();
 
-/* DATE */
+        }
 
-function updateDate(){
+    }
 
-const now = new Date();
+    catch(error) {
 
-document.getElementById("todayDate").innerText =
-now.toLocaleDateString(
-"en-IN",
-{
-weekday:"long",
-year:"numeric",
-month:"long",
-day:"numeric"
+        console.log(
+            'Firebase database error:',
+            error
+        );
+
+    }
+
+    return null;
+
 }
+
+
+/* ================= LOAD EXISTING SEATS ================= */
+
+function loadPremiumSeats() {
+
+    const db = getLibraryDatabase();
+
+    if (!db) {
+
+        console.log(
+            'Firebase not ready yet'
+        );
+
+        return;
+
+    }
+
+
+    db.ref(
+        LIBRARY_DATABASE_PATH + '/seats'
+    ).on(
+        'value',
+        function(snapshot) {
+
+            premiumLibrarySeats =
+                snapshot.val() || {};
+
+            renderPremiumSeats();
+
+            updateSeatStatistics();
+
+        }
+    );
+
+}
+
+
+/* ================= CREATE 105 SEATS ================= */
+
+function renderPremiumSeats() {
+
+    const grid =
+        document.getElementById(
+            'premiumSeatsGrid'
+        );
+
+    if (!grid) return;
+
+
+    grid.innerHTML = '';
+
+
+    for (
+        let seatNumber = 1;
+        seatNumber <= TOTAL_LIBRARY_SEATS;
+        seatNumber++
+    ) {
+
+
+        const seatData =
+            premiumLibrarySeats[seatNumber] || {};
+
+
+        const seatStatus =
+            getSeatStatus(
+                seatNumber,
+                seatData
+            );
+
+
+        const isUnreserved =
+            seatNumber >= 64 &&
+            seatNumber <= 85;
+
+
+        const seatCard =
+            document.createElement('button');
+
+
+        seatCard.type = 'button';
+
+
+        seatCard.className =
+            'premium-seat-card ' +
+            seatStatus.status;
+
+
+        if (isUnreserved) {
+
+            seatCard.classList.add(
+                'unreserved-seat'
+            );
+
+        }
+
+
+        seatCard.dataset.seat =
+            seatNumber;
+
+
+        seatCard.dataset.status =
+            seatStatus.status;
+
+
+        seatCard.dataset.name =
+            getSeatPrimaryName(
+                seatData
+            ).toLowerCase();
+
+
+        seatCard.onclick = function() {
+
+            openPremiumSeat(
+                seatNumber
+            );
+
+        };
+
+
+        const shiftIndicators =
+            createShiftIndicators(
+                seatData
+            );
+
+
+        let statusText =
+            seatStatus.text;
+
+
+        let studentName =
+            getSeatPrimaryName(
+                seatData
+            );
+
+
+        if (!studentName) {
+
+            studentName = 'Available';
+
+        }
+
+
+        seatCard.innerHTML = `
+
+            <div class="premium-seat-top">
+
+                <span class="seat-number-label">
+                    SEAT
+                </span>
+
+                <strong>
+                    ${seatNumber}
+                </strong>
+
+                ${
+                    isUnreserved
+                    ?
+                    '<span class="ur-label">UR</span>'
+                    :
+                    ''
+                }
+
+            </div>
+
+
+            <div class="premium-seat-student">
+
+                ${escapeHTML(studentName)}
+
+            </div>
+
+
+            <div class="premium-seat-status">
+
+                <span class="status-mini-dot"></span>
+
+                ${statusText}
+
+            </div>
+
+
+            <div class="premium-shift-indicators">
+
+                ${shiftIndicators}
+
+            </div>
+
+        `;
+
+
+        grid.appendChild(
+            seatCard
+        );
+
+    }
+
+
+    applyCurrentSeatFilter();
+
+}
+
+
+/* ================= GET PRIMARY NAME ================= */
+
+function getSeatPrimaryName(data) {
+
+    if (!data) return '';
+
+
+    if (data.name_all)
+        return data.name_all;
+
+
+    const shifts = [
+        'm',
+        'n',
+        'an',
+        'e',
+        'night'
+    ];
+
+
+    for (
+        let i = 0;
+        i < shifts.length;
+        i++
+    ) {
+
+        const key =
+            'name_' +
+            shifts[i];
+
+
+        if (data[key]) {
+
+            return data[key];
+
+        }
+
+    }
+
+
+    return '';
+
+}
+
+
+/* ================= SEAT STATUS ================= */
+
+function getSeatStatus(
+    seatNumber,
+    data
+) {
+
+
+    const hasBooking =
+        !!getSeatPrimaryName(data);
+
+
+    if (!hasBooking) {
+
+        return {
+
+            status: 'available',
+
+            text: 'Available'
+
+        };
+
+    }
+
+
+    let expired = false;
+
+    let expiring = false;
+
+
+    const dateFields = [
+        'date_all',
+        'date_m',
+        'date_n',
+        'date_an',
+        'date_e',
+        'date_night'
+    ];
+
+
+    const today = new Date();
+
+    today.setHours(
+        0,
+        0,
+        0,
+        0
+    );
+
+
+    const warningDate =
+        new Date(today);
+
+
+    warningDate.setDate(
+        today.getDate() + 3
+    );
+
+
+    dateFields.forEach(
+        function(field) {
+
+
+            if (!data[field])
+                return;
+
+
+            const renewalDate =
+                new Date(data[field]);
+
+
+            renewalDate.setHours(
+                0,
+                0,
+                0,
+                0
+            );
+
+
+            if (
+                renewalDate <= today
+            ) {
+
+                expired = true;
+
+            }
+
+            else if (
+                renewalDate <= warningDate
+            ) {
+
+                expiring = true;
+
+            }
+
+        }
+    );
+
+
+    if (expired) {
+
+        return {
+
+            status: 'expired',
+
+            text: 'Expired'
+
+        };
+
+    }
+
+
+    if (expiring) {
+
+        return {
+
+            status: 'expiring',
+
+            text: 'Renewal Soon'
+
+        };
+
+    }
+
+
+    return {
+
+        status: 'occupied',
+
+        text: 'Booked'
+
+    };
+
+}
+
+
+/* ================= SHIFT INDICATORS ================= */
+
+function createShiftIndicators(data) {
+
+    const shiftList = [
+
+        {
+            key: 'm',
+            label: 'M'
+        },
+
+        {
+            key: 'n',
+            label: 'N'
+        },
+
+        {
+            key: 'an',
+            label: 'A'
+        },
+
+        {
+            key: 'e',
+            label: 'E'
+        },
+
+        {
+            key: 'night',
+            label: '🌙'
+        }
+
+    ];
+
+
+    if (data.name_all) {
+
+        return `
+
+            <span class="shift-pill active all">
+                ALL DAY
+            </span>
+
+        `;
+
+    }
+
+
+    let html = '';
+
+
+    shiftList.forEach(
+        function(shift) {
+
+
+            const active =
+                data[
+                    'name_' +
+                    shift.key
+                ];
+
+
+            html += `
+
+                <span
+                    class="shift-pill ${
+                        active
+                        ?
+                        'active'
+                        :
+                        ''
+                    }"
+                >
+
+                    ${shift.label}
+
+                </span>
+
+            `;
+
+        }
+    );
+
+
+    return html;
+
+}
+
+
+/* ================= UPDATE STATISTICS ================= */
+
+function updateSeatStatistics() {
+
+    let available = 0;
+
+    let occupied = 0;
+
+    let expiring = 0;
+
+
+    for (
+        let i = 1;
+        i <= TOTAL_LIBRARY_SEATS;
+        i++
+    ) {
+
+
+        const data =
+            premiumLibrarySeats[i] || {};
+
+
+        const status =
+            getSeatStatus(
+                i,
+                data
+            );
+
+
+        if (
+            status.status ===
+            'available'
+        ) {
+
+            available++;
+
+        }
+
+        else {
+
+            occupied++;
+
+        }
+
+
+        if (
+            status.status ===
+            'expiring' ||
+            status.status ===
+            'expired'
+        ) {
+
+            expiring++;
+
+        }
+
+    }
+
+
+    setElementText(
+        'seatTotalCount',
+        TOTAL_LIBRARY_SEATS
+    );
+
+
+    setElementText(
+        'availableSeatCount',
+        available
+    );
+
+
+    setElementText(
+        'occupiedSeatCount',
+        occupied
+    );
+
+
+    setElementText(
+        'expiringSeatCount',
+        expiring
+    );
+
+}
+
+
+/* ================= OPEN SEAT ================= */
+
+function openPremiumSeat(seatNumber) {
+
+
+    currentSeatNumber =
+        seatNumber;
+
+
+    const data =
+        premiumLibrarySeats[seatNumber] || {};
+
+
+    setElementText(
+        'modalSeatNumber',
+        seatNumber
+    );
+
+
+    setElementText(
+        'seatModalTitle',
+        'Manage Seat ' + seatNumber
+    );
+
+
+    loadSeatFormData(
+        data
+    );
+
+
+    updateSeatModalStatus(
+        seatNumber,
+        data
+    );
+
+
+    checkAllShiftMode();
+
+
+    const modal =
+        document.getElementById(
+            'seatDetailsModal'
+        );
+
+
+    if (modal) {
+
+        modal.classList.add(
+            'show'
+        );
+
+    }
+
+
+    document.body.style.overflow =
+        'hidden';
+
+}
+
+
+/* ================= CLOSE MODAL ================= */
+
+function closeSeatModal() {
+
+
+    const modal =
+        document.getElementById(
+            'seatDetailsModal'
+        );
+
+
+    if (modal) {
+
+        modal.classList.remove(
+            'show'
+        );
+
+    }
+
+
+    document.body.style.overflow =
+        '';
+
+}
+
+
+/* ================= LOAD FORM DATA ================= */
+
+function loadSeatFormData(data) {
+
+
+    const shifts = [
+
+        'all',
+        'm',
+        'n',
+        'an',
+        'e',
+        'night'
+
+    ];
+
+
+    shifts.forEach(
+        function(shift) {
+
+
+            setInputValue(
+                'seat_name_' + shift,
+                data['name_' + shift] || ''
+            );
+
+
+            setInputValue(
+                'seat_phone_' + shift,
+                data['phone_' + shift] || ''
+            );
+
+
+            setInputValue(
+                'seat_fees_' + shift,
+                data['fees_' + shift] || ''
+            );
+
+
+            setInputValue(
+                'seat_due_' + shift,
+                data['due_' + shift] || ''
+            );
+
+
+            setInputValue(
+                'seat_date_' + shift,
+                data['date_' + shift] || ''
+            );
+
+
+            setInputValue(
+                'seat_paydate_' + shift,
+                data['paydate_' + shift] || ''
+            );
+
+        }
+    );
+
+}
+
+
+/* ================= MODAL STATUS ================= */
+
+function updateSeatModalStatus(
+    seatNumber,
+    data
+) {
+
+
+    const status =
+        getSeatStatus(
+            seatNumber,
+            data
+        );
+
+
+    const badge =
+        document.getElementById(
+            'modalSeatStatusBadge'
+        );
+
+
+    const text =
+        document.getElementById(
+            'modalSeatStatusText'
+        );
+
+
+    if (badge) {
+
+
+        badge.className =
+            'seat-status-badge ' +
+            status.status;
+
+
+        badge.textContent =
+            status.text;
+
+    }
+
+
+    if (text) {
+
+
+        if (
+            status.status ===
+            'available'
+        ) {
+
+            text.textContent =
+                'This seat is ready for a new student.';
+
+        }
+
+        else {
+
+            text.textContent =
+                'Student booking is active on this seat.';
+
+        }
+
+    }
+
+}
+
+
+/* ================= ALL SHIFT MODE ================= */
+
+function checkAllShiftMode() {
+
+
+    const allShiftInput =
+        document.getElementById(
+            'seat_name_all'
+        );
+
+
+    if (!allShiftInput)
+        return;
+
+
+    const hasAllShift =
+        allShiftInput.value
+            .trim() !== '';
+
+
+    const normalCards =
+        document.querySelectorAll(
+            '.normal-shift-form'
+        );
+
+
+    const divider =
+        document.getElementById(
+            'individualShiftDivider'
+        );
+
+
+    normalCards.forEach(
+        function(card) {
+
+
+            if (hasAllShift) {
+
+                card.classList.add(
+                    'disabled-shift-card'
+                );
+
+            }
+
+            else {
+
+                card.classList.remove(
+                    'disabled-shift-card'
+                );
+
+            }
+
+        }
+    );
+
+
+    if (divider) {
+
+        divider.style.opacity =
+            hasAllShift
+            ?
+            '0.35'
+            :
+            '1';
+
+    }
+
+}
+
+
+/* ================= CLEAR SHIFT ================= */
+
+function clearSeatShift(shift) {
+
+
+    const fields = [
+
+        'name',
+        'phone',
+        'fees',
+        'due',
+        'date',
+        'paydate'
+
+    ];
+
+
+    fields.forEach(
+        function(field) {
+
+
+            const input =
+                document.getElementById(
+                    'seat_' +
+                    field +
+                    '_' +
+                    shift
+                );
+
+
+            if (input) {
+
+                input.value = '';
+
+            }
+
+        }
+    );
+
+
+    if (shift === 'all') {
+
+        checkAllShiftMode();
+
+    }
+
+}
+
+
+/* ================= COLLECT FORM DATA ================= */
+
+function getSeatFormData() {
+
+
+    const shifts = [
+
+        'all',
+        'm',
+        'n',
+        'an',
+        'e',
+        'night'
+
+    ];
+
+
+    const result = {};
+
+
+    const allShiftName =
+        getInputValue(
+            'seat_name_all'
+        ).trim();
+
+
+    shifts.forEach(
+        function(shift) {
+
+
+            if (
+                allShiftName &&
+                [
+                    'm',
+                    'n',
+                    'an',
+                    'e'
+                ].includes(shift)
+            ) {
+
+
+                result[
+                    'name_' + shift
+                ] = '';
+
+
+                result[
+                    'phone_' + shift
+                ] = '';
+
+
+                result[
+                    'fees_' + shift
+                ] = 0;
+
+
+                result[
+                    'due_' + shift
+                ] = 0;
+
+
+                result[
+                    'date_' + shift
+                ] = '';
+
+
+                result[
+                    'paydate_' + shift
+                ] = '';
+
+
+                return;
+
+            }
+
+
+            const name =
+                getInputValue(
+                    'seat_name_' +
+                    shift
+                ).trim();
+
+
+            if (!name) {
+
+
+                result[
+                    'name_' + shift
+                ] = '';
+
+
+                result[
+                    'phone_' + shift
+                ] = '';
+
+
+                result[
+                    'fees_' + shift
+                ] = 0;
+
+
+                result[
+                    'due_' + shift
+                ] = 0;
+
+
+                result[
+                    'date_' + shift
+                ] = '';
+
+
+                result[
+                    'paydate_' + shift
+                ] = '';
+
+
+                return;
+
+            }
+
+
+            result[
+                'name_' + shift
+            ] = name;
+
+
+            result[
+                'phone_' + shift
+            ] =
+                getInputValue(
+                    'seat_phone_' +
+                    shift
+                ).trim();
+
+
+            result[
+                'fees_' + shift
+            ] =
+                parseInt(
+                    getInputValue(
+                        'seat_fees_' +
+                        shift
+                    )
+                ) || 0;
+
+
+            result[
+                'due_' + shift
+            ] =
+                parseInt(
+                    getInputValue(
+                        'seat_due_' +
+                        shift
+                    )
+                ) || 0;
+
+
+            result[
+                'date_' + shift
+            ] =
+                getInputValue(
+                    'seat_date_' +
+                    shift
+                );
+
+
+            result[
+                'paydate_' + shift
+            ] =
+                getInputValue(
+                    'seat_paydate_' +
+                    shift
+                );
+
+        }
+    );
+
+
+    return result;
+
+}
+
+
+/* ================= SAVE SEAT ================= */
+
+function savePremiumSeat() {
+
+
+    if (
+        !currentSeatNumber
+    ) {
+
+        showToast(
+            'Seat not selected',
+            'error'
+        );
+
+        return;
+
+    }
+
+
+    if (
+        typeof isAdminVerified !==
+        'undefined' &&
+        !isAdminVerified
+    ) {
+
+        showToast(
+            'Please login as admin first',
+            'error'
+        );
+
+        return;
+
+    }
+
+
+    const db =
+        getLibraryDatabase();
+
+
+    if (!db) {
+
+        showToast(
+            'Firebase connection error',
+            'error'
+        );
+
+        return;
+
+    }
+
+
+    const data =
+        getSeatFormData();
+
+
+    showToast(
+        'Saving seat...',
+        'info'
+    );
+
+
+    db.ref(
+        LIBRARY_DATABASE_PATH +
+        '/seats/' +
+        currentSeatNumber
+    )
+        .set(data)
+        .then(
+            function() {
+
+
+                showToast(
+                    'Seat saved successfully',
+                    'success'
+                );
+
+
+                closeSeatModal();
+
+            }
+        )
+        .catch(
+            function(error) {
+
+
+                console.log(error);
+
+
+                showToast(
+                    'Failed to save seat',
+                    'error'
+                );
+
+            }
+        );
+
+}
+
+
+/* ================= DELETE ENTIRE SEAT ================= */
+
+function deleteEntireSeat() {
+
+
+    if (!currentSeatNumber)
+        return;
+
+
+    openConfirmModal(
+
+        'Remove Seat Booking?',
+
+        'All student data from this seat will be removed.',
+
+        function() {
+
+
+            const db =
+                getLibraryDatabase();
+
+
+            if (!db) return;
+
+
+            db.ref(
+                LIBRARY_DATABASE_PATH +
+                '/seats/' +
+                currentSeatNumber
+            )
+                .remove()
+                .then(
+                    function() {
+
+
+                        closeConfirmModal();
+
+                        closeSeatModal();
+
+
+                        showToast(
+                            'Seat booking removed',
+                            'success'
+                        );
+
+                    }
+                );
+
+        }
+
+    );
+
+}
+
+
+/* ================= REFRESH ================= */
+
+function refreshSeats() {
+
+
+    renderPremiumSeats();
+
+
+    updateSeatStatistics();
+
+
+    showToast(
+        'Seat data refreshed',
+        'success'
+    );
+
+}
+
+
+/* ================= FILTER SEATS ================= */
+
+function filterSeats(
+    filter,
+    button
+) {
+
+
+    currentSeatFilter =
+        filter;
+
+
+    document
+        .querySelectorAll(
+            '.seat-filter'
+        )
+        .forEach(
+            function(btn) {
+
+
+                btn.classList.remove(
+                    'active'
+                );
+
+            }
+        );
+
+
+    if (button) {
+
+        button.classList.add(
+            'active'
+        );
+
+    }
+
+
+    applyCurrentSeatFilter();
+
+}
+
+
+/* ================= APPLY FILTER ================= */
+
+function applyCurrentSeatFilter() {
+
+
+    const seatCards =
+        document.querySelectorAll(
+            '.premium-seat-card'
+        );
+
+
+    const query =
+        (
+            document
+                .getElementById(
+                    'seatSearchInput'
+                )
+                ?.value || ''
+        )
+            .toLowerCase()
+            .trim();
+
+
+    seatCards.forEach(
+        function(card) {
+
+
+            const status =
+                card.dataset.status;
+
+
+            const seatNumber =
+                card.dataset.seat;
+
+
+            const studentName =
+                card.dataset.name;
+
+
+            const isUR =
+                card.classList.contains(
+                    'unreserved-seat'
+                );
+
+
+            let visible = true;
+
+
+            /* Filter */
+
+
+            if (
+                currentSeatFilter ===
+                'available' &&
+                status !== 'available'
+            ) {
+
+                visible = false;
+
+            }
+
+
+            if (
+                currentSeatFilter ===
+                'occupied' &&
+                status !== 'occupied'
+            ) {
+
+                visible = false;
+
+            }
+
+
+            if (
+                currentSeatFilter ===
+                'expiring' &&
+                status !== 'expiring' &&
+                status !== 'expired'
+            ) {
+
+                visible = false;
+
+            }
+
+
+            if (
+                currentSeatFilter ===
+                'unreserved' &&
+                !isUR
+            ) {
+
+                visible = false;
+
+            }
+
+
+            /* Search */
+
+
+            if (query) {
+
+
+                const matchesSeat =
+                    seatNumber.includes(
+                        query
+                    );
+
+
+                const matchesName =
+                    studentName.includes(
+                        query
+                    );
+
+
+                if (
+                    !matchesSeat &&
+                    !matchesName
+                ) {
+
+                    visible = false;
+
+                }
+
+            }
+
+
+            card.style.display =
+                visible
+                ?
+                'flex'
+                :
+                'none';
+
+        }
+    );
+
+}
+
+
+/* ================= SEARCH ================= */
+
+function searchPremiumSeats() {
+
+
+    applyCurrentSeatFilter();
+
+
+    const input =
+        document.getElementById(
+            'seatSearchInput'
+        );
+
+
+    const clearButton =
+        document.getElementById(
+            'clearSeatSearchBtn'
+        );
+
+
+    if (
+        clearButton &&
+        input
+    ) {
+
+
+        clearButton.style.display =
+            input.value
+            ?
+            'flex'
+            :
+            'none';
+
+    }
+
+}
+
+
+/* ================= CLEAR SEARCH ================= */
+
+function clearSeatSearch() {
+
+
+    const input =
+        document.getElementById(
+            'seatSearchInput'
+        );
+
+
+    if (input) {
+
+        input.value = '';
+
+    }
+
+
+    searchPremiumSeats();
+
+}
+
+
+/* ================= STUDENT PROFILE ================= */
+
+function openStudentProfile(
+    seatNumber
+) {
+
+
+    const data =
+        premiumLibrarySeats[
+            seatNumber
+        ] || {};
+
+
+    const name =
+        getSeatPrimaryName(data);
+
+
+    if (!name) {
+
+
+        showToast(
+            'No student assigned to this seat',
+            'info'
+        );
+
+        return;
+
+    }
+
+
+    setElementText(
+        'profileStudentName',
+        name
+    );
+
+
+    setElementText(
+        'profileStudentSeat',
+        'Seat No. ' +
+        seatNumber
+    );
+
+
+    const infoContainer =
+        document.getElementById(
+            'profileInfoList'
+        );
+
+
+    if (infoContainer) {
+
+
+        infoContainer.innerHTML = `
+
+            <div class="profile-info-item">
+
+                <i class="fa-solid fa-chair"></i>
+
+                <div>
+
+                    <span>Seat Number</span>
+
+                    <strong>${seatNumber}</strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="profile-info-item">
+
+                <i class="fa-solid fa-user"></i>
+
+                <div>
+
+                    <span>Student Name</span>
+
+                    <strong>
+                        ${escapeHTML(name)}
+                    </strong>
+
+                </div>
+
+            </div>
+
+        `;
+
+    }
+
+
+    const modal =
+        document.getElementById(
+            'studentProfileModal'
+        );
+
+
+    if (modal) {
+
+        modal.classList.add(
+            'show'
+        );
+
+    }
+
+}
+
+
+/* ================= CLOSE PROFILE ================= */
+
+function closeStudentProfile() {
+
+
+    const modal =
+        document.getElementById(
+            'studentProfileModal'
+        );
+
+
+    if (modal) {
+
+        modal.classList.remove(
+            'show'
+        );
+
+    }
+
+}
+
+
+/* ================= CONFIRM MODAL ================= */
+
+function openConfirmModal(
+    title,
+    message,
+    callback
+) {
+
+
+    const modal =
+        document.getElementById(
+            'confirmModal'
+        );
+
+
+    setElementText(
+        'confirmTitle',
+        title
+    );
+
+
+    setElementText(
+        'confirmMessage',
+        message
+    );
+
+
+    const confirmButton =
+        document.getElementById(
+            'confirmActionButton'
+        );
+
+
+    if (confirmButton) {
+
+
+        confirmButton.onclick =
+            callback;
+
+    }
+
+
+    if (modal) {
+
+        modal.classList.add(
+            'show'
+        );
+
+    }
+
+}
+
+
+/* ================= CLOSE CONFIRM ================= */
+
+function closeConfirmModal() {
+
+
+    const modal =
+        document.getElementById(
+            'confirmModal'
+        );
+
+
+    if (modal) {
+
+        modal.classList.remove(
+            'show'
+        );
+
+    }
+
+}
+
+
+/* ================= TOAST SYSTEM ================= */
+
+function showToast(
+    message,
+    type = 'info'
+) {
+
+
+    const container =
+        document.getElementById(
+            'toastContainer'
+        );
+
+
+    if (!container)
+        return;
+
+
+    const toast =
+        document.createElement(
+            'div'
+        );
+
+
+    toast.className =
+        'app-toast ' + type;
+
+
+    let icon =
+        'fa-circle-info';
+
+
+    if (type === 'success')
+        icon = 'fa-circle-check';
+
+
+    if (type === 'error')
+        icon = 'fa-circle-xmark';
+
+
+    if (type === 'warning')
+        icon =
+            'fa-triangle-exclamation';
+
+
+    toast.innerHTML = `
+
+        <i
+            class="fa-solid ${icon}"
+        ></i>
+
+        <span>
+            ${escapeHTML(message)}
+        </span>
+
+    `;
+
+
+    container.appendChild(
+        toast
+    );
+
+
+    setTimeout(
+        function() {
+
+
+            toast.classList.add(
+                'hide'
+            );
+
+
+            setTimeout(
+                function() {
+
+
+                    toast.remove();
+
+                },
+                400
+            );
+
+
+        },
+        3000
+    );
+
+}
+
+
+/* ================= HELPER FUNCTIONS ================= */
+
+function setElementText(
+    id,
+    value
+) {
+
+
+    const element =
+        document.getElementById(id);
+
+
+    if (element) {
+
+        element.textContent =
+            value;
+
+    }
+
+}
+
+
+function setInputValue(
+    id,
+    value
+) {
+
+
+    const element =
+        document.getElementById(id);
+
+
+    if (element) {
+
+        element.value =
+            value;
+
+    }
+
+}
+
+
+function getInputValue(id) {
+
+
+    const element =
+        document.getElementById(id);
+
+
+    if (!element)
+        return '';
+
+
+    return element.value;
+
+}
+
+
+function escapeHTML(text) {
+
+
+    const div =
+        document.createElement(
+            'div'
+        );
+
+
+    div.textContent =
+        text || '';
+
+
+    return div.innerHTML;
+
+}
+
+
+/* =====================================================
+   AUTO START SEAT SYSTEM
+===================================================== */
+
+document.addEventListener(
+    'DOMContentLoaded',
+    function() {
+
+
+        setTimeout(
+            function() {
+
+
+                loadPremiumSeats();
+
+            },
+            800
+        );
+
+    }
 );
 
-}
 
-updateDate();
-
-
-/* CREATE SEATS */
-
-const seatsGrid =
-document.getElementById("seatsGrid");
-
-
-for(let i=1;i<=TOTAL_SEATS;i++){
-
-const seat =
-document.createElement("div");
-
-const isUR =
-i>=64 && i<=85;
-
-seat.className =
-"seat" +
-(isUR ? " unreserved-seat":"");
-
-seat.id="seat-"+i;
-
-seat.onclick=
-()=>openSeatModal(i);
-
-seat.innerHTML=`
-
-${isUR ? '<span class="ur">UR</span>':''}
-
-<div class="seat-number">
-${i}
-</div>
-
-<div
-class="student-name"
-id="studentName-${i}">
-
-Available
-
-</div>
-
-<div class="shift-dots">
-
-<span class="dot"></span>
-
-<span class="dot"></span>
-
-<span class="dot"></span>
-
-<span class="dot"></span>
-
-<span class="dot"></span>
-
-</div>
-
-<div
-id="dueBox-${i}">
-
-</div>
-
-`;
-
-seatsGrid.appendChild(seat);
-
-}
-
-
-/* ADMIN AUTO LOGIN */
-
-function checkSavedAdmin(){
-
-const saved =
-localStorage.getItem(
-"hariom_library_admin"
-);
-
-if(
-saved &&
-allowedAdmins.includes(saved)
-){
-
-isAdminVerified=true;
-
-document.getElementById(
-"adminCard"
-).style.display="none";
-
-updateAdminStatus();
-
-}
-
-}
-
-
-checkSavedAdmin();
-
-
-function verifyAdmin(){
-
-const input =
-document.getElementById(
-"adminPhone"
-).value
-.trim();
-
-
-if(
-allowedAdmins.includes(input)
-){
-
-isAdminVerified=true;
-
-localStorage.setItem(
-"hariom_library_admin",
-input
-);
-
-document.getElementById(
-"adminCard"
-).style.display="none";
-
-
-updateAdminStatus();
-
-
-showToast(
-"✅ Admin login successful"
-);
-
-}else{
-
-showToast(
-"❌ Invalid admin mobile number"
-);
-
-}
-
-}
-
-
-function logoutAdmin(){
-
-localStorage.removeItem(
-"hariom_library_admin"
-);
-
-isAdminVerified=false;
-
-
-document.getElementById(
-"adminCard"
-).style.display="block";
-
-
-document.getElementById(
-"adminPhone"
-).value="";
-
-
-updateAdminStatus();
-
-
-showToast(
-"Admin logged out"
-);
-
-}
-
-
-function updateAdminStatus(){
-
-const el =
-document.getElementById(
-"adminStatus"
-);
-
-if(isAdminVerified){
-
-el.innerText=
-"✅ Admin Verified on this device";
-
-}else{
-
-el.innerText=
-"❌ Not Verified";
-
-}
-
-}
-
-
-/* FIREBASE REALTIME DATA */
-
-database
-.ref("library_v3")
-.on(
-"value",
-(snapshot)=>{
-
-const data =
-snapshot.val() || {};
-
-globalLibraryData =
-data.seats || {};
-
-globalWaitingData =
-data.waiting || {};
-
-updateEverything();
-
-}
-);
-
-
-/* UPDATE ALL */
-
-function updateEverything(){
-
-updateSeatsUI();
-
-updateDashboard();
-
-updateStudents();
-
-updateWaitingList();
-
-}
-
-
-/* DATE STATUS */
-
-function getDateStatus(dateString){
-
-if(!dateString)
-return "none";
-
-
-const today =
-new Date();
-
-today.setHours(0,0,0,0);
-
-
-const renewal =
-new Date(dateString);
-
-renewal.setHours(0,0,0,0);
-
-
-const alertDate =
-new Date(today);
-
-alertDate.setDate(
-today.getDate()+3
-);
-
-
-if(renewal<=today)
-return "expired";
-
-
-if(renewal<=alertDate)
-return "alert";
-
-
-return "active";
-
-}
-
-
-/* UPDATE SEATS */
-
-function updateSeatsUI(){
-
-for(
-let i=1;
-i<=TOTAL_SEATS;
-i++
-){
-
-const data =
-globalLibraryData[i] || {};
-
-
-const seat =
-document.getElementById(
-"seat-"+i
-);
-
-
-const nameBox =
-document.getElementById(
-"studentName-"+i
-);
-
-
-const dueBox =
-document.getElementById(
-"dueBox-"+i
-);
-
-
-const dots =
-seat.querySelectorAll(".dot");
-
-
-seat.classList.remove(
-"booked-seat",
-"allshift-seat"
-);
-
-
-dots.forEach(dot=>{
-
-dot.className="dot";
-
-});
-
-
-dueBox.innerHTML="";
-
-
-let names=[];
-
-let totalDue=0;
-
-let hasBooking=false;
-
-
-const shifts=[
-"m",
-"n",
-"an",
-"e",
-"night"
-];
-
-
-/* ALL SHIFT */
-
-if(data.name_all){
-
-hasBooking=true;
-
-names.push(data.name_all);
-
-seat.classList.add(
-"allshift-seat"
-);
-
-
-const status=
-getDateStatus(
-data.date_all
-);
-
-
-dots.forEach(dot=>{
-
-dot.classList.add(
-status==="expired"
-? "expired"
-: status==="alert"
-? "alert"
-: "active"
-);
-
-});
-
-
-totalDue+=
-Number(data.due_all)||0;
-
-}
-
-
-/* INDIVIDUAL */
-
-else{
-
-shifts.forEach(
-(shift,index)=>{
-
-if(data["name_"+shift]){
-
-hasBooking=true;
-
-names.push(
-data["name_"+shift]
-);
-
-
-const status=
-getDateStatus(
-data["date_"+shift]
-);
-
-
-dots[index].classList.add(
-status==="expired"
-? "expired"
-: status==="alert"
-? "alert"
-: "active"
-);
-
-
-totalDue+=
-Number(
-data["due_"+shift]
-)||0;
-
-}
-
-}
-);
-
-}
-
-
-if(hasBooking){
-
-seat.classList.add(
-"booked-seat"
-);
-
-nameBox.innerText=
-names.slice(0,2).join(", ");
-
-}else{
-
-nameBox.innerText=
-"Available";
-
-}
-
-
-if(totalDue>0){
-
-dueBox.innerHTML=
-
-`<div class="due-badge">
-Due ₹${totalDue}
-</div>`;
-
-}
-
-}
-
-}
-
-
-/* DASHBOARD */
-
-function updateDashboard(){
-
-let active=0;
-
-let due=0;
-
-let collection=0;
-
-let alerts=[];
-
-
-const today =
-new Date();
-
-const month=
-today.getMonth();
-
-const year=
-today.getFullYear();
-
-
-const shifts=[
-"all",
-"m",
-"n",
-"an",
-"e",
-"night"
-];
-
-
-Object.keys(
-globalLibraryData
-).forEach(seatNo=>{
-
-const data=
-globalLibraryData[seatNo];
-
-
-shifts.forEach(shift=>{
-
-const name=
-data["name_"+shift];
-
-
-if(name){
-
-active++;
-
-
-due+=
-Number(
-data["due_"+shift]
-)||0;
-
-
-const payDate=
-data["paydate_"+shift];
-
-
-const fees=
-Number(
-data["fees_"+shift]
-)||0;
-
-
-if(payDate){
-
-const pd=
-new Date(payDate);
-
-
-if(
-pd.getMonth()===month &&
-pd.getFullYear()===year
-){
-
-collection+=fees;
-
-}
-
-}
-
-
-const status=
-getDateStatus(
-data["date_"+shift]
-);
-
-
-if(status==="expired"){
-
-alerts.push({
-
-type:"expired",
-
-text:
-`Seat ${seatNo} - ${name} renewal expired`
-
-});
-
-}
-
-
-if(status==="alert"){
-
-alerts.push({
-
-type:"alert",
-
-text:
-`Seat ${seatNo} - ${name} renewal soon`
-
-});
-
-}
-
-}
-
-});
-
-});
-
-
-document.getElementById(
-"activeBookings"
-).innerText=active;
-
-
-document.getElementById(
-"vacantSeats"
-).innerText=
-Math.max(
-0,
-TOTAL_SEATS-active
-);
-
-
-document.getElementById(
-"totalDue"
-).innerText=
-"₹"+due.toLocaleString("en-IN");
-
-
-document.getElementById(
-"monthlyCollection"
-).innerText=
-"₹"+collection.toLocaleString("en-IN");
-
-
-const monthName=
-today.toLocaleString(
-"default",
-{month:"long"}
-);
-
-
-document.getElementById(
-"collectionLabel"
-).innerText=
-monthName+
-" "+year+
-" COLLECTION";
-
-
-const alertList=
-document.getElementById(
-"alertList"
-);
-
-
-if(alerts.length===0){
-
-alertList.innerHTML=
-
-`<div class="alert-item">
-<span>🎉 No urgent alerts. Everything looks good!</span>
-</div>`;
-
-}else{
-
-alertList.innerHTML="";
-
-
-alerts.slice(0,10)
-.forEach(alert=>{
-
-alertList.innerHTML+=`
-
-<div class="alert-item">
-
-<span>
-${alert.type==="expired"
-? "🔴"
-: "🟡"}
-
-${alert.text}
-
-</span>
-
-</div>
-
-`;
-
-});
-
-}
-
-}
-
-
-/* STUDENT LIST */
-
-function updateStudents(){
-
-const container=
-document.getElementById(
-"studentsList"
-);
-
-
-container.innerHTML="";
-
-
-const shifts={
-all:"Full Day",
-m:"Morning",
-n:"Noon",
-an:"Afternoon",
-e:"Evening",
-night:"Night"
-};
-
-
-Object.keys(
-globalLibraryData
-).forEach(seatNo=>{
-
-const data=
-globalLibraryData[seatNo];
-
-
-Object.keys(shifts)
-.forEach(shift=>{
-
-if(data["name_"+shift]){
-
-container.innerHTML+=`
-
-<div class="student-card">
-
-<div class="student-top">
-
-<div>
-
-<div class="student-name-big">
-
-${data["name_"+shift]}
-
-</div>
-
-<div class="student-info">
-
-Seat ${seatNo}
-• ${shifts[shift]}
-
-</div>
-
-</div>
-
-<div>
-
-<button
-class="btn"
-onclick="openSeatModal(${seatNo})">
-
-View
-
-</button>
-
-</div>
-
-</div>
-
-
-<div class="student-info">
-
-📞 ${data["phone_"+shift]||"Not Added"}
-
-<br>
-
-💰 Fees ₹${data["fees_"+shift]||0}
-
-• Due ₹${data["due_"+shift]||0}
-
-<br>
-
-📅 Renewal:
-${data["date_"+shift]||"Not Set"}
-
-</div>
-
-</div>
-
-`;
-
-}
-
-});
-
-});
-
-
-if(container.innerHTML===""){
-
-container.innerHTML=
-
-`<div class="loader">
-No active students found.
-</div>`;
-
-}
-
-}
-
-
-/* OPEN MODAL */
-
-function openSeatModal(seatNumber){
-
-activeSeatNumber=seatNumber;
-
-
-const data=
-globalLibraryData[seatNumber] || {};
-
-
-document.getElementById(
-"modalTitle"
-).innerText=
-"Manage Seat "+seatNumber;
-
-
-const fields=[
-"all",
-"m",
-"n",
-"an",
-"e",
-"night"
-];
-
-
-fields.forEach(shift=>{
-
-document.getElementById(
-"name_"+shift
-).value=
-data["name_"+shift]||"";
-
-
-document.getElementById(
-"phone_"+shift
-).value=
-data["phone_"+shift]||"";
-
-
-document.getElementById(
-"fees_"+shift
-).value=
-data["fees_"+shift]||0;
-
-
-document.getElementById(
-"due_"+shift
-).value=
-data["due_"+shift]||0;
-
-
-document.getElementById(
-"date_"+shift
-).value=
-data["date_"+shift]||"";
-
-
-document.getElementById(
-"paydate_"+shift
-).value=
-data["paydate_"+shift]||"";
-
-});
-
-
-toggleIndividualShifts();
-
-
-document.getElementById(
-"seatModal"
-).classList.add("show");
-
-}
-
-
-/* CLOSE */
-
-function closeModal(){
-
-document.getElementById(
-"seatModal"
-).classList.remove("show");
-
-}
-
-
-/* ALL SHIFT CONTROL */
-
-function toggleIndividualShifts(){
-
-const value=
-document.getElementById(
-"name_all"
-).value.trim();
-
-
-const area=
-document.getElementById(
-"individualShiftArea"
-);
-
-
-area.style.opacity=
-value ? ".35":"1";
-
-
-area.style.pointerEvents=
-value ? "none":"auto";
-
-}
-
-
-/* SAVE SEAT */
-
-function saveSeatData(){
-
-if(!isAdminVerified){
-
-showToast(
-"⚠️ Please login as admin first"
-);
-
-return;
-
-}
-
-
-const update={};
-
-
-const fields=[
-"all",
-"m",
-"n",
-"an",
-"e",
-"night"
-];
-
-
-const allShift=
-document.getElementById(
-"name_all"
-).value.trim();
-
-
-fields.forEach(shift=>{
-
-
-if(
-allShift &&
-["m","n","an","e"]
-.includes(shift)
-){
-
-update["name_"+shift]="";
-
-update["phone_"+shift]="";
-
-update["fees_"+shift]=0;
-
-update["due_"+shift]=0;
-
-update["date_"+shift]="";
-
-update["paydate_"+shift]="";
-
-return;
-
-}
-
-
-const name=
-document.getElementById(
-"name_"+shift
-).value.trim();
-
-
-if(!name){
-
-update["name_"+shift]="";
-
-update["phone_"+shift]="";
-
-update["fees_"+shift]=0;
-
-update["due_"+shift]=0;
-
-update["date_"+shift]="";
-
-update["paydate_"+shift]="";
-
-}else{
-
-update["name_"+shift]=name;
-
-update["phone_"+shift]=
-document.getElementById(
-"phone_"+shift
-).value.trim();
-
-
-update["fees_"+shift]=
-Number(
-document.getElementById(
-"fees_"+shift
-).value
-)||0;
-
-
-update["due_"+shift]=
-Number(
-document.getElementById(
-"due_"+shift
-).value
-)||0;
-
-
-update["date_"+shift]=
-document.getElementById(
-"date_"+shift
-).value;
-
-
-update["paydate_"+shift]=
-document.getElementById(
-"paydate_"+shift
-).value;
-
-}
-
-});
-
-
-database
-.ref(
-"library_v3/seats/"+activeSeatNumber
-)
-.set(update)
-.then(()=>{
-
-showToast(
-"✅ Seat data saved successfully"
-);
-
-closeModal();
-
-})
-.catch(error=>{
-
-showToast(
-"❌ Error: "+error.message
-);
-
-});
-
-}
-
-
-/* CLEAR SEAT */
-
-function clearSeatData(){
-
-if(!isAdminVerified){
-
-showToast(
-"Admin verification required"
-);
-
-return;
-
-}
-
-
-if(
-!confirm(
-"Are you sure you want to clear this entire seat?"
-)
-) return;
-
-
-database
-.ref(
-"library_v3/seats/"+activeSeatNumber
-)
-.remove()
-.then(()=>{
-
-showToast(
-"Seat cleared successfully"
-);
-
-closeModal();
-
-});
-
-}
-
-
-/* SEARCH */
-
-function filterSeats(){
-
-const query=
-document.getElementById(
-"searchBox"
-).value
-.toLowerCase()
-.trim();
-
-
-for(
-let i=1;
-i<=TOTAL_SEATS;
-i++
-){
-
-const seat=
-document.getElementById(
-"seat-"+i
-);
-
-
-const data=
-globalLibraryData[i]||{};
-
-
-let match=
-!query ||
-i.toString()===query;
-
-
-[
-"all",
-"m",
-"n",
-"an",
-"e",
-"night"
-].forEach(shift=>{
-
-const name=
-data["name_"+shift]||"";
-
-
-const phone=
-data["phone_"+shift]||"";
-
-
-if(
-name.toLowerCase()
-.includes(query)
-||
-phone.includes(query)
-){
-
-match=true;
-
-}
-
-});
-
-
-seat.style.display=
-match ? "flex":"none";
-
-}
-
-}
-
-
-/* WAITING */
-
-function addWaiting(){
-
-if(!isAdminVerified){
-
-showToast(
-"Admin verification required"
-);
-
-return;
-
-}
-
-
-const name=
-document.getElementById(
-"waitName"
-).value.trim();
-
-
-const phone=
-document.getElementById(
-"waitPhone"
-).value.trim();
-
-
-if(!name){
-
-showToast(
-"Please enter student name"
-);
-
-return;
-
-}
-
-
-database
-.ref("library_v3/waiting")
-.push()
-.set({
-
-name:name,
-
-phone:phone,
-
-createdAt:
-new Date().toISOString()
-
-})
-.then(()=>{
-
-document.getElementById(
-"waitName"
-).value="";
-
-
-document.getElementById(
-"waitPhone"
-).value="";
-
-
-showToast(
-"Student added to waiting list"
-);
-
-});
-
-}
-
-
-function updateWaitingList(){
-
-const container=
-document.getElementById(
-"waitingList"
-);
-
-
-container.innerHTML="";
-
-
-let index=1;
-
-
-Object.keys(
-globalWaitingData
-).forEach(key=>{
-
-const item=
-globalWaitingData[key];
-
-
-container.innerHTML+=`
-
-<div class="waiting-card">
-
-<div>
-
-<b>#${index} ${item.name}</b>
-
-<br>
-
-<small>
-📞 ${item.phone||"No phone"}
-</small>
-
-</div>
-
-
-<button
-class="btn btn-danger"
-onclick="removeWaiting('${key}')">
-
-Remove
-
-</button>
-
-</div>
-
-`;
-
-
-index++;
-
-});
-
-
-if(index===1){
-
-container.innerHTML=
-
-`<div class="loader">
-No students in waiting list.
-</div>`;
-
-}
-
-}
-
-
-function removeWaiting(key){
-
-if(!isAdminVerified){
-
-showToast(
-"Admin verification required"
-);
-
-return;
-
-}
-
-
-database
-.ref(
-"library_v3/waiting/"+key
-)
-.remove();
-
-}
-
-
-/* EXCEL EXPORT */
-
-function exportLibraryDataToExcel(){
-
-const report=[];
-
-
-const shifts={
-
-all:"Full Day Shift",
-
-m:"Morning Shift",
-
-n:"Noon Shift",
-
-an:"Afternoon Shift",
-
-e:"Evening Shift",
-
-night:"Night Shift"
-
-};
-
-
-for(
-let i=1;
-i<=TOTAL_SEATS;
-i++
-){
-
-const data=
-globalLibraryData[i]||{};
-
-
-Object.keys(shifts)
-.forEach(shift=>{
-
-if(data["name_"+shift]){
-
-report.push({
-
-"Seat Number":i,
-
-"Shift":
-shifts[shift],
-
-"Student Name":
-data["name_"+shift],
-
-"Mobile Number":
-data["phone_"+shift]||"",
-
-"Fees Paid":
-data["fees_"+shift]||0,
-
-"Due Amount":
-data["due_"+shift]||0,
-
-"Renewal Date":
-data["date_"+shift]||"",
-
-"Payment Date":
-data["paydate_"+shift]||""
-
-});
-
-}
-
-});
-
-}
-
-
-if(report.length===0){
-
-showToast(
-"No active student data found"
-);
-
-return;
-
-}
-
-
-const worksheet=
-XLSX.utils.json_to_sheet(report);
-
-
-const workbook=
-XLSX.utils.book_new();
-
-
-XLSX.utils.book_append_sheet(
-
-workbook,
-
-worksheet,
-
-"Library Students"
-
-);
-
-
-XLSX.writeFile(
-
-workbook,
-
-"Hariom_Library_Backup.xlsx"
-
-);
-
-
-}
-
-
-/* NAVIGATION */
-
-function showSection(section){
-
-const sections=[
-
-"home",
-"seats",
-"students",
-"report",
-"settings"
-
-];
-
-
-sections.forEach(item=>{
-
-document.getElementById(
-item+"Section"
-).classList.remove("active");
-
-
-document.getElementById(
-"nav-"+item
-).classList.remove("active");
-
-});
-
-
-document.getElementById(
-section+"Section"
-).classList.add("active");
-
-
-document.getElementById(
-"nav-"+section
-).classList.add("active");
-
-
-window.scrollTo({
-
-top:0,
-
-behavior:"smooth"
-
-});
-
-}
-
-
-/* THEME */
-
-function toggleTheme(){
-
-document.body.classList.toggle(
-"dark"
-);
-
-
-const dark=
-document.body.classList.contains(
-"dark"
-);
-
-
-localStorage.setItem(
-"hariom_theme",
-dark ? "dark":"light"
-);
-
-}
-
-
-function loadTheme(){
-
-const theme=
-localStorage.getItem(
-"hariom_theme"
-);
-
-
-if(theme==="dark"){
-
-document.body.classList.add(
-"dark"
-);
-
-}
-
-}
-
-
-loadTheme();
-
-
-/* TOAST */
-
-function showToast(message){
-
-const toast=
-document.getElementById(
-"toast"
-);
-
-
-toast.innerText=message;
-
-
-toast.classList.add(
-"show"
-);
-
-
-setTimeout(()=>{
-
-toast.classList.remove(
-"show"
-);
-
-},3000);
-
-}
-
-
-/* CLOSE MODAL OUTSIDE */
-
-document
-.getElementById("seatModal")
-.addEventListener(
-"click",
-function(e){
-
-if(e.target===this){
-
-closeModal();
-
-}
-
-}
-);
-
-
-updateAdminStatus();
+/* =====================================================
+   PART 2 COMPLETE
+   PART 3 WILL CONTINUE BELOW THIS SCRIPT
+===================================================== */
 
 </script>
+<!-- =========================================================
+     HARIOM SMART LIBRARY - PART 3
+     ADVANCED APP FEATURES & SMART SYSTEM
+========================================================= -->
 
-</body>
-</html>
+<script>
+
+/* =========================================================
+   PART 3 - ADVANCED SMART LIBRARY SYSTEM
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    console.log("Hariom Smart Library Part 3 Loaded");
+
+    /* =====================================================
+       GLOBAL SETTINGS
+    ===================================================== */
+
+    const librarySettings = {
+        libraryName: "Hariom Library",
+        totalSeats: 105,
+        currency: "₹",
+        adminNumber: "9815761696",
+        whatsappNumber: "9815761696"
+    };
+
+
+    /* =====================================================
+       TOAST NOTIFICATION SYSTEM
+    ===================================================== */
+
+    window.showSmartToast = function(message, type = "success") {
+
+        let oldToast = document.querySelector(".smart-toast");
+
+        if (oldToast) {
+            oldToast.remove();
+        }
+
+        const toast = document.createElement("div");
+
+        toast.className = "smart-toast " + type;
+
+        let icon = "✓";
+
+        if (type === "error") icon = "✕";
+        if (type === "warning") icon = "⚠";
+        if (type === "info") icon = "ℹ";
+
+        toast.innerHTML = `
+            <div class="toast-icon">${icon}</div>
+            <div class="toast-message">${message}</div>
+        `;
+
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add("show");
+        }, 100);
+
+        setTimeout(() => {
+
+            toast.classList.remove("show");
+
+            setTimeout(() => {
+                toast.remove();
+            }, 400);
+
+        }, 3500);
+
+    };
+
+
+    /* =====================================================
+       TOAST STYLE
+    ===================================================== */
+
+    const toastStyle = document.createElement("style");
+
+    toastStyle.innerHTML = `
+
+    .smart-toast{
+        position:fixed;
+        top:20px;
+        left:50%;
+        transform:translate(-50%,-100px);
+        z-index:999999;
+        min-width:260px;
+        max-width:90%;
+        padding:15px 20px;
+        border-radius:18px;
+        display:flex;
+        align-items:center;
+        gap:12px;
+        color:#fff;
+        background:#111827;
+        box-shadow:0 15px 50px rgba(0,0,0,.35);
+        transition:.4s;
+        opacity:0;
+        backdrop-filter:blur(15px);
+    }
+
+    .smart-toast.show{
+        transform:translate(-50%,0);
+        opacity:1;
+    }
+
+    .smart-toast.success{
+        background:linear-gradient(135deg,#16a34a,#15803d);
+    }
+
+    .smart-toast.error{
+        background:linear-gradient(135deg,#dc2626,#991b1b);
+    }
+
+    .smart-toast.warning{
+        background:linear-gradient(135deg,#f59e0b,#d97706);
+    }
+
+    .smart-toast.info{
+        background:linear-gradient(135deg,#2563eb,#1d4ed8);
+    }
+
+    .toast-icon{
+        width:34px;
+        height:34px;
+        border-radius:50%;
+        background:rgba(255,255,255,.2);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:18px;
+        font-weight:bold;
+    }
+
+    .toast-message{
+        font-size:14px;
+        font-weight:600;
+    }
+
+    `;
+
+    document.head.appendChild(toastStyle);
+
+
+
+    /* =====================================================
+       ONLINE STATUS SYSTEM
+    ===================================================== */
+
+    function updateOnlineStatus() {
+
+        let isOnline = navigator.onLine;
+
+        const onlineElements =
+            document.querySelectorAll(".online-status");
+
+        onlineElements.forEach(el => {
+
+            if (isOnline) {
+
+                el.innerHTML = `
+                <span class="online-dot"></span>
+                Online
+                `;
+
+                el.classList.remove("offline");
+
+            } else {
+
+                el.innerHTML = `
+                <span class="offline-dot"></span>
+                Offline
+                `;
+
+                el.classList.add("offline");
+
+            }
+
+        });
+
+    }
+
+    window.addEventListener("online", function(){
+
+        updateOnlineStatus();
+
+        showSmartToast(
+            "Internet connection restored",
+            "success"
+        );
+
+    });
+
+
+    window.addEventListener("offline", function(){
+
+        updateOnlineStatus();
+
+        showSmartToast(
+            "You are offline",
+            "warning"
+        );
+
+    });
+
+    updateOnlineStatus();
+
+
+
+    /* =====================================================
+       LIVE CLOCK SYSTEM
+    ===================================================== */
+
+    function updateLiveClock() {
+
+        const now = new Date();
+
+        const timeOptions = {
+            hour:"2-digit",
+            minute:"2-digit",
+            second:"2-digit",
+            hour12:true
+        };
+
+        const dateOptions = {
+            weekday:"short",
+            day:"numeric",
+            month:"short",
+            year:"numeric"
+        };
+
+        const time =
+            now.toLocaleTimeString(
+                "en-IN",
+                timeOptions
+            );
+
+        const date =
+            now.toLocaleDateString(
+                "en-IN",
+                dateOptions
+            );
+
+        document
+            .querySelectorAll(".live-clock")
+            .forEach(el => {
+
+                el.textContent = time;
+
+            });
+
+
+        document
+            .querySelectorAll(".live-date")
+            .forEach(el => {
+
+                el.textContent = date;
+
+            });
+
+    }
+
+    updateLiveClock();
+
+    setInterval(updateLiveClock,1000);
+
+
+
+    /* =====================================================
+       GREETING SYSTEM
+    ===================================================== */
+
+    function getGreeting() {
+
+        const hour = new Date().getHours();
+
+        if(hour < 12){
+            return "Good Morning";
+        }
+
+        if(hour < 17){
+            return "Good Afternoon";
+        }
+
+        if(hour < 21){
+            return "Good Evening";
+        }
+
+        return "Good Night";
+
+    }
+
+
+    window.updateGreeting = function(){
+
+        const greeting = getGreeting();
+
+        document
+            .querySelectorAll(".dynamic-greeting")
+            .forEach(el => {
+
+                el.textContent = greeting;
+
+            });
+
+    };
+
+    updateGreeting();
+
+
+
+    /* =====================================================
+       APP INSTALL BUTTON
+    ===================================================== */
+
+    let deferredPrompt = null;
+
+    window.addEventListener(
+        "beforeinstallprompt",
+        function(e){
+
+            e.preventDefault();
+
+            deferredPrompt = e;
+
+            const installButtons =
+                document.querySelectorAll(
+                    ".install-app-btn"
+                );
+
+            installButtons.forEach(btn => {
+
+                btn.style.display = "flex";
+
+            });
+
+        }
+    );
+
+
+    window.installHariomApp = async function(){
+
+        if(!deferredPrompt){
+
+            showSmartToast(
+                "App installation is not available right now",
+                "info"
+            );
+
+            return;
+
+        }
+
+        deferredPrompt.prompt();
+
+        const result =
+            await deferredPrompt.userChoice;
+
+        if(result.outcome === "accepted"){
+
+            showSmartToast(
+                "Hariom Library App Installed Successfully",
+                "success"
+            );
+
+        }
+
+        deferredPrompt = null;
+
+    };
+
+
+
+    /* =====================================================
+       FULL SCREEN MODE
+    ===================================================== */
+
+    window.toggleFullScreen = function(){
+
+        if(!document.fullscreenElement){
+
+            document.documentElement
+                .requestFullscreen()
+                .catch(() => {});
+
+            showSmartToast(
+                "Full Screen Enabled",
+                "info"
+            );
+
+        } else {
+
+            document.exitFullscreen();
+
+            showSmartToast(
+                "Full Screen Disabled",
+                "info"
+            );
+
+        }
+
+    };
+
+
+
+    /* =====================================================
+       DARK MODE SYSTEM
+    ===================================================== */
+
+    window.toggleDarkMode = function(){
+
+        document.body.classList.toggle("dark-mode");
+
+        const darkMode =
+            document.body.classList.contains("dark-mode");
+
+        localStorage.setItem(
+            "hariom_dark_mode",
+            darkMode
+        );
+
+        showSmartToast(
+
+            darkMode
+                ? "Dark Mode Enabled"
+                : "Light Mode Enabled",
+
+            "info"
+
+        );
+
+    };
+
+
+    function loadDarkMode(){
+
+        const savedMode =
+            localStorage.getItem(
+                "hariom_dark_mode"
+            );
+
+        if(savedMode === "true"){
+
+            document.body.classList.add(
+                "dark-mode"
+            );
+
+        }
+
+    }
+
+    loadDarkMode();
+
+
+
+    /* =====================================================
+       DASHBOARD REFRESH SYSTEM
+    ===================================================== */
+
+    window.refreshDashboard = function(){
+
+        showSmartToast(
+            "Dashboard refreshing...",
+            "info"
+        );
+
+        const refreshButtons =
+            document.querySelectorAll(
+                ".refresh-dashboard"
+            );
+
+        refreshButtons.forEach(btn => {
+
+            btn.classList.add("rotating");
+
+        });
+
+        setTimeout(() => {
+
+            refreshButtons.forEach(btn => {
+
+                btn.classList.remove("rotating");
+
+            });
+
+            showSmartToast(
+                "Dashboard updated successfully",
+                "success"
+            );
+
+        },1000);
+
+    };
+
+
+
+    /* =====================================================
+       ROTATION STYLE
+    ===================================================== */
+
+    const rotationStyle =
+        document.createElement("style");
+
+    rotationStyle.innerHTML = `
+
+    .rotating{
+        animation:rotate360 1s linear;
+    }
+
+    @keyframes rotate360{
+
+        from{
+            transform:rotate(0deg);
+        }
+
+        to{
+            transform:rotate(360deg);
+        }
+
+    }
+
+    `;
+
+    document.head.appendChild(
+        rotationStyle
+    );
+
+
+
+    /* =====================================================
+       QUICK SEARCH SYSTEM
+    ===================================================== */
+
+    window.smartSearch = function(query){
+
+        query =
+            query.toLowerCase().trim();
+
+        const seats =
+            document.querySelectorAll(
+                ".seat-card,.seat,.seat-item"
+            );
+
+        seats.forEach(seat => {
+
+            const text =
+                seat.innerText.toLowerCase();
+
+            if(text.includes(query)){
+
+                seat.style.display = "";
+
+                seat.classList.add(
+                    "search-highlight"
+                );
+
+            } else {
+
+                seat.style.display = "none";
+
+            }
+
+        });
+
+        if(query === ""){
+
+            seats.forEach(seat => {
+
+                seat.style.display = "";
+
+                seat.classList.remove(
+                    "search-highlight"
+                );
+
+            });
+
+        }
+
+    };
+
+
+    const searchStyle =
+        document.createElement("style");
+
+    searchStyle.innerHTML = `
+
+    .search-highlight{
+
+        animation:seatPulse .8s ease;
+
+        outline:2px solid #2563eb;
+
+    }
+
+    @keyframes seatPulse{
+
+        0%{
+            transform:scale(.95);
+        }
+
+        50%{
+            transform:scale(1.03);
+        }
+
+        100%{
+            transform:scale(1);
+        }
+
+    }
+
+    `;
+
+    document.head.appendChild(
+        searchStyle
+    );
+
+
+
+    /* =====================================================
+       SEAT STATISTICS SYSTEM
+    ===================================================== */
+
+    window.calculateSeatStats = function(){
+
+        let total = 105;
+
+        let occupied =
+            document.querySelectorAll(
+                ".seat.occupied,.seat-card.occupied"
+            ).length;
+
+        let reserved =
+            document.querySelectorAll(
+                ".seat.reserved,.seat-card.reserved"
+            ).length;
+
+        let available =
+            total - occupied - reserved;
+
+        if(available < 0){
+            available = 0;
+        }
+
+        const stats = {
+
+            total:total,
+
+            occupied:occupied,
+
+            reserved:reserved,
+
+            available:available
+
+        };
+
+        return stats;
+
+    };
+
+
+
+    /* =====================================================
+       UPDATE DASHBOARD NUMBERS
+    ===================================================== */
+
+    window.updateSeatDashboard = function(){
+
+        const stats =
+            calculateSeatStats();
+
+        document
+            .querySelectorAll(".total-seat-count")
+            .forEach(el => {
+
+                el.textContent = stats.total;
+
+            });
+
+
+        document
+            .querySelectorAll(".occupied-seat-count")
+            .forEach(el => {
+
+                el.textContent = stats.occupied;
+
+            });
+
+
+        document
+            .querySelectorAll(".available-seat-count")
+            .forEach(el => {
+
+                el.textContent = stats.available;
+
+            });
+
+
+        document
+            .querySelectorAll(".reserved-seat-count")
+            .forEach(el => {
+
+                el.textContent = stats.reserved;
+
+            });
+
+    };
+
+
+
+    /* =====================================================
+       SEAT CLICK EFFECT
+    ===================================================== */
+
+    document.addEventListener(
+        "click",
+        function(e){
+
+            const seat =
+                e.target.closest(
+                    ".seat,.seat-card,.seat-item"
+                );
+
+            if(!seat){
+                return;
+            }
+
+            seat.classList.add(
+                "seat-click-effect"
+            );
+
+            setTimeout(() => {
+
+                seat.classList.remove(
+                    "seat-click-effect"
+                );
+
+            },300);
+
+        }
+    );
+
+
+    const seatEffectStyle =
+        document.createElement("style");
+
+    seatEffectStyle.innerHTML = `
+
+    .seat-click-effect{
+        animation:seatClick .3s ease;
+    }
+
+    @keyframes seatClick{
+
+        0%{
+            transform:scale(1);
+        }
+
+        50%{
+            transform:scale(.92);
+        }
+
+        100%{
+            transform:scale(1);
+        }
+
+    }
+
+    `;
+
+    document.head.appendChild(
+        seatEffectStyle
+    );
+
+
+
+    /* =====================================================
+       COPY TEXT FUNCTION
+    ===================================================== */
+
+    window.copyLibraryText = function(text){
+
+        navigator.clipboard
+            .writeText(text)
+            .then(() => {
+
+                showSmartToast(
+                    "Copied successfully",
+                    "success"
+                );
+
+            })
+            .catch(() => {
+
+                showSmartToast(
+                    "Unable to copy",
+                    "error"
+                );
+
+            });
+
+    };
+
+
+
+    /* =====================================================
+       WHATSAPP CONTACT
+    ===================================================== */
+
+    window.openWhatsApp = function(){
+
+        const number =
+            librarySettings.whatsappNumber;
+
+        const message =
+            encodeURIComponent(
+                "Hello Hariom Library, I want information about seat availability."
+            );
+
+        window.open(
+            "https://wa.me/91" +
+            number +
+            "?text=" +
+            message,
+            "_blank"
+        );
+
+    };
+
+
+
+    /* =====================================================
+       CALL LIBRARY
+    ===================================================== */
+
+    window.callLibrary = function(){
+
+        window.location.href =
+            "tel:" +
+            librarySettings.adminNumber;
+
+    };
+
+
+
+    /* =====================================================
+       EMERGENCY MODE
+    ===================================================== */
+
+    window.activateEmergencyMode =
+    function(){
+
+        const confirmEmergency =
+            confirm(
+                "Do you want to activate Emergency Mode?"
+            );
+
+        if(!confirmEmergency){
+            return;
+        }
+
+        document.body.classList.add(
+            "emergency-mode"
+        );
+
+        showSmartToast(
+            "Emergency Mode Activated",
+            "warning"
+        );
+
+    };
+
+
+    window.deactivateEmergencyMode =
+    function(){
+
+        document.body.classList.remove(
+            "emergency-mode"
+        );
+
+        showSmartToast(
+            "Emergency Mode Deactivated",
+            "success"
+        );
+
+    };
+
+
+    const emergencyStyle =
+        document.createElement("style");
+
+    emergencyStyle.innerHTML = `
+
+    .emergency-mode{
+        filter:saturate(.8);
+    }
+
+    .emergency-mode::before{
+
+        content:"EMERGENCY MODE";
+
+        position:fixed;
+
+        top:0;
+
+        left:0;
+
+        width:100%;
+
+        background:#dc2626;
+
+        color:white;
+
+        text-align:center;
+
+        padding:8px;
+
+        font-weight:700;
+
+        z-index:999999;
+
+    }
+
+    `;
+
+    document.head.appendChild(
+        emergencyStyle
+    );
+
+
+
+    /* =====================================================
+       NOTES SYSTEM
+    ===================================================== */
+
+    window.saveQuickNote = function(){
+
+        const noteInput =
+            document.getElementById(
+                "quickNote"
+            );
+
+        if(!noteInput){
+            return;
+        }
+
+        const note =
+            noteInput.value.trim();
+
+        if(note === ""){
+
+            showSmartToast(
+                "Please write something first",
+                "warning"
+            );
+
+            return;
+
+        }
+
+        localStorage.setItem(
+            "hariom_quick_note",
+            note
+        );
+
+        showSmartToast(
+            "Note saved successfully",
+            "success"
+        );
+
+    };
+
+
+    window.loadQuickNote = function(){
+
+        const note =
+            localStorage.getItem(
+                "hariom_quick_note"
+            );
+
+        const noteInput =
+            document.getElementById(
+                "quickNote"
+            );
+
+        if(note && noteInput){
+
+            noteInput.value = note;
+
+        }
+
+    };
+
+    loadQuickNote();
+
+
+
+    /* =====================================================
+       AUTO SAVE FORM SYSTEM
+    ===================================================== */
+
+    document.addEventListener(
+        "input",
+        function(e){
+
+            if(
+                e.target.matches(
+                    "input,textarea,select"
+                )
+            ){
+
+                if(
+                    e.target.id
+                ){
+
+                    localStorage.setItem(
+
+                        "hariom_form_" +
+                        e.target.id,
+
+                        e.target.value
+
+                    );
+
+                }
+
+            }
+
+        }
+    );
+
+
+    window.restoreFormData =
+    function(){
+
+        document
+            .querySelectorAll(
+                "input,textarea,select"
+            )
+            .forEach(field => {
+
+                if(!field.id){
+                    return;
+                }
+
+                const saved =
+                    localStorage.getItem(
+
+                        "hariom_form_" +
+                        field.id
+
+                    );
+
+                if(
+                    saved !== null &&
+                    field.value === ""
+                ){
+
+                    field.value = saved;
+
+                }
+
+            });
+
+    };
+
+    restoreFormData();
+
+
+
+    /* =====================================================
+       CONFIRM ACTION SYSTEM
+    ===================================================== */
+
+    window.confirmSmartAction =
+    function(message,callback){
+
+        const result =
+            confirm(message);
+
+        if(result && typeof callback === "function"){
+
+            callback();
+
+        }
+
+    };
+
+
+
+    /* =====================================================
+       BACK TO TOP BUTTON
+    ===================================================== */
+
+    const backTop =
+        document.createElement("button");
+
+    backTop.innerHTML =
+        '<i class="fa-solid fa-arrow-up"></i>';
+
+    backTop.className =
+        "smart-back-top";
+
+    document.body.appendChild(
+        backTop
+    );
+
+
+    const backTopStyle =
+        document.createElement("style");
+
+    backTopStyle.innerHTML = `
+
+    .smart-back-top{
+
+        position:fixed;
+
+        right:18px;
+
+        bottom:85px;
+
+        width:48px;
+
+        height:48px;
+
+        border:none;
+
+        border-radius:16px;
+
+        background:linear-gradient(
+            135deg,
+            #2563eb,
+            #7c3aed
+        );
+
+        color:#fff;
+
+        font-size:18px;
+
+        cursor:pointer;
+
+        box-shadow:
+            0 10px 30px
+            rgba(37,99,235,.35);
+
+        z-index:9999;
+
+        opacity:0;
+
+        pointer-events:none;
+
+        transform:translateY(20px);
+
+        transition:.3s;
+
+    }
+
+    .smart-back-top.show{
+
+        opacity:1;
+
+        pointer-events:auto;
+
+        transform:translateY(0);
+
+    }
+
+    `;
+
+    document.head.appendChild(
+        backTopStyle
+    );
+
+
+    window.addEventListener(
+        "scroll",
+        function(){
+
+            if(window.scrollY > 400){
+
+                backTop.classList.add(
+                    "show"
+                );
+
+            } else {
+
+                backTop.classList.remove(
+                    "show"
+                );
+
+            }
+
+        }
+    );
+
+
+    backTop.addEventListener(
+        "click",
+        function(){
+
+            window.scrollTo({
+
+                top:0,
+
+                behavior:"smooth"
+
+            });
+
+        }
+    );
+
+
+
+    /* =====================================================
+       MOBILE VIBRATION
+    ===================================================== */
+
+    window.smartVibrate = function(){
+
+        if(navigator.vibrate){
+
+            navigator.vibrate(40);
+
+        }
+
+    };
+
+
+    document.addEventListener(
+        "click",
+        function(e){
+
+            if(
+                e.target.closest(
+                    "button,.seat,.seat-card"
+                )
+            ){
+
+                smartVibrate();
+
+            }
+
+        }
+    );
+
+
+
+    /* =====================================================
+       SESSION TRACKING
+    ===================================================== */
+
+    function trackSession(){
+
+        let start =
+            sessionStorage.getItem(
+                "hariom_session_start"
+            );
+
+        if(!start){
+
+            sessionStorage.setItem(
+
+                "hariom_session_start",
+
+                Date.now()
+
+            );
+
+        }
+
+    }
+
+    trackSession();
+
+
+
+    /* =====================================================
+       USER ACTIVITY DETECTION
+    ===================================================== */
+
+    let userLastActivity =
+        Date.now();
+
+    [
+        "click",
+        "mousemove",
+        "keypress",
+        "scroll",
+        "touchstart"
+    ]
+    .forEach(eventName => {
+
+        document.addEventListener(
+            eventName,
+            function(){
+
+                userLastActivity =
+                    Date.now();
+
+            },
+            true
+        );
+
+    });
+
+
+
+    /* =====================================================
+       IDLE DETECTION
+    ===================================================== */
+
+    setInterval(function(){
+
+        const idleTime =
+            Date.now() -
+            userLastActivity;
+
+        if(idleTime > 1800000){
+
+            console.log(
+                "User inactive for 30 minutes"
+            );
+
+        }
+
+    },60000);
+
+
+
+    /* =====================================================
+       DAILY VISIT COUNTER
+    ===================================================== */
+
+    function updateDailyVisit(){
+
+        const today =
+            new Date()
+            .toISOString()
+            .split("T")[0];
+
+        const storedDate =
+            localStorage.getItem(
+                "hariom_visit_date"
+            );
+
+        let visits =
+            parseInt(
+                localStorage.getItem(
+                    "hariom_daily_visits"
+                )
+            ) || 0;
+
+
+        if(storedDate !== today){
+
+            visits = 1;
+
+            localStorage.setItem(
+                "hariom_visit_date",
+                today
+            );
+
+        } else {
+
+            visits++;
+
+        }
+
+
+        localStorage.setItem(
+            "hariom_daily_visits",
+            visits
+        );
+
+        document
+            .querySelectorAll(
+                ".daily-visit-count"
+            )
+            .forEach(el => {
+
+                el.textContent = visits;
+
+            });
+
+    }
+
+    updateDailyVisit();
+
+
+
+    /* =====================================================
+       PERFORMANCE LOG
+    ===================================================== */
+
+    window.logLibraryActivity =
+    function(activity){
+
+        const logs =
+            JSON.parse(
+                localStorage.getItem(
+                    "hariom_activity_logs"
+                ) || "[]"
+            );
+
+        logs.unshift({
+
+            activity:activity,
+
+            time:new Date().toLocaleString(
+                "en-IN"
+            )
+
+        });
+
+        if(logs.length > 50){
+
+            logs.splice(50);
+
+        }
+
+        localStorage.setItem(
+
+            "hariom_activity_logs",
+
+            JSON.stringify(logs)
+
+        );
+
+    };
+
+
+
+    /* =====================================================
+       STARTUP MESSAGE
+    ===================================================== */
+
+    setTimeout(function(){
+
+        console.log(
+            "Hariom Smart Library Advanced System Ready"
+        );
+
+        updateSeatDashboard();
+
+    },1000);
+
+
+});
+
+
+/* =========================================================
+   GLOBAL SMART FUNCTIONS
+========================================================= */
+
+
+window.openSmartPage = function(pageId){
+
+    const pages =
+        document.querySelectorAll(
+            ".page,.app-page"
+        );
+
+    pages.forEach(page => {
+
+        page.classList.remove(
+            "active"
+        );
+
+    });
+
+
+    const target =
+        document.getElementById(pageId);
+
+    if(target){
+
+        target.classList.add(
+            "active"
+        );
+
+        window.scrollTo({
+
+            top:0,
+
+            behavior:"smooth"
+
+        });
+
+    }
+
+};
+
+
+
+/* =========================================================
+   SMART LOADING SYSTEM
+========================================================= */
+
+window.showLoading = function(message){
+
+    let loader =
+        document.getElementById(
+            "smartGlobalLoader"
+        );
+
+    if(loader){
+
+        loader.remove();
+
+    }
+
+    loader =
+        document.createElement("div");
+
+    loader.id =
+        "smartGlobalLoader";
+
+    loader.innerHTML = `
+
+        <div class="smart-loader-box">
+
+            <div class="loader-spinner"></div>
+
+            <p>
+                ${message || "Please wait..."}
+            </p>
+
+        </div>
+
+    `;
+
+    document.body.appendChild(loader);
+
+};
+
+
+window.hideLoading = function(){
+
+    const loader =
+        document.getElementById(
+            "smartGlobalLoader"
+        );
+
+    if(loader){
+
+        loader.remove();
+
+    }
+
+};
+
+
+const loaderStyle =
+document.createElement("style");
+
+loaderStyle.innerHTML = `
+
+#smartGlobalLoader{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(8,15,30,.75);
+
+    backdrop-filter:blur(8px);
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    z-index:999999;
+
+}
+
+.smart-loader-box{
+
+    background:#111827;
+
+    color:#fff;
+
+    padding:30px;
+
+    border-radius:24px;
+
+    text-align:center;
+
+    min-width:220px;
+
+    box-shadow:
+    0 20px 60px rgba(0,0,0,.5);
+
+}
+
+.loader-spinner{
+
+    width:50px;
+
+    height:50px;
+
+    margin:auto;
+
+    border-radius:50%;
+
+    border:4px solid rgba(255,255,255,.2);
+
+    border-top-color:#3b82f6;
+
+    animation:spinLoader 1s linear infinite;
+
+}
+
+@keyframes spinLoader{
+
+    to{
+
+        transform:rotate(360deg);
+
+    }
+
+}
+
+`;
+
+document.head.appendChild(
+    loaderStyle
+);
+
+
+
+/* =========================================================
+   SMART PAGE TRANSITION
+========================================================= */
+
+const pageTransitionStyle =
+document.createElement("style");
+
+pageTransitionStyle.innerHTML = `
+
+.page,
+.app-page{
+
+    animation:pageFade .35s ease;
+
+}
+
+@keyframes pageFade{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(10px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+`;
+
+document.head.appendChild(
+    pageTransitionStyle
+);
+
+
+
+/* =========================================================
+   ADVANCED APP FEEL
+========================================================= */
+
+document.addEventListener(
+    "touchstart",
+    function(){},
+    {passive:true}
+);
+
+
+/* =========================================================
+   PART 3 COMPLETE
+
+   PART 4 WILL CONTINUE BELOW
+   DO NOT ADD </body> OR </html> YET
+========================================================= */
+
+</script>
