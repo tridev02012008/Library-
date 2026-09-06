@@ -338,10 +338,9 @@
             let totalIncome = 0;
             let activeBookings = 0;
             
-            // AUTOMATIC LIVE DATE DETECTOR (Kayi saal tak bina code badle chalega)
             const today = new Date();
-            const currentMonth = today.getMonth(); // Auto Month Number (0 to 11)
-            const currentYear = today.getFullYear(); // Auto Live Year (e.g. 2026)
+            const currentMonth = today.getMonth(); 
+            const currentYear = today.getFullYear(); 
 
             const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             document.getElementById('collectionLabel').innerHTML = `💰 Total Collection (${monthNames[currentMonth]} ${currentYear})`;
@@ -350,18 +349,15 @@
             const threeDaysLater = new Date(today);
             threeDaysLater.setDate(today.getDate() + 3);
 
-            // strictly payment date filter for total calculation
             function getFilteredFees(feesValue, payDateStr) {
                 const amount = parseInt(feesValue, 10) || 0;
                 if (amount <= 0 || !payDateStr) return 0;
                 
-                // Pure Dynamic Payment Date Check
                 const parts = payDateStr.split('-');
                 if(parts.length === 3) {
                     const yearInput = parseInt(parts[0], 10);
-                    const monthInput = parseInt(parts[1], 10) - 1; // Month index sync
+                    const monthInput = parseInt(parts[1], 10) - 1; 
                     
-                    // Agar payment isi dynamic mahine aur saal ki hai tabhi judega
                     if(monthInput === currentMonth && yearInput === currentYear) {
                         return amount;
                     }
@@ -390,7 +386,6 @@
                 let seatHasAnyBooking = false;
                 let totalDueAmountOnSeat = 0;
 
-                // 100% accurate live month strict calculator
                 totalIncome += getFilteredFees(data.fees_all, data.paydate_all) + 
                                getFilteredFees(data.fees_m, data.paydate_m) + 
                                getFilteredFees(data.fees_n, data.paydate_n) + 
@@ -523,24 +518,35 @@
                     update[`paydate_${f}`] = ""; update[`fees_${f}`] = 0; update[`due_${f}`] = 0;
                 } else {
                     const newName = document.getElementById(`name_${f}`).value.trim();
-                    const newPhone = document.getElementById(`phone_${f}`).value.trim();
-                    const newDate = document.getElementById(`date_${f}`).value;
-                    const newFees = parseInt(document.getElementById(`fees_${f}`).value, 10) || 0;
-                    const newDue = parseInt(document.getElementById(`due_${f}`).value, 10) || 0;
-                    const newPayDate = document.getElementById(`paydate_${f}`).value;
+                    
+                    // Fix: Agar naam hata diya hai toh date aur baaki sabhi fields bhi blank/zero ho jayengi
+                    if(newName === "") {
+                        update[`name_${f}`] = "";
+                        update[`phone_${f}`] = "";
+                        update[`date_${f}`] = "";
+                        update[`paydate_${f}`] = "";
+                        update[`fees_${f}`] = 0;
+                        update[`due_${f}`] = 0;
+                    } else {
+                        const newPhone = document.getElementById(`phone_${f}`).value.trim();
+                        const newDate = document.getElementById(`date_${f}`).value;
+                        const newFees = parseInt(document.getElementById(`fees_${f}`).value, 10) || 0;
+                        const newDue = parseInt(document.getElementById(`due_${f}`).value, 10) || 0;
+                        const newPayDate = document.getElementById(`paydate_${f}`).value;
 
-                    update[`name_${f}`] = newName;
-                    update[`phone_${f}`] = newPhone;
-                    update[`date_${f}`] = newDate;
-                    update[`paydate_${f}`] = newPayDate;
-                    update[`fees_${f}`] = newFees;
-                    update[`due_${f}`] = newDue;
+                        update[`name_${f}`] = newName;
+                        update[`phone_${f}`] = newPhone;
+                        update[`date_${f}`] = newDate;
+                        update[`paydate_${f}`] = newPayDate;
+                        update[`fees_${f}`] = newFees;
+                        update[`due_${f}`] = newDue;
 
-                    if(newName !== "" && newName !== oldData[`name_${f}`] && newPhone !== "") {
-                        whatsappTriggers.push({
-                            name: newName, phone: newPhone, shift: shiftNamesHindi[f],
-                            renewal: newDate || 'Not Set', fees: newFees, due: newDue
-                        });
+                        if(newName !== oldData[`name_${f}`] && newPhone !== "") {
+                            whatsappTriggers.push({
+                                name: newName, phone: newPhone, shift: shiftNamesHindi[f],
+                                renewal: newDate || 'Not Set', fees: newFees, due: newDue
+                            });
+                        }
                     }
                 }
             });
