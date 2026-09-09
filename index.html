@@ -1,1488 +1,3752 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hariom Smart Library Pro Max | HARIOM OS</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.css">
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Tailwind Configuration & Theme Extension -->
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        primary: {
-                            DEFAULT: '#6366f1',
-                            50: '#eef2ff',
-                            100: '#e0e7ff',
-                            500: '#6366f1',
-                            600: '#4f46e5',
-                            700: '#4338ca',
-                        },
-                        darkTheme: {
-                            bg: '#0f172a',
-                            card: '#1e293b',
-                            border: '#334155',
-                            text: '#f8fafc',
-                            muted: '#94a3b8'
-                        },
-                        amoled: {
-                            bg: '#000000',
-                            card: '#0a0a0a',
-                            border: '#222222',
-                            text: '#ffffff',
-                            muted: '#888888'
-                        },
-                        midnight: {
-                            bg: '#090d16',
-                            card: '#111827',
-                            border: '#1f2937',
-                            text: '#f3f4f6',
-                            muted: '#9ca3af'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 9999px;
-        }
-        .dark ::-webkit-scrollbar-thumb {
-            background: #475569;
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-        }
-        input, select, textarea {
-            user-select: text;
-        }
-        /* Splash Screen Animation */
-        #splash-screen {
-            transition: opacity 0.5s ease, visibility 0.5s ease;
-        }
-        /* Glassmorphism Effect */
-        .glass {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-        }
-        .dark .glass {
-            background: rgba(30, 41, 59, 0.75);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-        }
-        /* Pulse Animation for Live Dot */
-        @keyframes pulse-dot {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-        }
-        .live-pulse {
-            animation: pulse-dot 2s infinite;
-        }
-    </style>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<meta name="theme-color" content="#4f46e5">
+
+<title>Hariom Smart Library Pro</title>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<!-- Excel -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<style>
+
+:root{
+
+--bg:#f4f7fb;
+--card:#ffffff;
+--text:#172033;
+--muted:#718096;
+
+--primary:#4f46e5;
+--primary2:#7c3aed;
+
+--success:#16a34a;
+--danger:#dc2626;
+--warning:#f59e0b;
+--night:#0284c7;
+
+--border:#e5e7eb;
+
+--shadow:0 8px 25px rgba(0,0,0,.08);
+
+}
+
+body.dark{
+
+--bg:#0b1120;
+--card:#111827;
+--text:#f8fafc;
+--muted:#94a3b8;
+--border:#263244;
+
+}
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+
+background:var(--bg);
+color:var(--text);
+padding-bottom:85px;
+
+}
+
+button,input,select{
+
+font-family:inherit;
+
+}
+
+/* APP HEADER */
+
+.app-header{
+
+position:sticky;
+top:0;
+
+z-index:50;
+
+background:linear-gradient(
+135deg,
+var(--primary),
+var(--primary2)
+);
+
+padding:18px 16px;
+
+color:white;
+
+box-shadow:0 5px 20px rgba(0,0,0,.15);
+
+}
+
+.header-row{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+}
+
+.logo-area{
+
+display:flex;
+
+align-items:center;
+
+gap:12px;
+
+}
+
+.logo{
+
+width:46px;
+height:46px;
+
+border-radius:14px;
+
+background:white;
+
+color:var(--primary);
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+font-size:24px;
+
+}
+
+.logo-area h2{
+
+font-size:18px;
+
+}
+
+.logo-area p{
+
+font-size:11px;
+
+opacity:.8;
+
+margin-top:3px;
+
+}
+
+.header-actions{
+
+display:flex;
+
+gap:8px;
+
+}
+
+.icon-btn{
+
+width:38px;
+height:38px;
+
+border:none;
+
+border-radius:12px;
+
+background:rgba(255,255,255,.18);
+
+color:white;
+
+font-size:18px;
+
+cursor:pointer;
+
+}
+
+/* MAIN */
+
+.main{
+
+padding:15px;
+
+max-width:900px;
+
+margin:auto;
+
+}
+
+/* LOGIN CARD */
+
+.admin-card{
+
+background:var(--card);
+
+border-radius:18px;
+
+padding:15px;
+
+box-shadow:var(--shadow);
+
+margin-bottom:15px;
+
+}
+
+.admin-title{
+
+font-size:14px;
+
+font-weight:bold;
+
+margin-bottom:10px;
+
+}
+
+.admin-row{
+
+display:flex;
+
+gap:8px;
+
+}
+
+.admin-row input{
+
+flex:1;
+
+padding:12px;
+
+border-radius:10px;
+
+border:1px solid var(--border);
+
+background:var(--bg);
+
+color:var(--text);
+
+}
+
+.btn{
+
+border:none;
+
+padding:12px 16px;
+
+border-radius:10px;
+
+background:var(--primary);
+
+color:white;
+
+font-weight:bold;
+
+cursor:pointer;
+
+}
+
+.btn:active{
+
+transform:scale(.97);
+
+}
+
+.btn-success{
+
+background:var(--success);
+
+}
+
+.btn-danger{
+
+background:var(--danger);
+
+}
+
+.btn-warning{
+
+background:var(--warning);
+
+}
+
+/* WELCOME */
+
+.welcome{
+
+margin:8px 0 18px;
+
+}
+
+.welcome h2{
+
+font-size:20px;
+
+}
+
+.welcome p{
+
+font-size:13px;
+
+color:var(--muted);
+
+margin-top:4px;
+
+}
+
+/* DASHBOARD */
+
+.stats-grid{
+
+display:grid;
+
+grid-template-columns:repeat(2,1fr);
+
+gap:12px;
+
+}
+
+.stat-card{
+
+background:var(--card);
+
+padding:15px;
+
+border-radius:18px;
+
+box-shadow:var(--shadow);
+
+position:relative;
+
+overflow:hidden;
+
+}
+
+.stat-card.big{
+
+grid-column:span 2;
+
+}
+
+.stat-icon{
+
+font-size:23px;
+
+margin-bottom:8px;
+
+}
+
+.stat-title{
+
+font-size:12px;
+
+color:var(--muted);
+
+}
+
+.stat-value{
+
+font-size:23px;
+
+font-weight:bold;
+
+margin-top:5px;
+
+}
+
+.blue-border{
+
+border-left:5px solid var(--primary);
+
+}
+
+.green-border{
+
+border-left:5px solid var(--success);
+
+}
+
+.orange-border{
+
+border-left:5px solid var(--warning);
+
+}
+
+.red-border{
+
+border-left:5px solid var(--danger);
+
+}
+
+/* ALERT */
+
+.alert-section{
+
+margin-top:18px;
+
+}
+
+.section-title{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+margin-bottom:10px;
+
+}
+
+.section-title h3{
+
+font-size:16px;
+
+}
+
+.alert-list{
+
+background:var(--card);
+
+border-radius:16px;
+
+box-shadow:var(--shadow);
+
+overflow:hidden;
+
+}
+
+.alert-item{
+
+padding:13px;
+
+border-bottom:1px solid var(--border);
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+font-size:13px;
+
+}
+
+.alert-item:last-child{
+
+border-bottom:none;
+
+}
+
+/* SEARCH */
+
+.search-wrap{
+
+margin-bottom:15px;
+
+}
+
+.search-wrap input{
+
+width:100%;
+
+padding:14px;
+
+border-radius:14px;
+
+border:1px solid var(--border);
+
+background:var(--card);
+
+color:var(--text);
+
+font-size:14px;
+
+}
+
+/* LEGEND */
+
+.legend{
+
+display:flex;
+
+gap:10px;
+
+flex-wrap:wrap;
+
+margin-bottom:15px;
+
+font-size:11px;
+
+color:var(--muted);
+
+}
+
+.legend-item{
+
+display:flex;
+
+align-items:center;
+
+gap:5px;
+
+}
+
+.legend-dot{
+
+width:10px;
+
+height:10px;
+
+border-radius:50%;
+
+}
+
+.available{
+
+background:#64748b;
+
+}
+
+.booked{
+
+background:var(--success);
+
+}
+
+.expired{
+
+background:var(--danger);
+
+}
+
+.warning{
+
+background:var(--warning);
+
+}
+
+/* SEATS */
+
+.seats-grid{
+
+display:grid;
+
+grid-template-columns:repeat(5,1fr);
+
+gap:9px;
+
+}
+
+.seat{
+
+min-height:95px;
+
+background:var(--card);
+
+border:1px solid var(--border);
+
+border-radius:15px;
+
+padding:7px;
+
+display:flex;
+
+flex-direction:column;
+
+justify-content:space-between;
+
+align-items:center;
+
+cursor:pointer;
+
+box-shadow:0 3px 10px rgba(0,0,0,.05);
+
+transition:.2s;
+
+position:relative;
+
+}
+
+.seat:active{
+
+transform:scale(.95);
+
+}
+
+.seat-number{
+
+font-weight:bold;
+
+font-size:16px;
+
+}
+
+.student-name{
+
+font-size:9px;
+
+text-align:center;
+
+color:var(--muted);
+
+width:100%;
+
+white-space:nowrap;
+
+overflow:hidden;
+
+text-overflow:ellipsis;
+
+}
+
+.shift-dots{
+
+display:flex;
+
+gap:3px;
+
+}
+
+.dot{
+
+width:7px;
+
+height:7px;
+
+border-radius:50%;
+
+background:#cbd5e1;
+
+}
+
+.dot.active{
+
+background:var(--success);
+
+}
+
+.dot.alert{
+
+background:var(--warning);
+
+animation:blink 1s infinite;
+
+}
+
+.dot.expired{
+
+background:var(--danger);
+
+animation:blink 1s infinite;
+
+}
+
+.seat.booked-seat{
+
+border:2px solid var(--primary);
+
+}
+
+.seat.allshift-seat{
+
+border:2px solid #eab308;
+
+background:linear-gradient(
+135deg,
+rgba(234,179,8,.12),
+var(--card)
+);
+
+}
+
+.seat.unreserved-seat{
+
+border-style:dashed;
+
+}
+
+.ur{
+
+position:absolute;
+
+right:5px;
+
+top:5px;
+
+font-size:8px;
+
+background:#64748b;
+
+color:white;
+
+padding:2px 4px;
+
+border-radius:4px;
+
+}
+
+.due-badge{
+
+font-size:9px;
+
+background:#fee2e2;
+
+color:#dc2626;
+
+padding:3px 5px;
+
+border-radius:5px;
+
+font-weight:bold;
+
+}
+
+/* SECTIONS */
+
+.app-section{
+
+display:none;
+
+}
+
+.app-section.active{
+
+display:block;
+
+}
+
+/* STUDENT LIST */
+
+.student-card{
+
+background:var(--card);
+
+border-radius:16px;
+
+padding:14px;
+
+box-shadow:var(--shadow);
+
+margin-bottom:10px;
+
+}
+
+.student-top{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+}
+
+.student-name-big{
+
+font-weight:bold;
+
+font-size:16px;
+
+}
+
+.student-info{
+
+font-size:12px;
+
+color:var(--muted);
+
+margin-top:6px;
+
+line-height:1.7;
+
+}
+
+/* WAITING */
+
+.wait-form{
+
+display:grid;
+
+grid-template-columns:1fr 1fr;
+
+gap:8px;
+
+margin-bottom:12px;
+
+}
+
+.wait-form input{
+
+padding:12px;
+
+border:1px solid var(--border);
+
+background:var(--card);
+
+color:var(--text);
+
+border-radius:10px;
+
+}
+
+.waiting-card{
+
+background:var(--card);
+
+padding:13px;
+
+border-radius:14px;
+
+margin-bottom:8px;
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+box-shadow:var(--shadow);
+
+}
+
+/* MODAL */
+
+.modal{
+
+display:none;
+
+position:fixed;
+
+inset:0;
+
+background:rgba(0,0,0,.65);
+
+z-index:100;
+
+align-items:flex-end;
+
+justify-content:center;
+
+}
+
+.modal.show{
+
+display:flex;
+
+}
+
+.modal-content{
+
+background:var(--card);
+
+width:100%;
+
+max-width:650px;
+
+max-height:92vh;
+
+overflow-y:auto;
+
+border-radius:25px 25px 0 0;
+
+padding:20px;
+
+}
+
+.modal-header{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+margin-bottom:15px;
+
+}
+
+.modal-header h2{
+
+font-size:18px;
+
+}
+
+.close-btn{
+
+border:none;
+
+background:var(--danger);
+
+color:white;
+
+width:35px;
+
+height:35px;
+
+border-radius:50%;
+
+font-size:18px;
+
+}
+
+.shift-card{
+
+background:var(--bg);
+
+border:1px solid var(--border);
+
+border-radius:15px;
+
+padding:13px;
+
+margin-bottom:12px;
+
+}
+
+.shift-card h4{
+
+font-size:14px;
+
+margin-bottom:10px;
+
+color:var(--primary);
+
+}
+
+.shift-card.all{
+
+border-color:#eab308;
+
+}
+
+.shift-card.night{
+
+border-color:var(--night);
+
+}
+
+.form-grid{
+
+display:grid;
+
+grid-template-columns:1fr 1fr;
+
+gap:8px;
+
+}
+
+.form-grid.three{
+
+grid-template-columns:1fr 1fr 1fr;
+
+}
+
+.form-full{
+
+grid-column:span 2;
+
+}
+
+.field label{
+
+font-size:10px;
+
+color:var(--muted);
+
+display:block;
+
+margin-bottom:4px;
+
+}
+
+.field input{
+
+width:100%;
+
+padding:10px;
+
+border-radius:9px;
+
+border:1px solid var(--border);
+
+background:var(--card);
+
+color:var(--text);
+
+}
+
+.modal-buttons{
+
+display:flex;
+
+gap:10px;
+
+margin-top:15px;
+
+}
+
+.modal-buttons button{
+
+flex:1;
+
+}
+
+/* BOTTOM NAV */
+
+.bottom-nav{
+
+position:fixed;
+
+bottom:0;
+
+left:0;
+
+width:100%;
+
+height:70px;
+
+background:var(--card);
+
+border-top:1px solid var(--border);
+
+display:flex;
+
+justify-content:space-around;
+
+align-items:center;
+
+z-index:80;
+
+}
+
+.nav-item{
+
+border:none;
+
+background:transparent;
+
+color:var(--muted);
+
+font-size:10px;
+
+display:flex;
+
+flex-direction:column;
+
+align-items:center;
+
+gap:4px;
+
+cursor:pointer;
+
+min-width:55px;
+
+}
+
+.nav-icon{
+
+font-size:21px;
+
+}
+
+.nav-item.active{
+
+color:var(--primary);
+
+font-weight:bold;
+
+}
+
+/* TOAST */
+
+.toast{
+
+position:fixed;
+
+top:80px;
+
+left:50%;
+
+transform:translateX(-50%);
+
+background:#111827;
+
+color:white;
+
+padding:12px 18px;
+
+border-radius:12px;
+
+z-index:200;
+
+display:none;
+
+font-size:13px;
+
+box-shadow:var(--shadow);
+
+}
+
+.toast.show{
+
+display:block;
+
+}
+
+/* LOADING */
+
+.loader{
+
+text-align:center;
+
+padding:30px;
+
+color:var(--muted);
+
+}
+
+@keyframes blink{
+
+50%{
+opacity:.3;
+}
+
+}
+
+@media(min-width:700px){
+
+.seats-grid{
+
+grid-template-columns:repeat(8,1fr);
+
+}
+
+}
+
+</style>
 </head>
-<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased min-h-screen flex flex-col transition-colors duration-300">
-
-    <!-- ========================================== -->
-    <!-- SPLASH SCREEN                              -->
-    <!-- ========================================== -->
-    <div id="splash-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-900 text-white">
-        <div class="relative mb-6">
-            <div class="w-24 h-24 rounded-3xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-2xl shadow-indigo-500/50 animate-bounce">
-                <i class="fa-solid fa-book-open-reader text-4xl text-white"></i>
-            </div>
-            <div class="absolute -bottom-2 -right-2 bg-emerald-500 w-6 h-6 rounded-full border-4 border-slate-900 flex items-center justify-center text-[10px] font-bold">PRO</div>
-        </div>
-        <h1 class="text-3xl font-extrabold tracking-tight mb-2 bg-gradient-to-r from-indigo-400 to-violet-300 bg-clip-text text-transparent">HARIOM OS</h1>
-        <p class="text-slate-400 font-medium text-sm tracking-wide mb-8">Smart Study. Smart Management. Smart Future.</p>
-        <div class="w-48 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-            <div id="splash-progress" class="bg-gradient-to-r from-indigo-500 to-violet-500 h-full w-0 transition-all duration-700"></div>
-        </div>
-        <p class="text-xs text-slate-500 mt-4">Hariom Smart Library Pro Max v3.2</p>
-    </div>
-
-    <!-- ========================================== -->
-    <!-- TOAST NOTIFICATION CONTAINER               -->
-    <!-- ========================================== -->
-    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
-
-    <!-- ========================================== -->
-    <!-- MAIN APP CONTAINER                         -->
-    <!-- ========================================== -->
-    <div id="app-container" class="flex flex-col min-h-screen opacity-0 transition-opacity duration-500">
-
-        <!-- TOP HEADER / NAVBAR -->
-        <header class="sticky top-0 z-30 glass border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <button onclick="toggleSidebar()" class="md:hidden w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-200 focus:outline-none">
-                    <i class="fa-solid fa-bars text-lg"></i>
-                </button>
-                <div class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-500/30">
-                        <i class="fa-solid fa-graduation-cap"></i>
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-1.5">
-                            <span class="font-bold text-sm tracking-tight" id="header-library-title">Hariom Smart Library</span>
-                            <span class="text-[10px] bg-indigo-100 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 px-1.5 py-0.5 rounded font-semibold" id="header-branch-badge">Hariom Library</span>
-                        </div>
-                        <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Pro Max Ecosystem</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Header Actions & Branch Switcher -->
-            <div class="flex items-center gap-2">
-                <!-- Branch Selector Dropdown -->
-                <select id="branch-switcher" onchange="switchBranch(this.value)" class="text-xs font-semibold bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <option value="Hariom Library">Hariom Library</option>
-                    <option value="Takshila Library">Takshila Library</option>
-                </select>
-
-                <!-- Theme Toggle Button -->
-                <button onclick="cycleTheme()" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition" title="Toggle Theme">
-                    <i id="theme-icon" class="fa-solid fa-moon"></i>
-                </button>
-
-                <!-- Quick QR Scan Button -->
-                <button onclick="openModal('qr-scanner-modal')" class="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition" title="Scan QR Attendance">
-                    <i class="fa-solid fa-qrcode"></i>
-                </button>
-            </div>
-        </header>
-
-        <!-- MAIN LAYOUT BODY (Sidebar + Content Area) -->
-        <div class="flex flex-1 overflow-hidden relative">
-
-            <!-- SIDEBAR NAVIGATION (Desktop & Mobile Drawer) -->
-            <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 md:static">
-                <!-- Sidebar Header -->
-                <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between md:hidden">
-                    <span class="font-bold text-sm">Navigation Menu</span>
-                    <button onclick="toggleSidebar()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-
-                <!-- Navigation Links -->
-                <div class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-3 mb-2">Main Management</div>
-                    <a href="#" onclick="navigate('dashboard')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50 transition" data-target="dashboard">
-                        <i class="fa-solid fa-house-chimney w-5"></i> Dashboard
-                    </a>
-                    <a href="#" onclick="navigate('seats')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition" data-target="seats">
-                        <i class="fa-solid fa-chair w-5"></i> Seat Map (105)
-                    </a>
-                    <a href="#" onclick="navigate('students')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition" data-target="students">
-                        <i class="fa-solid fa-users w-5"></i> Students Directory
-                    </a>
-                    <a href="#" onclick="navigate('attendance')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition" data-target="attendance">
-                        <i class="fa-solid fa-fingerprint w-5"></i> Attendance & QR
-                    </a>
-                    <a href="#" onclick="navigate('payments')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition" data-target="payments">
-                        <i class="fa-solid fa-file-invoice-dollar w-5"></i> Payments & Dues
-                    </a>
-
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-3 mt-6 mb-2">Operations & Analytics</div>
-                    <a href="#" onclick="navigate('finances')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition" data-target="finances">
-                        <i class="fa-solid fa-chart-pie w-5"></i> Finance & Expenses
-                    </a>
-                    <a href="#" onclick="navigate('student-portal')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition" data-target="student-portal">
-                        <i class="fa-solid fa-id-card w-5"></i> Student Portal (Demo)
-                    </a>
-                    <a href="#" onclick="navigate('settings')" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition" data-target="settings">
-                        <i class="fa-solid fa-gear w-5"></i> Settings & Backup
-                    </a>
-                </div>
-
-                <!-- Sidebar Footer User Profile Quick card -->
-                <div class="p-3 border-t border-slate-200 dark:border-slate-800">
-                    <div class="flex items-center gap-3 p-2 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces" alt="Admin" class="w-9 h-9 rounded-full object-cover">
-                        <div class="flex-1 min-w-0">
-                            <h4 class="text-xs font-bold truncate">Super Owner</h4>
-                            <p class="text-[10px] text-slate-500 truncate">Branch: <span id="current-branch-label">Hariom Library</span></p>
-                        </div>
-                        <button onclick="showToast('Logged in as Super Admin')" class="text-slate-400 hover:text-indigo-600"><i class="fa-solid fa-circle-check text-emerald-500"></i></button>
-                    </div>
-                </div>
-            </aside>
-
-            <!-- SIDEBAR BACKDROP FOR MOBILE -->
-            <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/50 z-30 hidden md:hidden"></div>
-
-            <!-- MAIN CONTENT AREA -->
-            <main class="flex-1 overflow-y-auto h-[calc(100vh-61px)] pb-24 md:pb-8">
-
-                <!-- ========================================== -->
-                <!-- VIEW 1: DASHBOARD                          -->
-                <!-- ========================================== -->
-                <section id="view-dashboard" class="view-section p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
-                    <!-- Greeting Banner -->
-                    <div class="bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
-                        <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative z-10">
-                            <div>
-                                <div class="flex items-center gap-2 text-indigo-100 text-xs font-medium mb-1">
-                                    <i class="fa-solid fa-calendar-day"></i> <span id="current-date-display">Wednesday, Sep 9, 2026</span>
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 live-pulse"></span>
-                                    <span id="live-clock" class="font-semibold">06:26 PM</span>
-                                </div>
-                                <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight">Good Evening, Super Admin!</h2>
-                                <p class="text-indigo-100/90 text-sm mt-1">Hariom Smart Library operating at peak capacity today.</p>
-                            </div>
-                            <div class="flex items-center gap-2.5">
-                                <button onclick="openModal('add-student-modal')" class="bg-white text-indigo-600 hover:bg-indigo-50 font-bold px-4 py-2.5 rounded-xl text-sm shadow-lg transition flex items-center gap-2">
-                                    <i class="fa-solid fa-user-plus"></i> Add Student
-                                </button>
-                                <button onclick="openModal('record-payment-modal')" class="bg-indigo-500/50 hover:bg-indigo-500/70 border border-indigo-400/30 text-white font-bold px-4 py-2.5 rounded-xl text-sm backdrop-blur-md transition flex items-center gap-2">
-                                    <i class="fa-solid fa-indian-rupee-sign"></i> Record Payment
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Quick Stats Cards Grid -->
-                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
-                            <div class="flex items-center justify-between mb-3">
-                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Active Students</span>
-                                <div class="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 flex items-center justify-center font-bold">
-                                    <i class="fa-solid fa-users"></i>
-                                </div>
-                            </div>
-                            <div class="flex items-baseline justify-between">
-                                <h3 id="stat-active-students" class="text-2xl font-extrabold">20</h3>
-                                <span class="text-xs text-emerald-500 font-semibold bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded-full"><i class="fa-solid fa-arrow-trend-up"></i> 100%</span>
-                            </div>
-                            <p class="text-[11px] text-slate-500 mt-1">Total registered in branch</p>
-                        </div>
-
-                        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
-                            <div class="flex items-center justify-between mb-3">
-                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Seat Occupancy</span>
-                                <div class="w-9 h-9 rounded-xl bg-violet-50 dark:bg-violet-950/60 text-violet-600 flex items-center justify-center font-bold">
-                                    <i class="fa-solid fa-chair"></i>
-                                </div>
-                            </div>
-                            <div class="flex items-baseline justify-between">
-                                <h3 id="stat-occupancy" class="text-2xl font-extrabold">20 / 105</h3>
-                                <span class="text-xs text-violet-500 font-semibold bg-violet-50 dark:bg-violet-950/50 px-2 py-0.5 rounded-full">85 Free</span>
-                            </div>
-                            <p class="text-[11px] text-slate-500 mt-1">Multi-shift system active</p>
-                        </div>
-
-                        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
-                            <div class="flex items-center justify-between mb-3">
-                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Today's Collection</span>
-                                <div class="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 flex items-center justify-center font-bold">
-                                    <i class="fa-solid fa-indian-rupee-sign"></i>
-                                </div>
-                            </div>
-                            <div class="flex items-baseline justify-between">
-                                <h3 id="stat-today-collection" class="text-2xl font-extrabold">₹16,800</h3>
-                                <span class="text-xs text-emerald-500 font-semibold bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded-full">Secure</span>
-                            </div>
-                            <p class="text-[11px] text-slate-500 mt-1">From fees & deposits</p>
-                        </div>
-
-                        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm">
-                            <div class="flex items-center justify-between mb-3">
-                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Pending Dues</span>
-                                <div class="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 flex items-center justify-center font-bold">
-                                    <i class="fa-solid fa-triangle-exclamation"></i>
-                                </div>
-                            </div>
-                            <div class="flex items-baseline justify-between">
-                                <h3 id="stat-pending-dues" class="text-2xl font-extrabold">₹0</h3>
-                                <span class="text-xs text-emerald-500 font-semibold bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded-full">All Clear</span>
-                            </div>
-                            <p class="text-[11px] text-slate-500 mt-1">0 students due</p>
-                        </div>
-                    </div>
-
-                    <!-- Quick Actions Row -->
-                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
-                        <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-3">Quick Actions</h3>
-                        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-                            <button onclick="openModal('add-student-modal')" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 text-slate-700 dark:text-slate-200 hover:text-indigo-600 transition flex flex-col items-center justify-center gap-2 text-center">
-                                <i class="fa-solid fa-user-plus text-indigo-600 text-lg"></i>
-                                <span class="text-xs font-semibold">Add Student</span>
-                            </button>
-                            <button onclick="openModal('record-payment-modal')" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 text-slate-700 dark:text-slate-200 hover:text-emerald-600 transition flex flex-col items-center justify-center gap-2 text-center">
-                                <i class="fa-solid fa-cash-register text-emerald-600 text-lg"></i>
-                                <span class="text-xs font-semibold">Payment</span>
-                            </button>
-                            <button onclick="openModal('qr-scanner-modal')" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-violet-50 dark:hover:bg-violet-950/50 text-slate-700 dark:text-slate-200 hover:text-violet-600 transition flex flex-col items-center justify-center gap-2 text-center">
-                                <i class="fa-solid fa-qrcode text-violet-600 text-lg"></i>
-                                <span class="text-xs font-semibold">Scan QR</span>
-                            </button>
-                            <button onclick="navigate('seats')" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-blue-50 dark:hover:bg-blue-950/50 text-slate-700 dark:text-slate-200 hover:text-blue-600 transition flex flex-col items-center justify-center gap-2 text-center">
-                                <i class="fa-solid fa-chair text-blue-600 text-lg"></i>
-                                <span class="text-xs font-semibold">Seat Map</span>
-                            </button>
-                            <button onclick="openModal('notice-modal')" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-amber-50 dark:hover:bg-amber-950/50 text-slate-700 dark:text-slate-200 hover:text-amber-600 transition flex flex-col items-center justify-center gap-2 text-center">
-                                <i class="fa-solid fa-bullhorn text-amber-600 text-lg"></i>
-                                <span class="text-xs font-semibold">Add Notice</span>
-                            </button>
-                            <button onclick="openModal('expense-modal')" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-rose-50 dark:hover:bg-rose-950/50 text-slate-700 dark:text-slate-200 hover:text-rose-600 transition flex flex-col items-center justify-center gap-2 text-center">
-                                <i class="fa-solid fa-wallet text-rose-600 text-lg"></i>
-                                <span class="text-xs font-semibold">Add Expense</span>
-                            </button>
-                            <button onclick="navigate('attendance')" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-cyan-50 dark:hover:bg-cyan-950/50 text-slate-700 dark:text-slate-200 hover:text-cyan-600 transition flex flex-col items-center justify-center gap-2 text-center">
-                                <i class="fa-solid fa-fingerprint text-cyan-600 text-lg"></i>
-                                <span class="text-xs font-semibold">Attendance</span>
-                            </button>
-                            <button onclick="navigate('finances')" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 hover:bg-purple-50 dark:hover:bg-purple-950/50 text-slate-700 dark:text-slate-200 hover:text-purple-600 transition flex flex-col items-center justify-center gap-2 text-center">
-                                <i class="fa-solid fa-chart-column text-purple-600 text-lg"></i>
-                                <span class="text-xs font-semibold">Reports</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Live Activity Feed & Spotlight Student -->
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <!-- Live Activity Feed -->
-                        <div class="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm flex flex-col">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="font-bold text-base">Live Activity Feed</h3>
-                                <span class="text-xs bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 px-2 py-0.5 rounded-full font-semibold flex items-center gap-1.5">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 live-pulse"></span> Realtime
-                                </span>
-                            </div>
-                            <div id="activity-feed-list" class="space-y-3 overflow-y-auto max-h-[320px] pr-1">
-                                <!-- Populated dynamically -->
-                            </div>
-                        </div>
-
-                        <!-- Demo Student Spotlight (Rahul Kumar) -->
-                        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm flex flex-col justify-between">
-                            <div>
-                                <div class="flex items-center justify-between mb-4">
-                                    <h3 class="font-bold text-base">Student Spotlight</h3>
-                                    <span class="text-xs bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 px-2 py-0.5 rounded font-bold">Featured</span>
-                                </div>
-                                <div class="flex items-center gap-3.5 mb-4">
-                                    <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150&h=150&fit=crop&crop=faces" alt="Rahul Kumar" class="w-14 h-14 rounded-2xl object-cover shadow-md border-2 border-indigo-500">
-                                    <div>
-                                        <h4 class="font-extrabold text-base">Rahul Kumar</h4>
-                                        <p class="text-xs text-slate-500 font-mono">HSL-BGP-2026-00024</p>
-                                        <div class="flex items-center gap-2 mt-1">
-                                            <span class="text-[10px] bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 px-2 py-0.5 rounded font-bold">Seat 24</span>
-                                            <span class="text-[10px] bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 px-2 py-0.5 rounded font-bold">Morning</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="space-y-2.5 text-xs bg-slate-50 dark:bg-slate-800/50 p-3.5 rounded-xl mb-4">
-                                    <div class="flex justify-between">
-                                        <span class="text-slate-500">Monthly Fee:</span>
-                                        <span class="font-bold">₹800 / mo</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-slate-500">Attendance:</span>
-                                        <span class="font-bold text-emerald-600">92%</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-slate-500">Study Streak:</span>
-                                        <span class="font-bold text-amber-600">12 Days 🔥</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <button onclick="viewStudentProfile('HSL-BGP-2026-00024')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition">
-                                View Full Profile & QR
-                            </button>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- ========================================== -->
-                <!-- VIEW 2: SMART SEAT MAP (105 SEATS)         -->
-                <!-- ========================================== -->
-                <section id="view-seats" class="view-section p-4 md:p-6 space-y-6 max-w-7xl mx-auto hidden">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                        <div>
-                            <h2 class="text-xl font-extrabold">Smart Seat Management (105 Seats)</h2>
-                            <p class="text-xs text-slate-500 mt-0.5">Interactive multi-shift seat allocation system for Hariom & Takshila libraries.</p>
-                        </div>
-                        <div class="flex flex-wrap items-center gap-2">
-                            <select id="seat-shift-filter" onchange="renderSeatMap()" class="text-xs font-semibold bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-slate-700 dark:text-slate-200 focus:outline-none">
-                                <option value="All">All Shifts</option>
-                                <option value="Morning">Morning (06 AM - 10 AM)</option>
-                                <option value="Noon">Noon (10 AM - 02 PM)</option>
-                                <option value="Afternoon">Afternoon (02 PM - 06 PM)</option>
-                                <option value="Evening">Evening (06 PM - 10 PM)</option>
-                                <option value="Night">Night (10 PM - 06 AM)</option>
-                                <option value="All Shift">All Shift (24 Hours)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Seat Status Legend -->
-                    <div class="flex flex-wrap items-center gap-4 text-xs font-medium bg-white dark:bg-slate-900 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800">
-                        <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-500"></span> Available</div>
-                        <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-indigo-600"></span> Occupied</div>
-                        <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-500"></span> Reserved</div>
-                        <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-rose-500"></span> Payment Due</div>
-                        <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-slate-400"></span> Maintenance</div>
-                    </div>
-
-                    <!-- Interactive Seats Grid -->
-                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
-                        <div id="seats-grid" class="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-15 gap-2.5">
-                            <!-- Populated via JavaScript (1 to 105) -->
-                        </div>
-                    </div>
-                </section>
-
-                <!-- ========================================== -->
-                <!-- VIEW 3: STUDENTS DIRECTORY                 -->
-                <!-- ========================================== -->
-                <section id="view-students" class="view-section p-4 md:p-6 space-y-6 max-w-7xl mx-auto hidden">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                        <div>
-                            <h2 class="text-xl font-extrabold">Students Directory</h2>
-                            <p class="text-xs text-slate-500 mt-0.5">Manage active memberships, student profiles, and documents.</p>
-                        </div>
-                        <div class="flex items-center gap-2 w-full md:w-auto">
-                            <div class="relative flex-1 md:w-64">
-                                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-xs"></i>
-                                <input type="text" id="student-search-input" oninput="filterStudents()" placeholder="Search name, ID, mobile..." class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl pl-9 pr-4 py-2 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            </div>
-                            <button onclick="openModal('add-student-modal')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-md transition flex items-center gap-1.5 whitespace-nowrap">
-                                <i class="fa-solid fa-user-plus"></i> Add Student
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Students Table Card -->
-                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="bg-slate-50 dark:bg-slate-800/60 text-slate-400 text-[11px] font-bold uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
-                                        <th class="p-4">Student</th>
-                                        <th class="p-4">Student ID</th>
-                                        <th class="p-4">Seat & Shift</th>
-                                        <th class="p-4">Mobile</th>
-                                        <th class="p-4">Status</th>
-                                        <th class="p-4 text-right">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="students-table-body" class="divide-y divide-slate-100 dark:divide-slate-800 text-xs font-medium">
-                                    <!-- Populated via JavaScript -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- ========================================== -->
-                <!-- VIEW 4: ATTENDANCE & QR                    -->
-                <!-- ========================================== -->
-                <section id="view-attendance" class="view-section p-4 md:p-6 space-y-6 max-w-7xl mx-auto hidden">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                        <div>
-                            <h2 class="text-xl font-extrabold">QR Attendance System</h2>
-                            <p class="text-xs text-slate-500 mt-0.5">Instant check-in using digital QR cards or manual entry.</p>
-                        </div>
-                        <button onclick="openModal('qr-scanner-modal')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow-md transition flex items-center gap-2">
-                            <i class="fa-solid fa-qrcode"></i> Launch QR Scanner
-                        </button>
-                    </div>
-
-                    <!-- Today Attendance Logs Table -->
-                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden p-5">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="font-bold text-base">Today's Attendance Log</h3>
-                            <span id="attendance-count-badge" class="text-xs bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 px-2.5 py-1 rounded-lg font-bold">0 Checked In Today</span>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="bg-slate-50 dark:bg-slate-800/60 text-slate-400 text-[11px] font-bold uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
-                                        <th class="p-3">Student Name</th>
-                                        <th class="p-3">ID</th>
-                                        <th class="p-3">Seat</th>
-                                        <th class="p-3">Shift</th>
-                                        <th class="p-3">Entry Time</th>
-                                        <th class="p-3">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="attendance-table-body" class="divide-y divide-slate-100 dark:divide-slate-800 text-xs font-medium">
-                                    <!-- Populated via JS -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- ========================================== -->
-                <!-- VIEW 5: PAYMENTS & DUES                    -->
-                <!-- ========================================== -->
-                <section id="view-payments" class="view-section p-4 md:p-6 space-y-6 max-w-7xl mx-auto hidden">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                        <div>
-                            <h2 class="text-xl font-extrabold">Payment Engine & Lifetime History</h2>
-                            <p class="text-xs text-slate-500 mt-0.5">Secure payment records, instant receipts, and fee tracking.</p>
-                        </div>
-                        <button onclick="openModal('record-payment-modal')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow-md transition flex items-center gap-2">
-                            <i class="fa-solid fa-indian-rupee-sign"></i> Record Payment
-                        </button>
-                    </div>
-
-                    <!-- Payment History Table -->
-                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden p-5">
-                        <h3 class="font-bold text-base mb-4">Lifetime Payment Ledger</h3>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="bg-slate-50 dark:bg-slate-800/60 text-slate-400 text-[11px] font-bold uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
-                                        <th class="p-3">Receipt No</th>
-                                        <th class="p-3">Student Name</th>
-                                        <th class="p-3">Amount</th>
-                                        <th class="p-3">Method</th>
-                                        <th class="p-3">Date</th>
-                                        <th class="p-3 text-right">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="payments-table-body" class="divide-y divide-slate-100 dark:divide-slate-800 text-xs font-medium">
-                                    <!-- Populated via JS -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- ========================================== -->
-                <!-- VIEW 6: FINANCE & EXPENSES                 -->
-                <!-- ========================================== -->
-                <section id="view-finances" class="view-section p-4 md:p-6 space-y-6 max-w-7xl mx-auto hidden">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                        <div>
-                            <h2 class="text-xl font-extrabold">Financial Command Center</h2>
-                            <p class="text-xs text-slate-500 mt-0.5">Track branch earnings, monthly profit, and operational expenses.</p>
-                        </div>
-                        <button onclick="openModal('expense-modal')" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow-md transition flex items-center gap-2">
-                            <i class="fa-solid fa-wallet"></i> Add Expense
-                        </button>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Revenue</span>
-                            <h3 id="finance-revenue" class="text-3xl font-extrabold text-emerald-600 mt-2">₹16,800</h3>
-                            <p class="text-xs text-slate-500 mt-1">From all recorded fee collections</p>
-                        </div>
-                        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Expenses</span>
-                            <h3 id="finance-expenses" class="text-3xl font-extrabold text-rose-600 mt-2">₹3,500</h3>
-                            <p class="text-xs text-slate-500 mt-1">Rent, Electricity & Maintenance</p>
-                        </div>
-                        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Net Profit</span>
-                            <h3 id="finance-profit" class="text-3xl font-extrabold text-indigo-600 mt-2">₹13,300</h3>
-                            <p class="text-xs text-slate-500 mt-1">Branch Health Score: 96/100</p>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- ========================================== -->
-                <!-- VIEW 7: STUDENT PORTAL (DEMO)              -->
-                <!-- ========================================== -->
-                <section id="view-student-portal" class="view-section p-4 md:p-6 space-y-6 max-w-4xl mx-auto hidden">
-                    <div class="bg-gradient-to-r from-indigo-600 to-violet-600 rounded-3xl p-6 text-white shadow-xl flex flex-col md:flex-row items-center gap-6">
-                        <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop&crop=faces" alt="Rahul Kumar" class="w-28 h-28 rounded-3xl object-cover border-4 border-white/30 shadow-2xl">
-                        <div class="flex-1 text-center md:text-left">
-                            <span class="bg-white/20 text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">Student Mobile App View</span>
-                            <h2 class="text-2xl font-extrabold mt-2">Rahul Kumar</h2>
-                            <p class="text-indigo-100 text-xs font-mono">HSL-BGP-2026-00024 • Hariom Library</p>
-                            <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mt-3">
-                                <span class="bg-white/10 px-3 py-1 rounded-xl text-xs font-semibold">Seat: 24 (Morning)</span>
-                                <span class="bg-emerald-500/30 px-3 py-1 rounded-xl text-xs font-semibold">Active Member</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Student Digital Wallet & Streak -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Study Streak & Stats</h4>
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h3 class="text-3xl font-extrabold text-amber-500">12 Days 🔥</h3>
-                                    <p class="text-xs text-slate-500 mt-1">Current Study Streak</p>
-                                </div>
-                                <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 flex items-center justify-center text-xl font-bold">
-                                    <i class="fa-solid fa-fire"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Digital Identity Card</h4>
-                            <button onclick="viewStudentProfile('HSL-BGP-2026-00024')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-xs shadow-md transition flex items-center justify-center gap-2">
-                                <i class="fa-solid id-card"></i> Show QR ID Card
-                            </button>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- ========================================== -->
-                <!-- VIEW 8: SETTINGS & BACKUP                  -->
-                <!-- ========================================== -->
-                <section id="view-settings" class="view-section p-4 md:p-6 space-y-6 max-w-4xl mx-auto hidden">
-                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-6">
-                        <div>
-                            <h2 class="text-xl font-extrabold">System Settings & Data Backup</h2>
-                            <p class="text-xs text-slate-500 mt-0.5">Manage local database, persistence, and system preferences.</p>
-                        </div>
-                        <div class="flex flex-wrap gap-3">
-                            <button onclick="exportDatabase()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow-md transition flex items-center gap-2">
-                                <i class="fa-solid fa-download"></i> Export JSON Backup
-                            </button>
-                            <button onclick="resetDemoData()" class="bg-rose-50 dark:bg-rose-950/50 text-rose-600 hover:bg-rose-100 font-bold px-4 py-2.5 rounded-xl text-xs transition flex items-center gap-2">
-                                <i class="fa-solid fa-rotate-right"></i> Reset Demo Data
-                            </button>
-                        </div>
-                    </div>
-                </section>
-
-            </main>
-        </div>
-
-        <!-- MOBILE BOTTOM NAVIGATION BAR -->
-        <nav class="md:hidden fixed bottom-0 inset-x-0 z-30 glass border-t border-slate-200 dark:border-slate-800 px-4 py-2 flex items-center justify-around">
-            <button onclick="navigate('dashboard')" class="mobile-nav-btn flex flex-col items-center gap-1 text-indigo-600 dark:text-indigo-400" data-target="dashboard">
-                <i class="fa-solid fa-house-chimney text-lg"></i>
-                <span class="text-[10px] font-bold">Home</span>
-            </button>
-            <button onclick="navigate('seats')" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600" data-target="seats">
-                <i class="fa-solid fa-chair text-lg"></i>
-                <span class="text-[10px] font-bold">Seats</span>
-            </button>
-            <button onclick="openModal('qr-scanner-modal')" class="w-12 h-12 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-500/50 -mt-4 border-4 border-slate-50 dark:border-slate-950">
-                <i class="fa-solid fa-qrcode text-xl"></i>
-            </button>
-            <button onclick="navigate('students')" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600" data-target="students">
-                <i class="fa-solid fa-users text-lg"></i>
-                <span class="text-[10px] font-bold">Students</span>
-            </button>
-            <button onclick="navigate('student-portal')" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400 hover:text-slate-600" data-target="student-portal">
-                <i class="fa-solid fa-id-card text-lg"></i>
-                <span class="text-[10px] font-bold">Portal</span>
-            </button>
-        </nav>
-    </div>
-
-    <!-- ========================================== -->
-    <!-- MODALS SECTION                             -->
-    <!-- ========================================== -->
-
-    <!-- 1. ADD STUDENT MODAL -->
-    <div id="add-student-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 max-h-[90vh] overflow-y-auto">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="font-extrabold text-lg">Register New Student</h3>
-                <button onclick="closeModal('add-student-modal')" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <form id="add-student-form" onsubmit="handleRegisterStudent(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Full Name</label>
-                    <input type="text" id="reg-name" required placeholder="e.g. Aman Kumar" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Mobile Number</label>
-                        <input type="tel" id="reg-mobile" required placeholder="9876543210" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Seat Number (1-105)</label>
-                        <input type="number" id="reg-seat" min="1" max="105" required placeholder="25" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Shift</label>
-                        <select id="reg-shift" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-medium focus:outline-none">
-                            <option value="Morning">Morning</option>
-                            <option value="Noon">Noon</option>
-                            <option value="Afternoon">Afternoon</option>
-                            <option value="Evening">Evening</option>
-                            <option value="Night">Night</option>
-                            <option value="All Shift">All Shift</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Monthly Fee (₹)</label>
-                        <input type="number" id="reg-fee" value="800" required class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-medium focus:outline-none">
-                    </div>
-                </div>
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-xs shadow-lg transition">
-                    Complete Registration & Generate QR ID
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- 2. RECORD PAYMENT MODAL -->
-    <div id="record-payment-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="font-extrabold text-lg">Record Fee Payment</h3>
-                <button onclick="closeModal('record-payment-modal')" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <form onsubmit="handleRecordPayment(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Student</label>
-                    <select id="pay-student-select" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-medium focus:outline-none">
-                        <!-- Populated via JS -->
-                    </select>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Amount (₹)</label>
-                        <input type="number" id="pay-amount" value="800" required class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-medium focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Method</label>
-                        <select id="pay-method" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-medium focus:outline-none">
-                            <option value="UPI / PhonePe">UPI / PhonePe</option>
-                            <option value="Cash">Cash</option>
-                            <option value="Google Pay">Google Pay</option>
-                            <option value="Bank Transfer">Bank Transfer</option>
-                        </select>
-                    </div>
-                </div>
-                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs shadow-lg transition">
-                    Confirm & Generate Receipt
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- 3. QR SCANNER MODAL -->
-    <div id="qr-scanner-modal" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
-        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 text-center space-y-4">
-            <div class="flex items-center justify-between">
-                <h3 class="font-extrabold text-lg">QR Attendance Scanner</h3>
-                <button onclick="closeModal('qr-scanner-modal')" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="w-48 h-48 mx-auto bg-slate-100 dark:bg-slate-800 rounded-2xl flex flex-col items-center justify-center border-2 border-dashed border-indigo-500 relative overflow-hidden">
-                <i class="fa-solid fa-qrcode text-6xl text-indigo-500 mb-2 animate-pulse"></i>
-                <p class="text-[11px] text-slate-500">Camera Active</p>
-            </div>
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Simulate QR Scan (Select Student ID)</label>
-                <select id="qr-simulate-select" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-medium focus:outline-none mb-3">
-                    <!-- Populated via JS -->
-                </select>
-                <button onclick="simulateQRScan()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-xs shadow-lg transition">
-                    Simulate Successful Scan
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 4. STUDENT PROFILE MODAL -->
-    <div id="student-profile-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 max-h-[90vh] overflow-y-auto space-y-4" id="profile-modal-content">
-            <!-- Populated dynamically -->
-        </div>
-    </div>
-
-    <!-- 5. ADD NOTICE MODAL -->
-    <div id="notice-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="font-extrabold text-lg">Publish Library Notice</h3>
-                <button onclick="closeModal('notice-modal')" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <form onsubmit="handleNoticeSubmit(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Notice Title</label>
-                    <input type="text" id="notice-title" required placeholder="e.g. Sunday Library Open Notice" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-medium focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Notice Message</label>
-                    <textarea id="notice-desc" required rows="3" placeholder="Enter message for all students..." class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs font-medium focus:outline-none"></textarea>
-                </div>
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-xs shadow-lg transition">
-                    Publish Notice
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- 6. ADD EXPENSE MODAL -->
-    <div id="expense-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="font-extrabold text-lg">Record Operational Expense</h3>
-                <button onclick="closeModal('expense-modal')" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <form onsubmit="handleExpenseSubmit(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Expense Title / Category</label>
-                    <select id="exp-category" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-medium focus:outline-none">
-                        <option value="Rent">Library Rent</option>
-                        <option value="Electricity">Electricity Bill</option>
-                        <option value="Internet">High Speed WiFi</option>
-                        <option value="Cleaning">Cleaning & Maintenance</option>
-                        <option value="Other">Other Expenses</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Amount (₹)</label>
-                    <input type="number" id="exp-amount" required placeholder="1500" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs font-medium focus:outline-none">
-                </div>
-                <button type="submit" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-xl text-xs shadow-lg transition">
-                    Save Expense Record
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- ========================================== -->
-    <!-- APPLICATION JAVASCRIPT LOGIC               -->
-    <!-- ========================================== -->
-    <script>
-        // --- CENTRAL DATABASE & STATE ---
-        let appState = {
-            currentBranch: "Hariom Library",
-            theme: "dark",
-            students: [],
-            payments: [],
-            attendance: [],
-            expenses: [],
-            activities: [],
-            notices: []
-        };
-
-        // --- INITIAL DEMO DATA ---
-        const DEMO_STUDENTS = [
-            { id: "HSL-BGP-2026-00024", name: "Rahul Kumar", mobile: "9876543210", seat: 24, shift: "Morning", fee: 800, status: "Active", streak: 12, attendanceRate: "92%", photo: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150&h=150&fit=crop&crop=faces" },
-            { id: "HSL-BGP-2026-00025", name: "Aman Sharma", mobile: "9876543211", seat: 25, shift: "Noon", fee: 800, status: "Active", streak: 8, attendanceRate: "88%", photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=faces" },
-            { id: "HSL-BGP-2026-00026", name: "Priya Singh", mobile: "9876543212", seat: 26, shift: "Evening", fee: 900, status: "Active", streak: 15, attendanceRate: "96%", photo: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=faces" },
-            { id: "HSL-BGP-2026-00027", name: "Vikram Roy", mobile: "9876543213", seat: 27, shift: "Night", fee: 1000, status: "Active", streak: 5, attendanceRate: "85%", photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=faces" },
-            { id: "HSL-BGP-2026-00028", name: "Neha Kumari", mobile: "9876543214", seat: 28, shift: "Morning", fee: 800, status: "Active", streak: 10, attendanceRate: "90%", photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=faces" }
-        ];
-
-        // Fill up to 20 realistic students for demo
-        function generateMoreDemoStudents() {
-            const firstNames = ["Amit", "Rohit", "Sneha", "Anjali", "Deepak", "Pooja", "Manish", "Kajal", "Ravi", "Sunil", "Divya", "Karan", "Megha", "Alok", "Sakshi"];
-            const lastNames = ["Kumar", "Sharma", "Singh", "Yadav", "Verma", "Gupta", "Jha", "Mishra", "Thakur", "Paswan"];
-            const shifts = ["Morning", "Noon", "Afternoon", "Evening", "Night", "All Shift"];
-            
-            let list = [...DEMO_STUDENTS];
-            for (let i = 6; i <= 20; i++) {
-                let fName = firstNames[(i * 3) % firstNames.length];
-                let lName = lastNames[(i * 7) % lastNames.length];
-                let seatNum = i + 25;
-                list.push({
-                    id: `HSL-BGP-2026-000${i < 10 ? '0' + i : i}`,
-                    name: `${fName} ${lName}`,
-                    mobile: `98765432${i < 10 ? '0' + i : i}`,
-                    seat: seatNum,
-                    shift: shifts[i % shifts.length],
-                    fee: 800,
-                    status: "Active",
-                    streak: (i * 2) % 14 + 1,
-                    attendanceRate: `${80 + (i % 15)}%`,
-                    photo: `https://images.unsplash.com/photo-${1500000000000 + i * 123456}?w=150&h=150&fit=crop&crop=faces`
-                });
-            }
-            return list;
-        }
-
-        // --- LOCALSTORAGE PERSISTENCE ---
-        function loadDatabase() {
-            const saved = localStorage.getItem('HARIOM_OS_DB');
-            if (saved) {
-                try {
-                    appState = JSON.parse(saved);
-                } catch(e) {
-                    initDefaultData();
-                }
-            } else {
-                initDefaultData();
-            }
-        }
-
-        function saveDatabase() {
-            localStorage.setItem('HARIOM_OS_DB', JSON.stringify(appState));
-        }
-
-        function initDefaultData() {
-            appState.students = generateMoreDemoStudents();
-            appState.payments = [
-                { receiptNo: "HSL-RCP-1001", studentId: "HSL-BGP-2026-00024", studentName: "Rahul Kumar", amount: 800, method: "UPI / PhonePe", date: "2026-09-01" },
-                { receiptNo: "HSL-RCP-1002", studentId: "HSL-BGP-2026-00025", studentName: "Aman Sharma", amount: 800, method: "Cash", date: "2026-09-02" },
-                { receiptNo: "HSL-RCP-1003", studentId: "HSL-BGP-2026-00026", studentName: "Priya Singh", amount: 900, method: "Google Pay", date: "2026-09-05" }
-            ];
-            appState.attendance = [
-                { name: "Rahul Kumar", id: "HSL-BGP-2026-00024", seat: 24, shift: "Morning", time: "06:15 AM", status: "Present" },
-                { name: "Aman Sharma", id: "HSL-BGP-2026-00025", seat: 25, shift: "Noon", time: "10:05 AM", status: "Present" }
-            ];
-            appState.expenses = [
-                { category: "Rent", amount: 5000, date: "2026-09-01" },
-                { category: "Electricity", amount: 1500, date: "2026-09-05" }
-            ];
-            appState.activities = [
-                { text: "Rahul Kumar checked in via QR scanner", time: "Today, 06:15 AM", type: "success" },
-                { text: "New fee payment received from Priya Singh (₹900)", time: "Sep 5, 2026", type: "payment" },
-                { text: "New student Aman Sharma registered", time: "Sep 2, 2026", type: "user" }
-            ];
-            saveDatabase();
-        }
-
-        // --- SPLASH & INITIALIZATION ---
-        window.addEventListener('DOMContentLoaded', () => {
-            loadDatabase();
-            
-            // Splash progress animation
-            let progress = 0;
-            const progressInterval = setInterval(() => {
-                progress += 25;
-                const bar = document.getElementById('splash-progress');
-                if (bar) bar.style.width = progress + '%';
-                if (progress >= 100) {
-                    clearInterval(progressInterval);
-                    setTimeout(() => {
-                        const splash = document.getElementById('splash-screen');
-                        if (splash) {
-                            splash.style.opacity = '0';
-                            setTimeout(() => splash.remove(), 500);
-                        }
-                        const app = document.getElementById('app-container');
-                        if (app) app.style.opacity = '1';
-                    }, 300);
-                }
-            }, 150);
-
-            // Clock & Date
-            updateClock();
-            setInterval(updateClock, 1000);
-
-            // Render all UI modules
-            renderDashboard();
-            renderSeatMap();
-            renderStudentsTable();
-            renderAttendanceTable();
-            renderPaymentsTable();
-            populateSelectDropdowns();
-            applyTheme(appState.theme);
-        });
-
-        function updateClock() {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const dateStr = now.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
-            const clockEl = document.getElementById('live-clock');
-            const dateEl = document.getElementById('current-date-display');
-            if (clockEl) clockEl.innerText = timeStr;
-            if (dateEl) dateEl.innerText = dateStr;
-        }
-
-        // --- NAVIGATION ROUTER ---
-        function navigate(targetView) {
-            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-            const target = document.getElementById(`view-${targetView}`);
-            if (target) target.classList.remove('hidden');
-
-            // Update sidebar & mobile active states
-            document.querySelectorAll('.nav-link').forEach(el => {
-                if (el.getAttribute('data-target') === targetView) {
-                    el.classList.add('text-indigo-600', 'dark:text-indigo-400', 'bg-indigo-50', 'dark:bg-indigo-950/50');
-                    el.classList.remove('text-slate-600', 'dark:text-slate-400');
-                } else {
-                    el.classList.remove('text-indigo-600', 'dark:text-indigo-400', 'bg-indigo-50', 'dark:bg-indigo-950/50');
-                    el.classList.add('text-slate-600', 'dark:text-slate-400');
-                }
-            });
-
-            document.querySelectorAll('.mobile-nav-btn').forEach(el => {
-                if (el.getAttribute('data-target') === targetView) {
-                    el.classList.add('text-indigo-600', 'dark:text-indigo-400');
-                    el.classList.remove('text-slate-400');
-                } else {
-                    el.classList.remove('text-indigo-600', 'dark:text-indigo-400');
-                    el.classList.add('text-slate-400');
-                }
-            });
-
-            // Close mobile sidebar if open
-            const sidebar = document.getElementById('sidebar');
-            const backdrop = document.getElementById('sidebar-backdrop');
-            if (sidebar) sidebar.classList.add('-translate-x-full');
-            if (backdrop) backdrop.classList.add('hidden');
-        }
-
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const backdrop = document.getElementById('sidebar-backdrop');
-            if (sidebar && backdrop) {
-                sidebar.classList.toggle('-translate-x-full');
-                backdrop.classList.toggle('hidden');
-            }
-        }
-
-        // --- THEME ENGINE ---
-        function cycleTheme() {
-            if (appState.theme === 'dark') {
-                appState.theme = 'light';
-            } else if (appState.theme === 'light') {
-                appState.theme = 'amoled';
-            } else {
-                appState.theme = 'dark';
-            }
-            applyTheme(appState.theme);
-            saveDatabase();
-            showToast(`Theme switched to ${appState.theme.toUpperCase()}`);
-        }
-
-        function applyTheme(theme) {
-            const html = document.documentElement;
-            html.classList.remove('dark', 'amoled');
-            const icon = document.getElementById('theme-icon');
-            
-            if (theme === 'dark') {
-                html.classList.add('dark');
-                if (icon) icon.className = "fa-solid fa-moon text-indigo-400";
-            } else if (theme === 'amoled') {
-                html.classList.add('dark', 'amoled');
-                if (icon) icon.className = "fa-solid fa-circle-half-stroke text-violet-400";
-            } else {
-                if (icon) icon.className = "fa-solid fa-sun text-amber-500";
-            }
-        }
-
-        // --- BRANCH SWITCHER ---
-        function switchBranch(branchName) {
-            appState.currentBranch = branchName;
-            saveDatabase();
-            const label = document.getElementById('current-branch-label');
-            const badge = document.getElementById('header-branch-badge');
-            if (label) label.innerText = branchName;
-            if (badge) badge.innerText = branchName;
-            showToast(`Switched to branch: ${branchName}`);
-            renderDashboard();
-        }
-
-        // --- MODAL CONTROLS ---
-        function openModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) modal.classList.remove('hidden');
-        }
-
-        function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) modal.classList.add('hidden');
-        }
-
-        function showToast(message) {
-            const container = document.getElementById('toast-container');
-            if (!container) return;
-            const toast = document.createElement('div');
-            toast.className = "bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-4 py-3 rounded-2xl shadow-2xl text-xs font-bold flex items-center gap-2 pointer-events-auto transform translate-y-2 opacity-0 transition-all duration-300";
-            toast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i> ${message}`;
-            container.appendChild(toast);
-            setTimeout(() => {
-                toast.classList.remove('translate-y-2', 'opacity-0');
-            }, 10);
-            setTimeout(() => {
-                toast.classList.add('translate-y-2', 'opacity-0');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        // --- DASHBOARD RENDER ---
-        function renderDashboard() {
-            const activeCountEl = document.getElementById('stat-active-students');
-            const occupancyEl = document.getElementById('stat-occupancy');
-            const collectionEl = document.getElementById('stat-today-collection');
-            
-            if (activeCountEl) activeCountEl.innerText = appState.students.length;
-            if (occupancyEl) occupancyEl.innerText = `${appState.students.length} / 105`;
-            
-            let totalColl = appState.payments.reduce((sum, p) => sum + p.amount, 0);
-            if (collectionEl) collectionEl.innerText = `₹${totalColl.toLocaleString()}`;
-
-            // Render Activity Feed
-            const feedList = document.getElementById('activity-feed-list');
-            if (feedList) {
-                feedList.innerHTML = appState.activities.map(act => `
-                    <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 text-xs">
-                        <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 flex items-center justify-center shrink-0">
-                            <i class="fa-solid fa-bolt"></i>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="font-semibold truncate">${act.text}</p>
-                            <span class="text-[10px] text-slate-400">${act.time}</span>
-                        </div>
-                    </div>
-                `).join('');
-            }
-        }
-
-        // --- SEAT MAP RENDER (105 SEATS) ---
-        function renderSeatMap() {
-            const grid = document.getElementById('seats-grid');
-            const shiftFilter = document.getElementById('seat-shift-filter')?.value || 'All';
-            if (!grid) return;
-
-            let html = '';
-            for (let i = 1; i <= 105; i++) {
-                // Check if seat is occupied
-                let occupant = appState.students.find(s => s.seat === i);
-                if (shiftFilter !== 'All' && occupant && occupant.shift !== shiftFilter && occupant.shift !== 'All Shift') {
-                    occupant = null; // Filter out if shift doesn't match
-                }
-
-                let statusColor = "bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-950/30 dark:border-emerald-800/60 dark:text-emerald-400 hover:bg-emerald-100";
-                let statusLabel = "Available";
-                
-                if (occupant) {
-                    statusColor = "bg-indigo-600 text-white border-indigo-700 shadow-md shadow-indigo-500/20";
-                    statusLabel = occupant.name;
-                }
-
-                html += `
-                    <div onclick="handleSeatClick(${i})" class="aspect-square rounded-xl border flex flex-col items-center justify-center p-1.5 cursor-pointer transition transform hover:scale-105 ${statusColor}">
-                        <span class="text-[10px] opacity-75 font-mono">S-${i}</span>
-                        <span class="text-xs font-extrabold truncate w-full text-center">${occupant ? occupant.name.split(' ')[0] : 'Free'}</span>
-                    </div>
-                `;
-            }
-            grid.innerHTML = html;
-        }
-
-        function handleSeatClick(seatNo) {
-            let occupant = appState.students.find(s => s.seat === seatNo);
-            if (occupant) {
-                viewStudentProfile(occupant.id);
-            } else {
-                showToast(`Seat ${seatNo} is Available. Use Add Student to assign.`);
-                openModal('add-student-modal');
-                document.getElementById('reg-seat').value = seatNo;
-            }
-        }
-
-        // --- STUDENTS DIRECTORY RENDER & ACTIONS ---
-        function renderStudentsTable() {
-            const tbody = document.getElementById('students-table-body');
-            if (!tbody) return;
-
-            tbody.innerHTML = appState.students.map(s => `
-                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
-                    <td class="p-4 flex items-center gap-3">
-                        <img src="${s.photo}" class="w-9 h-9 rounded-xl object-cover border border-slate-200 dark:border-slate-700">
-                        <div>
-                            <div class="font-bold">${s.name}</div>
-                            <span class="text-[10px] text-slate-400">${s.mobile}</span>
-                        </div>
-                    </td>
-                    <td class="p-4 font-mono text-indigo-600 dark:text-indigo-400 font-bold">${s.id}</td>
-                    <td class="p-4">
-                        <span class="bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 px-2.5 py-1 rounded-lg font-bold">Seat ${s.seat}</span>
-                        <span class="text-slate-400 text-[10px] ml-1">(${s.shift})</span>
-                    </td>
-                    <td class="p-4 font-mono">${s.mobile}</td>
-                    <td class="p-4">
-                        <span class="bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 px-2.5 py-1 rounded-full font-bold text-[10px]">Active</span>
-                    </td>
-                    <td class="p-4 text-right">
-                        <button onclick="viewStudentProfile('${s.id}')" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 text-slate-600 dark:text-slate-300 hover:text-indigo-600 transition inline-flex items-center justify-center">
-                            <i class="fa-solid fa-eye"></i>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function filterStudents() {
-            const query = document.getElementById('student-search-input').value.toLowerCase();
-            const tbody = document.getElementById('students-table-body');
-            if (!tbody) return;
-
-            const filtered = appState.students.filter(s => 
-                s.name.toLowerCase().includes(query) || 
-                s.id.toLowerCase().includes(query) || 
-                s.mobile.includes(query)
-            );
-
-            tbody.innerHTML = filtered.map(s => `
-                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
-                    <td class="p-4 flex items-center gap-3">
-                        <img src="${s.photo}" class="w-9 h-9 rounded-xl object-cover border border-slate-200 dark:border-slate-700">
-                        <div>
-                            <div class="font-bold">${s.name}</div>
-                            <span class="text-[10px] text-slate-400">${s.mobile}</span>
-                        </div>
-                    </td>
-                    <td class="p-4 font-mono text-indigo-600 dark:text-indigo-400 font-bold">${s.id}</td>
-                    <td class="p-4">
-                        <span class="bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 px-2.5 py-1 rounded-lg font-bold">Seat ${s.seat}</span>
-                        <span class="text-slate-400 text-[10px] ml-1">(${s.shift})</span>
-                    </td>
-                    <td class="p-4 font-mono">${s.mobile}</td>
-                    <td class="p-4">
-                        <span class="bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 px-2.5 py-1 rounded-full font-bold text-[10px]">Active</span>
-                    </td>
-                    <td class="p-4 text-right">
-                        <button onclick="viewStudentProfile('${s.id}')" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 text-slate-600 dark:text-slate-300 hover:text-indigo-600 transition inline-flex items-center justify-center">
-                            <i class="fa-solid fa-eye"></i>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        // --- REGISTER STUDENT ---
-        function handleRegisterStudent(e) {
-            e.preventDefault();
-            const name = document.getElementById('reg-name').value;
-            const mobile = document.getElementById('reg-mobile').value;
-            const seat = parseInt(document.getElementById('reg-seat').value);
-            const shift = document.getElementById('reg-shift').value;
-            const fee = parseInt(document.getElementById('reg-fee').value);
-
-            const newId = `HSL-BGP-2026-000${appState.students.length + 1}`;
-            const newStudent = {
-                id: newId,
-                name,
-                mobile,
-                seat,
-                shift,
-                fee,
-                status: "Active",
-                streak: 1,
-                attendanceRate: "100%",
-                photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=faces"
-            };
-
-            appState.students.push(newStudent);
-            appState.activities.unshift({ text: `New student registered: ${name} (Seat ${seat})`, time: "Just now", type: "user" });
-            saveDatabase();
-
-            closeModal('add-student-modal');
-            document.getElementById('add-student-form').reset();
-            
-            renderDashboard();
-            renderSeatMap();
-            renderStudentsTable();
-            populateSelectDropdowns();
-            showToast(`Successfully registered ${name} with ID ${newId}!`);
-        }
-
-        // --- PAYMENT & RECEIPT SYSTEM ---
-        function handleRecordPayment(e) {
-            e.preventDefault();
-            const studentId = document.getElementById('pay-student-select').value;
-            const amount = parseInt(document.getElementById('pay-amount').value);
-            const method = document.getElementById('pay-method').value;
-
-            const student = appState.students.find(s => s.id === studentId);
-            const receiptNo = `HSL-RCP-${1000 + appState.payments.length + 1}`;
-
-            const paymentObj = {
-                receiptNo,
-                studentId,
-                studentName: student ? student.name : "Unknown",
-                amount,
-                method,
-                date: new Date().toISOString().split('T')[0]
-            };
-
-            appState.payments.unshift(paymentObj);
-            appState.activities.unshift({ text: `Payment received: ₹${amount} from ${student ? student.name : studentId}`, time: "Just now", type: "payment" });
-            saveDatabase();
-
-            closeModal('record-payment-modal');
-            renderDashboard();
-            renderPaymentsTable();
-            showToast(`Payment recorded successfully! Receipt: ${receiptNo}`);
-        }
-
-        function renderPaymentsTable() {
-            const tbody = document.getElementById('payments-table-body');
-            if (!tbody) return;
-
-            tbody.innerHTML = appState.payments.map(p => `
-                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
-                    <td class="p-3 font-mono font-bold text-indigo-600">${p.receiptNo}</td>
-                    <td class="p-3 font-bold">${p.studentName}</td>
-                    <td class="p-3 font-extrabold text-emerald-600">₹${p.amount}</td>
-                    <td class="p-3"><span class="bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-[10px] font-bold">${p.method}</span></td>
-                    <td class="p-3 text-slate-500">${p.date}</td>
-                    <td class="p-3 text-right">
-                        <button onclick="showToast('Receipt ${p.receiptNo} downloaded')" class="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 hover:bg-indigo-100 inline-flex items-center justify-center">
-                            <i class="fa-solid fa-download"></i>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        // --- ATTENDANCE & QR SYSTEM ---
-        function simulateQRScan() {
-            const studentId = document.getElementById('qr-simulate-select').value;
-            const student = appState.students.find(s => s.id === studentId);
-            if (!student) return;
-
-            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            appState.attendance.unshift({
-                name: student.name,
-                id: student.id,
-                seat: student.seat,
-                shift: student.shift,
-                time: timeStr,
-                status: "Present"
-            });
-
-            appState.activities.unshift({ text: `QR Scan Welcome: ${student.name} (Seat ${student.seat})`, time: "Just now", type: "success" });
-            saveDatabase();
-
-            closeModal('qr-scanner-modal');
-            renderAttendanceTable();
-            showToast(`WELCOME ${student.name}! Attendance Marked Successfully.`);
-        }
-
-        function renderAttendanceTable() {
-            const tbody = document.getElementById('attendance-table-body');
-            const badge = document.getElementById('attendance-count-badge');
-            if (!tbody) return;
-
-            if (badge) badge.innerText = `${appState.attendance.length} Checked In Today`;
-
-            tbody.innerHTML = appState.attendance.map(a => `
-                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition">
-                    <td class="p-3 font-bold">${a.name}</td>
-                    <td class="p-3 font-mono text-xs text-indigo-600">${a.id}</td>
-                    <td class="p-3"><span class="bg-indigo-50 dark:bg-indigo-950/60 px-2 py-0.5 rounded font-bold">Seat ${a.seat}</span></td>
-                    <td class="p-3">${a.shift}</td>
-                    <td class="p-3 font-mono text-emerald-600 font-bold">${a.time}</td>
-                    <td class="p-3"><span class="bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 px-2.5 py-0.5 rounded-full text-[10px] font-bold">Present</span></td>
-                </tr>
-            `).join('');
-        }
-
-        // --- POPULATE SELECT DROPDOWNS ---
-        function populateSelectDropdowns() {
-            const paySelect = document.getElementById('pay-student-select');
-            const qrSelect = document.getElementById('qr-simulate-select');
-
-            const optionsHtml = appState.students.map(s => `<option value="${s.id}">${s.name} (${s.id} - Seat ${s.seat})</option>`).join('');
-            if (paySelect) paySelect.innerHTML = optionsHtml;
-            if (qrSelect) qrSelect.innerHTML = optionsHtml;
-        }
-
-        // --- STUDENT PROFILE MODAL ---
-        function viewStudentProfile(studentId) {
-            const student = appState.students.find(s => s.id === studentId);
-            if (!student) return;
-
-            const content = document.getElementById('profile-modal-content');
-            content.innerHTML = `
-                <div class="flex items-center justify-between">
-                    <h3 class="font-extrabold text-lg">Student Profile & QR ID</h3>
-                    <button onclick="closeModal('student-profile-modal')" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                <div class="flex items-center gap-4 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl">
-                    <img src="${student.photo}" class="w-16 h-16 rounded-2xl object-cover border-2 border-indigo-500">
-                    <div>
-                        <h4 class="font-extrabold text-base">${student.name}</h4>
-                        <p class="text-xs text-indigo-600 font-mono font-bold">${student.id}</p>
-                        <p class="text-xs text-slate-500 mt-0.5">Mobile: ${student.mobile}</p>
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-3 text-xs">
-                    <div class="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl">
-                        <span class="text-slate-400 block font-bold uppercase text-[10px]">Seat & Shift</span>
-                        <span class="font-extrabold text-sm mt-1 block">Seat ${student.seat} (${student.shift})</span>
-                    </div>
-                    <div class="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl">
-                        <span class="text-slate-400 block font-bold uppercase text-[10px]">Monthly Fee</span>
-                        <span class="font-extrabold text-sm mt-1 block text-emerald-600">₹${student.fee} / mo</span>
-                    </div>
-                </div>
-                <div class="bg-white dark:bg-slate-900 border-2 border-dashed border-indigo-500 p-4 rounded-2xl text-center space-y-2">
-                    <div class="w-32 h-32 mx-auto bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center">
-                        <i class="fa-solid fa-qrcode text-6xl text-indigo-600"></i>
-                    </div>
-                    <span class="font-mono text-xs font-bold text-slate-500">${student.id}</span>
-                    <p class="text-[10px] text-slate-400">Scan this QR code at library entrance gate for instant automated attendance.</p>
-                </div>
-                <button onclick="closeModal('student-profile-modal')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-xs shadow-lg transition">
-                    Close Profile
-                </button>
-            `;
-            openModal('student-profile-modal');
-        }
-
-        // --- NOTICES & EXPENSES ---
-        function handleNoticeSubmit(e) {
-            e.preventDefault();
-            const title = document.getElementById('notice-title').value;
-            const desc = document.getElementById('notice-desc').value;
-            appState.notices.unshift({ title, desc, date: "Today" });
-            appState.activities.unshift({ text: `Notice Published: ${title}`, time: "Just now", type: "notice" });
-            saveDatabase();
-            closeModal('notice-modal');
-            showToast('Notice published successfully to all students!');
-        }
-
-        function handleExpenseSubmit(e) {
-            e.preventDefault();
-            const category = document.getElementById('exp-category').value;
-            const amount = parseInt(document.getElementById('exp-amount').value);
-            appState.expenses.unshift({ category, amount, date: "Today" });
-            appState.activities.unshift({ text: `Expense added: ₹${amount} for ${category}`, time: "Just now", type: "expense" });
-            saveDatabase();
-            closeModal('expense-modal');
-            showToast('Expense recorded successfully!');
-        }
-
-        // --- SETTINGS & BACKUP ---
-        function exportDatabase() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", `HARIOM_OS_Backup_${new Date().toISOString().split('T')[0]}.json`);
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-            showToast('Database backup downloaded successfully as JSON.');
-        }
-
-        function resetDemoData() {
-            if (confirm('Are you sure you want to reset all data to default demo state?')) {
-                localStorage.removeItem('HARIOM_OS_DB');
-                initDefaultData();
-                location.reload();
-            }
-        }
-    </script>
+
+<body>
+
+<!-- HEADER -->
+
+<header class="app-header">
+
+<div class="header-row">
+
+<div class="logo-area">
+
+<div class="logo">📚</div>
+
+<div>
+
+<h2>Hariom Library</h2>
+
+<p>Smart Management System Pro</p>
+
+</div>
+
+</div>
+
+<div class="header-actions">
+
+<button class="icon-btn" onclick="toggleTheme()">🌙</button>
+
+<button class="icon-btn" onclick="logoutAdmin()">🔐</button>
+
+</div>
+
+</div>
+
+</header>
+
+
+<div class="main">
+
+<!-- ADMIN -->
+
+<div class="admin-card" id="adminCard">
+
+<div class="admin-title">
+🔐 Admin Verification
+</div>
+
+<div class="admin-row">
+
+<input
+type="tel"
+id="adminPhone"
+placeholder="Enter Admin Mobile Number"
+inputmode="numeric"
+maxlength="10">
+
+<button class="btn" onclick="verifyAdmin()">
+Login
+</button>
+
+</div>
+
+</div>
+
+
+<!-- HOME -->
+
+<section id="homeSection" class="app-section active">
+
+<div class="welcome">
+
+<h2 id="welcomeText">
+Welcome to Hariom Library 👋
+</h2>
+
+<p id="todayDate"></p>
+
+</div>
+
+
+<div class="stats-grid">
+
+<div class="stat-card blue-border">
+
+<div class="stat-icon">💺</div>
+
+<div class="stat-title">
+TOTAL SEATS
+</div>
+
+<div class="stat-value">
+105
+</div>
+
+</div>
+
+
+<div class="stat-card green-border">
+
+<div class="stat-icon">📚</div>
+
+<div class="stat-title">
+ACTIVE BOOKINGS
+</div>
+
+<div class="stat-value"
+id="activeBookings">
+0
+</div>
+
+</div>
+
+
+<div class="stat-card orange-border">
+
+<div class="stat-icon">🟢</div>
+
+<div class="stat-title">
+VACANT SEATS
+</div>
+
+<div class="stat-value"
+id="vacantSeats">
+105
+</div>
+
+</div>
+
+
+<div class="stat-card red-border">
+
+<div class="stat-icon">⚠️</div>
+
+<div class="stat-title">
+TOTAL DUE
+</div>
+
+<div class="stat-value"
+id="totalDue">
+₹0
+</div>
+
+</div>
+
+
+<div class="stat-card big blue-border">
+
+<div class="stat-icon">💰</div>
+
+<div class="stat-title"
+id="collectionLabel">
+MONTHLY COLLECTION
+</div>
+
+<div class="stat-value"
+id="monthlyCollection">
+₹0
+</div>
+
+</div>
+
+</div>
+
+
+<div class="alert-section">
+
+<div class="section-title">
+
+<h3>🔔 Important Alerts</h3>
+
+</div>
+
+<div class="alert-list"
+id="alertList">
+
+<div class="alert-item">
+
+<span>Loading alerts...</span>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- SEATS -->
+
+<section id="seatsSection"
+class="app-section">
+
+<div class="section-title">
+
+<h3>💺 Seat Management</h3>
+
+</div>
+
+
+<div class="search-wrap">
+
+<input
+id="searchBox"
+type="text"
+placeholder="Search name or seat number..."
+oninput="filterSeats()">
+
+</div>
+
+
+<div class="legend">
+
+<div class="legend-item">
+
+<div class="legend-dot available"></div>
+
+Available
+
+</div>
+
+<div class="legend-item">
+
+<div class="legend-dot booked"></div>
+
+Booked
+
+</div>
+
+<div class="legend-item">
+
+<div class="legend-dot warning"></div>
+
+Renewal Soon
+
+</div>
+
+<div class="legend-item">
+
+<div class="legend-dot expired"></div>
+
+Expired
+
+</div>
+
+</div>
+
+
+<div class="seats-grid"
+id="seatsGrid">
+
+</div>
+
+</section>
+
+
+<!-- STUDENTS -->
+
+<section id="studentsSection"
+class="app-section">
+
+<div class="section-title">
+
+<h3>👨‍🎓 Active Students</h3>
+
+</div>
+
+<div id="studentsList">
+
+</div>
+
+</section>
+
+
+<!-- REPORT -->
+
+<section id="reportSection"
+class="app-section">
+
+<div class="section-title">
+
+<h3>📊 Reports & Backup</h3>
+
+</div>
+
+
+<div class="student-card">
+
+<div class="student-name-big">
+💾 Database Backup
+</div>
+
+<div class="student-info">
+
+Download complete active student database in Excel format.
+
+</div>
+
+<br>
+
+<button
+class="btn btn-success"
+onclick="exportLibraryDataToExcel()">
+
+Download Excel Backup
+
+</button>
+
+</div>
+
+
+<div class="student-card">
+
+<div class="student-name-big">
+📋 Waiting List
+</div>
+
+<div class="student-info">
+
+Add students who are waiting for available seats.
+
+</div>
+
+</div>
+
+
+<div class="wait-form">
+
+<input
+id="waitName"
+placeholder="Student Name">
+
+<input
+id="waitPhone"
+placeholder="Mobile Number">
+
+</div>
+
+
+<button
+class="btn"
+style="width:100%;margin-bottom:15px;"
+onclick="addWaiting()">
+
++ Add To Waiting List
+
+</button>
+
+
+<div id="waitingList">
+
+</div>
+
+</section>
+
+
+<!-- SETTINGS -->
+
+<section id="settingsSection"
+class="app-section">
+
+<div class="section-title">
+
+<h3>⚙️ Settings</h3>
+
+</div>
+
+
+<div class="student-card">
+
+<div class="student-name-big">
+🌙 Appearance
+</div>
+
+<div class="student-info">
+
+Change application theme.
+
+</div>
+
+<br>
+
+<button
+class="btn"
+onclick="toggleTheme()">
+
+Toggle Dark / Light Mode
+
+</button>
+
+</div>
+
+
+<div class="student-card">
+
+<div class="student-name-big">
+🔐 Admin Status
+</div>
+
+<div
+class="student-info"
+id="adminStatus">
+
+Not Verified
+
+</div>
+
+<br>
+
+<button
+class="btn btn-danger"
+onclick="logoutAdmin()">
+
+Logout Admin
+
+</button>
+
+</div>
+
+
+<div class="student-card">
+
+<div class="student-name-big">
+📱 Hariom Smart Library Pro
+
+</div>
+
+<div class="student-info">
+
+Version 5.0
+
+<br>
+
+Realtime Firebase Database Connected
+
+<br>
+
+105 Smart Seats Management System
+
+</div>
+
+</div>
+
+</section>
+
+</div>
+
+
+<!-- BOTTOM NAV -->
+
+<nav class="bottom-nav">
+
+<button
+class="nav-item active"
+onclick="showSection('home')"
+id="nav-home">
+
+<span class="nav-icon">🏠</span>
+
+Home
+
+</button>
+
+
+<button
+class="nav-item"
+onclick="showSection('seats')"
+id="nav-seats">
+
+<span class="nav-icon">💺</span>
+
+Seats
+
+</button>
+
+
+<button
+class="nav-item"
+onclick="showSection('students')"
+id="nav-students">
+
+<span class="nav-icon">👨‍🎓</span>
+
+Students
+
+</button>
+
+
+<button
+class="nav-item"
+onclick="showSection('report')"
+id="nav-report">
+
+<span class="nav-icon">📊</span>
+
+Reports
+
+</button>
+
+
+<button
+class="nav-item"
+onclick="showSection('settings')"
+id="nav-settings">
+
+<span class="nav-icon">⚙️</span>
+
+Settings
+
+</button>
+
+</nav>
+
+
+<!-- SEAT MODAL -->
+
+<div class="modal"
+id="seatModal">
+
+<div class="modal-content">
+
+<div class="modal-header">
+
+<h2 id="modalTitle">
+Manage Seat
+</h2>
+
+<button
+class="close-btn"
+onclick="closeModal()">
+
+×
+</button>
+
+</div>
+
+
+<!-- ALL SHIFT -->
+
+<div class="shift-card all">
+
+<h4>
+⭐ Full Day / All Shift
+(6 AM - 10 PM)
+</h4>
+
+<div class="form-grid">
+
+<div class="field form-full">
+
+<label>Student Name</label>
+
+<input
+id="name_all"
+type="text"
+oninput="toggleIndividualShifts()">
+
+</div>
+
+
+<div class="field">
+
+<label>Phone</label>
+
+<input id="phone_all">
+
+</div>
+
+
+<div class="field">
+
+<label>Fees Paid</label>
+
+<input
+id="fees_all"
+type="number">
+
+</div>
+
+
+<div class="field">
+
+<label>Due Amount</label>
+
+<input
+id="due_all"
+type="number">
+
+</div>
+
+
+<div class="field">
+
+<label>Renewal Date</label>
+
+<input
+id="date_all"
+type="date">
+
+</div>
+
+
+<div class="field">
+
+<label>Payment Date</label>
+
+<input
+id="paydate_all"
+type="date">
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- INDIVIDUAL SHIFTS -->
+
+<div id="individualShiftArea">
+
+<div class="shift-card">
+
+<h4>
+1️⃣ Morning (6 AM - 10 AM)
+</h4>
+
+<div class="form-grid">
+
+<div class="field">
+
+<label>Name</label>
+
+<input id="name_m">
+
+</div>
+
+<div class="field">
+
+<label>Phone</label>
+
+<input id="phone_m">
+
+</div>
+
+<div class="field">
+
+<label>Fees</label>
+
+<input id="fees_m" type="number">
+
+</div>
+
+<div class="field">
+
+<label>Due</label>
+
+<input id="due_m" type="number">
+
+</div>
+
+<div class="field">
+
+<label>Renewal</label>
+
+<input id="date_m" type="date">
+
+</div>
+
+<div class="field">
+
+<label>Payment Date</label>
+
+<input id="paydate_m" type="date">
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="shift-card">
+
+<h4>
+2️⃣ Noon (10 AM - 2 PM)
+</h4>
+
+<div class="form-grid">
+
+<div class="field">
+
+<label>Name</label>
+
+<input id="name_n">
+
+</div>
+
+<div class="field">
+
+<label>Phone</label>
+
+<input id="phone_n">
+
+</div>
+
+<div class="field">
+
+<label>Fees</label>
+
+<input id="fees_n" type="number">
+
+</div>
+
+<div class="field">
+
+<label>Due</label>
+
+<input id="due_n" type="number">
+
+</div>
+
+<div class="field">
+
+<label>Renewal</label>
+
+<input id="date_n" type="date">
+
+</div>
+
+<div class="field">
+
+<label>Payment Date</label>
+
+<input id="paydate_n" type="date">
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="shift-card">
+
+<h4>
+3️⃣ Afternoon (2 PM - 6 PM)
+</h4>
+
+<div class="form-grid">
+
+<div class="field">
+
+<label>Name</label>
+
+<input id="name_an">
+
+</div>
+
+<div class="field">
+
+<label>Phone</label>
+
+<input id="phone_an">
+
+</div>
+
+<div class="field">
+
+<label>Fees</label>
+
+<input id="fees_an" type="number">
+
+</div>
+
+<div class="field">
+
+<label>Due</label>
+
+<input id="due_an" type="number">
+
+</div>
+
+<div class="field">
+
+<label>Renewal</label>
+
+<input id="date_an" type="date">
+
+</div>
+
+<div class="field">
+
+<label>Payment Date</label>
+
+<input id="paydate_an" type="date">
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="shift-card">
+
+<h4>
+4️⃣ Evening (6 PM - 10 PM)
+</h4>
+
+<div class="form-grid">
+
+<div class="field">
+
+<label>Name</label>
+
+<input id="name_e">
+
+</div>
+
+<div class="field">
+
+<label>Phone</label>
+
+<input id="phone_e">
+
+</div>
+
+<div class="field">
+
+<label>Fees</label>
+
+<input id="fees_e" type="number">
+
+</div>
+
+<div class="field">
+
+<label>Due</label>
+
+<input id="due_e" type="number">
+
+</div>
+
+<div class="field">
+
+<label>Renewal</label>
+
+<input id="date_e" type="date">
+
+</div>
+
+<div class="field">
+
+<label>Payment Date</label>
+
+<input id="paydate_e" type="date">
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- NIGHT SHIFT -->
+
+<div class="shift-card night">
+
+<h4>
+🌙 Night Shift (10 PM - 6 AM)
+</h4>
+
+<div class="form-grid">
+
+<div class="field">
+
+<label>Name</label>
+
+<input id="name_night">
+
+</div>
+
+<div class="field">
+
+<label>Phone</label>
+
+<input id="phone_night">
+
+</div>
+
+<div class="field">
+
+<label>Fees</label>
+
+<input id="fees_night" type="number">
+
+</div>
+
+<div class="field">
+
+<label>Due</label>
+
+<input id="due_night" type="number">
+
+</div>
+
+<div class="field">
+
+<label>Renewal</label>
+
+<input id="date_night" type="date">
+
+</div>
+
+<div class="field">
+
+<label>Payment Date</label>
+
+<input id="paydate_night" type="date">
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="modal-buttons">
+
+<button
+class="btn btn-danger"
+onclick="clearSeatData()">
+
+Clear Seat
+
+</button>
+
+
+<button
+class="btn btn-success"
+onclick="saveSeatData()">
+
+Save Student
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div
+class="toast"
+id="toast">
+
+</div>
+
+
+<script>
+
+/* FIREBASE CONFIG */
+
+const firebaseConfig = {
+
+databaseURL:
+"https://hariom-library-3c480-default-rtdb.firebaseio.com/"
+
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const database = firebase.database();
+
+
+/* IMPORTANT DATA PATH
+
+Old data remains safe because same path is used:
+
+library_v3/seats
+
+library_v3/waiting
+
+*/
+
+
+const TOTAL_SEATS = 105;
+
+
+const allowedAdmins = [
+
+"9815761696",
+"7631427170",
+"6207479929",
+"9155435099",
+"7488038058"
+
+];
+
+
+let isAdminVerified = false;
+
+let activeSeatNumber = null;
+
+let globalLibraryData = {};
+
+let globalWaitingData = {};
+
+
+/* DATE */
+
+function updateDate(){
+
+const now = new Date();
+
+document.getElementById("todayDate").innerText =
+now.toLocaleDateString(
+"en-IN",
+{
+weekday:"long",
+year:"numeric",
+month:"long",
+day:"numeric"
+}
+);
+
+}
+
+updateDate();
+
+
+/* CREATE SEATS */
+
+const seatsGrid =
+document.getElementById("seatsGrid");
+
+
+for(let i=1;i<=TOTAL_SEATS;i++){
+
+const seat =
+document.createElement("div");
+
+const isUR =
+i>=64 && i<=85;
+
+seat.className =
+"seat" +
+(isUR ? " unreserved-seat":"");
+
+seat.id="seat-"+i;
+
+seat.onclick=
+()=>openSeatModal(i);
+
+seat.innerHTML=`
+
+${isUR ? '<span class="ur">UR</span>':''}
+
+<div class="seat-number">
+${i}
+</div>
+
+<div
+class="student-name"
+id="studentName-${i}">
+
+Available
+
+</div>
+
+<div class="shift-dots">
+
+<span class="dot"></span>
+
+<span class="dot"></span>
+
+<span class="dot"></span>
+
+<span class="dot"></span>
+
+<span class="dot"></span>
+
+</div>
+
+<div
+id="dueBox-${i}">
+
+</div>
+
+`;
+
+seatsGrid.appendChild(seat);
+
+}
+
+
+/* ADMIN AUTO LOGIN */
+
+function checkSavedAdmin(){
+
+const saved =
+localStorage.getItem(
+"hariom_library_admin"
+);
+
+if(
+saved &&
+allowedAdmins.includes(saved)
+){
+
+isAdminVerified=true;
+
+document.getElementById(
+"adminCard"
+).style.display="none";
+
+updateAdminStatus();
+
+}
+
+}
+
+
+checkSavedAdmin();
+
+
+function verifyAdmin(){
+
+const input =
+document.getElementById(
+"adminPhone"
+).value
+.trim();
+
+
+if(
+allowedAdmins.includes(input)
+){
+
+isAdminVerified=true;
+
+localStorage.setItem(
+"hariom_library_admin",
+input
+);
+
+document.getElementById(
+"adminCard"
+).style.display="none";
+
+
+updateAdminStatus();
+
+
+showToast(
+"✅ Admin login successful"
+);
+
+}else{
+
+showToast(
+"❌ Invalid admin mobile number"
+);
+
+}
+
+}
+
+
+function logoutAdmin(){
+
+localStorage.removeItem(
+"hariom_library_admin"
+);
+
+isAdminVerified=false;
+
+
+document.getElementById(
+"adminCard"
+).style.display="block";
+
+
+document.getElementById(
+"adminPhone"
+).value="";
+
+
+updateAdminStatus();
+
+
+showToast(
+"Admin logged out"
+);
+
+}
+
+
+function updateAdminStatus(){
+
+const el =
+document.getElementById(
+"adminStatus"
+);
+
+if(isAdminVerified){
+
+el.innerText=
+"✅ Admin Verified on this device";
+
+}else{
+
+el.innerText=
+"❌ Not Verified";
+
+}
+
+}
+
+
+/* FIREBASE REALTIME DATA */
+
+database
+.ref("library_v3")
+.on(
+"value",
+(snapshot)=>{
+
+const data =
+snapshot.val() || {};
+
+globalLibraryData =
+data.seats || {};
+
+globalWaitingData =
+data.waiting || {};
+
+updateEverything();
+
+}
+);
+
+
+/* UPDATE ALL */
+
+function updateEverything(){
+
+updateSeatsUI();
+
+updateDashboard();
+
+updateStudents();
+
+updateWaitingList();
+
+}
+
+
+/* DATE STATUS */
+
+function getDateStatus(dateString){
+
+if(!dateString)
+return "none";
+
+
+const today =
+new Date();
+
+today.setHours(0,0,0,0);
+
+
+const renewal =
+new Date(dateString);
+
+renewal.setHours(0,0,0,0);
+
+
+const alertDate =
+new Date(today);
+
+alertDate.setDate(
+today.getDate()+3
+);
+
+
+if(renewal<=today)
+return "expired";
+
+
+if(renewal<=alertDate)
+return "alert";
+
+
+return "active";
+
+}
+
+
+/* UPDATE SEATS */
+
+function updateSeatsUI(){
+
+for(
+let i=1;
+i<=TOTAL_SEATS;
+i++
+){
+
+const data =
+globalLibraryData[i] || {};
+
+
+const seat =
+document.getElementById(
+"seat-"+i
+);
+
+
+const nameBox =
+document.getElementById(
+"studentName-"+i
+);
+
+
+const dueBox =
+document.getElementById(
+"dueBox-"+i
+);
+
+
+const dots =
+seat.querySelectorAll(".dot");
+
+
+seat.classList.remove(
+"booked-seat",
+"allshift-seat"
+);
+
+
+dots.forEach(dot=>{
+
+dot.className="dot";
+
+});
+
+
+dueBox.innerHTML="";
+
+
+let names=[];
+
+let totalDue=0;
+
+let hasBooking=false;
+
+
+const shifts=[
+"m",
+"n",
+"an",
+"e",
+"night"
+];
+
+
+/* ALL SHIFT */
+
+if(data.name_all){
+
+hasBooking=true;
+
+names.push(data.name_all);
+
+seat.classList.add(
+"allshift-seat"
+);
+
+
+const status=
+getDateStatus(
+data.date_all
+);
+
+
+dots.forEach(dot=>{
+
+dot.classList.add(
+status==="expired"
+? "expired"
+: status==="alert"
+? "alert"
+: "active"
+);
+
+});
+
+
+totalDue+=
+Number(data.due_all)||0;
+
+}
+
+
+/* INDIVIDUAL */
+
+else{
+
+shifts.forEach(
+(shift,index)=>{
+
+if(data["name_"+shift]){
+
+hasBooking=true;
+
+names.push(
+data["name_"+shift]
+);
+
+
+const status=
+getDateStatus(
+data["date_"+shift]
+);
+
+
+dots[index].classList.add(
+status==="expired"
+? "expired"
+: status==="alert"
+? "alert"
+: "active"
+);
+
+
+totalDue+=
+Number(
+data["due_"+shift]
+)||0;
+
+}
+
+}
+);
+
+}
+
+
+if(hasBooking){
+
+seat.classList.add(
+"booked-seat"
+);
+
+nameBox.innerText=
+names.slice(0,2).join(", ");
+
+}else{
+
+nameBox.innerText=
+"Available";
+
+}
+
+
+if(totalDue>0){
+
+dueBox.innerHTML=
+
+`<div class="due-badge">
+Due ₹${totalDue}
+</div>`;
+
+}
+
+}
+
+}
+
+
+/* DASHBOARD */
+
+function updateDashboard(){
+
+let active=0;
+
+let due=0;
+
+let collection=0;
+
+let alerts=[];
+
+
+const today =
+new Date();
+
+const month=
+today.getMonth();
+
+const year=
+today.getFullYear();
+
+
+const shifts=[
+"all",
+"m",
+"n",
+"an",
+"e",
+"night"
+];
+
+
+Object.keys(
+globalLibraryData
+).forEach(seatNo=>{
+
+const data=
+globalLibraryData[seatNo];
+
+
+shifts.forEach(shift=>{
+
+const name=
+data["name_"+shift];
+
+
+if(name){
+
+active++;
+
+
+due+=
+Number(
+data["due_"+shift]
+)||0;
+
+
+const payDate=
+data["paydate_"+shift];
+
+
+const fees=
+Number(
+data["fees_"+shift]
+)||0;
+
+
+if(payDate){
+
+const pd=
+new Date(payDate);
+
+
+if(
+pd.getMonth()===month &&
+pd.getFullYear()===year
+){
+
+collection+=fees;
+
+}
+
+}
+
+
+const status=
+getDateStatus(
+data["date_"+shift]
+);
+
+
+if(status==="expired"){
+
+alerts.push({
+
+type:"expired",
+
+text:
+`Seat ${seatNo} - ${name} renewal expired`
+
+});
+
+}
+
+
+if(status==="alert"){
+
+alerts.push({
+
+type:"alert",
+
+text:
+`Seat ${seatNo} - ${name} renewal soon`
+
+});
+
+}
+
+}
+
+});
+
+});
+
+
+document.getElementById(
+"activeBookings"
+).innerText=active;
+
+
+document.getElementById(
+"vacantSeats"
+).innerText=
+Math.max(
+0,
+TOTAL_SEATS-active
+);
+
+
+document.getElementById(
+"totalDue"
+).innerText=
+"₹"+due.toLocaleString("en-IN");
+
+
+document.getElementById(
+"monthlyCollection"
+).innerText=
+"₹"+collection.toLocaleString("en-IN");
+
+
+const monthName=
+today.toLocaleString(
+"default",
+{month:"long"}
+);
+
+
+document.getElementById(
+"collectionLabel"
+).innerText=
+monthName+
+" "+year+
+" COLLECTION";
+
+
+const alertList=
+document.getElementById(
+"alertList"
+);
+
+
+if(alerts.length===0){
+
+alertList.innerHTML=
+
+`<div class="alert-item">
+<span>🎉 No urgent alerts. Everything looks good!</span>
+</div>`;
+
+}else{
+
+alertList.innerHTML="";
+
+
+alerts.slice(0,10)
+.forEach(alert=>{
+
+alertList.innerHTML+=`
+
+<div class="alert-item">
+
+<span>
+${alert.type==="expired"
+? "🔴"
+: "🟡"}
+
+${alert.text}
+
+</span>
+
+</div>
+
+`;
+
+});
+
+}
+
+}
+
+
+/* STUDENT LIST */
+
+function updateStudents(){
+
+const container=
+document.getElementById(
+"studentsList"
+);
+
+
+container.innerHTML="";
+
+
+const shifts={
+all:"Full Day",
+m:"Morning",
+n:"Noon",
+an:"Afternoon",
+e:"Evening",
+night:"Night"
+};
+
+
+Object.keys(
+globalLibraryData
+).forEach(seatNo=>{
+
+const data=
+globalLibraryData[seatNo];
+
+
+Object.keys(shifts)
+.forEach(shift=>{
+
+if(data["name_"+shift]){
+
+container.innerHTML+=`
+
+<div class="student-card">
+
+<div class="student-top">
+
+<div>
+
+<div class="student-name-big">
+
+${data["name_"+shift]}
+
+</div>
+
+<div class="student-info">
+
+Seat ${seatNo}
+• ${shifts[shift]}
+
+</div>
+
+</div>
+
+<div>
+
+<button
+class="btn"
+onclick="openSeatModal(${seatNo})">
+
+View
+
+</button>
+
+</div>
+
+</div>
+
+
+<div class="student-info">
+
+📞 ${data["phone_"+shift]||"Not Added"}
+
+<br>
+
+💰 Fees ₹${data["fees_"+shift]||0}
+
+• Due ₹${data["due_"+shift]||0}
+
+<br>
+
+📅 Renewal:
+${data["date_"+shift]||"Not Set"}
+
+</div>
+
+</div>
+
+`;
+
+}
+
+});
+
+});
+
+
+if(container.innerHTML===""){
+
+container.innerHTML=
+
+`<div class="loader">
+No active students found.
+</div>`;
+
+}
+
+}
+
+
+/* OPEN MODAL */
+
+function openSeatModal(seatNumber){
+
+activeSeatNumber=seatNumber;
+
+
+const data=
+globalLibraryData[seatNumber] || {};
+
+
+document.getElementById(
+"modalTitle"
+).innerText=
+"Manage Seat "+seatNumber;
+
+
+const fields=[
+"all",
+"m",
+"n",
+"an",
+"e",
+"night"
+];
+
+
+fields.forEach(shift=>{
+
+document.getElementById(
+"name_"+shift
+).value=
+data["name_"+shift]||"";
+
+
+document.getElementById(
+"phone_"+shift
+).value=
+data["phone_"+shift]||"";
+
+
+document.getElementById(
+"fees_"+shift
+).value=
+data["fees_"+shift]||0;
+
+
+document.getElementById(
+"due_"+shift
+).value=
+data["due_"+shift]||0;
+
+
+document.getElementById(
+"date_"+shift
+).value=
+data["date_"+shift]||"";
+
+
+document.getElementById(
+"paydate_"+shift
+).value=
+data["paydate_"+shift]||"";
+
+});
+
+
+toggleIndividualShifts();
+
+
+document.getElementById(
+"seatModal"
+).classList.add("show");
+
+}
+
+
+/* CLOSE */
+
+function closeModal(){
+
+document.getElementById(
+"seatModal"
+).classList.remove("show");
+
+}
+
+
+/* ALL SHIFT CONTROL */
+
+function toggleIndividualShifts(){
+
+const value=
+document.getElementById(
+"name_all"
+).value.trim();
+
+
+const area=
+document.getElementById(
+"individualShiftArea"
+);
+
+
+area.style.opacity=
+value ? ".35":"1";
+
+
+area.style.pointerEvents=
+value ? "none":"auto";
+
+}
+
+
+/* SAVE SEAT */
+
+function saveSeatData(){
+
+if(!isAdminVerified){
+
+showToast(
+"⚠️ Please login as admin first"
+);
+
+return;
+
+}
+
+
+const update={};
+
+
+const fields=[
+"all",
+"m",
+"n",
+"an",
+"e",
+"night"
+];
+
+
+const allShift=
+document.getElementById(
+"name_all"
+).value.trim();
+
+
+fields.forEach(shift=>{
+
+
+if(
+allShift &&
+["m","n","an","e"]
+.includes(shift)
+){
+
+update["name_"+shift]="";
+
+update["phone_"+shift]="";
+
+update["fees_"+shift]=0;
+
+update["due_"+shift]=0;
+
+update["date_"+shift]="";
+
+update["paydate_"+shift]="";
+
+return;
+
+}
+
+
+const name=
+document.getElementById(
+"name_"+shift
+).value.trim();
+
+
+if(!name){
+
+update["name_"+shift]="";
+
+update["phone_"+shift]="";
+
+update["fees_"+shift]=0;
+
+update["due_"+shift]=0;
+
+update["date_"+shift]="";
+
+update["paydate_"+shift]="";
+
+}else{
+
+update["name_"+shift]=name;
+
+update["phone_"+shift]=
+document.getElementById(
+"phone_"+shift
+).value.trim();
+
+
+update["fees_"+shift]=
+Number(
+document.getElementById(
+"fees_"+shift
+).value
+)||0;
+
+
+update["due_"+shift]=
+Number(
+document.getElementById(
+"due_"+shift
+).value
+)||0;
+
+
+update["date_"+shift]=
+document.getElementById(
+"date_"+shift
+).value;
+
+
+update["paydate_"+shift]=
+document.getElementById(
+"paydate_"+shift
+).value;
+
+}
+
+});
+
+
+database
+.ref(
+"library_v3/seats/"+activeSeatNumber
+)
+.set(update)
+.then(()=>{
+
+showToast(
+"✅ Seat data saved successfully"
+);
+
+closeModal();
+
+})
+.catch(error=>{
+
+showToast(
+"❌ Error: "+error.message
+);
+
+});
+
+}
+
+
+/* CLEAR SEAT */
+
+function clearSeatData(){
+
+if(!isAdminVerified){
+
+showToast(
+"Admin verification required"
+);
+
+return;
+
+}
+
+
+if(
+!confirm(
+"Are you sure you want to clear this entire seat?"
+)
+) return;
+
+
+database
+.ref(
+"library_v3/seats/"+activeSeatNumber
+)
+.remove()
+.then(()=>{
+
+showToast(
+"Seat cleared successfully"
+);
+
+closeModal();
+
+});
+
+}
+
+
+/* SEARCH */
+
+function filterSeats(){
+
+const query=
+document.getElementById(
+"searchBox"
+).value
+.toLowerCase()
+.trim();
+
+
+for(
+let i=1;
+i<=TOTAL_SEATS;
+i++
+){
+
+const seat=
+document.getElementById(
+"seat-"+i
+);
+
+
+const data=
+globalLibraryData[i]||{};
+
+
+let match=
+!query ||
+i.toString()===query;
+
+
+[
+"all",
+"m",
+"n",
+"an",
+"e",
+"night"
+].forEach(shift=>{
+
+const name=
+data["name_"+shift]||"";
+
+
+const phone=
+data["phone_"+shift]||"";
+
+
+if(
+name.toLowerCase()
+.includes(query)
+||
+phone.includes(query)
+){
+
+match=true;
+
+}
+
+});
+
+
+seat.style.display=
+match ? "flex":"none";
+
+}
+
+}
+
+
+/* WAITING */
+
+function addWaiting(){
+
+if(!isAdminVerified){
+
+showToast(
+"Admin verification required"
+);
+
+return;
+
+}
+
+
+const name=
+document.getElementById(
+"waitName"
+).value.trim();
+
+
+const phone=
+document.getElementById(
+"waitPhone"
+).value.trim();
+
+
+if(!name){
+
+showToast(
+"Please enter student name"
+);
+
+return;
+
+}
+
+
+database
+.ref("library_v3/waiting")
+.push()
+.set({
+
+name:name,
+
+phone:phone,
+
+createdAt:
+new Date().toISOString()
+
+})
+.then(()=>{
+
+document.getElementById(
+"waitName"
+).value="";
+
+
+document.getElementById(
+"waitPhone"
+).value="";
+
+
+showToast(
+"Student added to waiting list"
+);
+
+});
+
+}
+
+
+function updateWaitingList(){
+
+const container=
+document.getElementById(
+"waitingList"
+);
+
+
+container.innerHTML="";
+
+
+let index=1;
+
+
+Object.keys(
+globalWaitingData
+).forEach(key=>{
+
+const item=
+globalWaitingData[key];
+
+
+container.innerHTML+=`
+
+<div class="waiting-card">
+
+<div>
+
+<b>#${index} ${item.name}</b>
+
+<br>
+
+<small>
+📞 ${item.phone||"No phone"}
+</small>
+
+</div>
+
+
+<button
+class="btn btn-danger"
+onclick="removeWaiting('${key}')">
+
+Remove
+
+</button>
+
+</div>
+
+`;
+
+
+index++;
+
+});
+
+
+if(index===1){
+
+container.innerHTML=
+
+`<div class="loader">
+No students in waiting list.
+</div>`;
+
+}
+
+}
+
+
+function removeWaiting(key){
+
+if(!isAdminVerified){
+
+showToast(
+"Admin verification required"
+);
+
+return;
+
+}
+
+
+database
+.ref(
+"library_v3/waiting/"+key
+)
+.remove();
+
+}
+
+
+/* EXCEL EXPORT */
+
+function exportLibraryDataToExcel(){
+
+const report=[];
+
+
+const shifts={
+
+all:"Full Day Shift",
+
+m:"Morning Shift",
+
+n:"Noon Shift",
+
+an:"Afternoon Shift",
+
+e:"Evening Shift",
+
+night:"Night Shift"
+
+};
+
+
+for(
+let i=1;
+i<=TOTAL_SEATS;
+i++
+){
+
+const data=
+globalLibraryData[i]||{};
+
+
+Object.keys(shifts)
+.forEach(shift=>{
+
+if(data["name_"+shift]){
+
+report.push({
+
+"Seat Number":i,
+
+"Shift":
+shifts[shift],
+
+"Student Name":
+data["name_"+shift],
+
+"Mobile Number":
+data["phone_"+shift]||"",
+
+"Fees Paid":
+data["fees_"+shift]||0,
+
+"Due Amount":
+data["due_"+shift]||0,
+
+"Renewal Date":
+data["date_"+shift]||"",
+
+"Payment Date":
+data["paydate_"+shift]||""
+
+});
+
+}
+
+});
+
+}
+
+
+if(report.length===0){
+
+showToast(
+"No active student data found"
+);
+
+return;
+
+}
+
+
+const worksheet=
+XLSX.utils.json_to_sheet(report);
+
+
+const workbook=
+XLSX.utils.book_new();
+
+
+XLSX.utils.book_append_sheet(
+
+workbook,
+
+worksheet,
+
+"Library Students"
+
+);
+
+
+XLSX.writeFile(
+
+workbook,
+
+"Hariom_Library_Backup.xlsx"
+
+);
+
+
+}
+
+
+/* NAVIGATION */
+
+function showSection(section){
+
+const sections=[
+
+"home",
+"seats",
+"students",
+"report",
+"settings"
+
+];
+
+
+sections.forEach(item=>{
+
+document.getElementById(
+item+"Section"
+).classList.remove("active");
+
+
+document.getElementById(
+"nav-"+item
+).classList.remove("active");
+
+});
+
+
+document.getElementById(
+section+"Section"
+).classList.add("active");
+
+
+document.getElementById(
+"nav-"+section
+).classList.add("active");
+
+
+window.scrollTo({
+
+top:0,
+
+behavior:"smooth"
+
+});
+
+}
+
+
+/* THEME */
+
+function toggleTheme(){
+
+document.body.classList.toggle(
+"dark"
+);
+
+
+const dark=
+document.body.classList.contains(
+"dark"
+);
+
+
+localStorage.setItem(
+"hariom_theme",
+dark ? "dark":"light"
+);
+
+}
+
+
+function loadTheme(){
+
+const theme=
+localStorage.getItem(
+"hariom_theme"
+);
+
+
+if(theme==="dark"){
+
+document.body.classList.add(
+"dark"
+);
+
+}
+
+}
+
+
+loadTheme();
+
+
+/* TOAST */
+
+function showToast(message){
+
+const toast=
+document.getElementById(
+"toast"
+);
+
+
+toast.innerText=message;
+
+
+toast.classList.add(
+"show"
+);
+
+
+setTimeout(()=>{
+
+toast.classList.remove(
+"show"
+);
+
+},3000);
+
+}
+
+
+/* CLOSE MODAL OUTSIDE */
+
+document
+.getElementById("seatModal")
+.addEventListener(
+"click",
+function(e){
+
+if(e.target===this){
+
+closeModal();
+
+}
+
+}
+);
+
+
+updateAdminStatus();
+
+</script>
+
 </body>
 </html>
