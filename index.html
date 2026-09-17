@@ -538,181 +538,273 @@ background:var(--warning);
 
 }
 
-/* SEATS */
+/* =========================
+   PREMIUM MOBILE SEAT MAP
+   ========================= */
 
 .seats-grid{
-
 display:grid;
-
-grid-template-columns:repeat(5,1fr);
-
-gap:9px;
-
+grid-template-columns:repeat(3,minmax(0,1fr));
+gap:10px;
+padding:2px 0 18px;
 }
 
 .seat{
-
-min-height:95px;
-
-background:var(--card);
-
-border:1px solid var(--border);
-
-border-radius:15px;
-
-padding:7px;
-
+min-width:0;
+min-height:142px;
+background:linear-gradient(145deg,var(--card),var(--bg));
+border:1.5px solid var(--border);
+border-radius:17px;
+padding:11px 7px 8px;
 display:flex;
-
 flex-direction:column;
-
 justify-content:space-between;
-
 align-items:center;
-
 cursor:pointer;
-
-box-shadow:0 3px 10px rgba(0,0,0,.05);
-
-transition:.2s;
-
+box-shadow:0 4px 13px rgba(15,23,42,.08);
+transition:transform .15s,box-shadow .15s,border-color .15s;
 position:relative;
-
+overflow:hidden;
+-webkit-tap-highlight-color:transparent;
 }
 
 .seat:active{
+transform:scale(.96);
+box-shadow:0 2px 8px rgba(15,23,42,.10);
+}
 
-transform:scale(.95);
+.seat::after{
+content:"";
+position:absolute;
+left:0;
+right:0;
+top:0;
+height:4px;
+background:#94a3b8;
+}
 
+.seat.booked-seat::after{background:var(--success);}
+.seat.allshift-seat::after{background:#eab308;}
+.seat.expired-seat::after{background:var(--danger);}
+
+.seat-top{
+width:100%;
+height:34px;
+display:flex;
+align-items:center;
+justify-content:flex-start;
 }
 
 .seat-number{
-
-font-weight:bold;
-
+width:35px;
+height:35px;
+border-radius:11px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:900;
 font-size:16px;
+background:#eef2ff;
+color:var(--primary);
+}
 
+body.dark .seat-number{
+background:#1e1b4b;
 }
 
 .student-name{
-
-font-size:9px;
-
-text-align:center;
-
-color:var(--muted);
-
 width:100%;
-
-white-space:nowrap;
-
+min-height:30px;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+font-size:10.5px;
+line-height:1.15;
+font-weight:800;
+color:var(--text);
+word-break:break-word;
 overflow:hidden;
+}
 
-text-overflow:ellipsis;
+.student-name.available-name{
+font-weight:700;
+color:var(--muted);
+}
 
+.renewal-badge{
+width:100%;
+min-height:25px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:8.5px;
+line-height:1.1;
+font-weight:800;
+text-align:center;
+padding:4px 2px;
+border-radius:7px;
+background:#f1f5f9;
+color:#475569;
+white-space:normal;
+overflow:hidden;
+}
+
+.renewal-badge.active-month{
+background:#dcfce7;
+color:#166534;
+}
+
+.renewal-badge.soon-month{
+background:#fef3c7;
+color:#92400e;
+}
+
+.renewal-badge.expired-month{
+background:#fee2e2;
+color:#b91c1c;
+}
+
+body.dark .renewal-badge{
+background:#1e293b;
+color:#cbd5e1;
+}
+
+body.dark .renewal-badge.active-month{
+background:#14532d;
+color:#bbf7d0;
+}
+
+body.dark .renewal-badge.soon-month{
+background:#78350f;
+color:#fde68a;
+}
+
+body.dark .renewal-badge.expired-month{
+background:#7f1d1d;
+color:#fecaca;
 }
 
 .shift-dots{
-
 display:flex;
-
-gap:3px;
-
+gap:5px;
+align-items:center;
+justify-content:center;
+padding:2px 0;
 }
 
 .dot{
-
-width:7px;
-
-height:7px;
-
+width:8px;
+height:8px;
 border-radius:50%;
-
 background:#cbd5e1;
-
+box-shadow:0 0 0 2px rgba(148,163,184,.10);
 }
 
 .dot.active{
-
 background:var(--success);
-
+box-shadow:0 0 0 2px rgba(22,163,74,.15);
 }
 
 .dot.alert{
-
 background:var(--warning);
-
+box-shadow:0 0 0 2px rgba(245,158,11,.15);
 animation:blink 1s infinite;
-
 }
 
 .dot.expired{
-
 background:var(--danger);
-
+box-shadow:0 0 0 2px rgba(220,38,38,.15);
 animation:blink 1s infinite;
-
 }
 
 .seat.booked-seat{
-
-border:2px solid var(--primary);
-
+border-color:var(--success);
 }
 
 .seat.allshift-seat{
-
-border:2px solid #eab308;
-
-background:linear-gradient(
-135deg,
-rgba(234,179,8,.12),
-var(--card)
-);
-
+border-color:#eab308;
+background:linear-gradient(145deg,rgba(234,179,8,.10),var(--card));
 }
 
 .seat.unreserved-seat{
-
 border-style:dashed;
-
 }
 
 .ur{
-
 position:absolute;
-
-right:5px;
-
-top:5px;
-
-font-size:8px;
-
+right:6px;
+top:7px;
+font-size:7px;
+font-weight:900;
 background:#64748b;
-
 color:white;
+padding:3px 5px;
+border-radius:5px;
+letter-spacing:.3px;
+}
 
-padding:2px 4px;
-
-border-radius:4px;
-
+.seat-status{
+font-size:7.5px;
+font-weight:900;
+color:var(--muted);
+text-transform:uppercase;
+letter-spacing:.35px;
 }
 
 .due-badge{
-
-font-size:9px;
-
+max-width:100%;
+font-size:8px;
 background:#fee2e2;
-
 color:#dc2626;
-
 padding:3px 5px;
-
 border-radius:5px;
-
-font-weight:bold;
-
+font-weight:900;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
 }
+
+@media(max-width:360px){
+.seats-grid{
+grid-template-columns:repeat(3,minmax(0,1fr));
+gap:7px;
+}
+.seat{
+min-height:136px;
+padding:10px 5px 7px;
+border-radius:15px;
+}
+.seat-number{
+width:32px;
+height:32px;
+font-size:14px;
+}
+.student-name{
+font-size:9.5px;
+}
+.dot{
+width:7px;
+height:7px;
+}
+}
+
+@media(min-width:600px){
+.seats-grid{
+grid-template-columns:repeat(4,minmax(0,1fr));
+gap:11px;
+}
+.seat{
+min-height:145px;
+}
+}
+
+@media(min-width:900px){
+.seats-grid{
+grid-template-columns:repeat(6,minmax(0,1fr));
+}
+}
+
 
 /* SECTIONS */
 
@@ -1342,7 +1434,7 @@ class="app-section">
 <input
 id="searchBox"
 type="text"
-placeholder="Search name or seat number..."
+placeholder="🔎 Search seat number or student name..."
 oninput="filterSeats()">
 
 </div>
@@ -1384,6 +1476,18 @@ Expired
 
 </div>
 
+<div style="
+font-size:10px;
+color:var(--muted);
+background:var(--card);
+border:1px solid var(--border);
+border-radius:10px;
+padding:8px 10px;
+margin:-4px 0 12px;
+line-height:1.4;
+">
+💡 Seat पर tap करके student details खोलें • 5 dots = Morning / Noon / Afternoon / Evening / Night
+</div>
 
 <div class="seats-grid"
 id="seatsGrid">
@@ -2199,36 +2303,31 @@ seat.innerHTML=`
 
 ${isUR ? '<span class="ur">UR</span>':''}
 
-<div class="seat-number">
-${i}
+<div class="seat-top">
+  <div class="seat-number">${i}</div>
 </div>
 
-<div
-class="student-name"
-id="studentName-${i}">
-
+<div class="student-name available-name" id="studentName-${i}">
 Available
-
 </div>
 
-<div class="shift-dots">
-
-<span class="dot"></span>
-
-<span class="dot"></span>
-
-<span class="dot"></span>
-
-<span class="dot"></span>
-
-<span class="dot"></span>
-
+<div class="renewal-badge" id="renewalBox-${i}">
+No Student
 </div>
 
-<div
-id="dueBox-${i}">
-
+<div class="shift-dots" title="Morning • Noon • Afternoon • Evening • Night">
+  <span class="dot"></span>
+  <span class="dot"></span>
+  <span class="dot"></span>
+  <span class="dot"></span>
+  <span class="dot"></span>
 </div>
+
+<div class="seat-status" id="seatStatus-${i}">
+VACANT
+</div>
+
+<div id="dueBox-${i}"></div>
 
 `;
 
@@ -2444,176 +2543,143 @@ return "active";
 
 function updateSeatsUI(){
 
-for(
-let i=1;
-i<=TOTAL_SEATS;
-i++
-){
+for(let i=1;i<=TOTAL_SEATS;i++){
 
-const data =
-globalLibraryData[i] || {};
+const data=globalLibraryData[i]||{};
+const seat=document.getElementById("seat-"+i);
+const nameBox=document.getElementById("studentName-"+i);
+const renewalBox=document.getElementById("renewalBox-"+i);
+const dueBox=document.getElementById("dueBox-"+i);
+const statusBox=document.getElementById("seatStatus-"+i);
+const dots=seat.querySelectorAll(".dot");
 
-
-const seat =
-document.getElementById(
-"seat-"+i
-);
-
-
-const nameBox =
-document.getElementById(
-"studentName-"+i
-);
-
-
-const dueBox =
-document.getElementById(
-"dueBox-"+i
-);
-
-
-const dots =
-seat.querySelectorAll(".dot");
-
-
-seat.classList.remove(
-"booked-seat",
-"allshift-seat"
-);
-
-
-dots.forEach(dot=>{
-
-dot.className="dot";
-
-});
-
-
+seat.classList.remove("booked-seat","allshift-seat","expired-seat");
+dots.forEach(dot=>dot.className="dot");
 dueBox.innerHTML="";
 
-
 let names=[];
-
 let totalDue=0;
-
 let hasBooking=false;
+let displayDate="";
+let displayStatus="none";
 
-
-const shifts=[
-"m",
-"n",
-"an",
-"e",
-"night"
-];
-
+const shifts=["m","n","an","e","night"];
 
 /* ALL SHIFT */
-
 if(data.name_all){
 
 hasBooking=true;
-
 names.push(data.name_all);
+seat.classList.add("allshift-seat");
 
-seat.classList.add(
-"allshift-seat"
-);
-
-
-const status=
-getDateStatus(
-data.date_all
-);
-
+displayDate=data.date_all||"";
+displayStatus=getDateStatus(displayDate);
 
 dots.forEach(dot=>{
-
 dot.classList.add(
-status==="expired"
-? "expired"
-: status==="alert"
-? "alert"
-: "active"
+displayStatus==="expired" ? "expired" :
+displayStatus==="alert" ? "alert" : "active"
 );
-
 });
 
+totalDue+=Number(data.due_all)||0;
 
-totalDue+=
-Number(data.due_all)||0;
+}else{
 
-}
-
-
-/* INDIVIDUAL */
-
-else{
-
-shifts.forEach(
-(shift,index)=>{
+/* INDIVIDUAL SHIFTS */
+shifts.forEach((shift,index)=>{
 
 if(data["name_"+shift]){
 
 hasBooking=true;
+names.push(data["name_"+shift]);
 
-names.push(
-data["name_"+shift]
-);
+const status=getDateStatus(data["date_"+shift]);
 
-
-const status=
-getDateStatus(
-data["date_"+shift]
-);
-
+/* Pick the most urgent renewal date */
+if(!displayDate ||
+status==="expired" ||
+(status==="alert" && displayStatus==="active") ||
+displayStatus==="none"){
+displayDate=data["date_"+shift]||"";
+displayStatus=status;
+}
 
 dots[index].classList.add(
-status==="expired"
-? "expired"
-: status==="alert"
-? "alert"
-: "active"
+status==="expired" ? "expired" :
+status==="alert" ? "alert" : "active"
 );
 
-
-totalDue+=
-Number(
-data["due_"+shift]
-)||0;
+totalDue+=Number(data["due_"+shift])||0;
 
 }
 
-}
-);
+});
 
 }
 
-
+/* STUDENT */
 if(hasBooking){
 
-seat.classList.add(
-"booked-seat"
-);
+seat.classList.add("booked-seat");
+nameBox.classList.remove("available-name");
 
-nameBox.innerText=
-names.slice(0,2).join(", ");
+if(names.length<=2){
+nameBox.innerText=names.join(" • ");
+}else{
+nameBox.innerText=names[0]+" • "+names[1]+" +"+(names.length-2);
+}
+
+statusBox.innerText=names.length>1 ? names.length+" SHIFTS" : "BOOKED";
 
 }else{
 
-nameBox.innerText=
-"Available";
+nameBox.classList.add("available-name");
+nameBox.innerText="Available";
+statusBox.innerText="VACANT";
 
 }
 
+/* RENEWAL */
+if(hasBooking && displayDate){
 
+const d=new Date(displayDate+"T00:00:00");
+const month=d.toLocaleDateString("en-IN",{month:"short"});
+const day=d.toLocaleDateString("en-IN",{day:"2-digit"});
+const year=d.toLocaleDateString("en-IN",{year:"numeric"});
+
+renewalBox.className="renewal-badge "+
+(displayStatus==="expired" ? "expired-month" :
+displayStatus==="alert" ? "soon-month" : "active-month");
+
+if(displayStatus==="expired"){
+renewalBox.innerText="🔴 EXPIRED • "+day+" "+month+" "+year;
+seat.classList.add("expired-seat");
+
+}else if(displayStatus==="alert"){
+renewalBox.innerText="🟡 DUE SOON • "+day+" "+month;
+
+}else{
+renewalBox.innerText="🟢 RENEW • "+day+" "+month;
+}
+
+}else if(hasBooking){
+
+renewalBox.className="renewal-badge";
+renewalBox.innerText="📅 Renewal not set";
+
+}else{
+
+renewalBox.className="renewal-badge";
+renewalBox.innerText="No Student";
+
+}
+
+/* DUE */
 if(totalDue>0){
 
 dueBox.innerHTML=
-
-`<div class="due-badge">
-Due ₹${totalDue}
-</div>`;
+`<div class="due-badge">Due ₹${totalDue.toLocaleString("en-IN")}</div>`;
 
 }
 
