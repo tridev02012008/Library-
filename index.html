@@ -1228,6 +1228,11 @@ grid-template-columns:repeat(8,1fr);
 
 }
 
+
+/* ===== HARIOM PRO V6 UPGRADE ===== */
+.pro-toolbar{display:flex;gap:8px;overflow-x:auto;padding:2px 0 12px;scrollbar-width:none}.pro-toolbar::-webkit-scrollbar{display:none}.chip{border:1px solid var(--border);background:var(--card);color:var(--text);padding:9px 12px;border-radius:999px;font-size:11px;font-weight:800;white-space:nowrap;cursor:pointer}.chip.active{background:var(--primary);border-color:var(--primary);color:#fff}.mini-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:12px 0}.mini-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:13px;box-shadow:var(--shadow)}.mini-card b{display:block;font-size:19px;margin-top:5px}.mini-card small{color:var(--muted);font-size:10px}.pro-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:15px;margin-bottom:12px;box-shadow:var(--shadow)}.pro-card h3{font-size:15px;margin-bottom:10px}.pro-row{display:flex;gap:8px;align-items:center}.pro-row>*{flex:1}.pro-input{width:100%;padding:11px;border:1px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text);margin-bottom:8px}.money-positive{color:var(--success)}.money-negative{color:var(--danger)}.quick-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:14px}.quick-action{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:13px;text-align:left;color:var(--text);font-weight:800;cursor:pointer}.quick-action span{display:block;color:var(--muted);font-size:9px;font-weight:600;margin-top:4px}.section-note{font-size:10px;color:var(--muted);line-height:1.5;margin:-4px 0 12px}.status-pill{display:inline-block;padding:5px 8px;border-radius:999px;font-size:9px;font-weight:900;background:var(--bg);border:1px solid var(--border)}.activity-item,.expense-item{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:11px}.activity-item:last-child,.expense-item:last-child{border-bottom:none}.activity-item small,.expense-item small{color:var(--muted)}.danger-zone{border-color:rgba(220,38,38,.25)}
+@media(min-width:700px){.mini-grid{grid-template-columns:repeat(4,1fr)}.quick-actions{grid-template-columns:repeat(4,1fr)}}
+
 </style>
 </head>
 
@@ -1439,6 +1444,14 @@ oninput="filterSeats()">
 
 </div>
 
+<div class="pro-toolbar" id="seatFilters">
+<button class="chip active" onclick="setSeatFilter('all',this)">All</button>
+<button class="chip" onclick="setSeatFilter('vacant',this)">Vacant</button>
+<button class="chip" onclick="setSeatFilter('booked',this)">Booked</button>
+<button class="chip" onclick="setSeatFilter('due',this)">Due</button>
+<button class="chip" onclick="setSeatFilter('expired',this)">Expired</button>
+<button class="chip" onclick="setSeatFilter('soon',this)">Renew Soon</button>
+</div>
 
 <div class="legend">
 
@@ -1670,7 +1683,7 @@ Logout Admin
 
 <div class="student-info">
 
-Version 5.0
+Version 6.0 Pro
 
 <br>
 
@@ -1686,8 +1699,36 @@ Realtime Firebase Database Connected
 
 </section>
 
-</div>
+<!-- BUSINESS PRO -->
+<section id="businessSection" class="app-section">
+  <div class="section-title"><h3>💼 Business Center</h3></div>
+  <div class="section-note">Collection, expenses, profit, backup and activity — one place.</div>
+  <div class="mini-grid">
+    <div class="mini-card"><small>THIS MONTH COLLECTION</small><b id="proCollection">₹0</b></div>
+    <div class="mini-card"><small>THIS MONTH EXPENSE</small><b id="proExpense" class="money-negative">₹0</b></div>
+    <div class="mini-card"><small>NET PROFIT</small><b id="proProfit" class="money-positive">₹0</b></div>
+    <div class="mini-card"><small>WAITING STUDENTS</small><b id="proWaiting">0</b></div>
+  </div>
+  <div class="pro-card">
+    <h3>➕ Add Expense</h3>
+    <input class="pro-input" id="expenseTitle" placeholder="Expense title (Electricity, Rent, Wi-Fi...)" />
+    <div class="pro-row"><input class="pro-input" id="expenseAmount" type="number" placeholder="Amount ₹"/><input class="pro-input" id="expenseDate" type="date"/></div>
+    <button class="btn btn-danger" style="width:100%" onclick="addExpense()">Save Expense</button>
+  </div>
+  <div class="pro-card"><h3>🧾 Recent Expenses</h3><div id="expenseList"><div class="loader">No expenses yet.</div></div></div>
+  <div class="pro-card">
+    <h3>⚡ Quick Tools</h3>
+    <div class="quick-actions">
+      <button class="quick-action" onclick="exportLibraryDataToExcel()">📊 Excel Backup<span>Students & fees</span></button>
+      <button class="quick-action" onclick="downloadJsonBackup()">🗄️ JSON Backup<span>Seats + waiting + expenses</span></button>
+      <button class="quick-action" onclick="showSection('seats')">💺 Seat Map<span>Manage 105 seats</span></button>
+      <button class="quick-action" onclick="showSection('report')">📋 Waiting List<span>Manage queue</span></button>
+    </div>
+  </div>
+  <div class="pro-card"><h3>🕘 Recent Activity</h3><div id="activityList"><div class="loader">No activity yet.</div></div></div>
+</section>
 
+</div>
 
 <!-- BOTTOM NAV -->
 
@@ -1740,6 +1781,11 @@ Reports
 
 </button>
 
+
+<button class="nav-item" onclick="showSection('business')" id="nav-business">
+<span class="nav-icon">💼</span>
+Business
+</button>
 
 <button
 class="nav-item"
@@ -3678,6 +3724,7 @@ const sections=[
 "seats",
 "students",
 "report",
+"business",
 "settings"
 
 ];
@@ -3809,6 +3856,99 @@ closeModal();
 }
 );
 
+
+
+/* ===== HARIOM PRO V6 LOGIC ===== */
+let currentSeatFilter="all";
+let globalExpenses={};
+let globalActivity={};
+
+// Extra realtime modules. Existing library_v3/seats and waiting stay untouched.
+database.ref("library_v3/expenses").on("value",s=>{globalExpenses=s.val()||{};renderBusinessCenter();});
+database.ref("library_v3/activity").limitToLast(30).on("value",s=>{globalActivity=s.val()||{};renderActivity();});
+
+function logActivity(action,detail){
+  if(!isAdminVerified) return;
+  database.ref("library_v3/activity").push().set({action,detail:detail||"",createdAt:new Date().toISOString()});
+}
+
+function setSeatFilter(type,btn){
+ currentSeatFilter=type;
+ document.querySelectorAll("#seatFilters .chip").forEach(x=>x.classList.remove("active"));
+ if(btn)btn.classList.add("active");
+ filterSeatsPro();
+}
+
+const oldFilterSeats=filterSeats;
+filterSeats=function(){ oldFilterSeats(); filterSeatsPro(); };
+function filterSeatsPro(){
+ const q=(document.getElementById("searchBox").value||"").toLowerCase().trim();
+ for(let i=1;i<=TOTAL_SEATS;i++){
+   const seat=document.getElementById("seat-"+i),d=globalLibraryData[i]||{};
+   let text=i+" "; ["all","m","n","an","e","night"].forEach(s=>text+=(d["name_"+s]||"")+" "+(d["phone_"+s]||"")+" ");
+   let queryOK=!q||text.toLowerCase().includes(q);
+   let names=["all","m","n","an","e","night"].filter(s=>d["name_"+s]);
+   let due=["all","m","n","an","e","night"].some(s=>(Number(d["due_"+s])||0)>0);
+   let expired=["all","m","n","an","e","night"].some(s=>d["name_"+s]&&getDateStatus(d["date_"+s])==="expired");
+   let soon=["all","m","n","an","e","night"].some(s=>d["name_"+s]&&getDateStatus(d["date_"+s])==="alert");
+   let ok=currentSeatFilter==="all"||(currentSeatFilter==="vacant"&&!names.length)||(currentSeatFilter==="booked"&&names.length)||(currentSeatFilter==="due"&&due)||(currentSeatFilter==="expired"&&expired)||(currentSeatFilter==="soon"&&soon);
+   seat.style.display=queryOK&&ok?"flex":"none";
+ }
+}
+
+function addExpense(){
+ if(!isAdminVerified){showToast("⚠️ Admin verification required");return;}
+ const title=document.getElementById("expenseTitle").value.trim();
+ const amount=Number(document.getElementById("expenseAmount").value)||0;
+ const date=document.getElementById("expenseDate").value||new Date().toISOString().slice(0,10);
+ if(!title||amount<=0){showToast("Expense title and amount required");return;}
+ database.ref("library_v3/expenses").push().set({title,amount,date,createdAt:new Date().toISOString()}).then(()=>{
+  document.getElementById("expenseTitle").value="";document.getElementById("expenseAmount").value="";showToast("✅ Expense saved");logActivity("Expense added",title+" ₹"+amount);
+ });
+}
+function removeExpense(key){
+ if(!isAdminVerified){showToast("Admin verification required");return;}
+ if(!confirm("Delete this expense?"))return;
+ database.ref("library_v3/expenses/"+key).remove().then(()=>{showToast("Expense removed");logActivity("Expense removed",key);});
+}
+function getMonthCollection(){
+ const now=new Date(),m=now.getMonth(),y=now.getFullYear();let total=0;
+ Object.values(globalLibraryData).forEach(d=>["all","m","n","an","e","night"].forEach(s=>{if(d["name_"+s]&&d["paydate_"+s]){let p=new Date(d["paydate_"+s]+"T00:00:00");if(p.getMonth()===m&&p.getFullYear()===y)total+=Number(d["fees_"+s])||0;}}));return total;
+}
+function renderBusinessCenter(){
+ const now=new Date(),m=now.getMonth(),y=now.getFullYear();let expense=0;
+ Object.values(globalExpenses).forEach(x=>{let d=new Date((x.date||x.createdAt||"").slice(0,10)+"T00:00:00");if(!isNaN(d)&&d.getMonth()===m&&d.getFullYear()===y)expense+=Number(x.amount)||0;});
+ const collection=getMonthCollection();
+ const ids={proCollection:collection,proExpense:expense,proProfit:collection-expense};Object.entries(ids).forEach(([id,v])=>{let e=document.getElementById(id);if(e)e.innerText="₹"+v.toLocaleString("en-IN");});
+ let w=document.getElementById("proWaiting");if(w)w.innerText=Object.keys(globalWaitingData).length;
+ const list=document.getElementById("expenseList");if(!list)return;let rows=Object.entries(globalExpenses).sort((a,b)=>(b[1].createdAt||"").localeCompare(a[1].createdAt||"")).slice(0,15);
+ list.innerHTML=rows.length?rows.map(([k,x])=>`<div class="expense-item"><div><b>${escapeHtml(x.title||"Expense")}</b><br><small>${escapeHtml(x.date||"")}</small></div><div style="text-align:right"><b class="money-negative">₹${Number(x.amount||0).toLocaleString("en-IN")}</b><br><button style="border:0;background:none;color:var(--danger);font-size:10px" onclick="removeExpense('${k}')">Delete</button></div></div>`).join(""):'<div class="loader">No expenses yet.</div>';
+}
+function renderActivity(){
+ const box=document.getElementById("activityList");if(!box)return;let rows=Object.values(globalActivity).sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||"")).slice(0,15);
+ box.innerHTML=rows.length?rows.map(x=>`<div class="activity-item"><div><b>${escapeHtml(x.action||"Activity")}</b><br><small>${escapeHtml(x.detail||"")}</small></div><small>${formatDateTime(x.createdAt)}</small></div>`).join(""):'<div class="loader">No activity yet.</div>';
+}
+function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));}
+function formatDateTime(v){if(!v)return"";let d=new Date(v);return isNaN(d)?"":d.toLocaleString("en-IN",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"});}
+function downloadJsonBackup(){
+ if(!isAdminVerified){showToast("Admin verification required");return;}
+ const data={version:"Hariom Pro V6",exportedAt:new Date().toISOString(),seats:globalLibraryData,waiting:globalWaitingData,expenses:globalExpenses};
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="Hariom_Library_Backup_"+new Date().toISOString().slice(0,10)+".json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);logActivity("JSON backup","Database backup downloaded");
+}
+// Wrap important existing actions for audit trail without changing old database structure.
+const originalSaveSeatData=saveSeatData;
+saveSeatData=function(){let seat=activeSeatNumber;originalSaveSeatData();if(isAdminVerified)logActivity("Seat saved","Seat "+seat);};
+const originalClearSeatData=clearSeatData;
+clearSeatData=function(){let seat=activeSeatNumber;originalClearSeatData();};
+const originalAddWaiting=addWaiting;
+addWaiting=function(){let n=document.getElementById("waitName").value.trim();originalAddWaiting();if(isAdminVerified&&n)logActivity("Waiting list","Added "+n);};
+
+// Keep Business Center synchronized whenever main data refreshes.
+const originalUpdateEverything=updateEverything;
+updateEverything=function(){originalUpdateEverything();renderBusinessCenter();filterSeatsPro();};
+
+// sensible default date for expense entry
+const expenseDateEl=document.getElementById("expenseDate");if(expenseDateEl)expenseDateEl.value=new Date().toISOString().slice(0,10);
 
 updateAdminStatus();
 
