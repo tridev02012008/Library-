@@ -4372,5 +4372,84 @@ window.addEventListener('load',function(){
 });
 </script>
 
+
+<style id="v17-critical-mobile-fix">
+/* Critical mobile navigation fix: later V13 CSS had left/right plus an old translateX(-50%), shifting half the nav off-screen. */
+.bottom-nav{
+  left:8px !important; right:8px !important; width:auto !important; max-width:none !important;
+  transform:none !important; bottom:8px !important; display:grid !important;
+  grid-template-columns:repeat(6,minmax(0,1fr)) !important; gap:2px !important;
+  overflow:visible !important; z-index:1100 !important; box-sizing:border-box !important;
+}
+.bottom-nav .nav-item{display:flex !important;width:100% !important;min-width:0 !important;max-width:none !important;padding:3px 0 !important;overflow:visible !important}
+.bottom-nav #nav-home,.bottom-nav #nav-seats,.bottom-nav #nav-students,.bottom-nav #nav-report,.bottom-nav #nav-business,.bottom-nav #nav-settings{display:flex !important;visibility:visible !important;opacity:1 !important}
+.bottom-nav .nav-icon{font-size:19px !important}.bottom-nav .nav-item{font-size:7.5px !important}
+/* Keep the screen clean: old experimental floating launchers were covering content. V15 is the single Pro/AI feature center. */
+.ultimate-fab,.super-fab,.ai14-fab,.nx-fab{display:none !important}
+.v15-fab{display:block !important;right:14px !important;left:auto !important;bottom:88px !important;z-index:1090 !important;padding:10px 13px !important;border-radius:15px !important}
+#seatsSection{display:none;padding-bottom:130px !important}
+#seatsSection.active{display:block !important}
+#seatsGrid{display:grid !important;grid-template-columns:repeat(3,minmax(0,1fr)) !important;width:100% !important;visibility:visible !important;opacity:1 !important;gap:8px !important}
+#seatsGrid .seat{display:block !important;visibility:visible !important;opacity:1 !important;min-width:0 !important}
+@media(max-width:360px){.bottom-nav{left:4px !important;right:4px !important}.bottom-nav .nav-icon{font-size:17px !important}.bottom-nav .nav-item{font-size:7px !important}}
+@media(min-width:650px){#seatsGrid{grid-template-columns:repeat(6,minmax(0,1fr)) !important}}
+</style>
+<script id="v17-nav-guard">
+(function(){
+ function fixNav(){
+  const nav=document.querySelector('.bottom-nav'); if(!nav)return;
+  nav.style.transform='none'; nav.style.left='8px'; nav.style.right='8px'; nav.style.width='auto';
+  ['home','seats','students','report','business','settings'].forEach(n=>{const b=document.getElementById('nav-'+n);if(b){b.style.display='flex';b.style.visibility='visible';b.style.opacity='1'}});
+ }
+ window.addEventListener('load',fixNav); document.addEventListener('DOMContentLoaded',fixNav); setTimeout(fixNav,300);
+})();
+</script>
+
+
+<!-- ===== V18 COMPLETE UX + PHOTO FIX ===== -->
+<style id="v18-premium-ui">
+:root{--v18a:#6d5dfc;--v18b:#00c2ff;--v18c:#16c784;--v18glass:rgba(17,24,39,.78)}
+body{background:radial-gradient(circle at 15% 0%,rgba(109,93,252,.22),transparent 30%),radial-gradient(circle at 100% 15%,rgba(0,194,255,.13),transparent 28%),linear-gradient(180deg,#070b16 0%,#0b1020 52%,#080b14 100%) fixed!important}
+.app-header{background:linear-gradient(135deg,rgba(17,24,39,.96),rgba(91,65,213,.88))!important;border:1px solid rgba(255,255,255,.08)!important;box-shadow:0 18px 50px rgba(0,0,0,.28)!important}
+.stats-grid .stat-card,.v15-card,.business-card,.report-card{background:linear-gradient(145deg,rgba(20,28,48,.94),rgba(12,18,34,.92))!important;border:1px solid rgba(255,255,255,.09)!important;box-shadow:0 12px 34px rgba(0,0,0,.22)!important}
+#v18Quick{margin:14px 0}.v18-hero{padding:16px;border-radius:22px;background:linear-gradient(135deg,rgba(109,93,252,.92),rgba(0,194,255,.72));box-shadow:0 18px 45px rgba(57,71,220,.22)}
+.v18-hero h2{margin:0 0 5px;font-size:19px}.v18-hero p{margin:0;font-size:10px;opacity:.86}.v18-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:12px}.v18-q{border:0;border-radius:15px;padding:13px 10px;background:rgba(8,14,30,.62);color:#fff;font-weight:900;font-size:10px;text-align:left}.v18-q b{display:block;font-size:17px;margin-bottom:3px}.v18-photo-box{display:flex;gap:12px;align-items:center;margin-bottom:10px}.v18-photo{width:92px;height:106px;border-radius:16px;object-fit:cover;background:#111827;border:1px solid rgba(255,255,255,.14)}.v18-photo-actions{display:grid;gap:7px;flex:1}.v18-file{display:block;padding:10px;border-radius:11px;background:#334155;color:#fff;font-size:9px;font-weight:900;text-align:center;cursor:pointer}.v18-file input{display:none}.v18-section-label{grid-column:1/-1;font-size:10px;font-weight:900;color:#a5b4fc;margin:7px 0 1px}.bottom-nav{height:68px!important;padding:5px!important;border-radius:22px!important;background:rgba(10,16,31,.96)!important;backdrop-filter:blur(18px)!important;border:1px solid rgba(255,255,255,.12)!important}.bottom-nav .nav-item{border-radius:14px!important;justify-content:center!important;align-items:center!important;flex-direction:column!important}.bottom-nav .nav-item.active{background:linear-gradient(145deg,rgba(109,93,252,.35),rgba(0,194,255,.13))!important;color:#b8b5ff!important}.bottom-nav .nav-icon{line-height:1!important}.v15-feature{background:linear-gradient(145deg,rgba(18,27,48,.96),rgba(10,16,31,.96))!important;border:1px solid rgba(255,255,255,.08)!important}.v15-feature button{background:linear-gradient(135deg,var(--v18a),#8b5cf6)!important}
+#seatsGrid{padding:8px 2px 145px!important}.seat{border-radius:15px!important;box-shadow:0 7px 18px rgba(0,0,0,.18)!important}
+@media(max-width:390px){.bottom-nav .nav-item{font-size:6.8px!important}.bottom-nav .nav-icon{font-size:17px!important}.v18-actions{grid-template-columns:1fr 1fr}}
+</style>
+<script id="v18-complete-fixes">
+(function(){
+ const V18='library_v3/v15'; let v18PhotoData='';
+ function esc(x){return String(x??'').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[m]))}
+ window.v18CompressPhoto=function(file){return new Promise((resolve,reject)=>{if(!file)return resolve('');if(file.size>12*1024*1024)return reject(new Error('Photo too large'));let r=new FileReader();r.onload=e=>{let im=new Image();im.onload=()=>{let max=640,scale=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*scale);c.height=Math.round(im.height*scale);c.getContext('2d').drawImage(im,0,0,c.width,c.height);resolve(c.toDataURL('image/jpeg',.72))};im.onerror=reject;im.src=e.target.result};r.onerror=reject;r.readAsDataURL(file)})}
+ window.v18PhotoPicked=async function(inp){try{v18PhotoData=await v18CompressPhoto(inp.files[0]);let im=document.getElementById('vpPhotoPreview');if(im)im.src=v18PhotoData}catch(e){alert('Photo load nahi hua: '+e.message)}};
+ window.v15ProfileForm=function(key){let p=(window.v15ProfilesCache||{})[key]||{};v18PhotoData=p.photo||'';let html=`
+ <div class="v18-photo-box"><img id="vpPhotoPreview" class="v18-photo" src="${p.photo?esc(p.photo):'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'92\' height=\'106\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23111827\'/%3E%3Ctext x=\'50%25\' y=\'54%25\' text-anchor=\'middle\' font-size=\'35\'%3E👤%3C/text%3E%3C/svg%3E'}"><div class="v18-photo-actions"><label class="v18-file">📷 CAMERA PHOTO<input type="file" accept="image/*" capture="user" onchange="v18PhotoPicked(this)"></label><label class="v18-file">🖼️ GALLERY PHOTO<input type="file" accept="image/*" onchange="v18PhotoPicked(this)"></label><small class="v15-muted">Photo automatically compress hoga.</small></div></div>
+ <div class="v15-grid"><div class="v18-section-label">STUDENT DETAILS</div>
+ <input id="vpName" class="v15-in" placeholder="Student name" value="${esc(p.name)}"><input id="vpPhone" class="v15-in" placeholder="Mobile" value="${esc(p.phone)}">
+ <input id="vpFather" class="v15-in" placeholder="Father name" value="${esc(p.father)}"><input id="vpMother" class="v15-in" placeholder="Mother name" value="${esc(p.mother)}">
+ <input id="vpDob" class="v15-in" type="date" value="${esc(p.dob)}"><select id="vpGender" class="v15-in"><option>${esc(p.gender||'Gender')}</option><option>Male</option><option>Female</option><option>Other</option></select>
+ <input id="vpWhatsapp" class="v15-in" placeholder="WhatsApp" value="${esc(p.whatsapp)}"><input id="vpAlt" class="v15-in" placeholder="Alternate number" value="${esc(p.alt)}">
+ <input id="vpEmergency" class="v15-in" placeholder="Emergency contact" value="${esc(p.emergency)}"><input id="vpBlood" class="v15-in" placeholder="Blood group (optional)" value="${esc(p.blood)}">
+ <textarea id="vpAddress" class="v15-in full" placeholder="Full address">${esc(p.address)}</textarea>
+ <div class="v18-section-label">STUDY & MEMBERSHIP</div>
+ <input id="vpCollege" class="v15-in" placeholder="College / Coaching" value="${esc(p.college)}"><input id="vpCourse" class="v15-in" placeholder="Course / Exam target" value="${esc(p.course)}">
+ <input id="vpJoin" class="v15-in" type="date" value="${esc(p.joining)}"><input id="vpExpiry" class="v15-in" type="date" value="${esc(p.expiry)}">
+ <input id="vpSeat" class="v15-in" type="number" min="1" max="105" placeholder="Seat 1-105" value="${esc(p.seat)}"><select id="vpShift" class="v15-in"><option>${esc(p.shift||'Morning')}</option><option>Morning</option><option>Noon</option><option>Afternoon</option><option>Evening</option><option>Night</option><option>All Shift</option></select>
+ <input id="vpPlan" class="v15-in" placeholder="Membership plan" value="${esc(p.plan)}"><input id="vpFee" class="v15-in" type="number" placeholder="Fee" value="${esc(p.fee)}">
+ <div class="v18-section-label">DOCUMENT / STATUS</div><input id="vpProof" class="v15-in" placeholder="ID proof number" value="${esc(p.proof)}"><input id="vpSign" class="v15-in" placeholder="Signature / sign note" value="${esc(p.signature)}">
+ <input id="vpTags" class="v15-in" placeholder="Tags" value="${esc(p.tags)}"><select id="vpStatus" class="v15-in"><option>${esc(p.status||'Active')}</option><option>Active</option><option>Inactive</option><option>Expired</option><option>Blocked</option></select><textarea id="vpNotes" class="v15-in full" placeholder="Notes">${esc(p.notes)}</textarea></div>
+ <div class="v15-actions"><button class="v15-btn green" onclick="v18SaveProfile('${key||''}')">💾 Save Profile</button>${key?`<button class="v15-btn" onclick="v15Card('${key}')">🪪 ID Card</button><button class="v15-btn gray" onclick="v15AdmissionSlip('${key}')">📄 Admission Slip</button>`:''}</div>`;
+ if(typeof v15Modal==='function')v15Modal(key?'Edit Digital Profile':'New Digital Admission',html)
+ };
+ window.v18SaveProfile=function(key){let g=id=>(document.getElementById(id)?.value||'').trim(),name=g('vpName'),phone=g('vpPhone');if(!name||!phone)return alert('Name aur mobile number required hai');let old=(window.v15ProfilesCache||{})[key]||{},data={studentId:old.studentId||(typeof v15Id==='function'?v15Id('HAR'):'HAR-'+Date.now()),name,photo:v18PhotoData||old.photo||'',father:g('vpFather'),mother:g('vpMother'),dob:g('vpDob'),gender:g('vpGender'),phone,whatsapp:g('vpWhatsapp'),alt:g('vpAlt'),emergency:g('vpEmergency'),address:g('vpAddress'),college:g('vpCollege'),course:g('vpCourse'),joining:g('vpJoin'),expiry:g('vpExpiry'),blood:g('vpBlood'),proof:g('vpProof'),seat:g('vpSeat'),shift:g('vpShift'),plan:g('vpPlan'),fee:Number(g('vpFee')||0),tags:g('vpTags'),notes:g('vpNotes'),status:g('vpStatus'),signature:g('vpSign'),updatedAt:Date.now()};let ref=key?v15db.ref(V18+'/profiles/'+key):v15db.ref(V18+'/profiles').push();if(!key)data.createdAt=Date.now();ref.update(data).then(()=>{v15db.ref(V18+'/timeline').push({studentId:data.studentId,type:key?'Profile Updated':'Admission',time:Date.now(),detail:data.name});if(typeof v15ModalClose==='function')v15ModalClose();if(typeof showToast==='function')showToast('Profile + photo saved')}).catch(e=>alert('Save error: '+e.message))};
+ function buildHome(){let h=document.getElementById('homeSection');if(!h||document.getElementById('v18Quick'))return;let d=document.createElement('div');d.id='v18Quick';d.innerHTML=`<div class="v18-hero"><h2>✨ Hariom Smart Command Center</h2><p>Students • Seats • Fees • Attendance • Documents • AI • Reports</p><div class="v18-actions"><button class="v18-q" onclick="showSection('seats')"><b>💺 105</b>Live Seats</button><button class="v18-q" onclick="v15ProfileForm()"><b>👨‍🎓 +</b>New Admission</button><button class="v18-q" onclick="v15Open();setTimeout(()=>v15Tab('payments'),50)"><b>₹</b>Fees & Due</button><button class="v18-q" onclick="v15Open()"><b>🚀 100</b>Pro Modules</button></div></div>`;let first=h.querySelector('.stats-grid');first?first.before(d):h.prepend(d)}
+ function navFix(){let nav=document.querySelector('.bottom-nav');if(!nav)return;nav.style.cssText+=';left:8px!important;right:8px!important;width:auto!important;transform:none!important;display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;';[['home','🏠','Home'],['seats','💺','Seats'],['students','👨‍🎓','Students'],['report','📊','Reports'],['business','💼','Business'],['settings','⚙️','Settings']].forEach(([id,ico,txt])=>{let b=document.getElementById('nav-'+id);if(b){b.style.display='flex';b.style.visibility='visible';b.style.opacity='1'; if(!b.querySelector('.nav-icon')) b.innerHTML=`<span class="nav-icon">${ico}</span><span>${txt}</span>`}})}
+ function seatsFix(){let g=document.getElementById('seatsGrid');if(g){g.style.display='grid';g.style.visibility='visible';g.style.opacity='1';if(!g.children.length&&typeof createSeats==='function')try{createSeats()}catch(e){}}}
+ window.addEventListener('load',()=>{buildHome();navFix();seatsFix();setTimeout(()=>{navFix();seatsFix()},700)});document.addEventListener('DOMContentLoaded',()=>{buildHome();navFix()});
+})();
+</script>
+<!-- ===== END V18 ===== -->
+
 </body>
 </html>
