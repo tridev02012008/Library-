@@ -1278,6 +1278,39 @@ html{background:var(--bg);scroll-behavior:smooth} body{background:radial-gradien
 @media(min-width:1000px){.seats-grid{grid-template-columns:repeat(8,minmax(0,1fr))}}
 
 </style>
+
+<style id="v16-visual-fix">
+/* V16 visual + navigation fix */
+html,body{min-height:100%;}
+body{
+ background:
+  radial-gradient(circle at 8% 4%,rgba(99,102,241,.22),transparent 27%),
+  radial-gradient(circle at 92% 10%,rgba(236,72,153,.15),transparent 25%),
+  radial-gradient(circle at 50% 72%,rgba(14,165,233,.10),transparent 34%),
+  linear-gradient(160deg,#eef2ff 0%,#f8fafc 42%,#f5f3ff 72%,#ecfeff 100%) !important;
+ background-attachment:fixed !important;
+}
+body.dark{background:radial-gradient(circle at 8% 3%,rgba(99,102,241,.24),transparent 27%),radial-gradient(circle at 95% 8%,rgba(168,85,247,.17),transparent 26%),linear-gradient(160deg,#050816,#0b1020 48%,#111827 100%) !important;}
+.main{position:relative;z-index:1;}
+.app-section.active{animation:v16fade .22s ease;}
+@keyframes v16fade{from{opacity:.35;transform:translateY(5px)}to{opacity:1;transform:none}}
+/* Seat map: always readable */
+#seatsSection{padding-bottom:125px;}
+#seatsSection .section-title{display:flex;align-items:center;justify-content:space-between;}
+#seatsGrid.seats-grid{display:grid !important;grid-template-columns:repeat(3,minmax(0,1fr)) !important;gap:10px !important;visibility:visible !important;opacity:1 !important;}
+#seatsGrid .seat{display:flex !important;visibility:visible !important;min-height:140px !important;}
+/* Six equal bottom tabs so Seats never disappears */
+.bottom-nav{display:grid !important;grid-template-columns:repeat(6,minmax(0,1fr)) !important;justify-content:initial !important;gap:2px !important;overflow:visible !important;z-index:999 !important;}
+.bottom-nav .nav-item{display:flex !important;min-width:0 !important;width:100% !important;padding:4px 1px !important;font-size:8px !important;overflow:visible !important;}
+.bottom-nav #nav-seats{display:flex !important;visibility:visible !important;opacity:1 !important;}
+.bottom-nav #nav-seats .nav-icon{filter:drop-shadow(0 3px 7px rgba(79,70,229,.25));}
+/* Premium dashboard surfaces */
+#homeSection .stat-card,#v15HomeDash .v15-kpi,.pro-card,.quick-action{background:linear-gradient(145deg,rgba(255,255,255,.96),rgba(248,250,252,.82)) !important;border:1px solid rgba(99,102,241,.10) !important;box-shadow:0 12px 34px rgba(30,41,59,.08) !important;}
+body.dark #homeSection .stat-card,body.dark #v15HomeDash .v15-kpi,body.dark .pro-card,body.dark .quick-action{background:linear-gradient(145deg,rgba(17,24,39,.97),rgba(15,23,42,.92)) !important;}
+@media(min-width:700px){#seatsGrid.seats-grid{grid-template-columns:repeat(6,minmax(0,1fr)) !important;}}
+@media(min-width:1000px){#seatsGrid.seats-grid{grid-template-columns:repeat(8,minmax(0,1fr)) !important;}}
+</style>
+
 </head>
 
 <body>
@@ -4326,9 +4359,18 @@ function v15BuildInsights(){let p=Object.values(v15ProfilesCache),missing=p.filt
 function v15Ask(){let q=document.getElementById('v15AIQuery').value.toLowerCase(),ans='Try: due students, vacant seats, expired, profiles, missing phone.';if(q.includes('vacant'))ans='Current dashboard shows '+(document.getElementById('vacantSeats')?.textContent||'-')+' vacant seats.';else if(q.includes('profile')||q.includes('student'))ans='V15 digital profiles: '+Object.keys(v15ProfilesCache).length;else if(q.includes('due'))ans='V15 payment-record remaining due total: ₹'+Object.values(v15PaymentsCache).reduce((a,x)=>a+Number(x.due||0),0);else if(q.includes('expired'))ans='Expired V15 profiles: '+Object.values(v15ProfilesCache).filter(x=>x.expiry&&new Date(x.expiry)<new Date()).length;else if(q.includes('missing'))ans='Profiles missing phone/name/seat: '+Object.values(v15ProfilesCache).filter(x=>!x.phone||!x.name||!x.seat).length;document.getElementById('v15AIAnswer').textContent=ans}
 function v15BulkPrintCards(){alert('Open a student and use ID → Print / Save PDF. Multi-card A4 queue is available through Print Center records.')}
 /* Enhanced home dashboard without changing old dashboard IDs */
-window.addEventListener('load',()=>{let h=document.getElementById('homeSection');if(h&&!document.getElementById('v15HomeDash')){let d=document.createElement('div');d.id='v15HomeDash';d.className='v15-dash';d.innerHTML=`<div class="section-title"><h3>⚡ Smart Command Dashboard</h3></div><div class="v15-kpis"><div class="v15-kpi"><small>DIGITAL PROFILES</small><b id="v15HomeProfiles">0</b></div><div class="v15-kpi"><small>TODAY ATTENDANCE</small><b id="v15HomeAtt">0</b></div><div class="v15-kpi"><small>OPEN HELPDESK</small><b id="v15HomeTickets">0</b></div><div class="v15-kpi"><small>APP VERSION</small><b>V15</b></div></div><div class="v15-actions"><button class="v15-btn" onclick="v15Open()">🚀 Open V15 Pro Center</button><button class="v15-btn green" onclick="showSection('seats')">💺 Live Seats</button></div>`;let stats=h.querySelector('.stats-grid');stats?.after(d)}if(v15db){v15db.ref(V15).on('value',s=>{let x=s.val()||{},today=new Date().toISOString().slice(0,10);let set=(id,v)=>{let e=document.getElementById(id);if(e)e.textContent=v};set('v15HomeProfiles',Object.keys(x.profiles||{}).length);set('v15HomeAtt',Object.values(x.attendance||{}).filter(a=>a.date===today).length);set('v15HomeTickets',Object.values(x.tickets||{}).filter(t=>t.status!=='Resolved').length)})}});
+window.addEventListener('load',()=>{let h=document.getElementById('homeSection');if(h&&!document.getElementById('v15HomeDash')){let d=document.createElement('div');d.id='v15HomeDash';d.className='v15-dash';d.innerHTML=`<div class="section-title"><h3>⚡ Smart Command Dashboard</h3></div><div class="v15-kpis"><div class="v15-kpi"><small>DIGITAL PROFILES</small><b id="v15HomeProfiles">0</b></div><div class="v15-kpi"><small>TODAY ATTENDANCE</small><b id="v15HomeAtt">0</b></div><div class="v15-kpi"><small>OPEN HELPDESK</small><b id="v15HomeTickets">0</b></div><div class="v15-kpi"><small>APP VERSION</small><b>V15</b></div></div><div class="v15-actions"><button class="v15-btn" onclick="v15Open()">🚀 Open V15 Pro Center</button><button class="v15-btn green" style="font-size:14px;padding:14px 18px" onclick="showSection('seats')">💺 OPEN 105 LIVE SEATS</button></div>`;let stats=h.querySelector('.stats-grid');stats?.after(d)}if(v15db){v15db.ref(V15).on('value',s=>{let x=s.val()||{},today=new Date().toISOString().slice(0,10);let set=(id,v)=>{let e=document.getElementById(id);if(e)e.textContent=v};set('v15HomeProfiles',Object.keys(x.profiles||{}).length);set('v15HomeAtt',Object.values(x.attendance||{}).filter(a=>a.date===today).length);set('v15HomeTickets',Object.values(x.tickets||{}).filter(t=>t.status!=='Resolved').length)})}});
 </script>
 <!-- ===== END V15 ===== -->
+
+
+<script id="v16-seat-guard">
+window.addEventListener('load',function(){
+  const nav=document.getElementById('nav-seats'); if(nav){nav.style.display='flex';nav.style.visibility='visible';}
+  const grid=document.getElementById('seatsGrid');
+  if(grid && grid.children.length===0 && typeof createSeats==='function'){ try{createSeats();}catch(e){console.warn('seat rebuild',e);} }
+});
+</script>
 
 </body>
 </html>
