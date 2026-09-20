@@ -7,6 +7,12 @@
 content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <meta name="theme-color" content="#4f46e5">
+<link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Hariom Library">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 
 <title>Hariom Smart Library Pro</title>
 
@@ -4076,5 +4082,13 @@ function nxRenderAll(){nxRenderCommand();nxRenderRenewals();nxRenderLeads();nxRe
 let nxmd=document.getElementById('nxMaintDate');if(nxmd)nxmd.value=new Date().toISOString().slice(0,10);
 </script>
 
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js').catch(console.error);
+  });
+}
+</script>
 </body>
 </html>
