@@ -1327,13 +1327,14 @@ body.dark #homeSection .stat-card,body.dark #v15HomeDash .v15-kpi,body.dark .pro
   background:color-mix(in srgb,var(--card) 94%,transparent);
   backdrop-filter:blur(16px);
 }
+#seatModal{z-index:5000 !important;}
 .seat-sticky-actions{
   position:fixed;
   left:50%;
   bottom:0;
   transform:translateX(-50%);
   width:min(650px,100%);
-  z-index:160;
+  z-index:5100;
   margin:0;
   padding:9px 12px calc(10px + env(safe-area-inset-bottom));
   background:color-mix(in srgb,var(--card) 96%,transparent);
@@ -1341,6 +1342,9 @@ body.dark #homeSection .stat-card,body.dark #v15HomeDash .v15-kpi,body.dark .pro
   box-shadow:0 -10px 30px rgba(15,23,42,.14);
   backdrop-filter:blur(18px);
 }
+.seat-header-actions{display:flex;align-items:center;gap:8px}
+.seat-header-save{border:0;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;border-radius:11px;min-height:36px;padding:8px 13px;font-size:10px;font-weight:900;box-shadow:0 5px 14px rgba(22,163,74,.24);cursor:pointer}
+.seat-header-save:active{transform:scale(.97)}
 .seat-action-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 2px 7px;font-size:10px;color:var(--muted)}
 .seat-action-meta b{font-size:11px;color:var(--text)}
 #seatUnsavedState.dirty{color:var(--warning);font-weight:900}
@@ -1355,6 +1359,19 @@ body.dark #homeSection .stat-card,body.dark #v15HomeDash .v15-kpi,body.dark .pro
 .seat-modal-tools{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 12px}
 .seat-modal-tool{border:1px solid var(--border);background:var(--card);color:var(--text);padding:10px 8px;border-radius:12px;font-size:9px;font-weight:900;box-shadow:var(--soft)}
 @media(max-width:380px){.seat-action-buttons{grid-template-columns:.62fr 1fr 1.1fr}.seat-action-btn{font-size:9px;padding:8px 5px}}
+</style>
+
+
+<style id="v22-save-visibility-fix">
+body.seat-modal-open .bottom-nav{visibility:hidden !important;pointer-events:none !important;}
+#seatModal.show{z-index:5000 !important;}
+#seatModal.show .seat-sticky-actions{display:block !important;visibility:visible !important;opacity:1 !important;z-index:5100 !important;}
+#seatModal.show .seat-action-btn.success{display:block !important;visibility:visible !important;opacity:1 !important;}
+@media(max-width:480px){
+  #seatModal .modal-content{padding-bottom:145px !important;}
+  .seat-action-buttons{grid-template-columns:.7fr 1fr 1.25fr !important;}
+  .seat-action-btn.success{font-size:11px !important;}
+}
 </style>
 
 </head>
@@ -1937,12 +1954,10 @@ id="seatModal">
 Manage Seat
 </h2>
 
-<button
-class="close-btn"
-onclick="closeModal()">
-
-×
-</button>
+<div class="seat-header-actions">
+<button class="seat-header-save" type="button" onclick="saveSeatData()">💾 Save</button>
+<button class="close-btn" type="button" onclick="closeModal()">×</button>
+</div>
 
 </div>
 
@@ -4277,7 +4292,7 @@ function nxWhatsApp(p,m){p=String(p).replace(/\D/g,'');if(p.length===10)p='91'+p
 function nxAddLead(){if(!uAdmin())return;let name=nxLeadName.value.trim(),phone=nxLeadPhone.value.trim(),shift=nxLeadShift.value,note=nxLeadNote.value.trim();if(!name||!phone){showToast('Name and phone required');return}database.ref(NXBASE+'/leads').push().set({name,phone,shift,note,status:'new',createdAt:new Date().toISOString()}).then(()=>{nxLeadName.value='';nxLeadPhone.value='';nxLeadNote.value='';showToast('Lead saved')})}
 function nxLeadStatus(k,status){if(!uAdmin())return;database.ref(NXBASE+'/leads/'+k+'/status').set(status)}
 function nxRenderLeads(){let box=document.getElementById('nxLeadList');if(!box)return;let rows=Object.entries(nxLeads).sort((a,b)=>(b[1].createdAt||'').localeCompare(a[1].createdAt||''));box.innerHTML=rows.length?rows.map(([k,x])=>`<div><b>${escapeHtml(x.name)}</b> <span class="nx-chip">${escapeHtml(x.status||'new')}</span><br><span class="nx-muted">${escapeHtml(x.phone)} • ${escapeHtml(x.shift)} • ${escapeHtml(x.note||'')}</span><br><button class="nx-btn green" style="padding:5px 8px" onclick="nxLeadStatus('${k}','joined')">Joined</button> <button class="nx-btn gray" style="padding:5px 8px" onclick="nxLeadStatus('${k}','followup')">Follow-up</button></div>`).join(''):'<div class="nx-muted">No admission leads.</div>'}
-function nxRenderCRM(){let box=document.getElementById('nxCrmList');if(!box)return,q=(document.getElementById('nxCrmSearch')?.value||'').toLowerCase(),rows=[];Object.entries(globalLibraryData).forEach(([seat,d])=>['all','m','n','an','e','night'].forEach(sh=>{if(d['name_'+sh]){let r={seat,sh,name:d['name_'+sh],phone:d['phone_'+sh]||'',due:Number(d['due_'+sh])||0,date:d['date_'+sh]||''};if(!q||[r.seat,r.name,r.phone].join(' ').toLowerCase().includes(q))rows.push(r)}}));box.innerHTML=rows.slice(0,80).map(x=>`<div><b>${escapeHtml(x.name)}</b> • Seat ${x.seat} <span class="nx-chip">${x.sh}</span><br><span class="nx-muted">${escapeHtml(x.phone)} • Due ₹${x.due} • ${escapeHtml(x.date)}</span></div>`).join('')||'<div class="nx-muted">No student found.</div>'}
+function nxRenderCRM(){let box=document.getElementById('nxCrmList');if(!box)return;let q=(document.getElementById('nxCrmSearch')?.value||'').toLowerCase(),rows=[];Object.entries(globalLibraryData).forEach(([seat,d])=>['all','m','n','an','e','night'].forEach(sh=>{if(d['name_'+sh]){let r={seat,sh,name:d['name_'+sh],phone:d['phone_'+sh]||'',due:Number(d['due_'+sh])||0,date:d['date_'+sh]||''};if(!q||[r.seat,r.name,r.phone].join(' ').toLowerCase().includes(q))rows.push(r)}}));box.innerHTML=rows.slice(0,80).map(x=>`<div><b>${escapeHtml(x.name)}</b> • Seat ${x.seat} <span class="nx-chip">${x.sh}</span><br><span class="nx-muted">${escapeHtml(x.phone)} • Due ₹${x.due} • ${escapeHtml(x.date)}</span></div>`).join('')||'<div class="nx-muted">No student found.</div>'}
 function nxAddMaintenance(){if(!uAdmin())return;let asset=nxMaintAsset.value.trim(),type=nxMaintType.value,date=nxMaintDate.value,note=nxMaintNote.value.trim();if(!asset){showToast('Asset required');return}database.ref(NXBASE+'/maintenance').push().set({asset,type,date,note,createdAt:new Date().toISOString()}).then(()=>{nxMaintAsset.value='';nxMaintNote.value='';showToast('Maintenance saved')})}
 function nxRenderMaintenance(){let box=document.getElementById('nxMaintList');if(!box)return;let rows=Object.values(nxMaintenance).sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));box.innerHTML=rows.map(x=>`<div><b>${escapeHtml(x.asset)} • ${escapeHtml(x.type)}</b><br><span class="nx-muted">${escapeHtml(x.date||'')} • ${escapeHtml(x.note||'')}</span></div>`).join('')||'<div class="nx-muted">No maintenance records.</div>'}
 function nxAddTicket(){if(!uAdmin())return;let title=nxTicketTitle.value.trim(),priority=nxTicketPriority.value,seat=nxTicketSeat.value,note=nxTicketNote.value.trim();if(!title){showToast('Issue title required');return}database.ref(NXBASE+'/tickets').push().set({title,priority,seat,note,status:'open',createdAt:new Date().toISOString()}).then(()=>{nxTicketTitle.value='';nxTicketNote.value='';showToast('Ticket created')})}
@@ -4590,6 +4605,18 @@ body{background:radial-gradient(circle at 15% 0%,rgba(109,93,252,.22),transparen
 })();
 </script>
 <!-- ===== END V18 ===== -->
+
+
+<script id="v22-save-visibility-js">
+// V22: keep seat Save controls above app navigation on mobile
+(function(){
+  const modal=document.getElementById("seatModal");
+  if(!modal) return;
+  const sync=function(){ document.body.classList.toggle("seat-modal-open", modal.classList.contains("show")); };
+  new MutationObserver(sync).observe(modal,{attributes:true,attributeFilter:["class"]});
+  sync();
+})();
+</script>
 
 </body>
 </html>
