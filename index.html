@@ -1311,6 +1311,52 @@ body.dark #homeSection .stat-card,body.dark #v15HomeDash .v15-kpi,body.dark .pro
 @media(min-width:1000px){#seatsGrid.seats-grid{grid-template-columns:repeat(8,minmax(0,1fr)) !important;}}
 </style>
 
+
+<style id="v21-seat-modal-fix">
+/* ===== V21 MOBILE SEAT MODAL FIX ===== */
+#seatModal .modal-content{
+  padding-bottom:118px !important;
+  overscroll-behavior:contain;
+  scroll-padding-bottom:128px;
+}
+#seatModal .modal-header{
+  top:0 !important;
+  margin:-18px -15px 12px !important;
+  padding:14px 15px 11px !important;
+  border-bottom:1px solid var(--border);
+  background:color-mix(in srgb,var(--card) 94%,transparent);
+  backdrop-filter:blur(16px);
+}
+.seat-sticky-actions{
+  position:fixed;
+  left:50%;
+  bottom:0;
+  transform:translateX(-50%);
+  width:min(650px,100%);
+  z-index:160;
+  margin:0;
+  padding:9px 12px calc(10px + env(safe-area-inset-bottom));
+  background:color-mix(in srgb,var(--card) 96%,transparent);
+  border-top:1px solid var(--border);
+  box-shadow:0 -10px 30px rgba(15,23,42,.14);
+  backdrop-filter:blur(18px);
+}
+.seat-action-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 2px 7px;font-size:10px;color:var(--muted)}
+.seat-action-meta b{font-size:11px;color:var(--text)}
+#seatUnsavedState.dirty{color:var(--warning);font-weight:900}
+#seatUnsavedState.saved{color:var(--success);font-weight:900}
+.seat-action-buttons{display:grid;grid-template-columns:.72fr 1fr 1.2fr;gap:7px}
+.seat-action-btn{border:0;border-radius:12px;min-height:44px;padding:9px 8px;color:#fff;font-size:10px;font-weight:900;box-shadow:0 5px 14px rgba(15,23,42,.12);cursor:pointer}
+.seat-action-btn:active{transform:scale(.97)}
+.seat-action-btn.ghost{background:#475569}.seat-action-btn.danger{background:linear-gradient(135deg,#ef4444,#dc2626)}.seat-action-btn.success{background:linear-gradient(135deg,#22c55e,#16a34a)}
+#seatModal .shift-card{position:relative}
+#seatModal .shift-card h4{padding-right:72px}
+.seat-shift-clear{position:absolute;right:10px;top:10px;border:1px solid var(--border);background:var(--card);color:var(--danger);border-radius:9px;padding:6px 8px;font-size:8px;font-weight:900;cursor:pointer}
+.seat-modal-tools{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 12px}
+.seat-modal-tool{border:1px solid var(--border);background:var(--card);color:var(--text);padding:10px 8px;border-radius:12px;font-size:9px;font-weight:900;box-shadow:var(--soft)}
+@media(max-width:380px){.seat-action-buttons{grid-template-columns:.62fr 1fr 1.1fr}.seat-action-btn{font-size:9px;padding:8px 5px}}
+</style>
+
 </head>
 
 <body>
@@ -1900,6 +1946,10 @@ onclick="closeModal()">
 
 </div>
 
+<div class="seat-modal-tools">
+  <button type="button" class="seat-modal-tool" onclick="fillTodayPaymentDates()">📅 Fill Today Payment Date</button>
+  <button type="button" class="seat-modal-tool" onclick="copyAllShiftPhone()">📱 Copy Full-Day Phone</button>
+</div>
 
 <!-- ALL SHIFT -->
 
@@ -2294,25 +2344,16 @@ type="date">
 </div>
 
 
-<div class="modal-buttons">
-
-<button
-class="btn btn-danger"
-onclick="clearSeatData()">
-
-Clear Seat
-
-</button>
-
-
-<button
-class="btn btn-success"
-onclick="saveSeatData()">
-
-Save Student
-
-</button>
-
+<div class="seat-sticky-actions" id="seatStickyActions">
+  <div class="seat-action-meta">
+    <b id="stickySeatLabel">💺 Seat</b>
+    <span id="seatUnsavedState">Ready</span>
+  </div>
+  <div class="seat-action-buttons">
+    <button class="seat-action-btn ghost" type="button" onclick="scrollSeatModalTop()">⬆ Top</button>
+    <button class="seat-action-btn danger" type="button" onclick="clearSeatData()">🗑 Clear All</button>
+    <button class="seat-action-btn success" type="button" onclick="saveSeatData()">💾 Save</button>
+  </div>
 </div>
 
 </div>
@@ -3234,8 +3275,101 @@ document.getElementById(
 "seatModal"
 ).classList.add("show");
 
+setTimeout(v21PrepareSeatModal,0);
+
 }
 
+
+/* ===== V21 SEAT MODAL MOBILE HELPERS ===== */
+let seatModalDirty=false;
+
+function v21SeatStatus(text,state){
+  const el=document.getElementById("seatUnsavedState");
+  if(!el) return;
+  el.textContent=text;
+  el.className=state||"";
+}
+
+function v21MarkSeatDirty(){
+  seatModalDirty=true;
+  v21SeatStatus("● Unsaved changes","dirty");
+}
+
+function v21BindSeatModalInputs(){
+  const modal=document.getElementById("seatModal");
+  if(!modal || modal.dataset.v21Bound) return;
+  modal.dataset.v21Bound="1";
+  modal.addEventListener("input",function(e){
+    if(e.target && e.target.matches("input,select,textarea")) v21MarkSeatDirty();
+  });
+  modal.addEventListener("change",function(e){
+    if(e.target && e.target.matches("input,select,textarea")) v21MarkSeatDirty();
+  });
+}
+
+function v21PrepareSeatModal(){
+  v21BindSeatModalInputs();
+  seatModalDirty=false;
+  const label=document.getElementById("stickySeatLabel");
+  if(label) label.textContent="💺 Seat "+(activeSeatNumber||"");
+  v21SeatStatus("Ready","");
+  v21AddShiftClearButtons();
+}
+
+function scrollSeatModalTop(){
+  const box=document.querySelector("#seatModal .modal-content");
+  if(box) box.scrollTo({top:0,behavior:"smooth"});
+}
+
+function fillTodayPaymentDates(){
+  const today=new Date();
+  const local=new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);
+  ["all","m","n","an","e","night"].forEach(function(shift){
+    const name=document.getElementById("name_"+shift);
+    const pay=document.getElementById("paydate_"+shift);
+    if(name && pay && name.value.trim() && !pay.value) pay.value=local;
+  });
+  v21MarkSeatDirty();
+  showToast("📅 Payment date filled for active entries");
+}
+
+function copyAllShiftPhone(){
+  const src=(document.getElementById("phone_all")||{}).value||"";
+  if(!src.trim()) return showToast("Full Day phone number is empty");
+  ["m","n","an","e","night"].forEach(function(shift){
+    const name=document.getElementById("name_"+shift);
+    const phone=document.getElementById("phone_"+shift);
+    if(name && phone && name.value.trim() && !phone.value.trim()) phone.value=src.trim();
+  });
+  v21MarkSeatDirty();
+  showToast("📱 Phone copied to filled shifts");
+}
+
+function v21ClearOneShift(shift){
+  const label={all:"Full Day",m:"Morning",n:"Noon",an:"Afternoon",e:"Evening",night:"Night"}[shift]||shift;
+  if(!confirm("Clear "+label+" fields from this form? Database will change only after Save.")) return;
+  ["name_","phone_","fees_","due_","date_","paydate_"].forEach(function(prefix){
+    const el=document.getElementById(prefix+shift);
+    if(el) el.value=(prefix==="fees_"||prefix==="due_")?0:"";
+  });
+  if(shift==="all") toggleIndividualShifts();
+  v21MarkSeatDirty();
+}
+
+function v21AddShiftClearButtons(){
+  const map=[
+    ["name_all","all"],["name_m","m"],["name_n","n"],["name_an","an"],["name_e","e"],["name_night","night"]
+  ];
+  map.forEach(function(pair){
+    const input=document.getElementById(pair[0]);
+    const card=input && input.closest(".shift-card");
+    if(!card || card.querySelector(".seat-shift-clear")) return;
+    const b=document.createElement("button");
+    b.type="button"; b.className="seat-shift-clear"; b.textContent="Clear shift";
+    b.onclick=function(){v21ClearOneShift(pair[1]);};
+    card.appendChild(b);
+  });
+}
 
 /* CLOSE */
 
@@ -3407,6 +3541,9 @@ showToast(
 "✅ Seat data saved successfully"
 );
 
+seatModalDirty=false;
+v21SeatStatus("✓ Saved","saved");
+
 closeModal();
 
 })
@@ -3453,6 +3590,9 @@ database
 showToast(
 "Seat cleared successfully"
 );
+
+seatModalDirty=false;
+v21SeatStatus("✓ Cleared","saved");
 
 closeModal();
 
