@@ -5051,3 +5051,94 @@ body.dark #ur23List .ur23-student.v24-expired{background:linear-gradient(135deg,
 })();
 </script>
 <!-- ===== END V24 ===== -->
+
+<!-- ===== HARIOM V25 — ONE-TAP WHATSAPP NOTICE BOX ===== -->
+<style id="v25-notice-style">
+#v24ContactPanel{display:none!important}
+.v25-notice-entry{background:linear-gradient(135deg,rgba(37,211,102,.14),rgba(79,70,229,.08),var(--card));border:1px solid rgba(37,211,102,.28);border-radius:20px;padding:14px;margin-bottom:12px;box-shadow:var(--shadow)}
+.v25-notice-entry h3{font-size:15px;margin-bottom:5px}.v25-notice-entry p{font-size:9px;color:var(--muted);line-height:1.55}.v25-entry-counts{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin:10px 0}.v25-entry-count{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:9px;text-align:center}.v25-entry-count b{display:block;font-size:17px}.v25-entry-count span{font-size:7px;color:var(--muted);font-weight:900}.v25-entry-open{width:100%;border:0;border-radius:13px;padding:12px;background:linear-gradient(135deg,#128c4b,#25d366);color:#fff;font-weight:950;font-size:10px;box-shadow:0 8px 20px rgba(37,211,102,.20)}
+#v25NoticePanel{display:none;position:fixed;inset:0;z-index:5200;background:var(--bg);overflow:auto}#v25NoticePanel.show{display:block}
+.v25-head{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:14px;color:#fff;background:linear-gradient(125deg,#0b1220,#166534 52%,#25d366);box-shadow:0 8px 24px rgba(0,0,0,.22)}.v25-head h2{font-size:16px;flex:1}.v25-head small{display:block;font-size:8px;opacity:.84;margin-top:3px}.v25-close{width:40px;height:40px;border:0;border-radius:12px;background:rgba(255,255,255,.15);color:#fff;font-size:21px}
+.v25-wrap{max-width:860px;margin:auto;padding:13px 12px 110px}.v25-card{background:var(--card);border:1px solid var(--border);border-radius:19px;padding:14px;margin-bottom:11px;box-shadow:var(--shadow)}.v25-card h3{font-size:14px;margin-bottom:7px}.v25-muted{font-size:8.7px;color:var(--muted);line-height:1.55}.v25-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:11px}.v25-stat{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:10px;text-align:center;box-shadow:var(--soft)}.v25-stat b{display:block;font-size:19px}.v25-stat span{font-size:6.8px;color:var(--muted);font-weight:950}
+.v25-template-row{display:flex;gap:6px;overflow:auto;padding:2px 0 9px;scrollbar-width:none}.v25-template{white-space:nowrap;border:1px solid var(--border);border-radius:999px;background:var(--bg);color:var(--text);padding:8px 10px;font-size:8px;font-weight:900}.v25-text{width:100%;min-height:145px;resize:vertical;padding:12px;border:1.5px solid var(--border);border-radius:14px;background:var(--bg);color:var(--text);font-size:13px;line-height:1.55;outline:none}.v25-text:focus{border-color:#25d366;box-shadow:0 0 0 4px rgba(37,211,102,.10)}
+.v25-countline{display:flex;justify-content:space-between;gap:8px;margin-top:7px;font-size:8px;color:var(--muted)}.v25-confirm{display:flex;gap:9px;align-items:flex-start;padding:10px;margin-top:10px;border-radius:12px;background:rgba(245,158,11,.09);border:1px solid rgba(245,158,11,.22);font-size:8.5px;line-height:1.5}.v25-confirm input{width:18px;height:18px;flex:0 0 auto;margin-top:1px}.v25-send{width:100%;border:0;border-radius:14px;padding:14px;margin-top:10px;background:linear-gradient(135deg,#128c4b,#25d366);color:#fff;font-size:11px;font-weight:950;box-shadow:0 9px 24px rgba(37,211,102,.23)}.v25-send:disabled{opacity:.45;box-shadow:none}.v25-test{width:100%;border:1px solid var(--border);border-radius:12px;padding:10px;margin-top:7px;background:var(--bg);color:var(--text);font-size:8.5px;font-weight:900}
+.v25-progress-card{display:none}.v25-progress-card.show{display:block}.v25-progress-top{display:flex;justify-content:space-between;gap:8px;align-items:center}.v25-progress-top b{font-size:12px}.v25-status-pill{padding:5px 8px;border-radius:999px;font-size:7px;font-weight:950;background:#e2e8f0;color:#475569}.v25-status-pill.sending{background:#dbeafe;color:#1d4ed8}.v25-status-pill.sent{background:#dcfce7;color:#166534}.v25-status-pill.partial{background:#fef3c7;color:#92400e}.v25-status-pill.failed{background:#fee2e2;color:#b91c1c}.v25-bar{height:10px;background:var(--bg);border-radius:99px;overflow:hidden;margin:10px 0 7px}.v25-bar i{display:block;width:0;height:100%;background:linear-gradient(90deg,#128c4b,#25d366);transition:width .25s;border-radius:99px}.v25-result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.v25-result{background:var(--bg);border-radius:10px;padding:8px;text-align:center}.v25-result b{display:block;font-size:15px}.v25-result span{font-size:6px;color:var(--muted);font-weight:900}.v25-warning{display:none;margin-top:9px;padding:9px;border-radius:11px;background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;font-size:8.5px;line-height:1.5}.v25-warning.show{display:block}
+.v25-history-item{padding:10px 0;border-bottom:1px solid var(--border);font-size:9px}.v25-history-item:last-child{border-bottom:0}.v25-history-top{display:flex;justify-content:space-between;gap:8px}.v25-history-msg{margin-top:4px;color:var(--muted);line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.v25-history-empty{text-align:center;color:var(--muted);font-size:9px;padding:18px}
+@media(min-width:700px){.v25-stats{grid-template-columns:repeat(3,1fr)}.v25-entry-counts{grid-template-columns:repeat(4,1fr)}}
+</style>
+
+<div id="v25NoticePanel" aria-hidden="true">
+  <div class="v25-head"><div style="font-size:22px">📢</div><h2>WhatsApp Notice Box<small>One notice • all app students • automatic number collection</small></h2><button class="v25-close" type="button" onclick="v25CloseNotice()">×</button></div>
+  <div class="v25-wrap">
+    <div class="v25-stats">
+      <div class="v25-stat"><b id="v25StudentCount">0</b><span>UNIQUE STUDENTS</span></div>
+      <div class="v25-stat"><b id="v25ReadyCount">0</b><span>WHATSAPP READY</span></div>
+      <div class="v25-stat"><b id="v25MissingCount">0</b><span>NUMBER MISSING</span></div>
+    </div>
+
+    <div class="v25-card">
+      <h3>✍️ Write Notice</h3>
+      <p class="v25-muted">Fixed-seat + Unreserved Register ke saare current students ke valid mobile numbers automatically use honge. Duplicate number ko sirf ek message jayega.</p>
+      <div class="v25-template-row">
+        <button class="v25-template" type="button" onclick="v25Template('general')">📣 General</button>
+        <button class="v25-template" type="button" onclick="v25Template('payment')">💰 Payment</button>
+        <button class="v25-template" type="button" onclick="v25Template('timing')">🕒 Timing</button>
+        <button class="v25-template" type="button" onclick="v25Template('holiday')">🏖️ Holiday</button>
+        <button class="v25-template" type="button" onclick="v25Template('urgent')">🚨 Urgent</button>
+      </div>
+      <textarea id="v25NoticeText" class="v25-text" maxlength="900" placeholder="Yahan notice likhiye..."></textarea>
+      <div class="v25-countline"><span><b id="v25RecipientLabel">0</b> students ko notice jayega</span><span><b id="v25Chars">0</b>/900</span></div>
+      <label class="v25-confirm"><input id="v25Confirm" type="checkbox"><span>Main confirm karta hoon ki yeh library notice sirf un enrolled students ke liye hai jinhone WhatsApp par library updates receive karne ki permission di hai.</span></label>
+      <button id="v25SendBtn" class="v25-send" type="button" onclick="v25SendAllNotice()">📢 SEND NOTICE TO ALL STUDENTS</button>
+      <button class="v25-test" type="button" onclick="v25SendTestNotice()">🧪 SEND TEST TO ONE NUMBER FIRST</button>
+    </div>
+
+    <div id="v25ProgressCard" class="v25-card v25-progress-card">
+      <div class="v25-progress-top"><b id="v25ProgressTitle">Notice queued...</b><span id="v25StatusPill" class="v25-status-pill">QUEUED</span></div>
+      <div class="v25-bar"><i id="v25BarFill"></i></div>
+      <div class="v25-result-grid">
+        <div class="v25-result"><b id="v25Sent">0</b><span>SENT</span></div>
+        <div class="v25-result"><b id="v25Failed">0</b><span>FAILED</span></div>
+        <div class="v25-result"><b id="v25TotalResult">0</b><span>TOTAL</span></div>
+      </div>
+      <div id="v25BackendWarning" class="v25-warning">⚠️ Notice Firebase me save ho gaya, lekin WhatsApp sender backend response nahi mila. Official WhatsApp Cloud API + Firebase Function ko ek baar connect/deploy karna zaroori hai.</div>
+    </div>
+
+    <div class="v25-card">
+      <h3>🕘 Recent Notice History</h3>
+      <div id="v25History"><div class="v25-history-empty">No notice sent yet.</div></div>
+    </div>
+  </div>
+</div>
+
+<script id="v25-notice-script">
+(function(){
+  const $=id=>document.getElementById(id); let seats={},flex={},currentRef=null,currentTimer=null;
+  const shifts=["all","m","n","an","e","night"];
+  function toast(m){if(typeof showToast==="function")showToast(m);else alert(m)}
+  function phone10(p){let d=String(p||"").replace(/\D/g,"");if(d.length===12&&d.startsWith("91"))d=d.slice(2);if(d.length>10)d=d.slice(-10);return /^\d{10}$/.test(d)?d:""}
+  function contacts(){const map=new Map(),missing=[];function add(name,phone,source){name=String(name||"").trim();if(!name)return;const p=phone10(phone);if(!p){missing.push({name,source});return}if(!map.has(p))map.set(p,{name,phone:p,sources:[source]});else{const x=map.get(p);if(!x.name&&name)x.name=name;if(!x.sources.includes(source))x.sources.push(source)}}
+    Object.keys(seats||{}).forEach(k=>{const d=seats[k]||{};shifts.forEach(sh=>{if(d["name_"+sh])add(d["name_"+sh],d["phone_"+sh],"Seat "+k+" "+sh)})});
+    Object.values(flex||{}).forEach(d=>{if(!d||d.status==="Left / Archived")return;add(d.name,d.phone,"Unreserved")});
+    return {rows:[...map.values()],missing};
+  }
+  function renderCounts(){const c=contacts();if($("v25StudentCount"))$("v25StudentCount").textContent=c.rows.length+c.missing.length;if($("v25ReadyCount"))$("v25ReadyCount").textContent=c.rows.length;if($("v25MissingCount"))$("v25MissingCount").textContent=c.missing.length;if($("v25RecipientLabel"))$("v25RecipientLabel").textContent=c.rows.length;document.querySelectorAll("[data-v25-ready]").forEach(x=>x.textContent=c.rows.length);document.querySelectorAll("[data-v25-total]").forEach(x=>x.textContent=c.rows.length+c.missing.length)}
+  function patchEntries(){
+    const old=$("v24MasterEntry");if(old){old.className="v25-notice-entry";old.innerHTML=`<h3>📢 WhatsApp Notice Box</h3><p>App me saved sabhi fixed-seat + unreserved students ke numbers automatically collect honge. Notice likhiye aur ek button se broadcast request bhejiye.</p><div class="v25-entry-counts"><div class="v25-entry-count"><b data-v25-total>0</b><span>STUDENTS</span></div><div class="v25-entry-count"><b data-v25-ready>0</b><span>WHATSAPP READY</span></div></div><button class="v25-entry-open" onclick="v25OpenNotice()">OPEN NOTICE BOX →</button>`}
+    const ur=$("v24UrTools");if(ur){const b=ur.querySelector(".v24-contacts");if(b){b.setAttribute("onclick","v25OpenNotice()");b.textContent="📢 NOTICE TO ALL STUDENTS"}}
+    renderCounts();
+  }
+  window.v25OpenNotice=function(){const p=$("v25NoticePanel");if(!p)return;p.classList.add("show");p.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";renderCounts();setTimeout(()=>p.scrollTo(0,0),0)};
+  window.v25CloseNotice=function(){const p=$("v25NoticePanel");if(!p)return;p.classList.remove("show");p.setAttribute("aria-hidden","true");document.body.style.overflow=""};
+  window.v25Template=function(type){const t=$("v25NoticeText");if(!t)return;const x={general:"Hariom Library Notice: Sabhi students kripya is suchna ko dhyan se padhein. Adhik jankari ke liye library admin se sampark karein.",payment:"Hariom Library Payment Reminder: Jinka monthly fee / renewal pending hai, kripya samay par payment complete karein. Payment ho chuka ho to is notice ko ignore karein.",timing:"Hariom Library Timing Notice: Kripya library ke updated timing aur apne shift schedule ka palan karein. Kisi change ke liye admin se sampark karein.",holiday:"Hariom Library Holiday Notice: Library schedule me temporary change/holiday rahega. Kripya notice ke anusaar apni study planning karein.",urgent:"Hariom Library Urgent Notice: Sabhi students kripya is zaroori suchna par turant dhyan dein aur zarurat hone par admin se sampark karein."};t.value=x[type]||x.general;t.dispatchEvent(new Event("input"))};
+  function monitor(ref){if(currentRef)currentRef.off();currentRef=ref;const card=$("v25ProgressCard");if(card)card.classList.add("show");let moved=false;if(currentTimer)clearTimeout(currentTimer);currentTimer=setTimeout(()=>{if(!moved){const w=$("v25BackendWarning");if(w)w.classList.add("show")}},18000);ref.on("value",snap=>{const d=snap.val()||{},status=d.status||"queued";if(status!=="queued")moved=true;const sent=Number(d.sentCount||0),failed=Number(d.failedCount||0),total=Number(d.total||d.totalExpected||0),done=sent+failed,pct=total?Math.min(100,Math.round(done*100/total)):0;if($("v25Sent"))$("v25Sent").textContent=sent;if($("v25Failed"))$("v25Failed").textContent=failed;if($("v25TotalResult"))$("v25TotalResult").textContent=total;if($("v25BarFill"))$("v25BarFill").style.width=pct+"%";if($("v25ProgressTitle"))$("v25ProgressTitle").textContent=status==="queued"?"Notice queued — sender starting...":status==="sending"?`Sending ${done}/${total}...`:status==="sent"?`✅ Notice sent to ${sent} students`:status==="partial"?`⚠️ Sent ${sent}, failed ${failed}`:`❌ Broadcast failed`;const pill=$("v25StatusPill");if(pill){pill.className="v25-status-pill "+status;pill.textContent=status.toUpperCase()}const warn=$("v25BackendWarning");if(warn&&moved)warn.classList.remove("show");const btn=$("v25SendBtn");if(btn)btn.disabled=status==="queued"||status==="sending";if(["sent","partial","failed"].includes(status)){if(btn)btn.disabled=false;if(currentTimer){clearTimeout(currentTimer);currentTimer=null}}})}
+  async function queueNotice(testPhone){const msg=($("v25NoticeText")?.value||"").trim();if(!msg)return toast("Notice message likhiye");if(msg.length>900)return toast("Notice 900 characters se chhota rakhiye");if(!testPhone&&!$("v25Confirm")?.checked)return toast("Permission confirmation checkbox tick kijiye");const c=contacts();if(!testPhone&&!c.rows.length)return toast("Koi valid student mobile number nahi mila");if(typeof database==="undefined")return toast("Firebase connection nahi mila");const ref=database.ref("library_v3/whatsappBroadcastQueue").push();const payload={message:msg,status:"queued",audience:testPhone?"test":"all_current_students",testPhone:testPhone||"",totalExpected:testPhone?1:c.rows.length,createdAt:firebase.database.ServerValue.TIMESTAMP,createdAtISO:new Date().toISOString(),source:"Hariom Library V25 Notice Box"};await ref.set(payload);monitor(ref);toast(testPhone?"🧪 Test notice queued":"📢 Notice queued for "+c.rows.length+" students")}
+  window.v25SendAllNotice=async function(){const c=contacts();if(!confirm(`WhatsApp notice ${c.rows.length} unique student numbers ko bhejne ke liye queue karein?`))return;try{await queueNotice("")}catch(e){console.error(e);toast("Notice queue error: "+(e.message||e))}};
+  window.v25SendTestNotice=async function(){let p=prompt("Test ke liye 10-digit WhatsApp number daliye:","");if(p===null)return;p=phone10(p);if(!p)return toast("Valid 10-digit number daliye");try{await queueNotice(p)}catch(e){console.error(e);toast("Test queue error: "+(e.message||e))}};
+  function renderHistory(obj){const box=$("v25History");if(!box)return;const arr=Object.entries(obj||{}).map(([key,d])=>({key,...d})).sort((a,b)=>Number(b.createdAt||0)-Number(a.createdAt||0)).slice(0,10);if(!arr.length){box.innerHTML='<div class="v25-history-empty">No notice sent yet.</div>';return}box.innerHTML=arr.map(d=>{const st=String(d.status||"queued"),when=d.createdAt?new Date(d.createdAt).toLocaleString("en-IN"):"",msg=String(d.message||"").replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]));return `<div class="v25-history-item"><div class="v25-history-top"><b>${st==="sent"?"✅":st==="failed"?"❌":st==="partial"?"⚠️":"⏳"} ${st.toUpperCase()} • ${Number(d.sentCount||0)}/${Number(d.total||d.totalExpected||0)}</b><span>${when}</span></div><div class="v25-history-msg">${msg}</div></div>`}).join("")}
+  function init(){patchEntries();const t=$("v25NoticeText");if(t){try{const s=localStorage.getItem("hariom_v25_notice");if(s)t.value=s}catch(e){}const upd=()=>{if($("v25Chars"))$("v25Chars").textContent=t.value.length;try{localStorage.setItem("hariom_v25_notice",t.value)}catch(e){}};t.addEventListener("input",upd);upd()}renderCounts();setTimeout(patchEntries,800)}
+  if(typeof database!=="undefined"){database.ref("library_v3/seats").on("value",s=>{seats=s.val()||{};renderCounts()});database.ref("library_v3/unreservedStudentsV23").on("value",s=>{flex=s.val()||{};renderCounts()});database.ref("library_v3/whatsappBroadcastQueue").limitToLast(10).on("value",s=>renderHistory(s.val()||{}))}
+  document.addEventListener("DOMContentLoaded",init);window.addEventListener("load",()=>{init();setTimeout(patchEntries,1200)});
+})();
+</script>
+<!-- ===== END V25 ===== -->
