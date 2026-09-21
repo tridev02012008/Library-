@@ -4866,3 +4866,188 @@ document.addEventListener('DOMContentLoaded',mount);window.addEventListener('loa
 </script>
 <!-- ===== END V23 ===== -->
 
+
+<!-- ===== HARIOM V24 STUDENT CARDS + MASTER WHATSAPP CENTER ===== -->
+<style id="v24-student-contact-style">
+/* V24: show the student list first; form opens only when Add/Edit is requested */
+#ur23FormCard{display:none}
+#ur23FormCard.v24-form-open{display:block;animation:v24Slide .2s ease}
+@keyframes v24Slide{from{opacity:.2;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.v24-register-tools{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 10px}
+.v24-register-tools button{border:0;border-radius:12px;padding:11px 8px;font-size:9px;font-weight:950;color:#fff;cursor:pointer}
+.v24-add{background:linear-gradient(135deg,#16a34a,#059669)}
+.v24-contacts{background:linear-gradient(135deg,#4f46e5,#7c3aed)}
+.v24-legend{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 11px}
+.v24-legend span{font-size:7.5px;font-weight:900;padding:5px 7px;border-radius:999px;border:1px solid var(--border)}
+.v24-legend .a{background:#dcfce7;color:#166534}.v24-legend .s{background:#fef3c7;color:#92400e}.v24-legend .d{background:#ffedd5;color:#9a3412}.v24-legend .e{background:#fee2e2;color:#b91c1c}.v24-legend .x{background:#e2e8f0;color:#475569}
+#ur23List{display:grid;grid-template-columns:1fr;gap:10px}
+#ur23List .ur23-student{margin-bottom:0;border-width:1.5px;padding:13px 12px;border-radius:18px}
+#ur23List .ur23-student.v24-active{border-color:rgba(22,163,74,.38);background:linear-gradient(135deg,rgba(220,252,231,.52),var(--card))}
+#ur23List .ur23-student.v24-soon{border-color:rgba(245,158,11,.45);background:linear-gradient(135deg,rgba(254,243,199,.62),var(--card))}
+#ur23List .ur23-student.v24-due{border-color:rgba(234,88,12,.45);background:linear-gradient(135deg,rgba(255,237,213,.68),var(--card))}
+#ur23List .ur23-student.v24-expired{border-color:rgba(220,38,38,.45);background:linear-gradient(135deg,rgba(254,226,226,.68),var(--card))}
+#ur23List .ur23-student.v24-archived{border-color:rgba(100,116,139,.35);background:linear-gradient(135deg,rgba(226,232,240,.55),var(--card));opacity:.78}
+body.dark #ur23List .ur23-student.v24-active{background:linear-gradient(135deg,rgba(22,101,52,.35),var(--card))}
+body.dark #ur23List .ur23-student.v24-soon{background:linear-gradient(135deg,rgba(120,53,15,.35),var(--card))}
+body.dark #ur23List .ur23-student.v24-due{background:linear-gradient(135deg,rgba(124,45,18,.38),var(--card))}
+body.dark #ur23List .ur23-student.v24-expired{background:linear-gradient(135deg,rgba(127,29,29,.38),var(--card))}
+.v24-statusline{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:-2px 0 9px;padding:8px 9px;border-radius:11px;font-size:8px;font-weight:950;letter-spacing:.25px}
+.v24-statusline.active{background:#dcfce7;color:#166534}.v24-statusline.soon{background:#fef3c7;color:#92400e}.v24-statusline.due{background:#ffedd5;color:#9a3412}.v24-statusline.expired{background:#fee2e2;color:#b91c1c}.v24-statusline.archived{background:#e2e8f0;color:#475569}
+.ur23-name{font-size:15px}.ur23-meta{font-size:9.5px;line-height:1.65}.ur23-badge{font-size:7.5px;padding:5px 7px}.ur23-card-actions button{font-size:8px;padding:9px 5px}
+@media(min-width:700px){#ur23List{grid-template-columns:repeat(2,minmax(0,1fr))}.v24-register-tools{grid-template-columns:200px 240px}}
+
+/* Master contacts entry on Students page */
+.v24-master-entry{background:linear-gradient(135deg,rgba(79,70,229,.13),rgba(37,211,102,.10),var(--card));border:1px solid rgba(79,70,229,.22);border-radius:20px;padding:14px;margin-bottom:12px;box-shadow:var(--shadow)}
+.v24-master-entry h3{font-size:14px;margin-bottom:5px}.v24-master-entry p{font-size:9px;color:var(--muted);line-height:1.5}.v24-entry-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0}.v24-entry-stat{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:8px;text-align:center}.v24-entry-stat b{display:block;font-size:15px}.v24-entry-stat span{font-size:6.5px;color:var(--muted);font-weight:900}.v24-entry-btn{width:100%;border:0;border-radius:12px;padding:11px;background:linear-gradient(135deg,#16a34a,#25d366);color:#fff;font-size:9px;font-weight:950}
+
+/* Full-screen contacts / WhatsApp notice center */
+#v24ContactPanel{display:none;position:fixed;inset:0;z-index:4300;background:var(--bg);overflow:auto}
+#v24ContactPanel.show{display:block}
+.v24-head{position:sticky;top:0;z-index:15;display:flex;align-items:center;gap:10px;padding:13px 14px;color:#fff;background:linear-gradient(125deg,#0f172a,#166534 54%,#25d366);box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.v24-head h2{font-size:15px;flex:1}.v24-head small{display:block;font-size:8px;opacity:.82;margin-top:2px}.v24-close{width:38px;height:38px;border:0;border-radius:12px;color:#fff;background:rgba(255,255,255,.16);font-size:20px}
+.v24-wrap{max-width:950px;margin:auto;padding:13px 12px 110px}.v24-info{font-size:8.5px;line-height:1.55;padding:10px 11px;border:1px solid rgba(37,211,102,.22);background:rgba(37,211,102,.07);border-radius:14px;margin-bottom:10px}
+.v24-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px}.v24-stat{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:11px;box-shadow:var(--soft)}.v24-stat small{font-size:7.5px;color:var(--muted);font-weight:900}.v24-stat b{display:block;font-size:19px;margin-top:4px}
+.v24-box{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:13px;margin-bottom:10px;box-shadow:var(--shadow)}.v24-box h3{font-size:13px;margin-bottom:8px}.v24-box p{font-size:8.5px;color:var(--muted);line-height:1.5}.v24-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.v24-in,.v24-sel,.v24-text{width:100%;padding:11px;border:1px solid var(--border);border-radius:11px;background:var(--bg);color:var(--text);outline:none}.v24-text{min-height:96px;resize:vertical}.v24-action-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}.v24-btn{border:0;border-radius:11px;padding:11px 8px;color:#fff;background:var(--primary);font-weight:950;font-size:8.5px}.v24-btn.wa{background:#16a34a}.v24-btn.gray{background:#475569}.v24-btn.orange{background:#d97706}.v24-btn.dark{background:#111827}.v24-btn:disabled{opacity:.45}
+.v24-contact-list{display:grid;grid-template-columns:1fr;gap:8px;margin-top:9px}.v24-contact{border:1px solid var(--border);border-radius:15px;padding:11px;background:var(--card);position:relative;overflow:hidden}.v24-contact:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:#16a34a}.v24-contact.pending:before{background:#f59e0b}.v24-contact.expired:before{background:#dc2626}.v24-contact.nophone:before{background:#64748b}.v24-contact-top{display:flex;justify-content:space-between;gap:8px}.v24-contact-name{font-size:12.5px;font-weight:950}.v24-contact-meta{font-size:8px;color:var(--muted);line-height:1.55;margin-top:4px}.v24-contact-badges{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}.v24-pill{font-size:6.8px;font-weight:900;border:1px solid var(--border);background:var(--bg);padding:4px 6px;border-radius:999px}.v24-pill.green{background:#dcfce7;color:#166534}.v24-pill.yellow{background:#fef3c7;color:#92400e}.v24-pill.red{background:#fee2e2;color:#b91c1c}.v24-mini-wa{margin-top:8px;width:100%;border:0;border-radius:9px;padding:8px;background:#16a34a;color:#fff;font-size:8px;font-weight:950}.v24-list-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.v24-list-head b{font-size:12px}.v24-list-head span{font-size:8px;color:var(--muted)}
+.v24-empty{text-align:center;padding:24px 10px;color:var(--muted);font-size:9px}
+@media(min-width:700px){.v24-stats{grid-template-columns:repeat(4,1fr)}.v24-contact-list{grid-template-columns:repeat(2,minmax(0,1fr))}.v24-action-grid{grid-template-columns:repeat(4,1fr)}}
+</style>
+
+<div id="v24ContactPanel" aria-hidden="true">
+  <div class="v24-head">
+    <div>💬</div><h2>All Students & WhatsApp Notice<small>Realtime master contact center • fixed + unreserved students</small></h2>
+    <button class="v24-close" type="button" onclick="v24CloseContacts()">×</button>
+  </div>
+  <div class="v24-wrap">
+    <div class="v24-info">📱 Student numbers are collected automatically from your existing seat records and the new Unreserved Register. Duplicate mobile numbers are merged. <b>No old Firebase data is moved or deleted.</b></div>
+    <div class="v24-stats">
+      <div class="v24-stat"><small>UNIQUE STUDENTS</small><b id="v24Total">0</b></div>
+      <div class="v24-stat"><small>WHATSAPP READY</small><b id="v24Phones">0</b></div>
+      <div class="v24-stat"><small>PAYMENT / RENEW PENDING</small><b id="v24Pending">0</b></div>
+      <div class="v24-stat"><small>MISSING NUMBER</small><b id="v24Missing">0</b></div>
+    </div>
+
+    <div class="v24-box">
+      <h3>📢 WhatsApp Notice Center</h3>
+      <div class="v24-grid">
+        <select id="v24Audience" class="v24-sel" onchange="v24RenderContacts()">
+          <option value="all">All Current Students</option>
+          <option value="pending">Due / Expired / Renew Soon</option>
+          <option value="active">Active / Paid Students</option>
+          <option value="fixed">Fixed / Seat Students</option>
+          <option value="flex">Unreserved Students</option>
+        </select>
+        <input id="v24ContactSearch" class="v24-in" placeholder="Search name / mobile / seat..." oninput="v24RenderContacts()">
+      </div>
+      <textarea id="v24Notice" class="v24-text" placeholder="Type notice for students...">Hariom Library Notice: कृपया library timing, payment/renewal और जरूरी सूचना के लिए इस message को ध्यान से देखें। अधिक जानकारी के लिए admin से संपर्क करें।</textarea>
+      <div class="v24-action-grid">
+        <button class="v24-btn wa" type="button" onclick="v24ShareNotice()">📢 WhatsApp Share</button>
+        <button class="v24-btn" type="button" onclick="v24CopyNumbers()">📋 Copy Numbers</button>
+        <button class="v24-btn dark" type="button" onclick="v24DownloadVCF()">👥 Save Contacts .VCF</button>
+        <button class="v24-btn orange" id="v24QueueBtn" type="button" onclick="v24StartOrNextQueue()">📲 Start Send Queue</button>
+      </div>
+      <p style="margin-top:8px">WhatsApp Share opens the message in WhatsApp so you can choose chats/groups. Send Queue opens one student's chat at a time with the notice already filled.</p>
+    </div>
+
+    <div class="v24-box">
+      <div class="v24-list-head"><b>👥 Master Student Contacts</b><span id="v24VisibleCount">0 shown</span></div>
+      <div id="v24ContactList" class="v24-contact-list"><div class="v24-empty">Loading students...</div></div>
+    </div>
+  </div>
+</div>
+
+<script id="v24-student-contact-script">
+(function(){
+  let v24Seats={}, v24Flex={}, v24Queue=[], v24QueueIndex=-1;
+  const $=id=>document.getElementById(id);
+  const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+  const localToday=()=>{const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)};
+  function toast(m){if(typeof showToast==="function")showToast(m);else alert(m)}
+  function phone10(p){let d=String(p||"").replace(/\D/g,"");if(d.length===12&&d.startsWith("91"))d=d.slice(2);if(d.length>10)d=d.slice(-10);return /^\d{10}$/.test(d)?d:""}
+  function dateStatus(date){if(!date)return "active";const t=new Date(localToday()+"T00:00:00"),d=new Date(date+"T00:00:00"),soon=new Date(t);soon.setDate(soon.getDate()+3);if(d<t)return "expired";if(d<=soon)return "soon";return "active"}
+  function statusPriority(s){return ({archived:0,active:1,soon:2,due:3,expired:4})[s]??1}
+  function recordStatus(date,due,archived){if(archived)return "archived";const ds=dateStatus(date);if(ds==="expired")return "expired";if(Number(due||0)>0)return "due";if(ds==="soon")return "soon";return "active"}
+  function addContact(map,raw){
+    const p=phone10(raw.phone), base=(raw.name||"Unnamed").trim(), key=p?"p:"+p:"n:"+base.toLowerCase()+"|"+raw.source;
+    if(!map[key])map[key]={name:base,phone:p,sources:[],types:new Set(),status:raw.status||"active",renewal:raw.renewal||"",due:Number(raw.due||0)};
+    const c=map[key]; if(base.length>c.name.length)c.name=base; if(raw.source&&!c.sources.includes(raw.source))c.sources.push(raw.source); if(raw.type)c.types.add(raw.type);
+    if(statusPriority(raw.status)>statusPriority(c.status))c.status=raw.status; c.due=Math.max(c.due,Number(raw.due||0));
+    if(raw.renewal&&(!c.renewal||raw.renewal<c.renewal))c.renewal=raw.renewal;
+  }
+  function allContacts(){
+    const map={};
+    for(let i=1;i<=105;i++){
+      const d=v24Seats[i]||v24Seats[String(i)]||{};
+      [["all","Full Day"],["m","Morning"],["n","Noon"],["an","Afternoon"],["e","Evening"],["night","Night"]].forEach(([sh,label])=>{
+        const name=d["name_"+sh]||"", phone=d["phone_"+sh]||""; if(!name&&!phone)return;
+        const renewal=d["date_"+sh]||"",due=Number(d["due_"+sh]||0);
+        addContact(map,{name,phone,source:`Seat ${i} • ${label}`,type:"fixed",renewal,due,status:recordStatus(renewal,due,false)});
+      });
+    }
+    Object.entries(v24Flex).forEach(([k,d])=>{
+      if(!d||d.status==="Left / Archived")return;
+      const renewal=d.renewal||"",due=Number(d.due||0);
+      addContact(map,{name:d.name||"",phone:d.phone||"",source:`Unreserved • ${d.plan||"Flexible"}${Array.isArray(d.shifts)&&d.shifts.length?" • "+d.shifts.join("/"):""}`,type:"flex",renewal,due,status:recordStatus(renewal,due,false)});
+    });
+    return Object.values(map).map(c=>({...c,types:Array.from(c.types)})).sort((a,b)=>statusPriority(b.status)-statusPriority(a.status)||a.name.localeCompare(b.name));
+  }
+  function filteredContacts(){
+    const audience=$("v24Audience")?.value||"all",q=($("v24ContactSearch")?.value||"").toLowerCase().trim();
+    return allContacts().filter(c=>{
+      const pending=["expired","due","soon"].includes(c.status);
+      if(audience==="pending"&&!pending)return false;if(audience==="active"&&c.status!=="active")return false;if(audience==="fixed"&&!c.types.includes("fixed"))return false;if(audience==="flex"&&!c.types.includes("flex"))return false;
+      return !q||[c.name,c.phone,c.sources.join(" ")].join(" ").toLowerCase().includes(q);
+    });
+  }
+  function statusLabel(s){return s==="expired"?"MONTH EXPIRED":s==="due"?"PAYMENT DUE":s==="soon"?"RENEW SOON":"ACTIVE"}
+  function statusPill(s){return s==="expired"?"red":s==="due"||s==="soon"?"yellow":"green"}
+  window.v24RenderContacts=function(){
+    const all=allContacts(), rows=filteredContacts(), ready=all.filter(x=>x.phone).length,pending=all.filter(x=>["expired","due","soon"].includes(x.status)).length,missing=all.filter(x=>!x.phone).length;
+    if($("v24Total"))$("v24Total").textContent=all.length;if($("v24Phones"))$("v24Phones").textContent=ready;if($("v24Pending"))$("v24Pending").textContent=pending;if($("v24Missing"))$("v24Missing").textContent=missing;if($("v24VisibleCount"))$("v24VisibleCount").textContent=rows.length+" shown";
+    document.querySelectorAll("[data-v24-master-total]").forEach(x=>x.textContent=all.length);document.querySelectorAll("[data-v24-master-phone]").forEach(x=>x.textContent=ready);document.querySelectorAll("[data-v24-master-pending]").forEach(x=>x.textContent=pending);
+    const box=$("v24ContactList");if(!box)return;if(!rows.length){box.innerHTML='<div class="v24-empty">No matching students.</div>';return}
+    box.innerHTML=rows.map(c=>{const cls=!c.phone?"nophone":c.status==="expired"?"expired":["due","soon"].includes(c.status)?"pending":"";return `<div class="v24-contact ${cls}"><div class="v24-contact-top"><div><div class="v24-contact-name">${esc(c.name)}</div><div class="v24-contact-meta">📞 ${esc(c.phone||"Number missing")}<br>📍 ${esc(c.sources.slice(0,3).join(" • "))}${c.sources.length>3?` +${c.sources.length-3} more`:""}<br>📅 Renewal ${esc(c.renewal||"not set")} • Due ₹${Number(c.due||0).toLocaleString("en-IN")}</div></div><div class="v24-contact-badges"><span class="v24-pill ${statusPill(c.status)}">${statusLabel(c.status)}</span>${c.types.includes("flex")?'<span class="v24-pill">UNRESERVED</span>':'<span class="v24-pill">SEAT</span>'}</div></div>${c.phone?`<button class="v24-mini-wa" onclick="v24OneWhatsApp('${c.phone}','${encodeURIComponent(c.name)}')">💬 WhatsApp ${esc(c.name)}</button>`:'<button class="v24-mini-wa" style="background:#64748b" disabled>⚠️ Mobile number missing</button>'}</div>`}).join("");
+  };
+  window.v24OpenContacts=function(){const p=$("v24ContactPanel");if(!p)return;p.classList.add("show");p.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";v24RenderContacts();setTimeout(()=>p.scrollTo(0,0),0)};
+  window.v24CloseContacts=function(){const p=$("v24ContactPanel");if(!p)return;p.classList.remove("show");p.setAttribute("aria-hidden","true");document.body.style.overflow=""};
+  window.v24OneWhatsApp=function(phone,nameEncoded){const msg=$("v24Notice")?.value||"Hariom Library Notice";window.open("https://wa.me/91"+phone+"?text="+encodeURIComponent(msg),"_blank")};
+  window.v24ShareNotice=function(){const msg=$("v24Notice")?.value.trim();if(!msg)return toast("Notice message लिखिए");try{localStorage.setItem("hariom_v24_notice",msg)}catch(e){}window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank")};
+  window.v24CopyNumbers=async function(){const nums=filteredContacts().map(x=>x.phone).filter(Boolean);if(!nums.length)return toast("No valid mobile numbers in this filter");const text=nums.map(x=>"+91"+x).join("\n");try{await navigator.clipboard.writeText(text);toast("✅ "+nums.length+" numbers copied")}catch(e){prompt("Copy all numbers",text)}};
+  window.v24DownloadVCF=function(){const rows=filteredContacts().filter(x=>x.phone);if(!rows.length)return toast("No valid contacts to save");const safeV=s=>String(s||"").replace(/\\/g,"\\\\").replace(/\n/g,"\\n").replace(/,/g,"\\,").replace(/;/g,"\\;");const vcf=rows.map((c,i)=>`BEGIN:VCARD\nVERSION:3.0\nFN:${safeV("Hariom - "+c.name)}\nTEL;TYPE=CELL:+91${c.phone}\nNOTE:${safeV(c.sources.join(" | ")+" | "+statusLabel(c.status))}\nEND:VCARD`).join("\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([vcf],{type:"text/vcard;charset=utf-8"}));a.download="Hariom-Library-Student-Contacts-"+localToday()+".vcf";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast("✅ "+rows.length+" contacts file ready")};
+  window.v24StartOrNextQueue=function(){
+    if(v24QueueIndex<0||v24QueueIndex>=v24Queue.length-1){v24Queue=filteredContacts().filter(x=>x.phone);v24QueueIndex=-1;if(!v24Queue.length)return toast("No WhatsApp-ready students in this filter")}
+    v24QueueIndex++;const c=v24Queue[v24QueueIndex],msg=$("v24Notice")?.value.trim()||"Hariom Library Notice";window.open("https://wa.me/91"+c.phone+"?text="+encodeURIComponent(msg),"_blank");const b=$("v24QueueBtn");if(b)b.textContent=v24QueueIndex>=v24Queue.length-1?"✅ Queue Finished":`📲 Send Next ${v24QueueIndex+2}/${v24Queue.length}`;
+  };
+  function decorateUrCards(){
+    const cards=document.querySelectorAll("#ur23List .ur23-student");cards.forEach(card=>{card.classList.remove("v24-active","v24-soon","v24-due","v24-expired","v24-archived");const txt=card.textContent||"";let s="active",label="🟢 MONTH ACTIVE / OK";if(txt.includes("MONTH EXPIRED")){s="expired";label="🔴 MONTH EXPIRED — PAYMENT / RENEWAL CHECK"}else if(txt.includes("DUE ₹")&&!txt.includes("DUE ₹0")){s="due";label="🟠 PAYMENT DUE — FOLLOW UP"}else if(txt.includes("RENEW SOON")){s="soon";label="🟡 RENEW SOON"}if(card.classList.contains("archived")||txt.includes("Left / Archived")){s="archived";label="⚪ ARCHIVED / LEFT"}card.classList.add("v24-"+s);let line=card.querySelector(".v24-statusline");if(!line){line=document.createElement("div");line.className="v24-statusline";card.insertBefore(line,card.firstChild)}line.className="v24-statusline "+s;line.innerHTML=`<span>${label}</span><span>Tap actions below</span>`});
+    const visible=$("ur23List")?.querySelectorAll(".ur23-student").length||0;const h=$("ur23List")?.closest(".ur23-card")?.querySelector("h3");if(h)h.textContent="👥 Student Register • "+visible+" students";
+  }
+  function setupUrRegister(){
+    const form=$("ur23FormCard"),list=$("ur23List")?.closest(".ur23-card");if(!form||!list)return;
+    if(list.parentNode&&form.parentNode===list.parentNode&&form.previousElementSibling!==list)form.parentNode.insertBefore(list,form);
+    form.classList.remove("v24-form-open");
+    if(!$("v24UrTools")){
+      const tools=document.createElement("div");tools.id="v24UrTools";tools.innerHTML=`<div class="v24-register-tools"><button class="v24-add" type="button" onclick="v24AddUrStudent()">➕ ADD NEW STUDENT</button><button class="v24-contacts" type="button" onclick="v24OpenContacts()">💬 ALL STUDENTS / WHATSAPP</button></div><div class="v24-legend"><span class="a">🟢 Month Active</span><span class="s">🟡 Renew Soon</span><span class="d">🟠 Payment Due</span><span class="e">🔴 Month Expired</span><span class="x">⚪ Archived</span></div>`;
+      const search=list.querySelector(".ur23-searchrow");if(search)list.insertBefore(tools,search);else list.insertBefore(tools,list.firstChild?.nextSibling||null)
+    }
+    decorateUrCards()
+  }
+  window.v24AddUrStudent=function(){const f=$("ur23FormCard");if(!f)return;if(typeof ur23ResetForm==="function")ur23ResetForm();f.classList.add("v24-form-open");setTimeout(()=>f.scrollIntoView({behavior:"smooth",block:"start"}),30)};
+  function insertMasterEntry(){
+    const sec=$("studentsSection");if(!sec||$("v24MasterEntry"))return;const entry=document.createElement("div");entry.id="v24MasterEntry";entry.className="v24-master-entry";entry.innerHTML=`<h3>💬 All Students & WhatsApp Notice</h3><p>All student mobile numbers automatically collected from fixed seats + Unreserved Register. New students appear here automatically.</p><div class="v24-entry-stats"><div class="v24-entry-stat"><b data-v24-master-total>0</b><span>STUDENTS</span></div><div class="v24-entry-stat"><b data-v24-master-phone>0</b><span>PHONE READY</span></div><div class="v24-entry-stat"><b data-v24-master-pending>0</b><span>PENDING</span></div></div><button class="v24-entry-btn" onclick="v24OpenContacts()">OPEN WHATSAPP NOTICE CENTER →</button>`;const title=sec.querySelector(".section-title");if(title&&title.nextSibling)sec.insertBefore(entry,title.nextSibling);else sec.prepend(entry);v24RenderContacts()
+  }
+  function wrapUrFunctions(){
+    if(window.__v24Wrapped)return;window.__v24Wrapped=true;
+    const oldOpen=window.ur23Open;if(typeof oldOpen==="function")window.ur23Open=function(){oldOpen.apply(this,arguments);setTimeout(()=>{setupUrRegister();const list=$("ur23List")?.closest(".ur23-card");if(list)list.scrollIntoView({block:"start"})},40)};
+    const oldEdit=window.ur23Edit;if(typeof oldEdit==="function")window.ur23Edit=function(){oldEdit.apply(this,arguments);const f=$("ur23FormCard");if(f)f.classList.add("v24-form-open")};
+    const oldRender=window.ur23Render;if(typeof oldRender==="function")window.ur23Render=function(){const r=oldRender.apply(this,arguments);setTimeout(()=>{decorateUrCards();},0);return r};
+  }
+  function init(){setupUrRegister();insertMasterEntry();wrapUrFunctions();try{const saved=localStorage.getItem("hariom_v24_notice");if(saved&&$("v24Notice"))$("v24Notice").value=saved}catch(e){}if($("v24Notice"))$("v24Notice").addEventListener("input",()=>{try{localStorage.setItem("hariom_v24_notice",$("v24Notice").value)}catch(e){}});v24RenderContacts()}
+  if(typeof database!=="undefined"){
+    database.ref("library_v3/seats").on("value",s=>{v24Seats=s.val()||{};v24RenderContacts()});
+    database.ref("library_v3/unreservedStudentsV23").on("value",s=>{v24Flex=s.val()||{};v24RenderContacts();setTimeout(decorateUrCards,0)});
+  }
+  document.addEventListener("DOMContentLoaded",init);window.addEventListener("load",()=>{init();setTimeout(init,500)});
+})();
+</script>
+<!-- ===== END V24 ===== -->
