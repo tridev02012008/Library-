@@ -4708,3 +4708,161 @@ document.addEventListener('DOMContentLoaded',mount);window.addEventListener('loa
 })();
 </script>
 <!-- ===== END V20 ===== -->
+
+<!-- ===== HARIOM V23 UNRESERVED FLEX REGISTER ===== -->
+<style id="v23-unreserved-style">
+/* Keep legacy 64–85 seat DOM nodes alive for old Firebase data/UI calculations, but do not show fixed cards. */
+#seatsGrid .v23-legacy-ur-seat{display:none !important;}
+.v23-ur-portal{grid-column:1/-1 !important;display:block !important;position:relative;overflow:hidden;border:1px solid rgba(99,102,241,.25);border-radius:22px;padding:16px;margin:4px 0 8px;background:linear-gradient(135deg,rgba(79,70,229,.14),rgba(14,165,233,.10),var(--card));box-shadow:0 12px 30px rgba(15,23,42,.10);cursor:pointer;min-height:0 !important}
+.v23-ur-portal:before{content:"";position:absolute;width:120px;height:120px;border-radius:50%;right:-44px;top:-55px;background:rgba(139,92,246,.14)}
+.v23-ur-title{font-size:16px;font-weight:950;letter-spacing:-.3px;position:relative;z-index:1}.v23-ur-sub{font-size:10px;color:var(--muted);line-height:1.5;margin-top:5px;max-width:82%;position:relative;z-index:1}
+.v23-ur-portal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:12px;position:relative;z-index:1}.v23-ur-mini{padding:8px;border-radius:12px;background:var(--card);border:1px solid var(--border);text-align:center}.v23-ur-mini b{display:block;font-size:15px}.v23-ur-mini span{font-size:7px;color:var(--muted);font-weight:900;letter-spacing:.35px}.v23-ur-open{width:100%;margin-top:10px;border:0;border-radius:13px;padding:11px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;font-weight:900;font-size:10px;position:relative;z-index:1}
+#urPanel{display:none;position:fixed;inset:0;z-index:3200;background:var(--bg);overflow:auto}#urPanel.show{display:block}.ur23-head{position:sticky;top:0;z-index:10;background:linear-gradient(125deg,#111827,#3730a3 55%,#7c3aed);color:#fff;padding:13px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 25px rgba(0,0,0,.18)}.ur23-head h2{font-size:15px;flex:1}.ur23-head small{display:block;font-size:8px;opacity:.8;margin-top:2px}.ur23-close{width:38px;height:38px;border:0;border-radius:12px;background:rgba(255,255,255,.15);color:#fff;font-size:20px}
+.ur23-wrap{max-width:900px;margin:auto;padding:13px 12px 105px}.ur23-note{padding:11px 12px;border:1px solid rgba(22,163,74,.18);background:rgba(22,163,74,.07);border-radius:15px;font-size:9px;line-height:1.55;margin-bottom:11px}.ur23-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:11px}.ur23-stat{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:11px;box-shadow:var(--soft)}.ur23-stat small{font-size:8px;color:var(--muted);font-weight:900}.ur23-stat b{display:block;font-size:19px;margin-top:4px}.ur23-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:13px;margin-bottom:10px;box-shadow:var(--shadow)}.ur23-card h3{font-size:13px;margin-bottom:9px}.ur23-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ur23-field{min-width:0}.ur23-field.full{grid-column:1/-1}.ur23-field label{display:block;font-size:8px;color:var(--muted);font-weight:800;margin:0 0 4px 2px}.ur23-in,.ur23-sel,.ur23-text{width:100%;padding:11px;border:1px solid var(--border);border-radius:11px;background:var(--bg);color:var(--text);outline:none}.ur23-text{min-height:65px;resize:vertical}.ur23-shifts{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}.ur23-check{display:flex;align-items:center;gap:7px;padding:9px;border:1px solid var(--border);background:var(--bg);border-radius:10px;font-size:9px;font-weight:800}.ur23-check input{accent-color:var(--primary)}
+.ur23-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.ur23-btn{border:0;border-radius:11px;padding:11px 10px;background:var(--primary);color:#fff;font-weight:900;font-size:9px}.ur23-btn.green{background:var(--success)}.ur23-btn.gray{background:#475569}.ur23-btn.red{background:var(--danger)}.ur23-btn.orange{background:#d97706}.ur23-autosave{font-size:8px;color:var(--muted);margin-top:8px;text-align:center}.ur23-autosave.on{color:var(--success);font-weight:900}.ur23-searchrow{display:grid;grid-template-columns:1fr auto;gap:7px}.ur23-filter{display:flex;gap:6px;overflow:auto;margin:8px 0 10px;scrollbar-width:none}.ur23-filter button{white-space:nowrap;border:1px solid var(--border);border-radius:999px;padding:7px 10px;background:var(--card);color:var(--text);font-size:8px;font-weight:900}.ur23-filter button.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+.ur23-student{border:1px solid var(--border);border-radius:16px;padding:11px;margin-bottom:8px;background:var(--card);box-shadow:var(--soft);position:relative;overflow:hidden}.ur23-student:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:#16a34a}.ur23-student.due:before{background:#f59e0b}.ur23-student.expired:before{background:#dc2626}.ur23-student.archived{opacity:.65}.ur23-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.ur23-name{font-size:13px;font-weight:950}.ur23-meta{font-size:8.5px;color:var(--muted);line-height:1.55;margin-top:4px}.ur23-badges{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}.ur23-badge{padding:4px 6px;border-radius:999px;font-size:7px;font-weight:900;background:var(--bg);border:1px solid var(--border)}.ur23-badge.red{background:#fee2e2;color:#b91c1c}.ur23-badge.yellow{background:#fef3c7;color:#92400e}.ur23-badge.green{background:#dcfce7;color:#166534}.ur23-card-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:9px}.ur23-card-actions button{border:0;border-radius:9px;padding:8px 4px;font-size:7.5px;font-weight:900;background:var(--bg);color:var(--text);border:1px solid var(--border)}.ur23-empty{text-align:center;padding:25px 10px;color:var(--muted);font-size:10px}.ur23-section-label{font-size:9px;font-weight:950;letter-spacing:.5px;color:var(--primary);margin:8px 0 2px;grid-column:1/-1}
+@media(min-width:700px){.ur23-stats{grid-template-columns:repeat(4,1fr)}.ur23-grid{grid-template-columns:repeat(4,1fr)}.ur23-field.full{grid-column:1/-1}.ur23-shifts{grid-template-columns:repeat(5,1fr)}.ur23-card-actions{grid-template-columns:repeat(6,1fr)}}
+@media(max-width:390px){.ur23-card-actions{grid-template-columns:repeat(2,1fr)}.ur23-portal-grid{gap:5px}.ur23-ur-mini{padding:7px 3px}}
+</style>
+
+<div id="urPanel" aria-hidden="true">
+  <div class="ur23-head">
+    <div>🪑</div><h2>Unreserved Student Register<small>Flexible seating • no fixed seat number</small></h2>
+    <button class="ur23-close" type="button" onclick="ur23Close()">×</button>
+  </div>
+  <div class="ur23-wrap">
+    <div class="ur23-note">✅ Existing old unreserved-seat Firebase records are kept untouched. This register uses a separate safe data path. New flexible students have <b>no fixed seat number</b>; they can use any available unreserved place according to your rule.</div>
+    <div class="ur23-stats">
+      <div class="ur23-stat"><small>ACTIVE FLEX STUDENTS</small><b id="ur23Active">0</b></div>
+      <div class="ur23-stat"><small>PAYMENT DUE</small><b id="ur23Due">₹0</b></div>
+      <div class="ur23-stat"><small>EXPIRED / RENEW</small><b id="ur23Expired">0</b></div>
+      <div class="ur23-stat"><small>TODAY PRESENT</small><b id="ur23Today">0</b></div>
+    </div>
+
+    <div class="ur23-card" id="ur23FormCard">
+      <h3>➕ Flexible Student Details</h3>
+      <div class="ur23-grid">
+        <div class="ur23-section-label">STUDENT</div>
+        <div class="ur23-field"><label>Student Name *</label><input id="ur23Name" class="ur23-in" placeholder="Name"></div>
+        <div class="ur23-field"><label>Mobile Number *</label><input id="ur23Phone" class="ur23-in" inputmode="numeric" maxlength="10" placeholder="10 digit mobile"></div>
+        <div class="ur23-field"><label>Plan</label><select id="ur23Plan" class="ur23-sel"><option>1 Shift</option><option>2 Shifts</option><option>3 Shifts</option><option>Flexible</option></select></div>
+        <div class="ur23-field"><label>Study Days / Week</label><select id="ur23DaysWeek" class="ur23-sel"><option value="7">7 days</option><option value="6">6 days</option><option value="5">5 days</option><option value="4">4 days</option><option value="3">3 days</option><option value="2">2 days</option><option value="1">1 day</option></select></div>
+        <div class="ur23-field full"><label>Allowed Shift(s) — select one or more</label><div class="ur23-shifts">
+          <label class="ur23-check"><input type="checkbox" class="ur23-shift" value="Morning">🌅 Morning</label>
+          <label class="ur23-check"><input type="checkbox" class="ur23-shift" value="Noon">☀️ Noon</label>
+          <label class="ur23-check"><input type="checkbox" class="ur23-shift" value="Afternoon">🌤️ Afternoon</label>
+          <label class="ur23-check"><input type="checkbox" class="ur23-shift" value="Evening">🌆 Evening</label>
+          <label class="ur23-check"><input type="checkbox" class="ur23-shift" value="Night">🌙 Night</label>
+        </div></div>
+        <div class="ur23-section-label">MONTH & PAYMENT</div>
+        <div class="ur23-field"><label>Joining Date</label><input id="ur23Join" class="ur23-in" type="date"></div>
+        <div class="ur23-field"><label>Renewal / Month End</label><input id="ur23Renew" class="ur23-in" type="date"></div>
+        <div class="ur23-field"><label>Monthly Fee ₹</label><input id="ur23Fee" class="ur23-in" type="number" min="0" placeholder="Fee"></div>
+        <div class="ur23-field"><label>Paid ₹</label><input id="ur23Paid" class="ur23-in" type="number" min="0" placeholder="Paid"></div>
+        <div class="ur23-field"><label>Due ₹ (Auto)</label><input id="ur23DueInput" class="ur23-in" type="number" readonly></div>
+        <div class="ur23-field"><label>Payment Date</label><input id="ur23PayDate" class="ur23-in" type="date"></div>
+        <div class="ur23-field"><label>Status</label><select id="ur23Status" class="ur23-sel"><option>Active</option><option>Paused</option><option>Left / Archived</option></select></div>
+        <div class="ur23-field full"><label>Admin Note</label><textarea id="ur23Note" class="ur23-text" placeholder="Example: one shift, random place, exam timing, payment promise..."></textarea></div>
+      </div>
+      <div class="ur23-actions"><button class="ur23-btn green" id="ur23SaveBtn" type="button" onclick="ur23Save()">💾 Save New Student</button><button class="ur23-btn gray" type="button" onclick="ur23ResetForm()">＋ New / Clear Form</button></div>
+      <div class="ur23-autosave" id="ur23AutoState">New entry draft is saved on this phone • after first Save, edits auto-save to Firebase.</div>
+    </div>
+
+    <div class="ur23-card">
+      <h3>🔎 Student Register</h3>
+      <div class="ur23-searchrow"><input id="ur23Search" class="ur23-in" placeholder="Search name or mobile..." oninput="ur23Render()"><button class="ur23-btn" type="button" onclick="ur23ExportCSV()">⬇ CSV</button></div>
+      <div class="ur23-filter" id="ur23Filters">
+        <button class="on" onclick="ur23SetFilter('all',this)">All</button><button onclick="ur23SetFilter('active',this)">Active</button><button onclick="ur23SetFilter('due',this)">Due</button><button onclick="ur23SetFilter('expired',this)">Expired</button><button onclick="ur23SetFilter('today',this)">Present Today</button><button onclick="ur23SetFilter('archived',this)">Archived</button>
+      </div>
+      <div id="ur23List"><div class="ur23-empty">Loading flexible students...</div></div>
+    </div>
+  </div>
+</div>
+
+<script id="v23-unreserved-script">
+(function(){
+  const URBASE="library_v3/unreservedStudentsV23";
+  const URATT="library_v3/unreservedAttendanceV23";
+  let ur23Data={};
+  let ur23Att={};
+  let ur23EditKey="";
+  let ur23Filter="all";
+  let ur23Timer=null;
+  const $=id=>document.getElementById(id);
+  const todayKey=()=>{const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)};
+  const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+  function toast(msg){if(typeof showToast==="function")showToast(msg);else alert(msg)}
+  function adminOK(){if(typeof isAdminVerified!=="undefined"&&!isAdminVerified){toast("⚠️ Admin verification required");return false}return true}
+  function dateState(date){if(!date)return "none";const t=new Date(todayKey()+"T00:00:00"),d=new Date(date+"T00:00:00"),soon=new Date(t);soon.setDate(soon.getDate()+3);if(d<t)return "expired";if(d<=soon)return "soon";return "active"}
+  function monthPresentCount(key){const a=ur23Att[key]||{},m=todayKey().slice(0,7);return Object.keys(a).filter(d=>d.startsWith(m)&&a[d]).length}
+  function totalPresentCount(key){return Object.values(ur23Att[key]||{}).filter(Boolean).length}
+  function presentToday(key){return !!((ur23Att[key]||{})[todayKey()])}
+  function selectedShifts(){return Array.from(document.querySelectorAll(".ur23-shift:checked")).map(x=>x.value)}
+  function collect(){
+    const fee=Number($("ur23Fee").value)||0,paid=Number($("ur23Paid").value)||0;
+    return {name:$("ur23Name").value.trim(),phone:$("ur23Phone").value.trim(),plan:$("ur23Plan").value,daysWeek:Number($("ur23DaysWeek").value)||7,shifts:selectedShifts(),joining:$("ur23Join").value,renewal:$("ur23Renew").value,fee,paid,due:Math.max(0,fee-paid),paymentDate:$("ur23PayDate").value,status:$("ur23Status").value,note:$("ur23Note").value.trim(),updatedAt:Date.now()}
+  }
+  function setDue(){const fee=Number($("ur23Fee").value)||0,paid=Number($("ur23Paid").value)||0;$("ur23DueInput").value=Math.max(0,fee-paid)}
+  function fillForm(d){
+    $("ur23Name").value=d.name||"";$("ur23Phone").value=d.phone||"";$("ur23Plan").value=d.plan||"1 Shift";$("ur23DaysWeek").value=String(d.daysWeek||7);$("ur23Join").value=d.joining||"";$("ur23Renew").value=d.renewal||"";$("ur23Fee").value=d.fee||"";$("ur23Paid").value=d.paid||"";$("ur23PayDate").value=d.paymentDate||"";$("ur23Status").value=d.status||"Active";$("ur23Note").value=d.note||"";document.querySelectorAll(".ur23-shift").forEach(x=>x.checked=(d.shifts||[]).includes(x.value));setDue()
+  }
+  function saveDraft(){if(ur23EditKey)return;try{localStorage.setItem("hariom_ur23_draft",JSON.stringify(collect()))}catch(e){}}
+  function loadDraft(){if(ur23EditKey)return;try{const raw=localStorage.getItem("hariom_ur23_draft");if(raw){const d=JSON.parse(raw);if(d&&d.name)fillForm(d)}}catch(e){}}
+  function autoSave(){
+    setDue();
+    if(!ur23EditKey){saveDraft();return}
+    clearTimeout(ur23Timer);$("ur23AutoState").textContent="● Saving...";$("ur23AutoState").className="ur23-autosave";
+    ur23Timer=setTimeout(()=>{const d=collect();database.ref(URBASE+"/"+ur23EditKey).update(d).then(()=>{$("ur23AutoState").textContent="✓ Auto-saved to Firebase";$("ur23AutoState").className="ur23-autosave on"}).catch(e=>{$("ur23AutoState").textContent="Save error: "+e.message})},550)
+  }
+  window.ur23Open=function(){const p=$("urPanel");if(!p)return;p.classList.add("show");p.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";if(!ur23EditKey)loadDraft();ur23Render();setTimeout(()=>p.scrollTo(0,0),0)};
+  window.ur23Close=function(){const p=$("urPanel");if(!p)return;p.classList.remove("show");p.setAttribute("aria-hidden","true");document.body.style.overflow=""};
+  window.ur23ResetForm=function(){ur23EditKey="";fillForm({joining:todayKey(),status:"Active",daysWeek:7,plan:"1 Shift"});try{localStorage.removeItem("hariom_ur23_draft")}catch(e){}$("ur23SaveBtn").textContent="💾 Save New Student";$("ur23AutoState").textContent="New entry draft is saved on this phone • after first Save, edits auto-save to Firebase.";$("ur23AutoState").className="ur23-autosave";$("ur23Name").focus()};
+  window.ur23Save=function(){
+    if(!adminOK())return;const d=collect();if(!d.name||!d.phone)return toast("Name and mobile number required");if(!d.shifts.length)return toast("At least one shift select करें");
+    if(!d.paymentDate&&d.paid>0)d.paymentDate=todayKey();
+    if(ur23EditKey){database.ref(URBASE+"/"+ur23EditKey).update(d).then(()=>toast("✅ Student updated"));return}
+    const ref=database.ref(URBASE).push();d.createdAt=Date.now();ref.set(d).then(()=>{ur23EditKey=ref.key;try{localStorage.removeItem("hariom_ur23_draft")}catch(e){}$("ur23SaveBtn").textContent="✅ Saved • Auto Save ON";$("ur23AutoState").textContent="✓ Saved to Firebase — any further edit will auto-save";$("ur23AutoState").className="ur23-autosave on";toast("✅ Flexible student saved")}).catch(e=>toast("Save error: "+e.message))
+  };
+  window.ur23Edit=function(key){const d=ur23Data[key];if(!d)return;ur23EditKey=key;fillForm(d);$("ur23SaveBtn").textContent="✅ Update Now";$("ur23AutoState").textContent="Auto Save ON — changes save automatically";$("ur23AutoState").className="ur23-autosave on";$("ur23FormCard").scrollIntoView({behavior:"smooth",block:"start"})};
+  window.ur23Archive=function(key){if(!adminOK())return;if(!confirm("Student ko archive/left mark करें? Record delete नहीं होगा."))return;database.ref(URBASE+"/"+key).update({status:"Left / Archived",archivedAt:Date.now(),updatedAt:Date.now()}).then(()=>toast("Record archived safely"))};
+  window.ur23MarkToday=function(key){if(!adminOK())return;const ref=database.ref(URATT+"/"+key+"/"+todayKey());ref.set(!presentToday(key)).then(()=>toast(presentToday(key)?"Attendance updated":"Attendance updated"))};
+  window.ur23RenewQuick=function(key){if(!adminOK())return;const d=ur23Data[key]||{},fee=Number(d.fee)||0;const amount=prompt("Paid amount ₹",String(fee));if(amount===null)return;const renewal=prompt("New renewal date (YYYY-MM-DD)",d.renewal||todayKey());if(renewal===null)return;const paid=Math.max(0,Number(amount)||0);database.ref(URBASE+"/"+key).update({paid,fee,due:Math.max(0,fee-paid),paymentDate:todayKey(),renewal,status:"Active",updatedAt:Date.now()}).then(()=>toast("✅ Payment / renewal updated"))};
+  window.ur23WhatsApp=function(key){const d=ur23Data[key]||{},p=String(d.phone||"").replace(/\D/g,"");if(!p)return toast("Phone number missing");const msg=`Hariom Library: Namaste ${d.name||"Student"}, aapka renewal/payment status check kar lijiye. Renewal: ${d.renewal||"not set"}, Due: ₹${Number(d.due||0)}.`;window.open("https://wa.me/91"+p+"?text="+encodeURIComponent(msg),"_blank")};
+  window.ur23SetFilter=function(type,btn){ur23Filter=type;document.querySelectorAll("#ur23Filters button").forEach(x=>x.classList.remove("on"));if(btn)btn.classList.add("on");ur23Render()};
+  window.ur23Render=function(){
+    const q=($("ur23Search")?.value||"").toLowerCase().trim(),today=todayKey();let arr=Object.entries(ur23Data).map(([key,d])=>({key,...d}));
+    arr=arr.filter(d=>!q||[d.name,d.phone,(d.shifts||[]).join(" "),d.plan].join(" ").toLowerCase().includes(q));
+    arr=arr.filter(d=>{const archived=d.status==="Left / Archived",st=dateState(d.renewal),due=Number(d.due||0)>0;if(ur23Filter==="active")return !archived&&d.status==="Active"&&st!=="expired";if(ur23Filter==="due")return !archived&&due;if(ur23Filter==="expired")return !archived&&st==="expired";if(ur23Filter==="today")return presentToday(d.key);if(ur23Filter==="archived")return archived;return true});
+    arr.sort((a,b)=>{const aa=a.status==="Left / Archived"?3:dateState(a.renewal)==="expired"?0:Number(a.due||0)>0?1:2,bb=b.status==="Left / Archived"?3:dateState(b.renewal)==="expired"?0:Number(b.due||0)>0?1:2;return aa-bb||String(a.renewal||"9999").localeCompare(String(b.renewal||"9999"))});
+    const box=$("ur23List");if(!box)return;if(!arr.length){box.innerHTML='<div class="ur23-empty">No matching flexible students.</div>';return}
+    box.innerHTML=arr.map(d=>{const st=dateState(d.renewal),due=Number(d.due||0),arch=d.status==="Left / Archived",cls=arch?"archived":st==="expired"?"expired":due>0?"due":"",badges=[`<span class="ur23-badge">${esc(d.plan||"Flexible")}</span>`];if(st==="expired")badges.push('<span class="ur23-badge red">MONTH EXPIRED</span>');else if(st==="soon")badges.push('<span class="ur23-badge yellow">RENEW SOON</span>');else badges.push('<span class="ur23-badge green">ACTIVE MONTH</span>');if(due>0)badges.push(`<span class="ur23-badge yellow">DUE ₹${due.toLocaleString("en-IN")}</span>`);if(presentToday(d.key))badges.push('<span class="ur23-badge green">PRESENT TODAY</span>');const shifts=(d.shifts||[]).join(" • ")||"Shift not set";return `<div class="ur23-student ${cls}"><div class="ur23-top"><div><div class="ur23-name">${esc(d.name||"Unnamed")}</div><div class="ur23-meta">📞 ${esc(d.phone||"-")}<br>🕒 ${esc(shifts)} • ${Number(d.daysWeek||7)} days/week<br>📅 Join ${esc(d.joining||"-")} • Renew ${esc(d.renewal||"-")}<br>💰 Fee ₹${Number(d.fee||0).toLocaleString("en-IN")} • Paid ₹${Number(d.paid||0).toLocaleString("en-IN")} • Due ₹${due.toLocaleString("en-IN")}<br>📚 This month: <b>${monthPresentCount(d.key)} days</b> • Total recorded: ${totalPresentCount(d.key)} days${d.note?`<br>📝 ${esc(d.note)}`:""}</div></div><div class="ur23-badges">${badges.join("")}</div></div><div class="ur23-card-actions"><button onclick="ur23Edit('${d.key}')">✏️ Edit</button><button onclick="ur23MarkToday('${d.key}')">${presentToday(d.key)?"↩️ Undo Today":"✅ Present Today"}</button><button onclick="ur23RenewQuick('${d.key}')">💳 Pay / Renew</button><button onclick="ur23WhatsApp('${d.key}')">💬 WhatsApp</button>${arch?"":`<button onclick="ur23Archive('${d.key}')">📦 Archive</button>`}</div></div>`}).join("")
+  };
+  function updateStats(){
+    const vals=Object.entries(ur23Data).map(([key,d])=>({key,...d})),active=vals.filter(d=>d.status!=="Left / Archived").length,due=vals.filter(d=>d.status!=="Left / Archived").reduce((s,d)=>s+Number(d.due||0),0),expired=vals.filter(d=>d.status!=="Left / Archived"&&dateState(d.renewal)==="expired").length,today=vals.filter(d=>presentToday(d.key)).length;
+    if($("ur23Active"))$("ur23Active").textContent=active;if($("ur23Due"))$("ur23Due").textContent="₹"+due.toLocaleString("en-IN");if($("ur23Expired"))$("ur23Expired").textContent=expired;if($("ur23Today"))$("ur23Today").textContent=today;
+    const p=$("v23Portal");if(p){const a=p.querySelector("[data-ur-active]"),e=p.querySelector("[data-ur-expired]"),du=p.querySelector("[data-ur-due]");if(a)a.textContent=active;if(e)e.textContent=expired;if(du)du.textContent="₹"+due.toLocaleString("en-IN")}
+  }
+  function legacySafeCount(){let c=0;for(let i=64;i<=85;i++){const d=(typeof globalLibraryData!=="undefined"&&globalLibraryData[i])||{};if(["all","m","n","an","e","night"].some(s=>d["name_"+s]))c++}const e=$("v23LegacyCount");if(e)e.textContent=c}
+  function mountPortal(){
+    const g=$("seatsGrid");if(!g)return;
+    for(let i=64;i<=85;i++){const s=$("seat-"+i);if(s)s.classList.add("v23-legacy-ur-seat")}
+    if(!$("v23Portal")){
+      const portal=document.createElement("div");portal.id="v23Portal";portal.className="v23-ur-portal";portal.onclick=ur23Open;portal.innerHTML=`<div class="v23-ur-title">🪑 Unreserved Student Register</div><div class="v23-ur-sub">Flexible seating for 1-shift / selected multi-shift students. No fixed seat number. Track month, payment, due and study days without losing old data.</div><div class="v23-ur-portal-grid"><div class="v23-ur-mini"><b data-ur-active>0</b><span>ACTIVE STUDENTS</span></div><div class="v23-ur-mini"><b data-ur-due>₹0</b><span>PAYMENT DUE</span></div><div class="v23-ur-mini"><b data-ur-expired>0</b><span>MONTH EXPIRED</span></div></div><button class="v23-ur-open" type="button">OPEN FLEX REGISTER →</button><div class="v23-ur-sub" style="max-width:100%;margin-top:7px">🔒 Old saved unreserved records safe: <b id="v23LegacyCount">0</b> legacy records detected.</div>`;
+      const before=$("seat-64")||$("seat-86");if(before)g.insertBefore(portal,before);else g.appendChild(portal)
+    }
+    updateStats();legacySafeCount()
+  }
+  window.ur23ExportCSV=function(){const rows=Object.values(ur23Data);if(!rows.length)return toast("No flexible student data");const cols=["name","phone","plan","shifts","daysWeek","joining","renewal","fee","paid","due","paymentDate","status","note"],csv=[cols.join(","),...rows.map(r=>cols.map(c=>'"'+String(c==="shifts"?(r.shifts||[]).join(" | "):(r[c]??"")).replace(/"/g,'""')+'"').join(","))].join("\n"),a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="Hariom-Unreserved-Students-"+todayKey()+".csv";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+  function bind(){
+    document.querySelectorAll("#ur23FormCard input,#ur23FormCard select,#ur23FormCard textarea").forEach(el=>{el.addEventListener("input",autoSave);el.addEventListener("change",autoSave)});
+    if(!$("ur23Join").value)$("ur23Join").value=todayKey();setDue();loadDraft()
+  }
+  database.ref(URBASE).on("value",s=>{ur23Data=s.val()||{};updateStats();ur23Render()});
+  database.ref(URATT).on("value",s=>{ur23Att=s.val()||{};updateStats();ur23Render()});
+  if(typeof database!=="undefined")database.ref("library_v3/seats").on("value",()=>setTimeout(legacySafeCount,0));
+  document.addEventListener("DOMContentLoaded",()=>{mountPortal();bind()});
+  window.addEventListener("load",()=>{mountPortal();setTimeout(mountPortal,500)});
+})();
+</script>
+<!-- ===== END V23 ===== -->
+
