@@ -6,7 +6,7 @@
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<meta name="theme-color" content="#4f46e5">
+<meta name="theme-color" content="#0f172a">
 <link rel="manifest" href="manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -14,7 +14,7 @@ content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable
 <meta name="apple-mobile-web-app-title" content="Hariom Library">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 
-<title>Hariom Smart Library Nexus V13</title>
+<title>Hariom Smart Library App V27</title>
 
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -3549,7 +3549,7 @@ database
 .ref(
 "library_v3/seats/"+activeSeatNumber
 )
-.set(update)
+.update(update)
 .then(()=>{
 
 showToast(
@@ -4354,7 +4354,7 @@ function spFeeCalc(){let fee=Number(document.getElementById('spMonthlyFee').valu
 function spHealth(){let rows=spRows(),issues=[],phones={};rows.forEach(x=>{if(!x.phone)issues.push('Seat '+x.seat+' ('+x.sh+'): phone missing');if(!x.date)issues.push('Seat '+x.seat+' ('+x.sh+'): renewal date missing');let p=x.phone.replace(/\D/g,'');if(p)phones[p]=(phones[p]||0)+1});let dup=Object.values(phones).filter(x=>x>1).length;if(dup)issues.push(dup+' duplicate phone number group(s) found');let score=Math.max(35,100-Math.min(60,issues.length*2));let e=document.getElementById('spHealthScore');if(e)e.innerText=score+'%';let b=document.getElementById('spHealthBar');if(b)b.style.width=score+'%';let t=document.getElementById('spHealthText');if(t)t.innerText=score>=90?'Excellent':score>=75?'Good':'Needs Review';let box=document.getElementById('spHealthIssues');if(box)box.innerHTML=(issues.slice(0,20).map(x=>'<div class="sp-item">⚠️ '+escapeHtml(x)+'</div>').join('')||'<div class="sp-item">✅ No obvious missing-data issue found.</div>')}
 </script>
 
-\n<!-- ===== HARIOM NEXUS AI V14 ===== -->
+<!-- ===== HARIOM NEXUS AI V14 ===== -->
 <style>
 .ai14-fab{position:fixed;right:16px;bottom:92px;z-index:98;border:0;border-radius:18px;padding:13px 15px;background:linear-gradient(135deg,#020617,#2563eb,#7c3aed);color:#fff;font-weight:900;box-shadow:0 14px 34px #4f46e555;cursor:pointer}.ai14-panel{display:none;position:fixed;inset:0;z-index:650;background:var(--bg);overflow:auto}.ai14-panel.show{display:block}.ai14-head{position:sticky;top:0;z-index:5;padding:15px;background:linear-gradient(120deg,#020617,#1e3a8a,#6d28d9);color:#fff;display:flex;justify-content:space-between;align-items:center}.ai14-head button{border:0;width:40px;height:40px;border-radius:13px;background:#ffffff20;color:#fff;font-size:20px}.ai14-wrap{max-width:900px;margin:auto;padding:14px 14px 110px}.ai14-hero{padding:20px;border-radius:25px;background:linear-gradient(135deg,#111827,#1d4ed8,#7c3aed);color:#fff;margin-bottom:12px;box-shadow:0 18px 45px #312e8133}.ai14-hero h2{font-size:23px}.ai14-hero p{font-size:11px;opacity:.85;margin-top:5px;line-height:1.55}.ai14-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:14px;margin-bottom:10px;box-shadow:var(--shadow)}.ai14-card h3{font-size:14px;margin-bottom:9px}.ai14-input{width:100%;padding:13px;border:1px solid var(--border);border-radius:13px;background:var(--bg);color:var(--text)}.ai14-chips{display:flex;gap:7px;overflow:auto;padding:9px 0}.ai14-chip{white-space:nowrap;border:1px solid var(--border);background:var(--card);color:var(--text);padding:8px 10px;border-radius:999px;font-size:9px;font-weight:800}.ai14-answer{padding:13px;border-radius:15px;background:linear-gradient(145deg,rgba(79,70,229,.09),var(--bg));font-size:11px;line-height:1.65;min-height:54px}.ai14-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.ai14-kpi{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:13px}.ai14-kpi small{font-size:9px;color:var(--muted)}.ai14-kpi b{display:block;font-size:20px;margin-top:4px}.ai14-item{padding:10px 0;border-bottom:1px solid var(--border);font-size:11px;line-height:1.5}.ai14-item:last-child{border:0}.ai14-tag{display:inline-block;padding:4px 7px;border-radius:999px;background:var(--bg);border:1px solid var(--border);font-size:8px;font-weight:900;margin-right:4px}.ai14-btn{border:0;border-radius:12px;padding:11px 12px;background:var(--primary);color:#fff;font-weight:900;cursor:pointer;width:100%;margin-top:8px}@media(min-width:700px){.ai14-grid{grid-template-columns:repeat(4,1fr)}}
 </style>
@@ -4374,7 +4374,7 @@ function ai14Data(){let occ=0,book=0,due=0,expired=0,soon=0,warn=[],queue=[],pho
 function ai14Render(){let x=ai14Data();document.getElementById('ai14Health').innerText=x.health+'%';document.getElementById('ai14Follow').innerText=x.queue.length;document.getElementById('ai14Warn').innerText=x.warn.length;document.getElementById('ai14Occ').innerText=x.occupancy+'%';let brief=[];brief.push(`💺 ${x.occ}/${TOTAL_SEATS} seats occupied; ${x.vac} vacant.`);if(x.due)brief.push(`💰 ₹${x.due.toLocaleString('en-IN')} total due needs follow-up.`);if(x.expired)brief.push(`🔴 ${x.expired} expired booking(s) need renewal action.`);if(x.soon)brief.push(`🟡 ${x.soon} booking(s) are near renewal.`);if(!x.expired&&!x.soon&&!x.due)brief.push('🟢 No urgent renewal/due issue detected.');document.getElementById('ai14Brief').innerHTML=brief.map(v=>`<div class="ai14-item">${v}</div>`).join('');document.getElementById('ai14Anomaly').innerHTML=x.warn.length?x.warn.slice(0,20).map(v=>`<div class="ai14-item">⚠️ ${v}</div>`).join(''):'<div class="ai14-item">✅ No obvious duplicate-phone or missing-phone anomaly detected.</div>';let cap=x.occupancy>=90?'Very high occupancy — waiting-list readiness is important.':x.occupancy>=70?'Healthy occupancy — monitor renewals and peak shifts.':x.occupancy>=45?'Moderate occupancy — vacant-seat promotion may help.':'Low occupancy — admission campaign and lead follow-up may help.';document.getElementById('ai14Capacity').innerHTML=`<div class="ai14-item"><span class="ai14-tag">${x.occupancy}% occupied</span> ${cap}</div><div class="ai14-item">Available capacity: <b>${x.vac} seats</b>. This is a rule-based operational insight, not a demand forecast.</div>`;document.getElementById('ai14Queue').innerHTML=x.queue.length?x.queue.slice(0,30).map(q=>`<div class="ai14-item"><b>Seat ${q.i} • ${safeKeyText(q.n)}</b><br><span style="color:var(--muted)">${safeKeyText(q.type)}${q.ph?' • '+q.ph:''}</span></div>`).join(''):'<div class="ai14-item">✅ Follow-up queue is clear.</div>'}
 function ai14Quick(q){document.getElementById('ai14Q').value=q;ai14Ask()}
 function ai14Ask(){let q=(document.getElementById('ai14Q').value||'').toLowerCase().trim(),x=ai14Data(),a='';if(!q){a='एक सवाल लिखिए — जैसे total due, vacant seats, renewal या collection.'}else if(q.includes('due'))a=`कुल pending due ₹${x.due.toLocaleString('en-IN')} है। Follow-up queue में ${x.queue.filter(z=>z.type.startsWith('Due')).length} due entries हैं।`;else if(q.includes('vacant')||q.includes('खाली'))a=`अभी ${x.vac} seats vacant और ${x.occ} seats occupied हैं। Occupancy ${x.occupancy}% है।`;else if(q.includes('renew')||q.includes('expire'))a=`${x.expired} expired और ${x.soon} renewal-soon booking(s) मिलीं।`;else if(q.includes('collection')||q.includes('income'))a=`Current month collection ₹${(typeof getMonthCollection==='function'?getMonthCollection():0).toLocaleString('en-IN')} दिख रहा है।`;else if(q.includes('priority')||q.includes('today')||q.includes('आज'))a=`आज priority: ${x.expired} expired renewal, ${x.soon} renew-soon, ₹${x.due.toLocaleString('en-IN')} due और ${x.warn.length} data warning(s)।`;else if(q.includes('health')||q.includes('problem'))a=`Smart data-health score ${x.health}% है। ${x.warn.length} obvious data warning(s) detect हुईं।`;else a=`मैं अभी library-specific commands समझता हूँ: due, vacant seats, renewal, collection, today priority और data health. आपका data सुरक्षित रखते हुए ये analysis browser में होता है।`;document.getElementById('ai14Answer').innerHTML=a}
-</script>\n
+</script>
 
 <!-- ===== V14 SEAT VISIBILITY HOTFIX ===== -->
 <style>
@@ -4618,8 +4618,6 @@ body{background:radial-gradient(circle at 15% 0%,rgba(109,93,252,.22),transparen
 })();
 </script>
 
-</body>
-</html>
 
 <!-- ===== V19 DOWNLOAD CENTER + SMART AI ===== -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -5222,3 +5220,388 @@ body.dark #ur23List .ur23-student.v24-expired{background:linear-gradient(135deg,
 })();
 </script>
 <!-- ===== END V26 DIRECT WHATSAPP ===== -->
+
+<!-- ===== HARIOM V27 NATIVE APP EXPERIENCE ===== -->
+<style id="v27-native-app-style">
+/* Native, mobile-first visual system. Existing data paths and feature logic remain intact. */
+:root{
+  --bg:#e8edf5;
+  --card:#f8fafc;
+  --card-strong:#ffffff;
+  --text:#101828;
+  --muted:#667085;
+  --primary:#2563eb;
+  --primary2:#1d4ed8;
+  --success:#16a34a;
+  --danger:#dc2626;
+  --warning:#d97706;
+  --night:#0369a1;
+  --border:#d6dde8;
+  --shadow:0 8px 24px rgba(15,23,42,.10);
+  --soft:0 2px 8px rgba(15,23,42,.07);
+}
+body.dark{
+  --bg:#070b14;
+  --card:#101827;
+  --card-strong:#141e2f;
+  --text:#f8fafc;
+  --muted:#9aa7ba;
+  --border:#263247;
+  --shadow:0 12px 30px rgba(0,0,0,.32);
+  --soft:0 3px 10px rgba(0,0,0,.22);
+}
+html{background:var(--bg)!important}
+body{
+  background:linear-gradient(180deg,#dfe6f1 0%,#edf1f7 30%,#e8edf5 100%)!important;
+  min-height:100vh;
+  color:var(--text);
+  padding-bottom:98px!important;
+  -webkit-tap-highlight-color:transparent;
+  overscroll-behavior-y:none;
+}
+body.dark{background:linear-gradient(180deg,#050913 0%,#0a101c 44%,#070b14 100%)!important}
+button,a,input,select,textarea{touch-action:manipulation}
+button{letter-spacing:.01em}
+
+/* Header: solid, app-like, readable */
+.app-header{
+  position:sticky!important;top:0!important;z-index:1000!important;
+  background:linear-gradient(135deg,#0b1220 0%,#111c32 58%,#17366f 100%)!important;
+  padding:12px 14px 13px!important;
+  border-radius:0 0 18px 18px!important;
+  border-bottom:1px solid rgba(255,255,255,.08)!important;
+  box-shadow:0 8px 22px rgba(2,6,23,.24)!important;
+}
+.app-header:after{opacity:.35!important;width:120px!important;height:120px!important;top:-70px!important;right:-42px!important}
+.header-row{min-height:50px}
+.logo{width:44px!important;height:44px!important;border-radius:12px!important;box-shadow:none!important;border:1px solid rgba(255,255,255,.18)!important}
+.logo-area h2{font-size:17px!important;font-weight:850!important;letter-spacing:-.2px!important}
+.logo-area p{font-size:9px!important;opacity:.74!important}
+.icon-btn{width:39px!important;height:39px!important;border-radius:11px!important;background:#ffffff12!important;border:1px solid #ffffff20!important;box-shadow:none!important}
+
+.main{padding:12px 11px 22px!important;max-width:980px!important}
+.welcome{margin:3px 2px 12px!important;padding:2px 1px!important}
+.welcome h2{font-size:19px!important;font-weight:850!important;color:var(--text)!important}
+.welcome p{font-size:10px!important;color:var(--muted)!important}
+.section-title{margin:14px 2px 9px!important}
+.section-title h3{font-size:16px!important;font-weight:850!important}
+.section-note{font-size:9.5px!important}
+
+/* Login / cards */
+.admin-card,.student-card,.pro-card,.mini-card,.u-card,.nx-card,.alert-list,.waiting-card{
+  background:var(--card)!important;
+  border:1px solid var(--border)!important;
+  box-shadow:var(--soft)!important;
+  backdrop-filter:none!important;
+}
+.admin-card{border-radius:16px!important;padding:13px!important}
+.admin-row input,.search-wrap input,.pro-input,.u-input,.u-select,.u-textarea,.nx-input,.nx-select,.nx-textarea,.wait-form input,.field input,.ur23-in,.ur23-sel,.ur23-text,.v24-in,.v24-sel,.v24-text{
+  background:var(--card-strong)!important;
+  border:1px solid var(--border)!important;
+  color:var(--text)!important;
+  border-radius:11px!important;
+  min-height:43px;
+}
+input:focus,select:focus,textarea:focus{outline:none!important;border-color:#60a5fa!important;box-shadow:0 0 0 3px rgba(37,99,235,.13)!important}
+.btn,.u-btn,.nx-btn,.v24-btn,.ur23-btn{border-radius:11px!important;min-height:42px!important;box-shadow:none!important}
+
+/* Home hero */
+#v18Quick .v18-hero{
+  background:linear-gradient(135deg,#0f172a 0%,#172554 52%,#1d4ed8 100%)!important;
+  border:1px solid rgba(255,255,255,.09)!important;
+  border-radius:18px!important;
+  box-shadow:0 10px 26px rgba(15,23,42,.22)!important;
+  padding:15px!important;
+}
+#v18Quick .v18-hero h2{font-size:17px!important;color:#fff!important}#v18Quick .v18-hero,#v18Quick .v18-hero *{color:#fff}
+#v18Quick .v18-hero p{font-size:9px!important;opacity:.78!important}
+#v18Quick .v18-q{background:rgba(255,255,255,.10)!important;border:1px solid rgba(255,255,255,.13)!important;color:#fff!important;border-radius:12px!important;box-shadow:none!important}
+
+/* Dashboard has strong visual hierarchy, not washed-out white cards */
+.stats-grid{gap:9px!important}
+#homeSection .stat-card{
+  min-height:104px!important;
+  border-radius:16px!important;
+  padding:13px!important;
+  box-shadow:var(--soft)!important;
+  border:1px solid var(--border)!important;
+  background:var(--card)!important;
+}
+#homeSection .stat-card:nth-child(1){background:linear-gradient(145deg,#e8efff,#f8fafc)!important;border-color:#bfd0fb!important}
+#homeSection .stat-card:nth-child(2){background:linear-gradient(145deg,#e6f7ee,#f8fafc)!important;border-color:#b7e1c8!important}
+#homeSection .stat-card:nth-child(3){background:linear-gradient(145deg,#e8f6f2,#f8fafc)!important;border-color:#b9e4d8!important}
+#homeSection .stat-card:nth-child(4){background:linear-gradient(145deg,#fff0ee,#f8fafc)!important;border-color:#f5c7c1!important}
+#homeSection .stat-card.big{background:linear-gradient(135deg,#172554,#1d4ed8)!important;border-color:#1d4ed8!important;color:#fff!important}
+#homeSection .stat-card.big .stat-title{color:#dbeafe!important}
+body.dark #homeSection .stat-card:nth-child(-n+4){background:linear-gradient(145deg,#111827,#141e2f)!important;border-color:#263247!important}
+body.dark #homeSection .stat-card.big{background:linear-gradient(135deg,#111c32,#17366f)!important;border-color:#234b90!important}
+.stat-icon{width:34px!important;height:34px!important;border-radius:10px!important;background:#ffffffa6!important;font-size:17px!important;margin-bottom:8px!important}
+body.dark .stat-icon{background:#ffffff10!important}
+.stat-title{font-size:8px!important;font-weight:900!important;letter-spacing:.55px!important}
+.stat-value{font-size:22px!important;font-weight:900!important}
+.alert-list{border-radius:15px!important;overflow:hidden!important}
+.alert-item{font-size:11px!important;padding:12px!important;background:var(--card)!important}
+
+/* Search and filter chips */
+.search-wrap{margin-bottom:10px!important}
+.search-wrap input{font-size:13px!important;padding:12px 13px!important;box-shadow:none!important}
+.pro-toolbar{gap:7px!important;padding:0 0 10px!important}
+.chip{padding:8px 11px!important;border-radius:10px!important;font-size:9px!important;background:var(--card)!important;box-shadow:none!important}
+.chip.active{background:#1d4ed8!important;color:white!important;border-color:#1d4ed8!important}
+.legend{gap:8px!important;margin-bottom:10px!important;font-size:9px!important}
+
+/* Seat map: readable on a phone. Two columns on small screens instead of cramped tiny cards. */
+#seatsGrid.seats-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;padding-bottom:118px!important}
+#seatsGrid .seat{
+  min-height:154px!important;
+  border-radius:15px!important;
+  padding:11px 9px 9px!important;
+  background:var(--card)!important;
+  border:1px solid var(--border)!important;
+  box-shadow:var(--soft)!important;
+  transform:none!important;
+}
+#seatsGrid .seat::after{height:4px!important;background:#94a3b8!important}
+#seatsGrid .seat.booked-seat{border-color:#86c99d!important;background:linear-gradient(160deg,#f0fbf4,var(--card))!important}
+#seatsGrid .seat.booked-seat::after{background:#16a34a!important}
+#seatsGrid .seat.expired-seat{border-color:#f1aaa3!important;background:linear-gradient(160deg,#fff2f1,var(--card))!important}
+#seatsGrid .seat.expired-seat::after{background:#dc2626!important}
+#seatsGrid .seat.allshift-seat{border-color:#e6c34c!important;background:linear-gradient(160deg,#fff8db,var(--card))!important}
+#seatsGrid .seat.allshift-seat::after{background:#d4a90b!important}
+body.dark #seatsGrid .seat.booked-seat{background:linear-gradient(160deg,#0f2419,var(--card))!important;border-color:#245b38!important}
+body.dark #seatsGrid .seat.expired-seat{background:linear-gradient(160deg,#2a1114,var(--card))!important;border-color:#673036!important}
+body.dark #seatsGrid .seat.allshift-seat{background:linear-gradient(160deg,#29230e,var(--card))!important;border-color:#695c23!important}
+.seat-number{width:38px!important;height:38px!important;border-radius:10px!important;background:#dce8ff!important;color:#1d4ed8!important;font-size:16px!important;font-weight:950!important}
+body.dark .seat-number{background:#172554!important;color:#bfdbfe!important}
+.student-name{font-size:11.5px!important;line-height:1.25!important;min-height:34px!important;font-weight:900!important}
+.renewal-badge{font-size:9px!important;min-height:27px!important;border-radius:8px!important;padding:5px 4px!important}
+.seat-status{font-size:7.5px!important;font-weight:950!important}
+.due-badge{font-size:8.5px!important;border-radius:7px!important;padding:4px 6px!important}
+.dot{width:8px!important;height:8px!important}
+.v23-ur-portal{border-radius:16px!important;padding:14px!important;background:linear-gradient(135deg,#172554,#1d4ed8)!important;color:#fff!important;border:0!important;box-shadow:0 8px 22px rgba(29,78,216,.20)!important}
+.v23-ur-portal .v23-ur-sub{color:#dbeafe!important}.v23-ur-mini{background:#ffffff12!important;border-color:#ffffff1f!important}.v23-ur-mini span{color:#dbeafe!important}.v23-ur-open{background:#fff!important;color:#1d4ed8!important}
+@media(min-width:520px){#seatsGrid.seats-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
+@media(min-width:760px){#seatsGrid.seats-grid{grid-template-columns:repeat(5,minmax(0,1fr))!important}}
+@media(min-width:1000px){#seatsGrid.seats-grid{grid-template-columns:repeat(7,minmax(0,1fr))!important}}
+
+/* Student center */
+.native-student-tools{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:10px;margin-bottom:10px;box-shadow:var(--soft)}
+.native-student-search{width:100%;min-height:43px;padding:11px 12px;border:1px solid var(--border);border-radius:11px;background:var(--card-strong);color:var(--text);font-size:12px;outline:none}
+.native-student-filters{display:flex;gap:6px;overflow:auto;margin-top:8px;scrollbar-width:none}.native-student-filters::-webkit-scrollbar{display:none}
+.native-student-filter{border:1px solid var(--border);background:var(--card-strong);color:var(--text);border-radius:9px;padding:7px 9px;white-space:nowrap;font-size:8px;font-weight:900}.native-student-filter.on{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
+#studentsList{display:grid;grid-template-columns:1fr;gap:9px}
+.native-student-card{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:12px;box-shadow:var(--soft);position:relative;overflow:hidden}
+.native-student-card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:#16a34a}.native-student-card.soon:before{background:#d97706}.native-student-card.due:before{background:#ea580c}.native-student-card.expired:before{background:#dc2626}.native-student-card.nodate:before{background:#64748b}
+.native-student-top{display:flex;align-items:flex-start;gap:9px}.native-avatar{width:39px;height:39px;flex:0 0 39px;border-radius:11px;display:grid;place-items:center;background:#dce8ff;color:#1d4ed8;font-size:16px;font-weight:950}.native-student-main{min-width:0;flex:1}.native-student-name{font-size:14px;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.native-student-sub{font-size:8.5px;color:var(--muted);margin-top:3px;line-height:1.45}.native-status{font-size:7px;font-weight:950;border-radius:999px;padding:5px 6px;background:#dcfce7;color:#166534;white-space:nowrap}.native-status.soon{background:#fef3c7;color:#92400e}.native-status.due{background:#ffedd5;color:#9a3412}.native-status.expired{background:#fee2e2;color:#b91c1c}.native-status.nodate{background:#e2e8f0;color:#475569}
+.native-student-money{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}.native-money{background:var(--card-strong);border:1px solid var(--border);border-radius:9px;padding:7px;text-align:center}.native-money b{display:block;font-size:11px}.native-money span{font-size:6px;color:var(--muted);font-weight:900}.native-student-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:9px}.native-student-actions button{border:1px solid var(--border);background:var(--card-strong);color:var(--text);border-radius:9px;padding:8px 4px;font-size:8px;font-weight:900}.native-student-actions button.primary{background:#1d4ed8;color:#fff;border-color:#1d4ed8}.native-student-actions button.wa{background:#15803d;color:#fff;border-color:#15803d}
+.native-empty{padding:28px 12px;text-align:center;color:var(--muted);font-size:11px;background:var(--card);border:1px solid var(--border);border-radius:15px}
+@media(min-width:720px){#studentsList{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Modal behaves like a native bottom sheet */
+.modal{background:rgba(2,6,23,.72)!important;backdrop-filter:blur(3px)!important}
+#seatModal .modal-content{border-radius:22px 22px 0 0!important;background:var(--bg)!important;border:1px solid var(--border)!important;padding:15px 12px 150px!important;box-shadow:0 -16px 45px rgba(2,6,23,.30)!important}
+#seatModal .modal-header{background:var(--bg)!important;border-bottom:1px solid var(--border)!important;margin:-15px -12px 11px!important;padding:13px 12px 10px!important}
+#seatModal .modal-header h2{font-size:16px!important;font-weight:900!important}
+.seat-header-save{background:#15803d!important;border-radius:10px!important;min-height:38px!important;font-size:9px!important}
+.close-btn{background:#334155!important;border-radius:10px!important;width:38px!important;height:38px!important}
+.shift-card{background:var(--card)!important;border:1px solid var(--border)!important;border-radius:14px!important;padding:12px!important;box-shadow:none!important}
+.shift-card h4{font-size:12px!important;color:#1d4ed8!important}
+body.dark .shift-card h4{color:#93c5fd!important}
+.seat-sticky-actions{background:var(--card)!important;border-top:1px solid var(--border)!important;box-shadow:0 -8px 20px rgba(15,23,42,.14)!important;padding:8px 10px calc(8px + env(safe-area-inset-bottom))!important}
+.seat-action-btn{border-radius:10px!important;min-height:43px!important}
+
+/* Business/reports */
+.mini-grid{gap:8px!important}.mini-card{border-radius:14px!important;padding:11px!important}.mini-card b{font-size:18px!important}
+.pro-card,.student-card,.waiting-card{border-radius:15px!important}
+.quick-actions{gap:7px!important}.quick-action{border-radius:12px!important;background:var(--card)!important;padding:11px!important;box-shadow:none!important}
+
+/* Bottom nav: dark native app bar */
+.bottom-nav{
+  bottom:8px!important;height:66px!important;
+  background:#0b1220!important;
+  border:1px solid #1f2a3f!important;
+  border-radius:17px!important;
+  box-shadow:0 10px 30px rgba(2,6,23,.30)!important;
+  padding:4px!important;
+}
+.bottom-nav .nav-item{height:56px!important;color:#9aa7ba!important;border-radius:12px!important;font-size:7.5px!important;font-weight:800!important;gap:3px!important}
+.bottom-nav .nav-item.active{background:#1d4ed8!important;color:white!important;font-weight:900!important}
+.bottom-nav .nav-icon{font-size:18px!important;line-height:1!important}
+body.seat-modal-open .bottom-nav{visibility:hidden!important}
+
+/* Single tool launcher replaces the pile of overlapping floating buttons */
+#nativeToolDock{position:fixed;right:12px;bottom:84px;z-index:1200;display:flex;flex-direction:column;align-items:flex-end;gap:8px;pointer-events:none}
+#nativeToolLauncher{pointer-events:auto;border:0;border-radius:14px;width:46px;min-width:46px;height:46px;padding:0;background:linear-gradient(135deg,#0f172a,#1d4ed8);color:#fff;font-size:20px;font-weight:950;box-shadow:0 9px 24px rgba(2,6,23,.28)}
+#nativeToolMenu{display:none;pointer-events:auto;width:min(270px,calc(100vw - 24px));padding:8px;background:var(--card);border:1px solid var(--border);border-radius:15px;box-shadow:0 14px 34px rgba(2,6,23,.24);grid-template-columns:1fr 1fr;gap:6px}
+#nativeToolDock.open #nativeToolMenu{display:grid}
+#nativeToolMenu .ultimate-fab,#nativeToolMenu .nx-fab,#nativeToolMenu .super-fab,#nativeToolMenu .ai14-fab,#nativeToolMenu .v15-fab{position:static!important;left:auto!important;right:auto!important;bottom:auto!important;top:auto!important;transform:none!important;width:100%!important;min-width:0!important;min-height:38px!important;margin:0!important;padding:8px 6px!important;border-radius:10px!important;font-size:8px!important;box-shadow:none!important;display:block!important;visibility:visible!important;opacity:1!important}
+body.seat-modal-open #nativeToolDock{display:none!important}
+
+/* Full-screen advanced panels stay above navigation and use the same surfaces */
+.ultimate-panel,.nx-panel,.super-panel,.ai14-panel,.v15-panel,#urPanel,#v24ContactPanel,#v25NoticePanel{background:var(--bg)!important;z-index:3000!important}
+.u-head,.nx-head,.sp-head,.v15-head,.ur23-head,.v24-head,.v25-head{background:linear-gradient(135deg,#0b1220,#17366f)!important}
+.u-card,.nx-card,.sp-card,.v15-card,.ur23-card,.v24-box,.v25-card{background:var(--card)!important;border-color:var(--border)!important;box-shadow:var(--soft)!important}
+
+.toast{top:70px!important;border-radius:11px!important;background:#0f172a!important;font-size:11px!important;box-shadow:0 8px 24px rgba(2,6,23,.30)!important}
+
+/* Prevent tiny/overflowing text on narrow phones */
+@media(max-width:380px){
+  .main{padding-left:8px!important;padding-right:8px!important}
+  #seatsGrid.seats-grid{gap:7px!important}
+  #seatsGrid .seat{min-height:150px!important;padding-left:7px!important;padding-right:7px!important}
+  .student-name{font-size:10.5px!important}
+  .bottom-nav .nav-item{font-size:7px!important}
+}
+</style>
+
+<script id="v27-native-app-js">
+(function(){
+  "use strict";
+  const $=id=>document.getElementById(id);
+  const SHIFTS={all:"Full Day",m:"Morning",n:"Noon",an:"Afternoon",e:"Evening",night:"Night"};
+  let nativeFlexStudents={};
+  let nativeStudentQuery="";
+  let nativeStudentFilter="all";
+
+  function esc(v){return String(v??"").replace(/[&<>\"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));}
+  function cleanPhone(v){return String(v||"").replace(/\D/g,"").slice(-10);}
+  function initial(name){const x=String(name||"S").trim();return (x[0]||"S").toUpperCase();}
+  function dateState(date){
+    if(!date)return "nodate";
+    try{const s=typeof getDateStatus==="function"?getDateStatus(date):"active";return s==="alert"?"soon":s;}catch(e){return "nodate";}
+  }
+  function statusInfo(date,due){
+    const d=dateState(date);
+    if(d==="expired")return {key:"expired",label:"EXPIRED"};
+    if(Number(due)>0)return {key:"due",label:"DUE ₹"+Number(due).toLocaleString("en-IN")};
+    if(d==="soon")return {key:"soon",label:"RENEW SOON"};
+    if(d==="nodate")return {key:"nodate",label:"DATE NOT SET"};
+    return {key:"active",label:"ACTIVE"};
+  }
+  function fixedRows(){
+    const rows=[];
+    for(let i=1;i<=Number(typeof TOTAL_SEATS!=="undefined"?TOTAL_SEATS:105);i++){
+      const d=(typeof globalLibraryData!=="undefined"?globalLibraryData:{})[i]||{};
+      Object.keys(SHIFTS).forEach(sh=>{
+        const name=d["name_"+sh]; if(!name)return;
+        rows.push({type:"fixed",seat:i,shift:sh,shiftLabel:SHIFTS[sh],name,phone:d["phone_"+sh]||"",fee:Number(d["fees_"+sh]||0),due:Number(d["due_"+sh]||0),renewal:d["date_"+sh]||"",paidDate:d["paydate_"+sh]||""});
+      });
+    }
+    return rows;
+  }
+  function flexRows(){
+    return Object.entries(nativeFlexStudents||{}).filter(([,d])=>d&&d.status!=="Left / Archived").map(([key,d])=>({type:"flex",key,name:d.name||"Unnamed",phone:d.phone||"",fee:Number(d.fee||0),due:Number(d.due||0),renewal:d.renewal||"",shiftLabel:Array.isArray(d.shifts)&&d.shifts.length?d.shifts.join(" • "):(d.plan||"Flexible"),paid:Number(d.paid||0),plan:d.plan||"Flexible"}));
+  }
+  function sortRank(r){const s=statusInfo(r.renewal,r.due).key;return ({expired:0,due:1,soon:2,nodate:3,active:4})[s]??5;}
+  function visibleRows(){
+    const q=nativeStudentQuery.toLowerCase().trim();
+    return [...fixedRows(),...flexRows()].filter(r=>{
+      const st=statusInfo(r.renewal,r.due).key;
+      if(nativeStudentFilter!=="all"&&st!==nativeStudentFilter)return false;
+      if(!q)return true;
+      return [r.name,r.phone,r.seat||"",r.shiftLabel,r.renewal,r.plan||""].join(" ").toLowerCase().includes(q);
+    }).sort((a,b)=>sortRank(a)-sortRank(b)||String(a.renewal||"9999").localeCompare(String(b.renewal||"9999"))||String(a.name).localeCompare(String(b.name)));
+  }
+  function studentCard(r){
+    const st=statusInfo(r.renewal,r.due);
+    const place=r.type==="fixed"?`Seat ${r.seat} • ${r.shiftLabel}`:`Unreserved • ${r.shiftLabel}`;
+    const phone=cleanPhone(r.phone);
+    const fee=Number(r.fee||0),due=Number(r.due||0),paid=r.type==="flex"?Number(r.paid||0):fee,totalFee=r.type==="flex"?fee:(fee+due);
+    const open=r.type==="fixed"?`nativeOpenFixed(${Number(r.seat)})`:`nativeOpenFlex('${esc(r.key)}')`;
+    return `<div class="native-student-card ${st.key}" data-native-status="${st.key}">
+      <div class="native-student-top">
+        <div class="native-avatar">${esc(initial(r.name))}</div>
+        <div class="native-student-main"><div class="native-student-name">${esc(r.name)}</div><div class="native-student-sub">${esc(place)}<br>📱 ${esc(phone||"Number not added")} • 📅 ${esc(r.renewal||"Renewal not set")}</div></div>
+        <span class="native-status ${st.key}">${esc(st.label)}</span>
+      </div>
+      <div class="native-student-money"><div class="native-money"><b>₹${totalFee.toLocaleString("en-IN")}</b><span>PLAN FEE</span></div><div class="native-money"><b>₹${paid.toLocaleString("en-IN")}</b><span>PAID</span></div><div class="native-money"><b>₹${due.toLocaleString("en-IN")}</b><span>DUE</span></div></div>
+      <div class="native-student-actions"><button class="primary" onclick="${open}">${r.type==="fixed"?"💺 OPEN SEAT":"✏️ OPEN PROFILE"}</button><button onclick="nativeCall('${phone}')" ${phone?"":"disabled"}>📞 CALL</button><button class="wa" onclick="nativeWA('${phone}')" ${phone?"":"disabled"}>💬 WHATSAPP</button></div>
+    </div>`;
+  }
+  function renderStudentsNative(){
+    const box=$("studentsList"); if(!box)return;
+    const rows=visibleRows();
+    box.innerHTML=rows.length?rows.map(studentCard).join(""):`<div class="native-empty">No matching students found.</div>`;
+    const count=$("nativeStudentCount");if(count)count.textContent=rows.length+" students";
+  }
+  window.updateStudents=renderStudentsNative;
+
+  window.nativeOpenFixed=function(seat){if(typeof showSection==="function")showSection("seats");setTimeout(()=>{if(typeof openSeatModal==="function")openSeatModal(seat)},80)};
+  window.nativeOpenFlex=function(key){if(typeof ur23Open==="function")ur23Open();setTimeout(()=>{if(typeof ur23Edit==="function")ur23Edit(key)},120)};
+  window.nativeCall=function(phone){phone=cleanPhone(phone);if(!phone)return;if(location.protocol!=="file:")location.href="tel:"+phone;else alert("Call: "+phone)};
+  window.nativeWA=function(phone){phone=cleanPhone(phone);if(!phone)return;const msg=`Hariom Library: Namaste, aapke library account/renewal ke sambandh me message hai.`;window.open("https://wa.me/91"+phone+"?text="+encodeURIComponent(msg),"_blank")};
+  window.nativeSetStudentFilter=function(type,btn){nativeStudentFilter=type;document.querySelectorAll(".native-student-filter").forEach(x=>x.classList.remove("on"));if(btn)btn.classList.add("on");renderStudentsNative()};
+
+  function mountStudentTools(){
+    const sec=$("studentsSection"),list=$("studentsList");if(!sec||!list||$("nativeStudentTools"))return;
+    const d=document.createElement("div");d.id="nativeStudentTools";d.className="native-student-tools";
+    d.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px"><b style="font-size:11px">🔎 Find Student</b><span id="nativeStudentCount" style="font-size:8px;color:var(--muted)">0 students</span></div><input id="nativeStudentSearch" class="native-student-search" placeholder="Name, mobile, seat, shift..."><div class="native-student-filters"><button class="native-student-filter on" onclick="nativeSetStudentFilter('all',this)">ALL</button><button class="native-student-filter" onclick="nativeSetStudentFilter('active',this)">ACTIVE</button><button class="native-student-filter" onclick="nativeSetStudentFilter('due',this)">DUE</button><button class="native-student-filter" onclick="nativeSetStudentFilter('soon',this)">RENEW SOON</button><button class="native-student-filter" onclick="nativeSetStudentFilter('expired',this)">EXPIRED</button><button class="native-student-filter" onclick="nativeSetStudentFilter('nodate',this)">DATE MISSING</button></div>`;
+    list.parentNode.insertBefore(d,list);
+    $("nativeStudentSearch").addEventListener("input",e=>{nativeStudentQuery=e.target.value||"";renderStudentsNative()});
+  }
+
+  function patchDashboard(){
+    if(typeof window.updateDashboard!=="function"||window.updateDashboard.__v27)return;
+    const old=window.updateDashboard;
+    const next=function(){
+      old.apply(this,arguments);
+      let occupied=0;
+      for(let i=1;i<=Number(typeof TOTAL_SEATS!=="undefined"?TOTAL_SEATS:105);i++){
+        const d=(typeof globalLibraryData!=="undefined"?globalLibraryData:{})[i]||{};
+        if(Object.keys(SHIFTS).some(sh=>String(d["name_"+sh]||"").trim()))occupied++;
+      }
+      const v=$("vacantSeats");if(v)v.textContent=Math.max(0,Number(typeof TOTAL_SEATS!=="undefined"?TOTAL_SEATS:105)-occupied);
+    };
+    next.__v27=true;window.updateDashboard=next;
+  }
+
+  function patchCloseModal(){
+    if(typeof window.closeModal!=="function"||window.closeModal.__v27)return;
+    const old=window.closeModal;
+    const next=function(force){
+      if(typeof seatModalDirty!=="undefined"&&seatModalDirty&&!force&&!confirm("Unsaved changes hain. Bina Save kiye close karna hai?"))return;
+      if(typeof seatModalDirty!=="undefined")seatModalDirty=false;
+      old.apply(this,arguments);
+    };
+    next.__v27=true;window.closeModal=next;
+  }
+
+  function mountToolDock(){
+    if($("nativeToolDock"))return;
+    const buttons=[...document.querySelectorAll(".ultimate-fab,.nx-fab,.super-fab,.ai14-fab,.v15-fab")];
+    if(!buttons.length)return;
+    const dock=document.createElement("div");dock.id="nativeToolDock";
+    const menu=document.createElement("div");menu.id="nativeToolMenu";
+    const launcher=document.createElement("button");launcher.id="nativeToolLauncher";launcher.type="button";launcher.innerHTML="⚡";launcher.title="Advanced Tools";launcher.setAttribute("aria-label","Advanced Tools");
+    launcher.onclick=e=>{e.stopPropagation();dock.classList.toggle("open")};
+    buttons.forEach(b=>{menu.appendChild(b);b.addEventListener("click",()=>dock.classList.remove("open"))});
+    dock.append(menu,launcher);document.body.appendChild(dock);
+    document.addEventListener("click",e=>{if(!dock.contains(e.target))dock.classList.remove("open")});
+  }
+
+  function syncThemeUI(){
+    const dark=document.body.classList.contains("dark");
+    document.querySelectorAll('.icon-btn[onclick*="toggleTheme"]').forEach(b=>{b.textContent=dark?"☀️":"🌙";b.setAttribute("aria-label",dark?"Light mode":"Dark mode")});
+    const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.content=dark?"#070b14":"#0f172a";
+  }
+  function patchTheme(){
+    if(typeof window.toggleTheme!=="function"||window.toggleTheme.__v27){syncThemeUI();return;}
+    const old=window.toggleTheme;const next=function(){old.apply(this,arguments);syncThemeUI()};next.__v27=true;window.toggleTheme=next;syncThemeUI();
+  }
+  function logoFallback(){const img=document.querySelector(".logo img");if(!img)return;img.addEventListener("error",()=>{const p=img.parentElement;if(p){p.innerHTML='<b style="font-size:14px;color:#1d4ed8">HL</b>'}}, {once:true})}
+
+  function init(){
+    mountStudentTools();patchDashboard();patchCloseModal();patchTheme();logoFallback();mountToolDock();renderStudentsNative();
+    if(typeof database!=="undefined"){
+      database.ref("library_v3/unreservedStudentsV23").on("value",s=>{nativeFlexStudents=s.val()||{};renderStudentsNative()});
+    }
+    setTimeout(()=>{mountStudentTools();mountToolDock();renderStudentsNative();syncThemeUI()},800);
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
+  window.addEventListener("load",()=>setTimeout(init,250));
+})();
+</script>
+<!-- ===== END V27 ===== -->
+
+</body>
+</html>
