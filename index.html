@@ -19,6 +19,7 @@ content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
 <!-- Excel -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -6227,12 +6228,50 @@ function profileFor(s){const p=digits(s.phone),n=norm(s.name);return Object.valu
 function extrasFor(s){return state.v31.studentExtras?.[studentKey(s)]||{}}
 function allStudents(){
   const fixed=[],data=typeof globalLibraryData!=='undefined'?globalLibraryData:{};const max=Number(typeof TOTAL_SEATS!=='undefined'?TOTAL_SEATS:105);
-  for(let seat=1;seat<=max;seat++){const d=data[seat]||data[String(seat)]||{};Object.entries(SH).forEach(([sh,label])=>{const name=String(d['name_'+sh]||'').trim();if(!name)return;fixed.push({type:'fixed',seat,shift:sh,shiftLabel:label,name,phone:d['phone_'+sh]||'',fee:Number(d['fees_'+sh]||0),paid:Number(d['fees_'+sh]||0),due:Number(d['due_'+sh]||0),renewal:d['date_'+sh]||'',paidDate:d['paydate_'+sh]||'',sourceRefs:[{seat,shift:sh}]})})}
-  const fMap=new Map();fixed.forEach(r=>{const k=iden(r)+'|'+r.seat;if(!fMap.has(k))fMap.set(k,{...r,shifts:[r.shiftLabel]});else{const x=fMap.get(k);x.sourceRefs.push(...r.sourceRefs);if(!x.shifts.includes(r.shiftLabel))x.shifts.push(r.shiftLabel);x.shiftLabel=x.shifts.join(' • ');x.due=Math.max(x.due,r.due);x.fee=Math.max(x.fee,r.fee);if(!x.renewal||(r.renewal&&r.renewal<x.renewal))x.renewal=r.renewal}});
+  for(let seat=1;seat<=max;seat++){
+    const d=data[seat]||data[String(seat)]||{};
+    Object.entries(SH).forEach(([sh,label])=>{
+      const name=String(d['name_'+sh]||'').trim();if(!name)return;
+      fixed.push({type:'fixed',seat,shift:sh,shiftLabel:label,name,phone:d['phone_'+sh]||'',fee:Number(d['fees_'+sh]||0),paid:Number(d['fees_'+sh]||0),due:Number(d['due_'+sh]||0),renewal:d['date_'+sh]||'',paidDate:d['paydate_'+sh]||'',sourceRefs:[{seat,shift:sh}],updatedAt:0})
+    })
+  }
+  const fMap=new Map();
+  fixed.forEach(r=>{
+    const k=(digits(r.phone)?'p:'+digits(r.phone):'n:'+norm(r.name))+'|seat:'+r.seat;
+    if(!fMap.has(k))fMap.set(k,{...r,shifts:[r.shiftLabel]});
+    else{
+      const x=fMap.get(k);x.sourceRefs.push(...r.sourceRefs);if(!x.shifts.includes(r.shiftLabel))x.shifts.push(r.shiftLabel);x.shiftLabel=x.shifts.join(' • ');
+      x.due=Math.max(Number(x.due||0),Number(r.due||0));x.fee=Math.max(Number(x.fee||0),Number(r.fee||0));x.paid=Math.max(Number(x.paid||0),Number(r.paid||0));
+      if(!x.renewal||(r.renewal&&r.renewal<x.renewal))x.renewal=r.renewal;
+    }
+  });
   const flex=Object.entries(state.flex||{}).filter(([,d])=>d&&d.status!=='Left / Archived').map(([key,d])=>({type:'flex',key,name:d.name||'Unnamed',phone:d.phone||'',fee:Number(d.fee||0),paid:Number(d.paid||0),due:Number(d.due||0),renewal:d.renewal||'',paidDate:d.paymentDate||'',shiftLabel:Array.isArray(d.shifts)&&d.shifts.length?d.shifts.join(' • '):(d.plan||'Flexible'),plan:d.plan||'Flexible',sourceSeat:Number(d.sourceSeat||0),updatedAt:Number(d.updatedAt||d.createdAt||0)}));
-  const flexIds=new Set(flex.map(iden));const kept=[...fMap.values()].filter(r=>!(r.seat>=64&&r.seat<=85&&flexIds.has(iden(r))));
+  const flexIds=new Set(flex.map(iden));
+  const kept=[...fMap.values()].filter(r=>!(r.seat>=64&&r.seat<=85&&flexIds.has(iden(r))));
   const xm=new Map();flex.forEach(r=>{const k=iden(r),o=xm.get(k);if(!o||r.updatedAt>=o.updatedAt)xm.set(k,r)});
-  const all=[...kept,...xm.values()];all.forEach(s=>{s.studentKey=studentKey(s);s.photo=photoFor(s);s.profile=profileFor(s);s.extra=extrasFor(s);s.state=statusDate(s.renewal)});return all.sort((a,b)=>String(a.name).localeCompare(String(b.name)))
+  const profiles=Object.entries(state.profiles||{}).filter(([,d])=>{
+    if(!d||!String(d.name||'').trim())return false;const st=norm(d.status||'active');return !['inactive','blocked','left / archived','archived'].includes(st)
+  }).map(([key,d])=>({type:'profile',key:'profile_'+key,name:d.name||'Unnamed',phone:d.whatsapp||d.phone||'',fee:Number(d.fee||0),paid:Number(d.paid||0),due:Number(d.due||0),renewal:d.expiry||d.renewal||'',paidDate:d.paymentDate||'',shiftLabel:d.shift||d.plan||'Digital Admission',plan:d.plan||'',seat:Number(d.seat||0)||'',updatedAt:Number(d.updatedAt||d.createdAt||0),studentId:d.studentId||''}));
+
+  // Final master dedupe: same valid mobile = one student across Reserved, Unreserved and Digital Admission.
+  // When mobile is missing, keep records separate by name + seat/type to avoid merging different people accidentally.
+  const raw=[...kept,...xm.values(),...profiles],master=new Map();
+  const rank={profile:1,fixed:2,flex:3};
+  raw.forEach(r=>{
+    const p=digits(r.phone),n=norm(r.name),k=p?'p:'+p:'n:'+n+'|'+String(r.seat||'')+'|'+String(r.type||'');
+    if(!master.has(k)){master.set(k,{...r,_rank:rank[r.type]||0,_labels:new Set(String(r.shiftLabel||'').split(' • ').filter(Boolean))});return}
+    const x=master.get(k),rr=rank[r.type]||0;
+    if(rr>x._rank){
+      const keep={due:x.due,fee:x.fee,paid:x.paid,renewal:x.renewal,sourceRefs:x.sourceRefs,_labels:x._labels};Object.assign(x,r);Object.assign(x,keep);x._rank=rr;
+    }
+    x.due=Math.max(Number(x.due||0),Number(r.due||0));x.fee=Math.max(Number(x.fee||0),Number(r.fee||0));x.paid=Math.max(Number(x.paid||0),Number(r.paid||0));
+    if(!x.renewal||(r.renewal&&r.renewal<x.renewal))x.renewal=r.renewal;
+    String(r.shiftLabel||'').split(' • ').filter(Boolean).forEach(v=>x._labels.add(v));x.shiftLabel=[...x._labels].join(' • ')||x.shiftLabel;
+    if(Array.isArray(r.sourceRefs)){x.sourceRefs=[...(x.sourceRefs||[]),...r.sourceRefs]}
+    if(!x.studentId&&r.studentId)x.studentId=r.studentId;
+  });
+  const all=[...master.values()];all.forEach(s=>{delete s._rank;delete s._labels;s.studentKey=studentKey(s);s.photo=photoFor(s);s.profile=profileFor(s);s.extra=extrasFor(s);s.state=statusDate(s.renewal)});
+  return all.sort((a,b)=>String(a.name).localeCompare(String(b.name)))
 }
 function refreshStudents(){state.students=allStudents()}
 function activeCount(){return state.students.filter(s=>s.state!=='expired').length}
@@ -6405,7 +6444,7 @@ function allModulesModule(){const rows=[...Object.entries(genericCfg).map(([k,v]
 window.v31Timeline=function(k){const s=getStudent(k);if(!s)return;const rows=[];Object.values(state.v31.attendance||{}).filter(x=>x?.studentKey===k).forEach(x=>rows.push({time:x.time,label:'Attendance: '+x.type,detail:x.note||''}));Object.values(state.v31.ledger||{}).filter(x=>x?.studentKey===k).forEach(x=>rows.push({time:x.time,label:(x.kind||'Payment')+' '+money(x.amount),detail:x.mode||''}));Object.values(state.v31.timeline||{}).filter(x=>x?.studentKey===k).forEach(x=>rows.push({time:x.time||x.createdAt,label:x.type||'Update',detail:x.detail||''}));Object.values(state.v31.leaves||{}).filter(x=>x?.studentKey===k).forEach(x=>rows.push({time:x.createdAt,label:'Leave / Freeze',detail:(x.from||'')+' → '+(x.to||'')}));rows.sort((a,b)=>(b.time||0)-(a.time||0));setSheet('🕓 '+s.name+' Timeline',`<div class="v31-list">${rows.map(x=>`<div class="v31-item"><b>${esc(x.label)}</b><br><small>${tsText(x.time)} • ${esc(x.detail)}</small></div>`).join('')||'<div class="v31-empty">No V31 timeline yet.</div>'}</div>`)}
 
 function updateLaunch(){refreshStudents();const el=$('v31Launch');if(!el)return;el.querySelector('[data-k="students"]').textContent=state.students.length;el.querySelector('[data-k="due"]').textContent=money(dueSum());el.querySelector('[data-k="expired"]').textContent=expiredCount();el.querySelector('[data-k="attendance"]').textContent=new Set(todaysAttendance().map(x=>x.studentKey)).size}
-function mountLaunch(){const h=$('homeSection');if(!h||$('v31Launch'))return;const d=document.createElement('div');d.id='v31Launch';d.className='v31-launch';d.innerHTML=`<div class="v31-launch-top"><div class="v31-launch-icon">📚</div><div><h2>Hariom Library Pro OS</h2><p>Real app command center • Attendance • Finance • Operations • Reports • Security</p></div></div><div class="v31-launch-grid"><div class="v31-launch-kpi"><b data-k="students">0</b><span>STUDENTS</span></div><div class="v31-launch-kpi"><b data-k="due">₹0</b><span>TOTAL DUE</span></div><div class="v31-launch-kpi"><b data-k="expired">0</b><span>EXPIRED</span></div><div class="v31-launch-kpi"><b data-k="attendance">0</b><span>TODAY IN</span></div></div><button class="v31-launch-btn" onclick="v31Open()">OPEN PRO OS →</button>`;const welcome=h.querySelector('.welcome');welcome?.after(d);updateLaunch()}
+function mountLaunch(){const h=$('homeSection');if(!h||$('v31Launch'))return;const d=document.createElement('div');d.id='v31Launch';d.className='v31-launch';d.innerHTML=`<div class="v31-launch-top"><div class="v31-launch-icon">📚</div><div><h2>Hariom Library Pro OS</h2><p>Reserved + Unreserved + Digital Admission • live master totals • Finance • Attendance</p></div></div><div class="v31-launch-grid"><div class="v31-launch-kpi"><b data-k="students">0</b><span>STUDENTS</span></div><div class="v31-launch-kpi"><b data-k="due">₹0</b><span>TOTAL DUE</span></div><div class="v31-launch-kpi"><b data-k="expired">0</b><span>EXPIRED</span></div><div class="v31-launch-kpi"><b data-k="attendance">0</b><span>TODAY IN</span></div></div><button class="v31-launch-btn" onclick="v31Open()">OPEN PRO OS →</button>`;const welcome=h.querySelector('.welcome');welcome?.after(d);updateLaunch()}
 
 function checkPin(){if(localStorage.getItem('v31_pin_enabled')==='1'&&sessionStorage.getItem('v31_unlocked')!=='1')$('v31Lock').classList.add('show')}
 function init(){mountLaunch();refreshStudents();updateLaunch();checkPin();const imp=$('v31ImportFile');if(imp&&!imp.dataset.bound){imp.dataset.bound='1';imp.addEventListener('change',e=>{const f=e.target.files?.[0];if(f)handleImport(f);e.target.value=''})}if(typeof database!=='undefined'){database.ref(FLEX).on('value',s=>{state.flex=s.val()||{};refreshStudents();updateLaunch();if($('v31Panel').classList.contains('show'))renderAll()});database.ref(MEDIA).on('value',s=>{state.media=s.val()||{};refreshStudents();updateLaunch()});database.ref(PROFILES).on('value',s=>{state.profiles=s.val()||{};refreshStudents();updateLaunch()});db('').on('value',s=>{state.v31=s.val()||{};refreshStudents();updateLaunch();if($('v31Panel').classList.contains('show'))renderPane(document.querySelector('.v31-nav.on')?.dataset.v31nav||'home')});database.ref('library_v3/seats').on('value',()=>{setTimeout(()=>{refreshStudents();updateLaunch()},0)})}window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();state.installPrompt=e})}
@@ -6482,11 +6521,21 @@ body.dark .v32-compose{background:#0f172a;color:#f8fafc;box-shadow:inset 0 0 0 1
 .v33-mini-feed{margin-top:10px;display:grid;gap:5px}.v33-mini-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 9px;border-radius:11px;background:#ffffff0b;border:1px solid #ffffff0d;font-size:7.5px}.v33-mini-row b{font-size:8px}.v33-mini-row span{opacity:.65;white-space:nowrap}
 .v33-modal{display:none;position:fixed;inset:0;z-index:9800;background:rgba(2,6,23,.72);backdrop-filter:blur(8px);padding:14px;overflow:auto}.v33-modal.show{display:flex;align-items:flex-start;justify-content:center}.v33-dialog{width:min(620px,100%);margin:auto;background:var(--card,#fff);color:var(--text,#0f172a);border:1px solid var(--border,#e2e8f0);border-radius:24px;box-shadow:0 28px 80px rgba(0,0,0,.28);overflow:hidden}.v33-dialog-head{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;background:var(--card,#fff);border-bottom:1px solid var(--border,#e2e8f0)}.v33-dialog-head b{font-size:14px}.v33-close{width:36px;height:36px;border:0;border-radius:12px;background:var(--bg,#f1f5f9);color:inherit;font-size:20px}.v33-dialog-body{padding:14px}.v33-panel{padding:12px;border:1px solid var(--border,#e2e8f0);border-radius:17px;background:var(--bg,#f8fafc);margin-bottom:10px}.v33-panel h3{font-size:12px;margin-bottom:7px}.v33-muted{font-size:8.5px;color:var(--muted,#64748b);line-height:1.5}.v33-qr-wrap{display:grid;place-items:center;background:#fff;border-radius:18px;padding:16px;margin:10px auto;width:min(290px,100%);box-shadow:inset 0 0 0 1px #e2e8f0}.v33-qr-wrap canvas,.v33-qr-wrap img{max-width:100%;height:auto}.v33-link{width:100%;border:1px solid var(--border,#e2e8f0);border-radius:12px;background:var(--card,#fff);color:inherit;padding:10px;font-size:9px}.v33-grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.v33-action{border:0;border-radius:13px;padding:11px 10px;background:#2563eb;color:#fff;font-size:9px;font-weight:950}.v33-action.green{background:#16a34a}.v33-action.gray{background:#334155}.v33-action.ghost{background:var(--bg,#f1f5f9);color:var(--text,#0f172a);border:1px solid var(--border,#e2e8f0)}
 .v33-year-toolbar{display:grid;grid-template-columns:120px 1fr;gap:8px;margin-bottom:10px}.v33-select,.v33-input{width:100%;border:1px solid var(--border,#e2e8f0);border-radius:12px;background:var(--card,#fff);color:inherit;padding:10px;font-size:9px}.v33-year-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px}.v33-year-kpi{padding:9px;border:1px solid var(--border,#e2e8f0);border-radius:13px;background:var(--bg,#f8fafc);text-align:center}.v33-year-kpi b{display:block;font-size:16px}.v33-year-kpi span{font-size:6.5px;color:var(--muted,#64748b);font-weight:900}.v33-summary,.v33-log{display:grid;gap:6px}.v33-summary-row,.v33-log-row{display:flex;align-items:center;justify-content:space-between;gap:9px;padding:9px 10px;border:1px solid var(--border,#e2e8f0);border-radius:13px;background:var(--card,#fff)}.v33-summary-row b,.v33-log-row b{font-size:9.5px}.v33-summary-row small,.v33-log-row small{font-size:7.5px;color:var(--muted,#64748b);line-height:1.45}.v33-days{font-size:11px;font-weight:950;color:#16a34a;white-space:nowrap}
-#v33GateStudent{display:none;position:fixed;inset:0;z-index:12000;background:linear-gradient(160deg,#071527,#0d2a46 55%,#0a3a2c);color:#fff;overflow:auto;padding:18px}.v33-student-wrap{width:min(460px,100%);margin:0 auto;padding:12px 0 32px}.v33-student-brand{display:flex;align-items:center;gap:10px;margin-bottom:24px}.v33-student-logo{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(145deg,#38bdf8,#2563eb);font-size:23px}.v33-student-brand h2{font-size:18px}.v33-student-brand p{font-size:8px;opacity:.65;margin-top:3px}.v33-student-card{background:#fff;color:#0f172a;border-radius:25px;padding:18px;box-shadow:0 25px 60px rgba(0,0,0,.26)}.v33-student-hero{text-align:center;margin-bottom:15px}.v33-student-hero .big{font-size:42px}.v33-student-hero h1{font-size:22px;margin-top:5px}.v33-student-hero p{font-size:9px;color:#64748b;margin-top:4px}.v33-phone{width:100%;border:1.5px solid #cbd5e1;border-radius:15px;padding:14px 13px;font-size:15px;outline:0}.v33-phone:focus{border-color:#2563eb;box-shadow:0 0 0 4px #2563eb18}.v33-check-btn{width:100%;border:0;border-radius:15px;padding:14px;margin-top:9px;background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;font-size:11px;font-weight:950}.v33-student-state{margin-top:13px;border-radius:17px;padding:13px;background:#f8fafc;border:1px solid #e2e8f0}.v33-success{background:#ecfdf5;border-color:#bbf7d0}.v33-success h3{color:#15803d;font-size:17px}.v33-success b{font-size:14px}.v33-student-state p{font-size:9px;color:#64748b;line-height:1.5;margin-top:4px}.v33-change{display:block;margin:12px auto 0;border:0;background:transparent;color:#2563eb;font-size:8.5px;font-weight:900;text-decoration:underline}.v33-admin-link{display:block;text-align:center;margin-top:16px;color:#bae6fd;font-size:8px;text-decoration:underline}
+#v33GateStudent{display:none;position:fixed;inset:0;z-index:12000;background:linear-gradient(160deg,#071527,#0d2a46 55%,#0a3a2c);color:#fff;overflow:auto;padding:18px}.v33-student-wrap{width:min(460px,100%);margin:0 auto;padding:12px 0 32px}.v33-student-brand{display:flex;align-items:center;gap:10px;margin-bottom:24px}.v33-student-logo{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(145deg,#38bdf8,#2563eb);font-size:23px}.v33-student-brand h2{font-size:18px}.v33-student-brand p{font-size:8px;opacity:.65;margin-top:3px}.v33-student-card{background:#fff;color:#0f172a;border-radius:25px;padding:18px;box-shadow:0 25px 60px rgba(0,0,0,.26)}.v33-student-hero{text-align:center;margin-bottom:15px}.v33-student-hero .big{font-size:42px}.v33-student-hero h1{font-size:22px;margin-top:5px}.v33-student-hero p{font-size:9px;color:#64748b;margin-top:4px}.v33-phone{width:100%;border:1.5px solid #cbd5e1;border-radius:15px;padding:14px 13px;font-size:15px;outline:0}.v33-phone:focus{border-color:#2563eb;box-shadow:0 0 0 4px #2563eb18}.v33-check-btn{width:100%;border:0;border-radius:15px;padding:14px;margin-top:9px;background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;font-size:11px;font-weight:950}.v33-student-state{margin-top:13px;border-radius:17px;padding:13px;background:#f8fafc;border:1px solid #e2e8f0}.v33-success{background:#ecfdf5;border-color:#bbf7d0}.v33-success h3{color:#15803d;font-size:17px}.v33-success b{font-size:14px}.v33-student-state p{font-size:9px;color:#64748b;line-height:1.5;margin-top:4px}.v33-change{display:block;margin:12px auto 0;border:0;background:transparent;color:#2563eb;font-size:8.5px;font-weight:900;text-decoration:underline}.v33-admin-link{display:none!important}
 @media(max-width:390px){.v33-gate-card{padding:13px;border-radius:21px}.v33-gate-title h3{font-size:14px}.v33-gate-icon{width:40px;height:40px}.v33-gate-stat b{font-size:16px}.v33-gate-actions{grid-template-columns:1fr 1fr}.v33-gate-actions .primary{grid-column:1/-1}.v33-year-toolbar{grid-template-columns:1fr}.v33-dialog-body{padding:11px}}
 </style>
+
+<style id="v34-gate-private-style">
+body.v34-gate-only>header,body.v34-gate-only>.main,body.v34-gate-only>.bottom-nav,body.v34-gate-only>.super-fab,body.v34-gate-only>.ai14-fab,body.v34-gate-only>.ultimate-fab,body.v34-gate-only>.nx-fab,body.v34-gate-only>#v31Panel,body.v34-gate-only>#v31Sheet,body.v34-gate-only>#v33Modal{display:none!important}
+body.v34-gate-only{background:#071527!important;overflow:auto!important}
+body.v34-gate-only #v33GateStudent{display:block!important}
+body.v34-gate-only .v33-student-brand{justify-content:center;text-align:left}
+body.v34-gate-only .v33-student-wrap{padding-top:max(28px,env(safe-area-inset-top))}
+body.v34-gate-only .v33-student-card{max-width:430px;margin:auto}
+.v34-auto-note{margin-top:10px;text-align:center;font-size:8px;color:#64748b;line-height:1.45}
+</style>
 <div id="v33Modal" class="v33-modal" aria-hidden="true"><div class="v33-dialog"><div class="v33-dialog-head"><b id="v33ModalTitle">Smart Gate Attendance</b><button class="v33-close" onclick="v33CloseModal()">×</button></div><div id="v33ModalBody" class="v33-dialog-body"></div></div></div>
-<div id="v33GateStudent" aria-hidden="true"><div class="v33-student-wrap"><div class="v33-student-brand"><div class="v33-student-logo">📚</div><div><h2>Hariom Library</h2><p>SMART GATE ATTENDANCE</p></div></div><div class="v33-student-card"><div class="v33-student-hero"><div class="big">📍</div><h1>Gate Check-in</h1><p>Library gate ka QR scan hua hai. Apna registered mobile number verify karke Present mark karein.</p></div><div id="v33GateForm"><input id="v33GatePhone" class="v33-phone" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit registered mobile number"><button class="v33-check-btn" onclick="v33GateCheckIn()">✅ VERIFY & MARK PRESENT</button></div><div id="v33GateState" class="v33-student-state"><p>Sirf library app me enrolled mobile number accept hoga. Ek student ka ek din ka attendance record permanent save rahega.</p></div><button class="v33-change" onclick="v33ForgetGateStudent()">Use another student number</button></div><a class="v33-admin-link" href="./">Admin app open karein</a></div></div>
+<div id="v33GateStudent" aria-hidden="true"><div class="v33-student-wrap"><div class="v33-student-brand"><div class="v33-student-logo">📚</div><div><h2>Hariom Library</h2><p>SMART GATE ATTENDANCE</p></div></div><div class="v33-student-card"><div class="v33-student-hero"><div class="big">📍</div><h1>Gate Check-in</h1><p>Library gate ka QR scan hua hai. Apna registered mobile number verify karke Present mark karein.</p></div><div id="v33GateForm"><input id="v33GatePhone" class="v33-phone" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit registered mobile number"><button class="v33-check-btn" onclick="v33GateCheckIn()">✅ VERIFY & MARK PRESENT</button></div><div id="v33GateState" class="v33-student-state"><p>Sirf library app me enrolled mobile number accept hoga. Ek student ka ek din ka attendance record permanent save rahega.</p></div><button class="v33-change" onclick="v33ForgetGateStudent()">Use another student number</button></div></div></div>
 <script id="v33-gate-script">
 (function(){
   const BASE='library_v3/gateAttendanceV33';
@@ -6496,6 +6545,9 @@ body.dark .v32-compose{background:#0f172a;color:#f8fafc;box-shadow:inset 0 0 0 1
   let seats={},flex={},profiles={},todayData={},yearRows=[],yearSelected=new Date().getFullYear(),initialToday=true,lastAlertTs=0;
   function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
   function phone10(p){let d=String(p||'').replace(/\D/g,'');if(d.length===12&&d.startsWith('91'))d=d.slice(2);if(d.length>10)d=d.slice(-10);return /^\d{10}$/.test(d)?d:''}
+  function rememberedGatePhone(){let p='';try{p=localStorage.getItem('hariom_v34_gate_phone')||localStorage.getItem('hariom_v33_gate_phone')||''}catch(e){}if(!p){const m=document.cookie.match(/(?:^|; )hariom_gate_phone=([^;]+)/);if(m)p=decodeURIComponent(m[1])}return phone10(p)}
+  function rememberGatePhone(p){p=phone10(p);if(!p)return;try{localStorage.setItem('hariom_v34_gate_phone',p);localStorage.setItem('hariom_v33_gate_phone',p)}catch(e){}document.cookie='hariom_gate_phone='+encodeURIComponent(p)+'; Max-Age=31536000; Path=/; SameSite=Lax'}
+  function forgetRememberedGatePhone(){try{localStorage.removeItem('hariom_v34_gate_phone');localStorage.removeItem('hariom_v33_gate_phone')}catch(e){}document.cookie='hariom_gate_phone=; Max-Age=0; Path=/; SameSite=Lax'}
   function toast(m){if(typeof showToast==='function')showToast(m);else alert(m)}
   function adminOK(){if(typeof isAdminVerified!=='undefined'&&!isAdminVerified){toast('⚠️ Admin verification required');return false}return true}
   function istParts(ts){const d=ts?new Date(ts):new Date(),parts=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Kolkata',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).formatToParts(d),o={};parts.forEach(p=>{if(p.type!=='literal')o[p.type]=p.value});return {year:o.year,month:o.month,day:o.day,date:o.year+'-'+o.month+'-'+o.day,time:o.hour+':'+o.minute+':'+o.second}}
@@ -6535,16 +6587,102 @@ body.dark .v32-compose{background:#0f172a;color:#f8fafc;box-shadow:inset 0 0 0 1
   window.v33YearFilter=function(){renderYearbook()};
   window.v33ExportYearCSV=function(){if(!yearRows.length)return toast('Is year me attendance record nahi hai');const cols=['date','name','phone','seat','shift','source','firstSeenAt','lastSeenAt','scans'],csv=[cols.join(','),...yearRows.map(x=>cols.map(c=>'"'+String(c==='shift'?shiftText(x[c]):c.endsWith('At')&&x[c]?new Date(Number(x[c])).toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}):(x[c]??'')).replace(/"/g,'""')+'"').join(','))].join('\n'),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='Hariom_Gate_Attendance_'+yearSelected+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
   async function savePresent(s){const n=nowPath(),key=phone10(s.phone),ref=database.ref(BASE+'/years/'+n.year+'/'+n.month+'/'+n.day+'/'+key),ts=Date.now();let first=false;await ref.transaction(cur=>{if(cur){return {...cur,lastSeenAt:ts,scans:Number(cur.scans||1)+1}}first=true;return {name:s.name,phone:key,seat:s.seat||'',shift:s.shift||'',source:s.source||'',studentKey:s.studentKey||key,studentId:s.studentId||'',date:n.date,year:n.year,month:n.month,day:n.day,present:true,firstSeenAt:ts,lastSeenAt:ts,scans:1,createdAt:ts}});await database.ref(BASE+'/events/'+n.year+'/'+n.month).push().set({name:s.name,phone:key,seat:s.seat||'',shift:s.shift||'',source:s.source||'',studentKey:s.studentKey||key,date:n.date,time:ts,type:first?'PRESENT':'RESCAN'});return first}
-  async function gateCheck(phone,auto){phone=phone10(phone);const state=$('v33GateState');if(!phone){state.className='v33-student-state';state.innerHTML='<p>Valid 10-digit registered mobile number daliye.</p>';return}const s=resolveStudent(phone);if(!s){state.className='v33-student-state';state.innerHTML='<p><b>Student not found.</b><br>Ye number Reserved / Unreserved / Digital Admission list me registered nahi mila. Admin se mobile number check karwayein.</p>';return}state.className='v33-student-state';state.innerHTML='<p>⏳ '+esc(s.name)+' ka attendance save ho raha hai…</p>';try{const first=await savePresent(s);localStorage.setItem('hariom_v33_gate_phone',phone);$('v33GatePhone').value=phone;state.className='v33-student-state v33-success';state.innerHTML='<h3>✅ PRESENT</h3><b>'+esc(s.name)+'</b><p>'+esc(s.source||'Student')+(s.seat?' • '+esc(String(s.seat)):'')+' • '+esc(shiftText(s.shift))+'<br>'+esc(nowPath().date)+' • '+esc(nowPath().time)+(first?'':'<br>Already present today • scan time updated')+'</p>';if(auto)toast('✅ '+s.name+' Present')}catch(e){state.className='v33-student-state';state.innerHTML='<p><b>Attendance save failed.</b><br>'+esc(e.message||e)+'</p>'}}
+  async function gateCheck(phone,auto){
+    phone=phone10(phone);const state=$('v33GateState'),form=$('v33GateForm'),change=document.querySelector('.v33-change');
+    if(!phone){state.className='v33-student-state';state.innerHTML='<p>Valid 10-digit registered mobile number daliye.</p>';return}
+    const s=resolveStudent(phone);if(!s){state.className='v33-student-state';state.innerHTML='<p><b>Student not found.</b><br>Ye number Reserved / Unreserved / Digital Admission list me registered nahi mila. Admin se mobile number check karwayein.</p>';return}
+    state.className='v33-student-state';state.innerHTML='<p>⏳ '+esc(s.name)+' ka attendance save ho raha hai…</p>';
+    try{
+      const first=await savePresent(s);rememberGatePhone(phone);$('v33GatePhone').value=phone;if(form)form.style.display='none';if(change)change.style.display='none';
+      state.className='v33-student-state v33-success';state.innerHTML='<h3>✅ PRESENT</h3><b>'+esc(s.name)+'</b><p>'+esc(s.source||'Student')+(s.seat?' • '+esc(String(s.seat)):'')+' • '+esc(shiftText(s.shift))+'<br>'+esc(nowPath().date)+' • '+esc(nowPath().time)+(first?'':'<br>Already present today • scan time updated')+'</p><div class="v34-auto-note">Is phone par registration remember ho gaya hai. Agli baar gate QR scan karte hi number dobara nahi maangega.</div>';
+      try{navigator.vibrate&&navigator.vibrate([90,40,90])}catch(e){}if(auto)toast('✅ '+s.name+' Present')
+    }catch(e){state.className='v33-student-state';state.innerHTML='<p><b>Attendance save failed.</b><br>'+esc(e.message||e)+'</p>'}
+  }
   window.v33GateCheckIn=function(){gateCheck($('v33GatePhone').value,false)};
-  window.v33ForgetGateStudent=function(){try{localStorage.removeItem('hariom_v33_gate_phone')}catch(e){}$('v33GatePhone').value='';$('v33GateState').className='v33-student-state';$('v33GateState').innerHTML='<p>Dusra registered mobile number enter karke Present mark karein.</p>';$('v33GatePhone').focus()};
-  async function openGateMode(){const overlay=$('v33GateStudent');overlay.style.display='block';overlay.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';try{const vals=await Promise.all([database.ref('library_v3/seats').once('value'),database.ref('library_v3/unreservedStudentsV23').once('value'),database.ref('library_v3/v15/profiles').once('value')]);seats=vals[0].val()||{};flex=vals[1].val()||{};profiles=vals[2].val()||{};const saved=phone10(localStorage.getItem('hariom_v33_gate_phone')||'');if(saved){$('v33GatePhone').value=saved;await gateCheck(saved,true)}else $('v33GatePhone').focus()}catch(e){$('v33GateState').innerHTML='<p>Firebase connect nahi hua. Internet check karke QR dobara scan karein.</p>'}}
+  window.v33ForgetGateStudent=function(){forgetRememberedGatePhone();const form=$('v33GateForm'),change=document.querySelector('.v33-change');if(form)form.style.display='block';if(change)change.style.display='none';$('v33GatePhone').value='';$('v33GateState').className='v33-student-state';$('v33GateState').innerHTML='<p>Registered mobile number enter karke is phone ko attendance ke liye register karein.</p>';$('v33GatePhone').focus()};
+  async function openGateMode(){
+    document.body.classList.add('v34-gate-only');const overlay=$('v33GateStudent');overlay.style.display='block';overlay.setAttribute('aria-hidden','false');document.body.style.overflow='auto';const form=$('v33GateForm'),change=document.querySelector('.v33-change');if(change)change.style.display='none';
+    try{const vals=await Promise.all([database.ref('library_v3/seats').once('value'),database.ref('library_v3/unreservedStudentsV23').once('value'),database.ref('library_v3/v15/profiles').once('value')]);seats=vals[0].val()||{};flex=vals[1].val()||{};profiles=vals[2].val()||{};const saved=rememberedGatePhone();if(saved){if(form)form.style.display='none';$('v33GatePhone').value=saved;await gateCheck(saved,true)}else{if(form)form.style.display='block';$('v33GateState').innerHTML='<p>First time sirf apna registered mobile number daliye. Is phone par save ho jayega; future scans automatic PRESENT mark karenge.</p>';$('v33GatePhone').focus()}}catch(e){$('v33GateState').innerHTML='<p>Firebase connect nahi hua. Internet check karke QR dobara scan karein.</p>'}
+  }
   function init(){mountFront();if(typeof database==='undefined')return;database.ref('library_v3/seats').on('value',s=>{seats=s.val()||{};renderFront()});database.ref('library_v3/unreservedStudentsV23').on('value',s=>{flex=s.val()||{};renderFront()});database.ref('library_v3/v15/profiles').on('value',s=>{profiles=s.val()||{};renderFront()});database.ref(currentTodayPath()).on('value',s=>{todayData=s.val()||{};renderFront()});const q=new URLSearchParams(location.search);if(q.get('gate')==='present')setTimeout(openGateMode,80)}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();window.addEventListener('load',()=>setTimeout(()=>{mountFront();renderFront()},250));
 })();
 </script>
 <!-- ===== END V33 SMART GATE ===== -->
 
+
+<!-- ===== HARIOM V34 — MASTER COUNTS + DOUBLE BACK + OTP READY SECURITY ===== -->
+<style id="v34-security-style">
+#v34AuthGate{display:none;position:fixed;inset:0;z-index:20000;background:linear-gradient(155deg,#061225,#0b2b5d 60%,#155eef);padding:18px;color:#fff;overflow:auto}
+#v34AuthGate.show{display:grid;place-items:center}.v34-auth-card{width:min(430px,100%);background:#fff;color:#0f172a;border-radius:28px;padding:22px;box-shadow:0 28px 80px rgba(0,0,0,.35)}.v34-auth-logo{width:58px;height:58px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(135deg,#155eef,#38bdf8);color:#fff;font-size:26px;margin-bottom:14px}.v34-auth-card h2{font-size:21px}.v34-auth-card p{font-size:10px;color:#64748b;line-height:1.5;margin:6px 0 15px}.v34-auth-in{width:100%;border:1.5px solid #cbd5e1;border-radius:15px;padding:14px;font-size:15px;outline:0;margin-bottom:9px}.v34-auth-in:focus{border-color:#155eef;box-shadow:0 0 0 4px #155eef18}.v34-auth-btn{width:100%;border:0;border-radius:15px;padding:14px;background:#155eef;color:#fff;font-weight:950;font-size:11px}.v34-auth-btn.green{background:#16a34a}.v34-auth-msg{margin-top:10px;padding:10px 12px;border-radius:13px;background:#f1f5f9;color:#475569;font-size:9px;line-height:1.45}.v34-auth-step{display:none}.v34-auth-step.on{display:block}
+</style>
+<div id="v34AuthGate" aria-hidden="true"><div class="v34-auth-card"><div class="v34-auth-logo">🔐</div><h2>Hariom Library Secure Login</h2><p>Sirf approved admin mobile numbers. OTP ek baar verify hone ke baad Firebase is device par session remember rakhega.</p><div id="v34AuthPhoneStep" class="v34-auth-step on"><input id="v34AuthPhone" class="v34-auth-in" type="tel" inputmode="numeric" maxlength="10" placeholder="Approved 10-digit mobile number"><div id="v34Recaptcha"></div><button class="v34-auth-btn" onclick="v34SendOtp()">SEND OTP</button></div><div id="v34AuthOtpStep" class="v34-auth-step"><input id="v34AuthOtp" class="v34-auth-in" type="tel" inputmode="numeric" maxlength="6" placeholder="6-digit OTP"><button class="v34-auth-btn green" onclick="v34VerifyOtp()">VERIFY & OPEN APP</button></div><div id="v34AuthMsg" class="v34-auth-msg">OTP security will activate after Firebase Phone Authentication web config is connected.</div></div></div>
+<script id="v34-master-security-js">
+(function(){
+  'use strict';
+  const gateMode=new URLSearchParams(location.search).get('gate')==='present';
+
+  // DOUBLE BACK TO EXIT: first back closes an open app layer or warns; second back within 1.8s exits.
+  if(!gateMode){
+    let lastBack=0,handling=false;
+    try{history.pushState({hariomV34Guard:1},'',location.href)}catch(e){}
+    const closeTopLayer=()=>{
+      const v33=document.getElementById('v33Modal');if(v33?.classList.contains('show')&&typeof v33CloseModal==='function'){v33CloseModal();return true}
+      const sh=document.getElementById('v31Sheet');if(sh?.classList.contains('show')&&typeof v31SheetClose==='function'){v31SheetClose();return true}
+      const p=document.getElementById('v31Panel');if(p?.classList.contains('show')&&typeof v31Close==='function'){v31Close();return true}
+      const seat=document.getElementById('seatModal');if(seat?.classList.contains('show')&&typeof closeModal==='function'){closeModal();return true}
+      const vm=document.getElementById('v15Modal');if(vm?.classList.contains('show')&&typeof v15ModalClose==='function'){v15ModalClose();return true}
+      return false;
+    };
+    const backHandler=()=>{
+      if(handling)return;handling=true;
+      if(closeTopLayer()){try{history.pushState({hariomV34Guard:1},'',location.href)}catch(e){}handling=false;return}
+      const now=Date.now();
+      if(now-lastBack<1800){window.removeEventListener('popstate',backHandler);handling=false;try{history.back()}catch(e){try{window.close()}catch(_){}}return}
+      lastBack=now;
+      if(typeof showToast==='function')showToast('⬅️ App band karne ke liye Back dobara dabaiye');
+      try{history.pushState({hariomV34Guard:1},'',location.href)}catch(e){}
+      setTimeout(()=>handling=false,40);
+    };
+    window.addEventListener('popstate',backHandler);
+  }
+
+  // OTP SECURITY FRAMEWORK. Do not lock the owner out until a Firebase Web API key is supplied.
+  // Paste Firebase Project Settings > Your apps > Web app config here tomorrow, then Phone provider can be enabled.
+  window.HARIOM_AUTH_CONFIG=window.HARIOM_AUTH_CONFIG||{
+    apiKey:'',
+    authDomain:'hariom-library-3c480.firebaseapp.com',
+    projectId:'hariom-library-3c480',
+    appId:''
+  };
+  window.HARIOM_OTP_ADMINS=window.HARIOM_OTP_ADMINS||null; // null = use current allowedAdmins list; set exact 4 numbers here if desired.
+  let auth=null,confirmation=null,recaptcha=null;
+  const p10=v=>{let d=String(v||'').replace(/\D/g,'');if(d.length>10)d=d.slice(-10);return /^\d{10}$/.test(d)?d:''};
+  const allowed=()=>new Set((Array.isArray(window.HARIOM_OTP_ADMINS)?window.HARIOM_OTP_ADMINS:(typeof allowedAdmins!=='undefined'?allowedAdmins:[])).map(p10).filter(Boolean));
+  const configured=()=>!gateMode&&window.HARIOM_AUTH_CONFIG.apiKey&&typeof firebase!=='undefined'&&typeof firebase.auth==='function';
+  const msg=t=>{const e=document.getElementById('v34AuthMsg');if(e)e.textContent=t};
+  const showGate=()=>{const e=document.getElementById('v34AuthGate');if(e){e.classList.add('show');e.setAttribute('aria-hidden','false')}};
+  const hideGate=()=>{const e=document.getElementById('v34AuthGate');if(e){e.classList.remove('show');e.setAttribute('aria-hidden','true')}};
+  const unlock=(phone)=>{phone=p10(phone);if(typeof isAdminVerified!=='undefined')isAdminVerified=true;try{localStorage.setItem('hariom_library_admin',phone)}catch(e){}const c=document.getElementById('adminCard');if(c)c.style.display='none';try{typeof updateAdminStatus==='function'&&updateAdminStatus()}catch(e){}hideGate()};
+  async function setupAuth(){
+    if(!configured())return;
+    try{
+      let app;try{app=firebase.app('hariomOtpAuth')}catch(e){app=firebase.initializeApp(window.HARIOM_AUTH_CONFIG,'hariomOtpAuth')}
+      auth=app.auth();await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+      auth.onAuthStateChanged(async user=>{const ph=p10(user?.phoneNumber||'');if(user&&allowed().has(ph))unlock(ph);else{if(user)await auth.signOut();showGate();msg('Approved admin number se OTP login kijiye.')}});
+      const old=window.logoutAdmin;if(typeof old==='function'&&!old.__v34otp){const wrap=function(){try{auth&&auth.signOut()}catch(e){}old.apply(this,arguments);showGate()};wrap.__v34otp=true;window.logoutAdmin=wrap}
+    }catch(e){console.error('V34 OTP init',e);showGate();msg('OTP setup error: '+e.message)}
+  }
+  window.v34SendOtp=async function(){
+    const phone=p10(document.getElementById('v34AuthPhone')?.value);if(!allowed().has(phone)){msg('Ye mobile number approved admin list me nahi hai.');return}
+    if(!auth){msg('Firebase Phone Authentication config abhi connect nahi hai.');return}
+    try{if(recaptcha){try{recaptcha.clear()}catch(e){}}recaptcha=new firebase.auth.RecaptchaVerifier('v34Recaptcha',{size:'normal'},auth);confirmation=await auth.signInWithPhoneNumber('+91'+phone,recaptcha);document.getElementById('v34AuthPhoneStep').classList.remove('on');document.getElementById('v34AuthOtpStep').classList.add('on');msg('OTP bhej diya gaya. 6-digit code enter kijiye.')}catch(e){msg('OTP send failed: '+e.message)}
+  };
+  window.v34VerifyOtp=async function(){const code=String(document.getElementById('v34AuthOtp')?.value||'').trim();if(!confirmation||!/^\d{6}$/.test(code)){msg('Valid 6-digit OTP daliye.');return}try{const r=await confirmation.confirm(code),ph=p10(r.user?.phoneNumber||'');if(!allowed().has(ph)){await auth.signOut();msg('Number approved list me nahi hai.');return}unlock(ph);if(typeof showToast==='function')showToast('✅ OTP verified • trusted session active')}catch(e){msg('OTP verify failed: '+e.message)}};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setupAuth);else setupAuth();
+})();
+</script>
+<!-- ===== END V34 ===== -->
 
 <script id="v31-pwa-register">if('serviceWorker' in navigator && location.protocol.startsWith('http')){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}</script>
 
