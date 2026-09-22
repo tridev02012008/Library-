@@ -5112,7 +5112,7 @@ body.dark #ur23List .ur23-student.v24-expired{background:linear-gradient(135deg,
 <script id="v26-notice-script">
 (function(){
   const $=id=>document.getElementById(id);
-  let seats={},flex={},currentRef=null,currentTimer=null;
+  let seats={},flex={},profiles={},currentRef=null,currentTimer=null;
   const shifts=["all","m","n","an","e","night"];
   const DIRECT_ENDPOINT="https://us-central1-hariom-library-3c480.cloudfunctions.net/sendNoticeNow";
 
@@ -5123,6 +5123,7 @@ body.dark #ur23List .ur23-student.v24-expired{background:linear-gradient(135deg,
     function add(name,phone,source){name=String(name||"").trim();if(!name)return;const p=phone10(phone);if(!p){missing.push({name,source});return}if(!map.has(p))map.set(p,{name,phone:p,sources:[source]});else{const x=map.get(p);if(!x.name&&name)x.name=name;if(!x.sources.includes(source))x.sources.push(source)}}
     Object.keys(seats||{}).forEach(k=>{const d=seats[k]||{};shifts.forEach(sh=>{if(d["name_"+sh])add(d["name_"+sh],d["phone_"+sh],"Seat "+k+" "+sh)})});
     Object.values(flex||{}).forEach(d=>{if(!d||d.status==="Left / Archived")return;add(d.name,d.phone,"Unreserved")});
+    Object.values(profiles||{}).forEach(d=>{if(!d)return;const st=String(d.status||"Active").toLowerCase();if(["inactive","blocked","left / archived","archived"].includes(st))return;add(d.name,d.whatsapp||d.phone,"Digital Admission")});
     return {rows:[...map.values()],missing};
   }
   function renderCounts(){const c=contacts();if($("v25StudentCount"))$("v25StudentCount").textContent=c.rows.length+c.missing.length;if($("v25ReadyCount"))$("v25ReadyCount").textContent=c.rows.length;if($("v25MissingCount"))$("v25MissingCount").textContent=c.missing.length;if($("v25RecipientLabel"))$("v25RecipientLabel").textContent=c.rows.length;document.querySelectorAll("[data-v25-ready]").forEach(x=>x.textContent=c.rows.length);document.querySelectorAll("[data-v25-total]").forEach(x=>x.textContent=c.rows.length+c.missing.length)}
@@ -5188,7 +5189,7 @@ body.dark #ur23List .ur23-student.v24-expired{background:linear-gradient(135deg,
     monitorHistory(histRef);setUi("connecting",0,0,total,"Connecting direct WhatsApp sender…");
     const w=$("v25BackendWarning");if(w)w.classList.remove("show");
     try{
-      const r=await fetch(DIRECT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json","x-notice-key":key},body:JSON.stringify({message:msg,audience:testPhone?"test":"all_current_students",testPhone:testPhone||"",requestId,totalExpected:total,source:"Hariom Library V26 Direct Notice Box"})});
+      const r=await fetch(DIRECT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json","x-notice-key":key},body:JSON.stringify({message:msg,audience:testPhone?"test":"all_current_students",testPhone:testPhone||"",requestId,totalExpected:total,recipients:testPhone?[{phone:testPhone,name:"Test"}]:c.rows.map(x=>({phone:x.phone,name:x.name,sources:x.sources})),source:"Hariom Library V32 Front Notice Box"})});
       let data={};try{data=await r.json()}catch(e){}
       if(r.status===401||r.status===403){try{localStorage.removeItem("hariom_v26_sender_key")}catch(e){}throw new Error("Sender Key galat hai. Dobara send karke sahi key daliye.")}
       if(!r.ok||!data.ok)throw new Error(data.error||("Backend HTTP "+r.status));
@@ -5214,6 +5215,7 @@ body.dark #ur23List .ur23-student.v24-expired{background:linear-gradient(135deg,
   if(typeof database!=="undefined"){
     database.ref("library_v3/seats").on("value",s=>{seats=s.val()||{};renderCounts()});
     database.ref("library_v3/unreservedStudentsV23").on("value",s=>{flex=s.val()||{};renderCounts()});
+    database.ref("library_v3/v15/profiles").on("value",s=>{profiles=s.val()||{};renderCounts()});
     database.ref("library_v3/whatsappBroadcastHistory").limitToLast(10).on("value",s=>renderHistory(s.val()||{}));
   }
   document.addEventListener("DOMContentLoaded",init);window.addEventListener("load",()=>{init();setTimeout(patchEntries,1200)});
@@ -6411,6 +6413,59 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 <!-- ===== END V31 PRO OS ===== -->
+
+
+<!-- ===== HARIOM V32 — FRONT DIRECT NOTICE EXPERIENCE ===== -->
+<style id="v32-front-notice-style">
+/* Remove the older master WhatsApp entry / legacy contact launcher. */
+#v24MasterEntry{display:none!important}
+#v24UrTools .v24-contacts{display:none!important}
+#v24ContactPanel{display:none!important}
+
+.v32-notice{
+  position:relative;overflow:hidden;margin:10px 0 14px;padding:16px;
+  border:1px solid rgba(37,211,102,.26);border-radius:24px;
+  background:linear-gradient(145deg,#0b1f18 0%,#0d2c20 52%,#103b2a 100%);
+  color:#fff;box-shadow:0 16px 36px rgba(5,46,22,.20)
+}
+.v32-notice:before{content:"";position:absolute;width:180px;height:180px;border-radius:50%;right:-72px;top:-88px;background:rgba(37,211,102,.14)}
+.v32-notice:after{content:"";position:absolute;width:130px;height:130px;border-radius:50%;left:-70px;bottom:-85px;background:rgba(59,130,246,.10)}
+.v32-top,.v32-stats,.v32-compose,.v32-actions,.v32-foot{position:relative;z-index:2}
+.v32-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:11px}
+.v32-title{display:flex;gap:10px;align-items:center;min-width:0}.v32-icon{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(145deg,#25d366,#16a34a);font-size:22px;box-shadow:0 8px 20px rgba(37,211,102,.24)}
+.v32-title h3{font-size:16px;line-height:1.05;margin:0}.v32-title p{font-size:8.5px;opacity:.72;margin-top:4px;line-height:1.35}
+.v32-live{display:flex;align-items:center;gap:5px;padding:6px 8px;border-radius:999px;background:#ffffff12;border:1px solid #ffffff16;font-size:7.5px;font-weight:900;white-space:nowrap}.v32-live i{width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 4px #22c55e20}
+.v32-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px}.v32-stat{padding:9px 7px;border-radius:14px;background:#ffffff0d;border:1px solid #ffffff13;text-align:center}.v32-stat b{display:block;font-size:18px}.v32-stat span{display:block;font-size:6.5px;opacity:.65;font-weight:900;letter-spacing:.35px;margin-top:2px}
+.v32-compose{background:#fff;border-radius:18px;padding:10px;color:#0f172a;box-shadow:inset 0 0 0 1px rgba(15,23,42,.06)}
+body.dark .v32-compose{background:#0f172a;color:#f8fafc;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
+.v32-compose-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:7px}.v32-compose-head b{font-size:11px}.v32-compose-head span{font-size:7.5px;color:#64748b}
+.v32-templates{display:flex;gap:6px;overflow:auto;padding-bottom:7px;scrollbar-width:none}.v32-templates::-webkit-scrollbar{display:none}.v32-template{border:1px solid #e2e8f0;background:#f8fafc;color:#334155;border-radius:999px;padding:6px 9px;font-size:7.5px;font-weight:900;white-space:nowrap}.v32-template:active{transform:scale(.96)}body.dark .v32-template{background:#182235;border-color:#273449;color:#e2e8f0}
+#v32NoticeText{width:100%;min-height:92px;resize:vertical;border:0;outline:0;background:transparent;color:inherit;font:600 11px/1.55 Inter,system-ui,sans-serif;padding:4px 2px 2px}
+.v32-meta{display:flex;justify-content:space-between;gap:8px;margin-top:6px;font-size:7.5px;color:#64748b}.v32-meta b{color:#16a34a}
+.v32-consent{display:flex;align-items:flex-start;gap:7px;margin:10px 1px 0;font-size:7.4px;line-height:1.4;opacity:.8}.v32-consent input{margin-top:1px;accent-color:#25d366;width:15px;height:15px;flex:0 0 auto}
+.v32-actions{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px}.v32-send{border:0;border-radius:15px;min-height:50px;padding:10px 12px;color:#fff;background:linear-gradient(135deg,#16a34a,#25d366);font-size:10.5px;font-weight:950;box-shadow:0 10px 24px rgba(37,211,102,.22)}.v32-send:active{transform:scale(.985)}.v32-send:disabled{opacity:.55}.v32-more{width:50px;border:1px solid #ffffff22;border-radius:15px;background:#ffffff12;color:#fff;font-size:19px}
+.v32-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:9px;font-size:7.3px;opacity:.72}.v32-foot button{border:0;background:transparent;color:#86efac;font-size:7.5px;font-weight:900;text-decoration:underline}
+.v32-status{display:flex;align-items:center;gap:5px}.v32-status i{width:7px;height:7px;border-radius:50%;background:#f59e0b}.v32-status.ready i{background:#22c55e}.v32-status.error i{background:#ef4444}
+@media(max-width:370px){.v32-notice{padding:13px;border-radius:21px}.v32-title h3{font-size:14px}.v32-icon{width:40px;height:40px}.v32-stat b{font-size:16px}.v32-actions{grid-template-columns:1fr 46px}.v32-more{width:46px}}
+</style>
+<script id="v32-front-notice-script">
+(function(){
+ const $=id=>document.getElementById(id), phone10=p=>{let d=String(p||'').replace(/\D/g,'');if(d.length===12&&d.startsWith('91'))d=d.slice(2);if(d.length>10)d=d.slice(-10);return /^\d{10}$/.test(d)?d:''};
+ let seats={},flex={},profiles={};
+ function getContacts(){const map=new Map(),missing=[];const add=(name,phone,source)=>{name=String(name||'').trim();if(!name)return;const p=phone10(phone);if(!p){missing.push({name,source});return}if(!map.has(p))map.set(p,{name,phone:p,sources:[source]});else{const x=map.get(p);if(!x.sources.includes(source))x.sources.push(source)}};['all','m','n','an','e','night'].forEach(sh=>Object.keys(seats||{}).forEach(k=>{const d=seats[k]||{};if(d['name_'+sh])add(d['name_'+sh],d['phone_'+sh],'Seat '+k)}));Object.values(flex||{}).forEach(d=>{if(!d||d.status==='Left / Archived')return;add(d.name,d.phone,'Unreserved')});Object.values(profiles||{}).forEach(d=>{if(!d)return;const st=String(d.status||'Active').toLowerCase();if(['inactive','blocked','left / archived','archived'].includes(st))return;add(d.name,d.whatsapp||d.phone,'Admission')});return {rows:[...map.values()],missing}}
+ function update(){const c=getContacts(),total=c.rows.length+c.missing.length;['v32Total'].forEach(id=>{$(id)&&($(id).textContent=total)});$('v32Ready')&&($('v32Ready').textContent=c.rows.length);$('v32Missing')&&($('v32Missing').textContent=c.missing.length);$('v32Recipients')&&($('v32Recipients').textContent=c.rows.length+' personal chats');const old=$('v25NoticeText'),t=$('v32NoticeText');if(old&&t&&document.activeElement!==t&&old.value&&t.value!==old.value)t.value=old.value;chars()}
+ function chars(){const t=$('v32NoticeText');if(!t)return;$('v32Chars')&&($('v32Chars').textContent=t.value.length+'/900')}
+ function mount(){const home=$('homeSection');if(!home||$('v32NoticeCard'))return;const box=document.createElement('div');box.id='v32NoticeCard';box.className='v32-notice';box.innerHTML=`<div class="v32-top"><div class="v32-title"><div class="v32-icon">💬</div><div><h3>Direct Student Notice</h3><p>Reserved + Unreserved + New Admissions • numbers auto-sync</p></div></div><div class="v32-live"><i></i> LIVE CONTACTS</div></div><div class="v32-stats"><div class="v32-stat"><b id="v32Total">0</b><span>STUDENTS</span></div><div class="v32-stat"><b id="v32Ready">0</b><span>WHATSAPP READY</span></div><div class="v32-stat"><b id="v32Missing">0</b><span>NUMBER MISSING</span></div></div><div class="v32-compose"><div class="v32-compose-head"><b>📢 Write one notice</b><span id="v32Recipients">0 personal chats</span></div><div class="v32-templates"><button class="v32-template" onclick="v32Template('general')">General</button><button class="v32-template" onclick="v32Template('payment')">Payment</button><button class="v32-template" onclick="v32Template('timing')">Timing</button><button class="v32-template" onclick="v32Template('holiday')">Holiday</button><button class="v32-template" onclick="v32Template('urgent')">Urgent</button></div><textarea id="v32NoticeText" maxlength="900" placeholder="Notice likhiye...">Hariom Library Notice: Sabhi students kripya is suchna ko dhyan se padhein. Adhik jankari ke liye library admin se sampark karein.</textarea><div class="v32-meta"><span>Personal WhatsApp notice</span><b id="v32Chars">0/900</b></div></div><label class="v32-consent"><input id="v32Consent" type="checkbox"><span>Sirf enrolled students ko bheje jinhone library WhatsApp updates receive karne ki permission di hai.</span></label><div class="v32-actions"><button id="v32Send" class="v32-send" onclick="v32SendFrontNotice()">📢 SEND TO ALL PERSONALLY</button><button class="v32-more" onclick="v25OpenNotice()" aria-label="Open full notice center">⋯</button></div><div class="v32-foot"><div id="v32Status" class="v32-status"><i></i><span>Direct sender connects on send</span></div><button onclick="v25OpenNotice()">History / Test / Setup</button></div>`;
+ const launch=$('v31Launch'); if(launch) launch.after(box); else {const w=home.querySelector('.welcome');w?.after(box)};
+ const t=$('v32NoticeText');t?.addEventListener('input',()=>{chars();const old=$('v25NoticeText');if(old)old.value=t.value;try{localStorage.setItem('hariom_v25_notice',t.value)}catch(e){}});try{const saved=localStorage.getItem('hariom_v25_notice');if(saved)t.value=saved}catch(e){}chars();update();
+ }
+ window.v32Template=function(type){const m={general:'Hariom Library Notice: Sabhi students kripya is suchna ko dhyan se padhein. Adhik jankari ke liye library admin se sampark karein.',payment:'Hariom Library Payment Reminder: Jinka monthly fee / renewal pending hai, kripya payment complete karein. Payment ho chuka ho to is notice ko ignore karein.',timing:'Hariom Library Timing Notice: Library timing / shift me update hai. Kripya naye timing ko follow karein aur zarurat par admin se sampark karein.',holiday:'Hariom Library Holiday Notice: Library schedule me temporary holiday / timing change rahega. Kripya notice ke anusaar planning karein.',urgent:'Hariom Library Urgent Notice: Sabhi students kripya is zaroori suchna par turant dhyan dein aur zarurat hone par admin se sampark karein.'},t=$('v32NoticeText');if(!t)return;t.value=m[type]||m.general;t.dispatchEvent(new Event('input'))}
+ window.v32SendFrontNotice=function(){const t=$('v32NoticeText'),old=$('v25NoticeText');if(!t||!t.value.trim())return typeof showToast==='function'?showToast('Notice message likhiye'):alert('Notice message likhiye');if(!$('v32Consent')?.checked)return typeof showToast==='function'?showToast('Permission checkbox tick kijiye'):alert('Permission checkbox tick kijiye');if(old){old.value=t.value;old.dispatchEvent(new Event('input'))}const c=$('v25Confirm');if(c)c.checked=true;const st=$('v32Status');if(st){st.className='v32-status';st.querySelector('span').textContent='Connecting direct sender…'};if(typeof window.v25SendAllNotice==='function')window.v25SendAllNotice();else if(typeof showToast==='function')showToast('Direct sender module load nahi hua')}
+ function init(){mount();update();if(typeof database!=='undefined'){database.ref('library_v3/seats').on('value',s=>{seats=s.val()||{};update()});database.ref('library_v3/unreservedStudentsV23').on('value',s=>{flex=s.val()||{};update()});database.ref('library_v3/v15/profiles').on('value',s=>{profiles=s.val()||{};update()});database.ref('library_v3/whatsappBroadcastHistory').limitToLast(1).on('value',s=>{const vals=s.val()||{},d=Object.values(vals).sort((a,b)=>Number(b.createdAt||0)-Number(a.createdAt||0))[0],st=$('v32Status');if(!st||!d)return;const state=String(d.status||'').toLowerCase();st.className='v32-status '+(['sent','partial'].includes(state)?'ready':state==='failed'?'error':'');st.querySelector('span').textContent=state==='sent'?`Last: ${Number(d.sentCount||0)} sent`:state==='partial'?`Last: ${Number(d.sentCount||0)} sent • ${Number(d.failedCount||0)} failed`:state==='failed'?'Last send failed • check setup':'Sending notice…'})}}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();window.addEventListener('load',()=>setTimeout(init,250));
+})();
+</script>
+<!-- ===== END V32 FRONT NOTICE ===== -->
 
 <script id="v31-pwa-register">if('serviceWorker' in navigator && location.protocol.startsWith('http')){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}</script>
 
