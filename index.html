@@ -5915,17 +5915,62 @@ body.dark #seatsGrid .seat{background:#101827!important;border-color:#27344a!imp
 
 <!-- ===== HARIOM V30 UNIQUE STUDENTS + PHOTO ID/SLIP ACTIONS ===== -->
 <style id="v30-student-unique-style">
+/* V31.1 — compact native-style student card tools */
 .native-avatar{overflow:hidden!important;padding:0!important}
 .native-avatar img{width:100%;height:100%;object-fit:cover;display:block}
-.v30-extra-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:7px}
-.v30-extra-actions button{border:1px solid var(--border);border-radius:10px;min-height:40px;padding:7px 4px;background:var(--card);color:var(--text);font-size:7.4px;font-weight:950;line-height:1.15;cursor:pointer;box-shadow:var(--soft)}
-.v30-extra-actions button.photo{background:linear-gradient(135deg,#0f172a,#334155);color:#fff;border:0}
-.v30-extra-actions button.slip{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;border:0}
-.v30-extra-actions button.id{background:linear-gradient(135deg,#f59e0b,#ea580c);color:#fff;border:0}
-.v30-extra-actions button.welcome{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;border:0}
-.v30-unique-note{margin:8px 0 0;padding:7px 9px;border-radius:10px;background:rgba(22,163,74,.08);border:1px solid rgba(22,163,74,.16);font-size:7.5px;color:var(--muted);line-height:1.45}
+
+/* Make every student card feel like a real mobile app card instead of a web form. */
+#studentsList .native-student-card{border-radius:24px!important;padding:15px!important;border:1px solid rgba(148,163,184,.24)!important;background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(248,250,252,.96))!important;box-shadow:0 12px 30px rgba(15,23,42,.08)!important;margin-bottom:13px!important}
+body.dark #studentsList .native-student-card{background:linear-gradient(180deg,rgba(17,24,39,.99),rgba(15,23,42,.98))!important;border-color:rgba(148,163,184,.18)!important}
+#studentsList .native-student-card:before{width:5px!important;border-radius:0 6px 6px 0}
+#studentsList .native-student-top{gap:12px!important;align-items:center!important}
+#studentsList .native-avatar{width:58px!important;height:58px!important;min-width:58px!important;border-radius:18px!important;background:#e8f0ff!important;color:#1d4ed8!important;font-size:22px!important;box-shadow:inset 0 0 0 1px rgba(37,99,235,.08)}
+#studentsList .native-student-name{font-size:16px!important;line-height:1.2!important;letter-spacing:-.2px!important}
+#studentsList .native-student-sub{font-size:10px!important;line-height:1.55!important;margin-top:4px!important}
+#studentsList .native-status{font-size:7.5px!important;padding:6px 8px!important;border-radius:999px!important;white-space:nowrap!important}
+
+/* Money strip: one clean summary row. */
+#studentsList .native-student-money{gap:7px!important;margin-top:13px!important}
+#studentsList .native-money{border-radius:14px!important;padding:9px 5px!important;background:rgba(248,250,252,.86)!important;border:1px solid rgba(148,163,184,.22)!important;box-shadow:none!important}
+body.dark #studentsList .native-money{background:rgba(30,41,59,.62)!important}
+#studentsList .native-money b{font-size:13px!important}
+#studentsList .native-money span{font-size:6.6px!important;letter-spacing:.45px!important}
+
+/* Primary actions: simple app toolbar, no oversized colour blocks. */
+#studentsList .native-student-actions{grid-template-columns:1.25fr .85fr 1fr!important;gap:7px!important;margin-top:11px!important}
+#studentsList .native-student-actions button{height:43px!important;border-radius:13px!important;padding:7px 5px!important;font-size:8.3px!important;font-weight:900!important;box-shadow:none!important;background:var(--card)!important;border:1px solid var(--border)!important;color:var(--text)!important;white-space:nowrap!important}
+#studentsList .native-student-actions button.primary{background:linear-gradient(135deg,#2563eb,#1d4ed8)!important;color:#fff!important;border-color:transparent!important;box-shadow:0 7px 16px rgba(37,99,235,.22)!important}
+#studentsList .native-student-actions button.wa{background:#f0fdf4!important;color:#15803d!important;border-color:#bbf7d0!important}
+body.dark #studentsList .native-student-actions button.wa{background:rgba(20,83,45,.26)!important;color:#86efac!important;border-color:rgba(34,197,94,.28)!important}
+#studentsList .native-student-actions button:disabled{opacity:.38!important;filter:grayscale(.4)}
+
+/* Secondary tools: icon tiles like Android/iOS quick actions. */
+.v30-tools-label{display:flex;align-items:center;justify-content:space-between;margin:11px 2px 7px;color:var(--muted);font-size:7.2px;font-weight:900;letter-spacing:.55px;text-transform:uppercase}
+.v30-tools-label span:last-child{font-weight:700;letter-spacing:0;text-transform:none;opacity:.75}
+.v30-extra-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:0}
+.v30-extra-actions button{border:1px solid rgba(148,163,184,.22)!important;border-radius:15px!important;min-height:64px!important;padding:8px 3px!important;background:rgba(248,250,252,.9)!important;color:var(--text)!important;font-size:7.6px!important;font-weight:900!important;line-height:1.05!important;cursor:pointer!important;box-shadow:none!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:6px!important;transition:transform .12s ease,background .12s ease!important}
+body.dark .v30-extra-actions button{background:rgba(30,41,59,.66)!important;border-color:rgba(148,163,184,.16)!important}
+.v30-extra-actions button:active{transform:scale(.96)!important}
+.v30-tool-icon{width:31px;height:31px;border-radius:10px;display:grid;place-items:center;font-size:15px;background:#e2e8f0;color:#0f172a}
+.v30-extra-actions button.photo .v30-tool-icon{background:#e2e8f0;color:#0f172a}
+.v30-extra-actions button.slip .v30-tool-icon{background:#dbeafe;color:#1d4ed8}
+.v30-extra-actions button.id .v30-tool-icon{background:#fef3c7;color:#b45309}
+.v30-extra-actions button.welcome .v30-tool-icon{background:#dcfce7;color:#15803d}
+body.dark .v30-tool-icon{filter:saturate(.9) brightness(.9)}
+.v30-tool-text{display:block;white-space:nowrap}
+.v30-unique-note{margin:8px 0 0;padding:8px 10px;border-radius:12px;background:rgba(22,163,74,.07);border:1px solid rgba(22,163,74,.14);font-size:7.5px;color:var(--muted);line-height:1.45}
 .v30-unique-note b{color:var(--text)}
-@media(max-width:390px){.v30-extra-actions{grid-template-columns:repeat(2,minmax(0,1fr))}.v30-extra-actions button{font-size:8px;min-height:42px}}
+
+@media(max-width:390px){
+  #studentsList .native-student-card{padding:13px!important;border-radius:21px!important}
+  #studentsList .native-avatar{width:52px!important;height:52px!important;min-width:52px!important;border-radius:16px!important}
+  #studentsList .native-student-name{font-size:14px!important}
+  #studentsList .native-student-actions{grid-template-columns:1.18fr .82fr 1fr!important;gap:5px!important}
+  #studentsList .native-student-actions button{font-size:7.5px!important;height:41px!important}
+  .v30-extra-actions{gap:5px}
+  .v30-extra-actions button{min-height:59px!important;font-size:7px!important;border-radius:13px!important}
+  .v30-tool-icon{width:29px;height:29px;font-size:14px;border-radius:9px}
+}
 </style>
 <input id="v30PhotoInput" type="file" accept="image/*" capture="user" style="display:none">
 <script id="v30-student-unique-js">
@@ -6013,7 +6058,13 @@ body.dark #seatsGrid .seat{background:#101827!important;border-color:#27344a!imp
       </div>
       <div class="native-student-money"><div class="native-money"><b>₹${fee.toLocaleString("en-IN")}</b><span>PLAN FEE</span></div><div class="native-money"><b>₹${paid.toLocaleString("en-IN")}</b><span>PAID</span></div><div class="native-money"><b>₹${due.toLocaleString("en-IN")}</b><span>DUE</span></div></div>
       <div class="native-student-actions"><button class="primary" onclick="${open}">${r.type==="fixed"?"💺 OPEN SEAT":"✏️ OPEN PROFILE"}</button><button onclick="nativeCall('${ph}')" ${ph?"":"disabled"}>📞 CALL</button><button class="wa" onclick="nativeWA('${ph}')" ${ph?"":"disabled"}>💬 WHATSAPP</button></div>
-      <div class="v30-extra-actions"><button class="photo" onclick="v30ChoosePhoto('${r.uid}')">📷 PHOTO</button><button class="slip" onclick="v30DownloadSlip('${r.uid}')">🧾 SLIP PNG</button><button class="id" onclick="v30DownloadId('${r.uid}')">🪪 ID CARD</button><button class="welcome" onclick="v30Welcome('${r.uid}')">👋 WELCOME</button></div>
+      <div class="v30-tools-label"><span>Student tools</span><span>Photo • Slip • ID • Message</span></div>
+      <div class="v30-extra-actions">
+        <button class="photo" onclick="v30ChoosePhoto('${r.uid}')"><span class="v30-tool-icon">📷</span><span class="v30-tool-text">Photo</span></button>
+        <button class="slip" onclick="v30DownloadSlip('${r.uid}')"><span class="v30-tool-icon">🧾</span><span class="v30-tool-text">Slip</span></button>
+        <button class="id" onclick="v30DownloadId('${r.uid}')"><span class="v30-tool-icon">🪪</span><span class="v30-tool-text">ID Card</span></button>
+        <button class="welcome" onclick="v30Welcome('${r.uid}')"><span class="v30-tool-icon">👋</span><span class="v30-tool-text">Welcome</span></button>
+      </div>
     </div>`
   }
   function render(){
@@ -6086,7 +6137,7 @@ body.dark #seatsGrid .seat{background:#101827!important;border-color:#27344a!imp
 
 
 
-<!-- ===== HARIOM LIBRARY V31 PRO OS ===== -->
+<!-- ===== HARIOM LIBRARY V31.1 PRO OS ===== -->
 <style id="v31-pro-os-style">
 :root{
   --v31-bg:#eef2f7;--v31-surface:#ffffff;--v31-surface2:#f8fafc;--v31-ink:#0f172a;--v31-muted:#64748b;
@@ -6131,7 +6182,7 @@ body.dark{background:linear-gradient(180deg,#050914,#08111f 42%,#07101c 100%) fi
 <div class="v31-lock" id="v31Lock"><div class="v31-lock-card"><div class="v31-lock-logo">📚</div><h2>Hariom Library</h2><p>Device PIN lock is enabled for this browser.</p><input id="v31PinInput" type="password" inputmode="numeric" maxlength="6" placeholder="••••"><button onclick="v31Unlock()">UNLOCK APP</button><div id="v31PinMsg" style="font-size:8px;color:#fecaca;margin-top:8px"></div></div></div>
 <div id="v31Toast"></div>
 <div id="v31Panel">
-  <div class="v31-appbar"><button class="v31-icon-btn" onclick="v31Close()">‹</button><div class="v31-appbar-title"><b>Hariom Library Pro OS</b><span id="v31TopSub">Realtime • Firebase • V31</span></div><button class="v31-icon-btn" onclick="v31OpenModule('command')">⌘</button><button class="v31-icon-btn" onclick="toggleTheme();v31SyncTheme()">◐</button></div>
+  <div class="v31-appbar"><button class="v31-icon-btn" onclick="v31Close()">‹</button><div class="v31-appbar-title"><b>Hariom Library Pro OS</b><span id="v31TopSub">Realtime • Firebase • V31.1</span></div><button class="v31-icon-btn" onclick="v31OpenModule('command')">⌘</button><button class="v31-icon-btn" onclick="toggleTheme();v31SyncTheme()">◐</button></div>
   <div class="v31-body">
     <div id="v31-main-home" class="v31-pane on"></div>
     <div id="v31-main-students" class="v31-pane"></div>
