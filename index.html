@@ -14,7 +14,7 @@ content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable
 <meta name="apple-mobile-web-app-title" content="Hariom Library">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 
-<title>Hariom Smart Library App V27</title>
+<title>Hariom Smart Library App V28</title>
 
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -5602,6 +5602,153 @@ body.seat-modal-open #nativeToolDock{display:none!important}
 })();
 </script>
 <!-- ===== END V27 ===== -->
+
+<!-- ===== HARIOM V28 TRUE MOBILE APP UI + FILTER FIX ===== -->
+<style id="v28-true-app-style">
+/* V28: edge-to-edge native app shell + fully working seat controls */
+:root{--v28nav:#07111f;--v28nav2:#0d1b31;--v28blue:#2563eb;--v28blue2:#1d4ed8}
+body{padding-bottom:82px!important;background:#e9eef6!important}
+body.dark{background:#070b14!important}
+.app-header{border-radius:0!important;box-shadow:0 1px 0 rgba(255,255,255,.08)!important;background:linear-gradient(135deg,var(--v28nav),var(--v28nav2))!important;padding:11px 13px!important}
+.app-header:after{display:none!important}.header-row{min-height:52px!important}.logo{width:42px!important;height:42px!important}.logo-area h2{font-size:17px!important}.logo-area p{font-size:9px!important}
+.main{padding:10px 10px 18px!important}
+#seatsSection>.section-title{margin:5px 2px 10px!important;min-height:36px;display:flex!important;align-items:center!important}
+#seatsSection>.section-title h3{font-size:19px!important;letter-spacing:-.35px!important}
+.v28-seat-live{margin-left:auto;display:inline-flex;align-items:center;gap:5px;background:#dbeafe;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:999px;padding:6px 9px;font-size:8px;font-weight:950;white-space:nowrap}
+body.dark .v28-seat-live{background:#172554;color:#bfdbfe;border-color:#1e3a8a}
+
+/* One compact native control surface instead of loose website controls */
+.v28-seat-control{position:relative;background:linear-gradient(145deg,#0b1425,#122442)!important;border:1px solid rgba(255,255,255,.08)!important;border-radius:18px!important;padding:10px!important;margin:0 0 10px!important;box-shadow:0 10px 24px rgba(15,23,42,.18)!important;overflow:hidden}
+.v28-seat-control:after{content:"";position:absolute;width:110px;height:110px;border-radius:50%;right:-55px;top:-65px;background:rgba(37,99,235,.20);pointer-events:none}
+.v28-seat-control .search-wrap{margin:0 0 9px!important;position:relative;z-index:1}
+.v28-seat-control .search-wrap input{height:46px!important;min-height:46px!important;background:#fff!important;color:#111827!important;border:0!important;border-radius:13px!important;padding:0 43px 0 14px!important;font-size:13px!important;font-weight:650!important;box-shadow:0 3px 10px rgba(2,6,23,.18)!important}
+.v28-seat-control .search-wrap input::placeholder{color:#7b8798!important;font-weight:550!important}
+.v28-search-clear{position:absolute;right:7px;top:50%;transform:translateY(-50%);width:32px;height:32px;border:0;border-radius:9px;background:#e8eef8;color:#334155;font-size:16px;font-weight:900;display:none;align-items:center;justify-content:center;z-index:3}
+.v28-search-clear.show{display:flex}
+.v28-seat-control .pro-toolbar{display:flex!important;overflow-x:auto!important;gap:7px!important;padding:0 0 2px!important;scrollbar-width:none!important;position:relative;z-index:1}.v28-seat-control .pro-toolbar::-webkit-scrollbar{display:none}
+.v28-seat-control .chip{display:inline-flex!important;align-items:center!important;gap:6px!important;flex:0 0 auto!important;min-height:35px!important;padding:7px 9px!important;border-radius:10px!important;background:rgba(255,255,255,.09)!important;color:#d9e5f6!important;border:1px solid rgba(255,255,255,.10)!important;font-size:9px!important;font-weight:900!important;box-shadow:none!important}
+.v28-seat-control .chip b{display:inline-grid;place-items:center;min-width:19px;height:19px;padding:0 5px;border-radius:7px;background:rgba(255,255,255,.11);font-size:8px;color:#fff}
+.v28-seat-control .chip.active{background:#2563eb!important;color:#fff!important;border-color:#60a5fa!important;box-shadow:0 5px 14px rgba(37,99,235,.32)!important}
+.v28-seat-control .chip.active b{background:#fff;color:#1d4ed8}
+.v28-result-row{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;color:#b7c7dd;font-size:8.5px;font-weight:800}.v28-result-row strong{color:#fff}.v28-reset{border:0;background:transparent;color:#93c5fd;font-size:8.5px;font-weight:950;padding:4px}
+
+/* Make the legend a useful native quick-status strip */
+#seatsSection .legend{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:6px!important;margin:0 0 10px!important;color:var(--text)!important}
+#seatsSection .legend-item{justify-content:center!important;gap:5px!important;min-height:34px;padding:6px 4px;border:1px solid var(--border);border-radius:10px;background:var(--card);font-size:7.5px!important;font-weight:850!important;box-shadow:var(--soft);cursor:pointer;-webkit-tap-highlight-color:transparent}
+#seatsSection .legend-item:active{transform:scale(.97)}
+.v28-seat-tip{display:none!important}
+
+/* Stronger, more native seat cards */
+#seatsGrid.seats-grid{gap:10px!important}
+#seatsGrid .seat{min-height:151px!important;border-radius:17px!important;padding:10px!important;box-shadow:0 4px 12px rgba(15,23,42,.09)!important;border:1px solid #d4dce8!important;background:#f9fbfe!important}
+body.dark #seatsGrid .seat{background:#101827!important;border-color:#27344a!important}
+#seatsGrid .seat::after{height:5px!important;border-radius:17px 17px 0 0!important}
+.seat-number{width:40px!important;height:40px!important;border-radius:12px!important;background:#e0eaff!important;color:#1d4ed8!important;font-size:17px!important}
+.student-name{font-size:11.5px!important;line-height:1.22!important}.renewal-badge{font-size:8.7px!important}.seat-status{font-size:7.5px!important;letter-spacing:.7px!important}
+
+/* Edge-to-edge Android-style bottom navigation */
+.bottom-nav{left:0!important;right:0!important;bottom:0!important;transform:none!important;width:100%!important;max-width:none!important;height:72px!important;border-radius:18px 18px 0 0!important;border:0!important;border-top:1px solid rgba(255,255,255,.09)!important;background:#07111f!important;box-shadow:0 -8px 24px rgba(2,6,23,.22)!important;padding:5px 5px calc(5px + env(safe-area-inset-bottom))!important;display:grid!important;grid-template-columns:repeat(6,1fr)!important}
+.bottom-nav .nav-item{height:57px!important;border-radius:12px!important;color:#93a4ba!important;font-size:7.3px!important;font-weight:850!important;gap:3px!important}
+.bottom-nav .nav-item.active{background:#1d4ed8!important;color:#fff!important;box-shadow:0 5px 14px rgba(29,78,216,.28)!important}.bottom-nav .nav-icon{font-size:18px!important}
+#nativeToolDock{bottom:82px!important}
+@media(max-width:360px){.v28-seat-control{padding:8px!important}.v28-seat-control .chip{padding:7px 8px!important}.bottom-nav .nav-item{font-size:6.7px!important}}
+</style>
+<script id="v28-filter-fix-js">
+(function(){
+  const $=id=>document.getElementById(id);
+  const SH=["all","m","n","an","e","night"];
+  const LABELS={all:"All",vacant:"Vacant",booked:"Booked",due:"Due",expired:"Expired",soon:"Renew Soon"};
+  let seatFilter="all";
+
+  function dataFor(i){try{return (typeof globalLibraryData!=="undefined"&&globalLibraryData&&globalLibraryData[i])||{}}catch(e){return {}}}
+  function stateFor(i){
+    const d=dataFor(i); let booked=false,due=false,expired=false,soon=false;
+    SH.forEach(sh=>{
+      const name=String(d["name_"+sh]||"").trim(); if(!name)return;
+      booked=true; if((Number(d["due_"+sh])||0)>0)due=true;
+      const ds=typeof getDateStatus==="function"?getDateStatus(d["date_"+sh]||""):"none";
+      if(ds==="expired")expired=true; if(ds==="alert")soon=true;
+    });
+    return {booked,vacant:!booked,due,expired,soon};
+  }
+  function haystack(i){
+    const d=dataFor(i),a=[String(i)];
+    SH.forEach(sh=>a.push(String(d["name_"+sh]||""),String(d["phone_"+sh]||"")));
+    return a.join(" ").toLowerCase();
+  }
+  function matchFilter(st){return seatFilter==="all"?true:!!st[seatFilter]}
+  function setDisplay(el,show){
+    if(!el)return;
+    if(el.classList.contains("v23-legacy-ur-seat")){el.style.setProperty("display","none","important");return}
+    el.style.setProperty("display",show?"flex":"none","important");
+  }
+  function counts(){
+    const c={all:0,vacant:0,booked:0,due:0,expired:0,soon:0};
+    const total=Number(typeof TOTAL_SEATS!=="undefined"?TOTAL_SEATS:105);
+    for(let i=1;i<=total;i++){
+      const el=$("seat-"+i); if(!el||el.classList.contains("v23-legacy-ur-seat"))continue;
+      const st=stateFor(i); c.all++; Object.keys(st).forEach(k=>{if(st[k]&&c[k]!==undefined)c[k]++});
+    }
+    return c;
+  }
+  function paintChips(c){
+    document.querySelectorAll("#seatFilters .chip").forEach(btn=>{
+      const attr=btn.getAttribute("onclick")||"";
+      const mm=attr.match(/setSeatFilter\('([^']+)'/);
+      const type=btn.dataset.v28Type || (mm&&mm[1]) || "all";
+      btn.dataset.v28Type=type;
+      const label=LABELS[type]||type; const n=c[type]??0;
+      btn.innerHTML=`<span>${label}</span><b>${n}</b>`;
+      btn.classList.toggle("active",type===seatFilter);
+      btn.setAttribute("aria-pressed",type===seatFilter?"true":"false");
+    });
+  }
+  function apply(){
+    const input=$("searchBox"),q=String(input?.value||"").toLowerCase().trim();
+    const total=Number(typeof TOTAL_SEATS!=="undefined"?TOTAL_SEATS:105); let shown=0;
+    for(let i=1;i<=total;i++){
+      const el=$("seat-"+i); if(!el)continue;
+      const show=(!q||haystack(i).includes(q))&&matchFilter(stateFor(i));
+      setDisplay(el,show); if(show&&!el.classList.contains("v23-legacy-ur-seat"))shown++;
+    }
+    const portal=$("v23Portal");
+    if(portal){const portalShow=seatFilter==="all"&&(!q||"unreserved flexible flex register".includes(q));portal.style.setProperty("display",portalShow?"block":"none","important")}
+    const c=counts(); paintChips(c);
+    const result=$("v28ResultText");if(result)result.innerHTML=`<strong>${shown}</strong> seat${shown===1?"":"s"} shown • ${LABELS[seatFilter]||seatFilter}`;
+    const clear=$("v28SearchClear");if(clear)clear.classList.toggle("show",!!q);
+    const live=$("v28SeatLive");if(live)live.textContent=`${c.booked} booked • ${c.vacant} vacant`;
+  }
+  window.v28ApplySeatFilters=apply;
+  window.setSeatFilter=function(type,btn){seatFilter=LABELS[type]?type:"all";document.querySelectorAll("#seatFilters .chip").forEach(x=>x.classList.remove("active"));if(btn)btn.classList.add("active");apply()};
+  window.filterSeats=function(){apply()};
+  window.v28ResetSeatFilters=function(){seatFilter="all";const i=$("searchBox");if(i)i.value="";apply()};
+  window.v28ClearSearch=function(){const i=$("searchBox");if(i){i.value="";i.focus()}apply()};
+
+  function mountControls(){
+    const sec=$("seatsSection"),search=sec?.querySelector(".search-wrap"),filters=$("seatFilters"); if(!sec||!search||!filters)return;
+    const title=sec.querySelector(":scope > .section-title");
+    if(title&&!$("v28SeatLive")){const live=document.createElement("span");live.id="v28SeatLive";live.className="v28-seat-live";live.textContent="Seats live";title.appendChild(live)}
+    if(!$("v28SeatControl")){
+      const wrap=document.createElement("div");wrap.id="v28SeatControl";wrap.className="v28-seat-control";
+      search.parentNode.insertBefore(wrap,search);wrap.appendChild(search);wrap.appendChild(filters);
+      const clear=document.createElement("button");clear.id="v28SearchClear";clear.className="v28-search-clear";clear.type="button";clear.innerHTML="×";clear.setAttribute("aria-label","Clear search");clear.onclick=window.v28ClearSearch;search.appendChild(clear);
+      const row=document.createElement("div");row.className="v28-result-row";row.innerHTML='<span id="v28ResultText">Seats</span><button class="v28-reset" type="button" onclick="v28ResetSeatFilters()">RESET</button>';wrap.appendChild(row);
+    }
+    const tip=sec.querySelector('.legend + div[style*="font-size"]');if(tip)tip.classList.add("v28-seat-tip");
+    const map=["vacant","booked","soon","expired"];sec.querySelectorAll(".legend .legend-item").forEach((el,idx)=>{if(!map[idx])return;el.setAttribute("role","button");el.tabIndex=0;el.onclick=()=>window.setSeatFilter(map[idx],document.querySelector(`#seatFilters .chip[data-v28-type="${map[idx]}"]`));el.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();el.click()}}});
+    const input=$("searchBox");if(input&&!input.dataset.v28Bound){input.dataset.v28Bound="1";input.removeAttribute("oninput");input.addEventListener("input",apply)}
+    document.querySelectorAll("#seatFilters .chip").forEach(btn=>{if(btn.dataset.v28Bound)return;btn.dataset.v28Bound="1";const attr=btn.getAttribute("onclick")||"";const mm=attr.match(/setSeatFilter\('([^']+)'/);const type=(mm&&mm[1])||"all";btn.dataset.v28Type=type;btn.removeAttribute("onclick");btn.addEventListener("click",()=>window.setSeatFilter(type,btn))});
+  }
+  function patchUpdates(){
+    if(typeof window.updateEverything==="function"&&!window.updateEverything.__v28){const old=window.updateEverything;const next=function(){const r=old.apply(this,arguments);setTimeout(apply,0);return r};next.__v28=true;window.updateEverything=next}
+    if(typeof window.showSection==="function"&&!window.showSection.__v28){const old=window.showSection;const next=function(section){const r=old.apply(this,arguments);if(section==="seats")setTimeout(()=>{mountControls();apply()},0);return r};next.__v28=true;window.showSection=next}
+  }
+  function init(){mountControls();patchUpdates();apply();setTimeout(()=>{mountControls();apply()},500);setTimeout(apply,1400)}
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
+  window.addEventListener("load",()=>setTimeout(init,150));
+})();
+</script>
+<!-- ===== END V28 ===== -->
 
 </body>
 </html>
