@@ -5913,5 +5913,176 @@ body.dark #seatsGrid .seat{background:#101827!important;border-color:#27344a!imp
 </script>
 <!-- ===== END V29 ===== -->
 
+<!-- ===== HARIOM V30 UNIQUE STUDENTS + PHOTO ID/SLIP ACTIONS ===== -->
+<style id="v30-student-unique-style">
+.native-avatar{overflow:hidden!important;padding:0!important}
+.native-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.v30-extra-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:7px}
+.v30-extra-actions button{border:1px solid var(--border);border-radius:10px;min-height:40px;padding:7px 4px;background:var(--card);color:var(--text);font-size:7.4px;font-weight:950;line-height:1.15;cursor:pointer;box-shadow:var(--soft)}
+.v30-extra-actions button.photo{background:linear-gradient(135deg,#0f172a,#334155);color:#fff;border:0}
+.v30-extra-actions button.slip{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;border:0}
+.v30-extra-actions button.id{background:linear-gradient(135deg,#f59e0b,#ea580c);color:#fff;border:0}
+.v30-extra-actions button.welcome{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;border:0}
+.v30-unique-note{margin:8px 0 0;padding:7px 9px;border-radius:10px;background:rgba(22,163,74,.08);border:1px solid rgba(22,163,74,.16);font-size:7.5px;color:var(--muted);line-height:1.45}
+.v30-unique-note b{color:var(--text)}
+@media(max-width:390px){.v30-extra-actions{grid-template-columns:repeat(2,minmax(0,1fr))}.v30-extra-actions button{font-size:8px;min-height:42px}}
+</style>
+<input id="v30PhotoInput" type="file" accept="image/*" capture="user" style="display:none">
+<script id="v30-student-unique-js">
+(function(){
+  const FLEX="library_v3/unreservedStudentsV23";
+  const MEDIA="library_v3/studentMediaV30";
+  const PROFILES="library_v3/v15/profiles";
+  const SHIFTS={all:"Full Day",m:"Morning",n:"Noon",an:"Afternoon",e:"Evening",night:"Night"};
+  let flex={},media={},profiles={},q="",filter="all",rowsById={},photoPending=null;
+  const $=id=>document.getElementById(id);
+  const esc=v=>String(v??"").replace(/[&<>\"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
+  const phone=v=>String(v||"").replace(/\D/g,"").slice(-10);
+  const norm=v=>String(v||"").trim().toLowerCase().replace(/\s+/g," ");
+  function hash(s){let h=2166136261;for(let i=0;i<String(s).length;i++){h^=String(s).charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(36)}
+  function identity(r){const p=phone(r.phone),n=norm(r.name);return p?"p:"+p+"|n:"+n:"n:"+n}
+  function mediaKey(r){return "student_"+hash(identity(r))}
+  function today(){const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)}
+  function dateState(v){if(!v)return "nodate";try{const s=typeof getDateStatus==="function"?getDateStatus(v):"active";return s==="alert"?"soon":s}catch(e){return "nodate"}}
+  function statusInfo(r){const s=dateState(r.renewal);if(s==="expired")return {key:"expired",label:"EXPIRED"};if(Number(r.due)>0)return {key:"due",label:"DUE ₹"+Number(r.due).toLocaleString("en-IN")};if(s==="soon")return {key:"soon",label:"RENEW SOON"};if(s==="nodate")return {key:"nodate",label:"DATE NOT SET"};return {key:"active",label:"ACTIVE"}}
+  function fixedRaw(){
+    const out=[],data=typeof globalLibraryData!=="undefined"?globalLibraryData:{};
+    const max=Number(typeof TOTAL_SEATS!=="undefined"?TOTAL_SEATS:105);
+    for(let seat=1;seat<=max;seat++){
+      const d=data[seat]||data[String(seat)]||{};
+      Object.keys(SHIFTS).forEach(sh=>{
+        const name=String(d["name_"+sh]||"").trim();if(!name)return;
+        out.push({type:"fixed",seat,shift:sh,shiftLabel:SHIFTS[sh],name,phone:d["phone_"+sh]||"",fee:Number(d["fees_"+sh]||0),paid:Number(d["fees_"+sh]||0),due:Number(d["due_"+sh]||0),renewal:d["date_"+sh]||"",paidDate:d["paydate_"+sh]||""});
+      });
+    }
+    return out;
+  }
+  function flexRaw(){return Object.entries(flex||{}).filter(([,d])=>d&&d.status!=="Left / Archived").map(([key,d])=>({type:"flex",key,name:d.name||"Unnamed",phone:d.phone||"",fee:Number(d.fee||0),paid:Number(d.paid||0),due:Number(d.due||0),renewal:d.renewal||"",paidDate:d.paymentDate||"",shiftLabel:Array.isArray(d.shifts)&&d.shifts.length?d.shifts.join(" • "):(d.plan||"Flexible"),plan:d.plan||"Flexible",legacyImportedV29:!!d.legacyImportedV29,sourceSeat:Number(d.sourceSeat||0),updatedAt:Number(d.updatedAt||d.createdAt||0)}))}
+  function collapseFixed(list){
+    const map=new Map();
+    list.forEach(r=>{
+      const id=identity(r),k=id+"|seat:"+r.seat;
+      if(!map.has(k)){map.set(k,{...r,shifts:[r.shiftLabel],shiftLabel:r.shiftLabel});return}
+      const x=map.get(k);if(!x.shifts.includes(r.shiftLabel))x.shifts.push(r.shiftLabel);x.shiftLabel=x.shifts.join(" • ");x.fee=Math.max(Number(x.fee||0),Number(r.fee||0));x.paid=Math.max(Number(x.paid||0),Number(r.paid||0));x.due=Math.max(Number(x.due||0),Number(r.due||0));
+      if(!x.renewal||(r.renewal&&String(r.renewal)<String(x.renewal)))x.renewal=r.renewal;
+    });
+    return [...map.values()]
+  }
+  function uniqueRows(){
+    const fr=collapseFixed(fixedRaw()),xr=flexRaw();
+    // Seats 64–85 were the old unreserved area. If the same student now exists
+    // in the Unreserved Register, show the student only once even if the old
+    // imported flag/source-seat metadata is missing or older.
+    const flexIdentity=new Set(xr.map(r=>identity(r)));
+    const importedBySeat=new Set(xr.filter(r=>r.sourceSeat>=64&&r.sourceSeat<=85).map(r=>identity(r)+"|"+r.sourceSeat));
+    const keptFixed=fr.filter(r=>{
+      if(!(r.seat>=64&&r.seat<=85)) return true;
+      const id=identity(r);
+      return !(flexIdentity.has(id)||importedBySeat.has(id+"|"+r.seat));
+    });
+    // If the flex register itself contains an accidental duplicate, keep the newest record only.
+    const flexMap=new Map();
+    xr.forEach(r=>{const id=identity(r);const old=flexMap.get(id);if(!old||r.updatedAt>=old.updatedAt)flexMap.set(id,r)});
+    const all=[...keptFixed,...flexMap.values()];
+    all.forEach(r=>{r.uid="v30_"+hash(identity(r)+"|"+(r.type==="flex"?("f:"+r.key):("s:"+r.seat)));r.mediaKey=mediaKey(r)});
+    return all;
+  }
+  function visibleRows(){
+    const search=norm(q);
+    return uniqueRows().filter(r=>{
+      const st=statusInfo(r).key;if(filter!=="all"&&st!==filter)return false;
+      if(!search)return true;
+      return [r.name,r.phone,r.seat||"",r.shiftLabel,r.renewal,r.plan||""].join(" ").toLowerCase().includes(search)
+    }).sort((a,b)=>{const rank={expired:0,due:1,soon:2,nodate:3,active:4};return (rank[statusInfo(a).key]??9)-(rank[statusInfo(b).key]??9)||String(a.renewal||"9999").localeCompare(String(b.renewal||"9999"))||String(a.name).localeCompare(String(b.name))})
+  }
+  function findProfile(r){
+    const p=phone(r.phone),n=norm(r.name),vals=Object.values(profiles||{});
+    return vals.find(x=>x&&p&&phone(x.phone)===p&&norm(x.name)===n)||vals.find(x=>x&&p&&phone(x.phone)===p)||vals.find(x=>x&&norm(x.name)===n)||null
+  }
+  function photoFor(r){return (media[r.mediaKey]&&media[r.mediaKey].photo)||((findProfile(r)||{}).photo)||""}
+  function initial(n){return (String(n||"S").trim()[0]||"S").toUpperCase()}
+  function place(r){return r.type==="fixed"?`Seat ${r.seat} • ${r.shiftLabel}`:`Unreserved • ${r.shiftLabel}`}
+  function card(r){
+    const st=statusInfo(r),ph=phone(r.phone),pic=photoFor(r),fee=Number(r.fee||0),paid=Number(r.paid||0),due=Number(r.due||0);
+    const open=r.type==="fixed"?`nativeOpenFixed(${Number(r.seat)})`:`nativeOpenFlex('${esc(r.key)}')`;
+    return `<div class="native-student-card ${st.key}" data-native-status="${st.key}">
+      <div class="native-student-top">
+        <div class="native-avatar">${pic?`<img src="${esc(pic)}" alt="${esc(r.name)}">`:esc(initial(r.name))}</div>
+        <div class="native-student-main"><div class="native-student-name">${esc(r.name)}</div><div class="native-student-sub">${esc(place(r))}<br>📱 ${esc(ph||"Number not added")} • 📅 ${esc(r.renewal||"Renewal not set")}</div></div>
+        <span class="native-status ${st.key}">${esc(st.label)}</span>
+      </div>
+      <div class="native-student-money"><div class="native-money"><b>₹${fee.toLocaleString("en-IN")}</b><span>PLAN FEE</span></div><div class="native-money"><b>₹${paid.toLocaleString("en-IN")}</b><span>PAID</span></div><div class="native-money"><b>₹${due.toLocaleString("en-IN")}</b><span>DUE</span></div></div>
+      <div class="native-student-actions"><button class="primary" onclick="${open}">${r.type==="fixed"?"💺 OPEN SEAT":"✏️ OPEN PROFILE"}</button><button onclick="nativeCall('${ph}')" ${ph?"":"disabled"}>📞 CALL</button><button class="wa" onclick="nativeWA('${ph}')" ${ph?"":"disabled"}>💬 WHATSAPP</button></div>
+      <div class="v30-extra-actions"><button class="photo" onclick="v30ChoosePhoto('${r.uid}')">📷 PHOTO</button><button class="slip" onclick="v30DownloadSlip('${r.uid}')">🧾 SLIP PNG</button><button class="id" onclick="v30DownloadId('${r.uid}')">🪪 ID CARD</button><button class="welcome" onclick="v30Welcome('${r.uid}')">👋 WELCOME</button></div>
+    </div>`
+  }
+  function render(){
+    const box=$("studentsList");if(!box)return;
+    const all=uniqueRows(),rows=visibleRows();rowsById={};all.forEach(r=>rowsById[r.uid]=r);
+    box.innerHTML=rows.length?rows.map(card).join(""):'<div class="native-empty">No matching students found.</div>';
+    const c=$("nativeStudentCount");if(c)c.textContent=rows.length+" students";
+    const tools=$("nativeStudentTools");if(tools&&!$("v30UniqueNote")){const n=document.createElement("div");n.id="v30UniqueNote";n.className="v30-unique-note";n.innerHTML="✅ <b>Unique student view:</b> old seat 64–85 records that were auto-imported into Unreserved Register are shown only once.";tools.appendChild(n)}
+  }
+  window.updateStudents=render;
+  window.v30RenderStudents=render;
+  window.nativeSetStudentFilter=function(type,btn){filter=type||"all";document.querySelectorAll(".native-student-filter").forEach(x=>x.classList.remove("on"));if(btn)btn.classList.add("on");render()};
+  function bindSearch(){
+    const old=$("nativeStudentSearch");if(!old||old.dataset.v30)return;
+    const neu=old.cloneNode(true);neu.dataset.v30="1";old.replaceWith(neu);neu.value=q;neu.addEventListener("input",e=>{q=e.target.value||"";render()})
+  }
+  function compress(file){return new Promise((resolve,reject)=>{if(!file)return resolve("");if(file.size>12*1024*1024)return reject(new Error("Photo too large"));const rd=new FileReader();rd.onload=e=>{const im=new Image();im.onload=()=>{const max=520,s=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.max(1,Math.round(im.width*s));c.height=Math.max(1,Math.round(im.height*s));c.getContext("2d").drawImage(im,0,0,c.width,c.height);resolve(c.toDataURL("image/jpeg",.76))};im.onerror=reject;im.src=e.target.result};rd.onerror=reject;rd.readAsDataURL(file)})}
+  window.v30ChoosePhoto=function(uid,after){const r=rowsById[uid];if(!r)return;photoPending={uid,after:after||""};const inp=$("v30PhotoInput");inp.value="";inp.click()};
+  async function photoPicked(e){
+    const file=e.target.files&&e.target.files[0],pending=photoPending;photoPending=null;if(!file||!pending)return;const r=rowsById[pending.uid];if(!r)return;
+    try{const data=await compress(file);await database.ref(MEDIA+"/"+r.mediaKey).update({photo:data,name:r.name,phone:phone(r.phone),updatedAt:Date.now()});if(typeof showToast==="function")showToast("✅ Student photo saved");if(pending.after==="id")setTimeout(()=>makeId(r),80);if(pending.after==="slip")setTimeout(()=>makeSlip(r),80)}catch(err){alert("Photo save nahi hua: "+(err.message||err))}
+  }
+  function safeName(s){return String(s||"student").replace(/[^a-z0-9_-]+/gi,"_").replace(/^_+|_+$/g,"").slice(0,45)||"student"}
+  function downloadCanvas(c,name){c.toBlob(blob=>{if(!blob)return;const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500)},"image/png")}
+  function rounded(ctx,x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.closePath()}
+  function fitText(ctx,text,maxWidth,start){let size=start;while(size>22){ctx.font=`900 ${size}px Arial`;if(ctx.measureText(text).width<=maxWidth)break;size-=2}return size}
+  function loadImage(src){return new Promise(res=>{if(!src)return res(null);const im=new Image();im.onload=()=>res(im);im.onerror=()=>res(null);im.src=src})}
+  async function makeId(r){
+    let pic=photoFor(r);if(!pic){if(typeof showToast==="function")showToast("📷 ID card ke liye student photo choose karein");return v30ChoosePhoto(r.uid,"id")}
+    const c=document.createElement("canvas");c.width=800;c.height=1200;const x=c.getContext("2d");
+    x.fillStyle="#f8fafc";x.fillRect(0,0,c.width,c.height);x.fillStyle="#0f172a";x.fillRect(0,0,800,250);x.fillStyle="#2563eb";x.fillRect(0,235,800,15);
+    x.fillStyle="#fff";x.font="900 42px Arial";x.fillText("HARIOM LIBRARY",54,86);x.font="500 22px Arial";x.fillStyle="#cbd5e1";x.fillText("SMART STUDENT ID CARD",55,128);
+    x.fillStyle="#22c55e";rounded(x,55,160,230,54,27);x.fill();x.fillStyle="#fff";x.font="900 19px Arial";x.fillText("ACTIVE MEMBER",88,195);
+    const im=await loadImage(pic);x.save();rounded(x,250,282,300,330,30);x.clip();if(im){const scale=Math.max(300/im.width,330/im.height),w=im.width*scale,h=im.height*scale;x.drawImage(im,250+(300-w)/2,282+(330-h)/2,w,h)}else{x.fillStyle="#dbeafe";x.fillRect(250,282,300,330)}x.restore();x.strokeStyle="#cbd5e1";x.lineWidth=5;rounded(x,250,282,300,330,30);x.stroke();
+    const name=String(r.name||"Student");const fs=fitText(x,name,690,52);x.font=`900 ${fs}px Arial`;x.fillStyle="#0f172a";x.textAlign="center";x.fillText(name,400,690);x.textAlign="left";
+    const sid="HL-"+hash(identity(r)).toUpperCase().slice(0,8);x.font="700 24px Arial";x.fillStyle="#64748b";x.textAlign="center";x.fillText("Student ID: "+sid,400,738);x.textAlign="left";
+    const fields=[["MOBILE",phone(r.phone)||"Not added"],["SEAT / TYPE",r.type==="fixed"?"Seat "+r.seat:"Unreserved"],["SHIFT",r.shiftLabel||"-"],["VALID / RENEWAL",r.renewal||"Not set"]];
+    let y=790;fields.forEach(([k,v])=>{x.fillStyle="#64748b";x.font="800 18px Arial";x.fillText(k,75,y);x.fillStyle="#0f172a";x.font="800 27px Arial";x.fillText(String(v),75,y+35);x.strokeStyle="#e2e8f0";x.lineWidth=2;x.beginPath();x.moveTo(75,y+57);x.lineTo(725,y+57);x.stroke();y+=92});
+    x.fillStyle="#0f172a";x.fillRect(0,1110,800,90);x.fillStyle="#fff";x.font="700 18px Arial";x.textAlign="center";x.fillText("Hariom Library • Smart Management System",400,1148);x.font="500 15px Arial";x.fillStyle="#cbd5e1";x.fillText("This card is generated from the live library record",400,1178);x.textAlign="left";
+    downloadCanvas(c,`Hariom_ID_${safeName(r.name)}.png`)
+  }
+  async function makeSlip(r){
+    const c=document.createElement("canvas");c.width=900;c.height=1200;const x=c.getContext("2d"),pic=photoFor(r),im=await loadImage(pic);
+    x.fillStyle="#ffffff";x.fillRect(0,0,900,1200);x.fillStyle="#1d4ed8";x.fillRect(0,0,900,180);x.fillStyle="#fff";x.font="900 44px Arial";x.fillText("HARIOM LIBRARY",55,78);x.font="700 24px Arial";x.fillText("ADMISSION / MEMBERSHIP SLIP",56,126);x.font="500 17px Arial";x.fillStyle="#dbeafe";x.fillText("Generated: "+today(),57,157);
+    if(im){x.save();rounded(x,650,205,180,210,22);x.clip();const s=Math.max(180/im.width,210/im.height),w=im.width*s,h=im.height*s;x.drawImage(im,650+(180-w)/2,205+(210-h)/2,w,h);x.restore()}else{x.fillStyle="#dbeafe";rounded(x,650,205,180,210,22);x.fill();x.fillStyle="#1d4ed8";x.font="900 76px Arial";x.textAlign="center";x.fillText(initial(r.name),740,335);x.textAlign="left"}
+    x.fillStyle="#0f172a";x.font="900 42px Arial";x.fillText(String(r.name||"Student"),55,255);x.fillStyle="#64748b";x.font="700 23px Arial";x.fillText(place(r),55,300);x.fillText("Mobile: "+(phone(r.phone)||"Not added"),55,338);
+    const due=Number(r.due||0),data=[["Plan / Monthly Fee","₹"+Number(r.fee||0).toLocaleString("en-IN")],["Paid","₹"+Number(r.paid||0).toLocaleString("en-IN")],["Due","₹"+due.toLocaleString("en-IN")],["Renewal / Month End",r.renewal||"Not set"],["Payment Date",r.paidDate||"Not set"],["Membership Type",r.type==="fixed"?"Reserved Seat":"Unreserved / Flexible"]];
+    let y=470;data.forEach(([k,v],i)=>{x.fillStyle=i%2?"#f8fafc":"#f1f5f9";rounded(x,55,y,790,92,16);x.fill();x.fillStyle="#64748b";x.font="800 18px Arial";x.fillText(k,78,y+34);x.fillStyle="#0f172a";x.font="900 27px Arial";x.fillText(String(v),78,y+69);y+=104});
+    x.fillStyle="#dcfce7";rounded(x,55,1100,790,58,18);x.fill();x.fillStyle="#166534";x.font="800 18px Arial";x.textAlign="center";x.fillText("Thank you for choosing Hariom Library",450,1137);x.textAlign="left";
+    downloadCanvas(c,`Hariom_Slip_${safeName(r.name)}.png`)
+  }
+  window.v30DownloadId=function(uid){const r=rowsById[uid];if(r)makeId(r)};
+  window.v30DownloadSlip=function(uid){const r=rowsById[uid];if(r)makeSlip(r)};
+  window.v30Welcome=function(uid){const r=rowsById[uid];if(!r)return;const p=phone(r.phone);if(!p)return alert("Student mobile number nahi hai");const msg=`Namaste ${r.name} 👋\n\nHariom Library me aapka swagat hai.\n📚 Membership: ${r.type==="fixed"?"Seat "+r.seat:"Unreserved"}\n🕒 Shift: ${r.shiftLabel||"-"}\n📅 Renewal: ${r.renewal||"Not set"}\n💰 Fee: ₹${Number(r.fee||0)}${Number(r.due||0)>0?`\n⚠️ Due: ₹${Number(r.due||0)}`:""}\n\nThank you 🙏\nHariom Library`;window.open("https://wa.me/91"+p+"?text="+encodeURIComponent(msg),"_blank")};
+  function init(){
+    const inp=$("v30PhotoInput");if(inp&&!inp.dataset.bound){inp.dataset.bound="1";inp.addEventListener("change",photoPicked)}
+    bindSearch();render();setTimeout(()=>{bindSearch();render()},500);
+    if(typeof database!=="undefined"){
+      database.ref(FLEX).on("value",s=>{flex=s.val()||{};render()});
+      database.ref(MEDIA).on("value",s=>{media=s.val()||{};render()});
+      database.ref(PROFILES).on("value",s=>{profiles=s.val()||{};render()});
+      database.ref("library_v3/seats").on("value",()=>setTimeout(render,0));
+    }
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
+  window.addEventListener("load",()=>setTimeout(init,120));
+})();
+</script>
+<!-- ===== END V30 ===== -->
+
 </body>
 </html>
