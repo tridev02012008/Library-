@@ -5712,9 +5712,9 @@ body.dark #seatsGrid .seat{background:#101827!important;border-color:#27344a!imp
       setDisplay(el,show); if(show&&!el.classList.contains("v23-legacy-ur-seat"))shown++;
     }
     const portal=$("v23Portal");
-    if(portal){const portalShow=seatFilter==="all"&&(!q||"unreserved flexible flex register".includes(q));portal.style.setProperty("display",portalShow?"block":"none","important")}
+    if(portal){const portalShow=(typeof window.v29PortalShouldShow==="function")?window.v29PortalShouldShow(seatFilter,q):(seatFilter==="all"&&(!q||"unreserved flexible flex register".includes(q)));portal.style.setProperty("display",portalShow?"block":"none","important")}
     const c=counts(); paintChips(c);
-    const result=$("v28ResultText");if(result)result.innerHTML=`<strong>${shown}</strong> seat${shown===1?"":"s"} shown • ${LABELS[seatFilter]||seatFilter}`;
+    const result=$("v28ResultText");if(result){const flexExtra=(typeof window.v29FlexMatchCount==="function")?window.v29FlexMatchCount(seatFilter,q):0;result.innerHTML=`<strong>${shown}</strong> seat${shown===1?"":"s"} shown • ${LABELS[seatFilter]||seatFilter}${flexExtra?` • <strong>${flexExtra}</strong> unreserved`:""}`;}
     const clear=$("v28SearchClear");if(clear)clear.classList.toggle("show",!!q);
     const live=$("v28SeatLive");if(live)live.textContent=`${c.booked} booked • ${c.vacant} vacant`;
   }
@@ -5749,6 +5749,169 @@ body.dark #seatsGrid .seat{background:#101827!important;border-color:#27344a!imp
 })();
 </script>
 <!-- ===== END V28 ===== -->
+
+
+<!-- ===== HARIOM V29 LEGACY UNRESERVED AUTO-IMPORT + EXPIRED FILTER FIX ===== -->
+<style id="v29-ur-fix-style">
+#v23Portal.v29-filter-match{border-color:#dc2626!important;background:linear-gradient(135deg,rgba(220,38,38,.10),rgba(245,158,11,.08),var(--card))!important}
+#v23Portal.v29-due-match{border-color:#ea580c!important;background:linear-gradient(135deg,rgba(234,88,12,.10),rgba(245,158,11,.07),var(--card))!important}
+#v23Portal.v29-soon-match{border-color:#d97706!important;background:linear-gradient(135deg,rgba(217,119,6,.11),rgba(250,204,21,.07),var(--card))!important}
+.v29-sync-note{margin-top:8px;padding:8px 9px;border-radius:11px;background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.15);font-size:8px;line-height:1.45;color:var(--muted);position:relative;z-index:1}
+.v29-sync-note b{color:var(--text)}
+.v29-sync-note.ok{background:rgba(22,163,74,.08);border-color:rgba(22,163,74,.18)}
+.v29-sync-note.warn{background:rgba(245,158,11,.09);border-color:rgba(245,158,11,.20)}
+</style>
+<script id="v29-ur-fix-js">
+(function(){
+  const BASE="library_v3/unreservedStudentsV23";
+  const SEATS="library_v3/seats";
+  const LEGACY_FROM=64, LEGACY_TO=85;
+  const ORDER=["all","m","n","an","e","night"];
+  const SHIFT_LABEL={m:"Morning",n:"Noon",an:"Afternoon",e:"Evening",night:"Night"};
+  let flexCache={};
+  let currentMainFilter="all";
+  let syncRunning=false;
+  const $=id=>document.getElementById(id);
+  const trim=v=>String(v??"").trim();
+  const digits=v=>trim(v).replace(/\D/g,"");
+  const todayKey=()=>{const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)};
+  function parseDate(v){
+    v=trim(v); if(!v)return null;
+    let d=/^\d{4}-\d{2}-\d{2}$/.test(v)?new Date(v+"T00:00:00"):new Date(v);
+    return isNaN(d.getTime())?null:d;
+  }
+  function dateState(v){
+    const d=parseDate(v); if(!d)return "none";
+    const t=new Date(todayKey()+"T00:00:00"),soon=new Date(t);soon.setDate(soon.getDate()+3);
+    if(d<t)return "expired"; if(d<=soon)return "soon"; return "active";
+  }
+  function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(36)}
+  function identity(name,phone){const p=digits(phone);return p?"p:"+p:"n:"+trim(name).toLowerCase().replace(/\s+/g," ")}
+  function labelsFor(sh){if(sh==="all")return ["Morning","Noon","Afternoon","Evening"];return SHIFT_LABEL[sh]?[SHIFT_LABEL[sh]]:[]}
+  function earliest(a,b){if(!a)return b||"";if(!b)return a;const da=parseDate(a),db=parseDate(b);if(!da)return b;if(!db)return a;return da<=db?a:b}
+  function latest(a,b){if(!a)return b||"";if(!b)return a;const da=parseDate(a),db=parseDate(b);if(!da)return b;if(!db)return a;return da>=db?a:b}
+
+  function buildLegacyRows(seats){
+    const rows=[];
+    for(let seat=LEGACY_FROM;seat<=LEGACY_TO;seat++){
+      const d=(seats&&seats[seat])||(seats&&seats[String(seat)])||{};
+      const groups={};
+      ORDER.forEach(sh=>{
+        const name=trim(d["name_"+sh]); if(!name)return;
+        const phone=trim(d["phone_"+sh]); const id=identity(name,phone);
+        if(!groups[id])groups[id]={seat,name,phone,source:[],shifts:[],paid:0,due:0,fee:0,renewal:"",paymentDate:""};
+        const g=groups[id];
+        g.source.push(sh);
+        labelsFor(sh).forEach(x=>{if(!g.shifts.includes(x))g.shifts.push(x)});
+        const paid=Number(d["fees_"+sh])||0, due=Number(d["due_"+sh])||0;
+        g.paid+=paid; g.due+=due; g.fee+=paid+due;
+        g.renewal=earliest(g.renewal,trim(d["date_"+sh]));
+        g.paymentDate=latest(g.paymentDate,trim(d["paydate_"+sh]));
+      });
+      Object.values(groups).forEach(g=>{
+        const id=identity(g.name,g.phone),key="legacyV29_s"+seat+"_"+hash(id);
+        rows.push({key,...g,identity:id});
+      });
+    }
+    return rows;
+  }
+  window.v29BuildLegacyRows=buildLegacyRows;
+
+  function flexRows(){return Object.entries(flexCache||{}).map(([key,d])=>({key,...(d||{})}))}
+  function notArchived(d){return d.status!=="Left / Archived"}
+  function matchesQuery(d,q){if(!q)return true;return [d.name,d.phone,d.plan,(d.shifts||[]).join(" "),d.sourceSeat].join(" ").toLowerCase().includes(q)}
+  function matchFlexFilter(d,type){
+    if(!notArchived(d))return false;
+    const ds=dateState(d.renewal),due=Number(d.due||0)>0;
+    if(type==="expired")return ds==="expired";
+    if(type==="soon")return ds==="soon";
+    if(type==="due")return due;
+    if(type==="booked")return true;
+    if(type==="vacant")return false;
+    return true;
+  }
+  window.v29FlexMatchCount=function(type,q){return flexRows().filter(d=>matchesQuery(d,q||"")&&matchFlexFilter(d,type)).length};
+  window.v29PortalShouldShow=function(type,q){
+    if(type==="vacant")return false;
+    if(type==="all"&&!q)return true;
+    return window.v29FlexMatchCount(type,q)>0;
+  };
+
+  function setSyncNote(text,cls){
+    const p=$("v23Portal");if(!p)return;
+    let n=$("v29SyncNote");
+    if(!n){n=document.createElement("div");n.id="v29SyncNote";n.className="v29-sync-note";p.appendChild(n)}
+    n.className="v29-sync-note"+(cls?" "+cls:"");n.innerHTML=text;
+  }
+  function updatePortal(){
+    const p=$("v23Portal");if(!p)return;
+    p.classList.remove("v29-filter-match","v29-due-match","v29-soon-match");
+    const n=window.v29FlexMatchCount(currentMainFilter,(($("searchBox")||{}).value||"").toLowerCase().trim());
+    const title=p.querySelector(".v23-ur-title"),sub=p.querySelector(".v23-ur-sub");
+    if(currentMainFilter==="expired"&&n){p.classList.add("v29-filter-match");if(title)title.textContent="🔴 Unreserved Expired Students ("+n+")";if(sub)sub.textContent="Tap to open only expired unreserved students."}
+    else if(currentMainFilter==="due"&&n){p.classList.add("v29-due-match");if(title)title.textContent="🟠 Unreserved Due Students ("+n+")";if(sub)sub.textContent="Tap to open unreserved students with pending due."}
+    else if(currentMainFilter==="soon"&&n){p.classList.add("v29-soon-match");if(title)title.textContent="🟡 Unreserved Renew Soon ("+n+")";if(sub)sub.textContent="Tap to open unreserved students nearing renewal."}
+    else {if(title)title.textContent="🪑 Unreserved Student Register";if(sub)sub.textContent="Flexible seating for old 64–85 records and new unreserved students. Old Firebase seat data stays safe."}
+    p.onclick=function(){
+      if(typeof ur23Open==="function")ur23Open();
+      const mode=currentMainFilter;
+      setTimeout(()=>{
+        if(!["expired","due","today","archived","active"].includes(mode))return;
+        const buttons=Array.from(document.querySelectorAll("#ur23Filters button"));
+        const btn=buttons.find(b=>(b.getAttribute("onclick")||"").includes("'"+mode+"'"));
+        if(typeof ur23SetFilter==="function")ur23SetFilter(mode,btn||null);
+      },80);
+    };
+  }
+
+  async function syncLegacy(){
+    if(syncRunning||typeof database==="undefined")return;
+    if(typeof isAdminVerified!=="undefined"&&!isAdminVerified){setSyncNote("🔐 <b>Old 64–85 students:</b> Admin login ke baad automatic import hoga.","warn");return}
+    syncRunning=true;setSyncNote("⏳ <b>Old 64–85 students:</b> checking old Firebase records…","");
+    try{
+      const [seatSnap,flexSnap]=await Promise.all([database.ref(SEATS).once("value"),database.ref(BASE).once("value")]);
+      const legacy=buildLegacyRows(seatSnap.val()||{}),existing=flexSnap.val()||{};
+      const vals=Object.values(existing);
+      const updates={};let add=0,skip=0;
+      legacy.forEach(r=>{
+        const same=vals.some(x=>{
+          if(!x)return false;
+          const xi=identity(x.name,x.phone);
+          if(digits(r.phone)&&digits(x.phone))return digits(r.phone)===digits(x.phone);
+          return Number(x.sourceSeat||0)===Number(r.seat)&&xi===r.identity;
+        });
+        if(existing[r.key]||same){skip++;return}
+        updates[r.key]={
+          name:r.name,phone:r.phone,plan:r.shifts.length>1?(r.shifts.length+" Shifts"):"1 Shift",daysWeek:7,shifts:r.shifts,
+          joining:"",renewal:r.renewal,fee:r.fee,paid:r.paid,due:r.due,paymentDate:r.paymentDate,status:"Active",
+          note:"Auto-imported from old unreserved seat "+r.seat+" ("+r.source.join(", ")+"). Original seat data kept safe.",
+          legacyImportedV29:true,sourceSeat:r.seat,sourceShifts:r.source,createdAt:Date.now(),updatedAt:Date.now()
+        };add++
+      });
+      if(add)await database.ref(BASE).update(updates);
+      setSyncNote("✅ <b>Old 64–85 sync:</b> "+add+" student"+(add===1?"":"s")+" added automatically"+(skip?" • "+skip+" already present":"")+".","ok");
+    }catch(e){setSyncNote("⚠️ <b>Old 64–85 sync failed:</b> "+String(e&&e.message||e),"warn")}
+    finally{syncRunning=false}
+  }
+  window.v29SyncLegacyUnreserved=syncLegacy;
+
+  function hookMainFilters(){
+    if(typeof window.setSeatFilter==="function"&&!window.setSeatFilter.__v29){const old=window.setSeatFilter;const next=function(type,btn){currentMainFilter=type||"all";const r=old.apply(this,arguments);setTimeout(updatePortal,0);return r};next.__v29=true;window.setSeatFilter=next}
+    if(typeof window.v28ResetSeatFilters==="function"&&!window.v28ResetSeatFilters.__v29){const old=window.v28ResetSeatFilters;const next=function(){currentMainFilter="all";const r=old.apply(this,arguments);setTimeout(updatePortal,0);return r};next.__v29=true;window.v28ResetSeatFilters=next}
+    if(typeof window.verifyAdmin==="function"&&!window.verifyAdmin.__v29){const old=window.verifyAdmin;const next=function(){const r=old.apply(this,arguments);setTimeout(syncLegacy,180);return r};next.__v29=true;window.verifyAdmin=next}
+  }
+  function init(){
+    hookMainFilters();updatePortal();setTimeout(updatePortal,500);
+    if(typeof database!=="undefined"){
+      database.ref(BASE).on("value",s=>{flexCache=s.val()||{};if(typeof window.v28ApplySeatFilters==="function")window.v28ApplySeatFilters();setTimeout(updatePortal,0)});
+      setTimeout(syncLegacy,250);setTimeout(syncLegacy,1300);
+    }
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
+  window.addEventListener("load",()=>setTimeout(init,120));
+})();
+</script>
+<!-- ===== END V29 ===== -->
 
 </body>
 </html>
