@@ -13,8 +13,11 @@ content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Hariom Library">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+<meta name="description" content="Hariom Library smart management app for students, seats, attendance, fees and notices.">
 
-<title>Hariom Smart Library App V28</title>
+<title>Hariom Library</title>
 
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -1824,7 +1827,7 @@ Logout Admin
 
 <div class="student-info">
 
-Version 31.0 Pro OS
+Final V35 • Pro OS
 
 <br>
 
@@ -2077,7 +2080,7 @@ type="date">
 
 <div class="field">
 
-<label>Fees</label>
+<label>Fees Paid</label>
 
 <input id="fees_m" type="number">
 
@@ -2138,7 +2141,7 @@ type="date">
 
 <div class="field">
 
-<label>Fees</label>
+<label>Fees Paid</label>
 
 <input id="fees_n" type="number">
 
@@ -2199,7 +2202,7 @@ type="date">
 
 <div class="field">
 
-<label>Fees</label>
+<label>Fees Paid</label>
 
 <input id="fees_an" type="number">
 
@@ -2260,7 +2263,7 @@ type="date">
 
 <div class="field">
 
-<label>Fees</label>
+<label>Fees Paid</label>
 
 <input id="fees_e" type="number">
 
@@ -2325,7 +2328,7 @@ type="date">
 
 <div class="field">
 
-<label>Fees</label>
+<label>Fees Paid</label>
 
 <input id="fees_night" type="number">
 
@@ -4305,14 +4308,6 @@ let nxmd=document.getElementById('nxMaintDate');if(nxmd)nxmd.value=new Date().to
 </script>
 
 
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js').catch(console.error);
-  });
-}
-</script>
-
 <!-- ===== HARIOM NEXUS V13 SUPER APP PACK ===== -->
 <style>
 :root{--radius-xl:26px;--radius-lg:20px;--soft:rgba(79,70,229,.08)}
@@ -4329,7 +4324,7 @@ body{background:radial-gradient(circle at 10% -10%,rgba(99,102,241,.12),transpar
 .super-fab{position:fixed;left:16px;bottom:92px;z-index:97;width:54px;height:54px;border:0;border-radius:18px;background:linear-gradient(135deg,#06b6d4,#4f46e5,#7c3aed);color:white;font-size:23px;box-shadow:0 12px 30px rgba(79,70,229,.35);cursor:pointer}
 .super-panel{display:none;position:fixed;inset:0;z-index:500;background:var(--bg);overflow:auto}.super-panel.show{display:block}.sp-head{position:sticky;top:0;z-index:4;padding:15px 16px;background:linear-gradient(120deg,#0f172a,#312e81,#7c3aed);color:white;display:flex;justify-content:space-between;align-items:center}.sp-head button{width:40px;height:40px;border:0;border-radius:13px;background:#ffffff20;color:#fff;font-size:20px}.sp-wrap{max-width:900px;margin:auto;padding:14px 14px 110px}.sp-hero{padding:19px;border-radius:25px;background:linear-gradient(135deg,#0f172a,#312e81 55%,#7c3aed);color:#fff;box-shadow:0 16px 38px rgba(49,46,129,.24);margin-bottom:12px}.sp-hero h2{font-size:22px}.sp-hero p{font-size:11px;opacity:.82;margin-top:5px;line-height:1.5}.sp-tabs{display:flex;gap:7px;overflow:auto;padding:4px 0 12px;scrollbar-width:none}.sp-tabs button{white-space:nowrap;border:1px solid var(--border);background:var(--card);color:var(--text);padding:9px 12px;border-radius:999px;font-size:10px;font-weight:900}.sp-tabs button.active{background:var(--primary);border-color:var(--primary);color:#fff}.sp-pane{display:none}.sp-pane.active{display:block}.sp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.sp-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:14px;margin-bottom:10px;box-shadow:var(--shadow)}.sp-card h3{font-size:14px;margin-bottom:9px}.sp-kpi small{font-size:9px;color:var(--muted)}.sp-kpi b{display:block;font-size:22px;margin-top:4px}.sp-input,.sp-select{width:100%;padding:11px;border:1px solid var(--border);border-radius:12px;background:var(--bg);color:var(--text);margin:4px 0 8px}.sp-btn{border:0;border-radius:12px;padding:11px 12px;background:var(--primary);color:#fff;font-weight:900;cursor:pointer}.sp-btn.green{background:var(--success)}.sp-btn.gray{background:#475569}.sp-item{padding:10px 0;border-bottom:1px solid var(--border);font-size:11px;line-height:1.55}.sp-item:last-child{border:0}.sp-muted{font-size:10px;color:var(--muted);line-height:1.5}.sp-id{max-width:360px;margin:auto;border-radius:25px;padding:18px;background:linear-gradient(145deg,#111827,#312e81,#7c3aed);color:#fff;box-shadow:0 18px 50px #0003}.sp-id .photo{width:74px;height:74px;border-radius:24px;background:#ffffff20;display:grid;place-items:center;font-size:35px;margin-bottom:12px}.sp-id h2{font-size:21px}.sp-id .line{padding:8px 0;border-bottom:1px solid #ffffff22;font-size:11px}.sp-id .line:last-child{border:0}.sp-health{height:10px;background:var(--bg);border-radius:99px;overflow:hidden}.sp-health i{height:100%;display:block;background:linear-gradient(90deg,#22c55e,#06b6d4,#6366f1)}
 @media(min-width:700px){.sp-grid{grid-template-columns:repeat(4,1fr)}}
-@media print{body>*{display:none!important}.super-panel,.super-panel.show,#sp-id,.sp-id{display:block!important}.super-panel{position:static;background:white}.sp-head,.sp-tabs,.sp-hero,.sp-pane>*:not(#sp-id){display:none!important}#sp-id{position:fixed;inset:40px auto auto 50%;transform:translateX(-50%);width:360px}}
+@media print{body>*{display:none!important}.super-panel,.super-panel.show,#sp-id-output,.sp-id{display:block!important}.super-panel{position:static;background:white}.sp-head,.sp-tabs,.sp-hero,.sp-pane>*:not(#sp-id-output){display:none!important}#sp-id-output{position:fixed;inset:40px auto auto 50%;transform:translateX(-50%);width:360px}}
 </style>
 <button class="super-fab" onclick="spOpen()" title="Super Tools">⚡</button>
 <div class="super-panel" id="superPanel">
@@ -4338,7 +4333,7 @@ body{background:radial-gradient(circle at 10% -10%,rgba(99,102,241,.12),transpar
   <div class="sp-hero"><h2>Good to see you 👋</h2><p>आज की library activity, renewals, dues और fast tools एक ही जगह। Existing seat data को बदले बिना यह layer काम करती है।</p></div>
   <div class="sp-tabs" id="spTabs"><button class="active" onclick="spTab('today',this)">☀️ Today</button><button onclick="spTab('id',this)">🪪 ID Card</button><button onclick="spTab('fees',this)">🧮 Fee Tool</button><button onclick="spTab('health',this)">🛡 Data Health</button><button onclick="spTab('shortcuts',this)">⚡ Shortcuts</button></div>
   <div class="sp-pane active" id="sp-today"><div class="sp-grid"><div class="sp-card sp-kpi"><small>OCCUPIED SEATS</small><b id="spOcc">0</b></div><div class="sp-card sp-kpi"><small>VACANT SEATS</small><b id="spVac">105</b></div><div class="sp-card sp-kpi"><small>RENEWAL RISK</small><b id="spRenew">0</b></div><div class="sp-card sp-kpi"><small>TOTAL DUE</small><b id="spDue">₹0</b></div></div><div class="sp-card"><h3>🎯 Today Priority</h3><div id="spPriority"></div></div><div class="sp-card"><h3>🔎 Fast Student Search</h3><input class="sp-input" id="spSearch" placeholder="Name, phone or seat..." oninput="spSearchStudents()"><div id="spSearchResults" class="sp-muted">Search any active student.</div></div></div>
-  <div class="sp-pane" id="sp-id"><div class="sp-card"><h3>🪪 Instant Student ID Card</h3><input class="sp-input" id="spIdSeat" type="number" min="1" max="105" placeholder="Enter seat number"><select class="sp-select" id="spIdShift"><option value="all">Full Day</option><option value="m">Morning</option><option value="n">Noon</option><option value="an">Afternoon</option><option value="e">Evening</option><option value="night">Night</option></select><button class="sp-btn" onclick="spMakeId()">Generate ID</button></div><div id="sp-id"></div></div>
+  <div class="sp-pane" id="sp-id"><div class="sp-card"><h3>🪪 Instant Student ID Card</h3><input class="sp-input" id="spIdSeat" type="number" min="1" max="105" placeholder="Enter seat number"><select class="sp-select" id="spIdShift"><option value="all">Full Day</option><option value="m">Morning</option><option value="n">Noon</option><option value="an">Afternoon</option><option value="e">Evening</option><option value="night">Night</option></select><button class="sp-btn" onclick="spMakeId()">Generate ID</button></div><div id="sp-id-output"></div></div>
   <div class="sp-pane" id="sp-fees"><div class="sp-card"><h3>🧮 Fee / Due Calculator</h3><input class="sp-input" id="spMonthlyFee" type="number" placeholder="Monthly fee ₹"><input class="sp-input" id="spPaid" type="number" placeholder="Amount paid ₹"><input class="sp-input" id="spDiscount" type="number" placeholder="Discount ₹"><button class="sp-btn green" onclick="spFeeCalc()">Calculate</button><div id="spFeeResult" class="sp-item" style="margin-top:8px">Enter values to calculate.</div></div></div>
   <div class="sp-pane" id="sp-health"><div class="sp-card"><h3>🛡 Database Health Check</h3><div style="display:flex;justify-content:space-between"><b id="spHealthText">Checking...</b><b id="spHealthScore">0%</b></div><div class="sp-health" style="margin:10px 0"><i id="spHealthBar" style="width:0%"></i></div><div id="spHealthIssues"></div></div></div>
   <div class="sp-pane" id="sp-shortcuts"><div class="sp-card"><h3>⚡ One Tap Actions</h3><div class="sp-grid"><button class="sp-btn" onclick="spClose();showSection('seats')">💺 Seats</button><button class="sp-btn" onclick="spClose();showSection('students')">👨‍🎓 Students</button><button class="sp-btn green" onclick="spClose();showSection('business')">💰 Business</button><button class="sp-btn gray" onclick="downloadJsonBackup()">🗄 Backup</button><button class="sp-btn" onclick="spClose();openUltimate()">✨ Ultimate</button><button class="sp-btn" onclick="spClose();nxOpen()">🧠 Nexus AI+</button></div></div></div>
@@ -4350,7 +4345,7 @@ function spTab(n,b){document.querySelectorAll('.sp-pane').forEach(x=>x.classList
 function spRows(){let rows=[];Object.entries(globalLibraryData||{}).forEach(([seat,d])=>['all','m','n','an','e','night'].forEach(sh=>{if(d&&d['name_'+sh])rows.push({seat,sh,name:d['name_'+sh],phone:d['phone_'+sh]||'',due:Number(d['due_'+sh])||0,date:d['date_'+sh]||'',fees:Number(d['fees_'+sh])||0})}));return rows}
 function spRender(){let rows=spRows(),occ=new Set(rows.map(x=>x.seat)).size,risk=rows.filter(x=>['expired','alert'].includes(getDateStatus(x.date))).length,due=rows.reduce((a,x)=>a+x.due,0);let put=(id,v)=>{let e=document.getElementById(id);if(e)e.innerText=v};put('spOcc',occ);put('spVac',TOTAL_SEATS-occ);put('spRenew',risk);put('spDue','₹'+due.toLocaleString('en-IN'));let pri=[];let exp=rows.filter(x=>getDateStatus(x.date)==='expired').length,soon=rows.filter(x=>getDateStatus(x.date)==='alert').length;if(exp)pri.push('🔴 '+exp+' expired booking(s) को renewal follow-up चाहिए।');if(soon)pri.push('🟡 '+soon+' booking(s) जल्द renew होने वाले हैं।');if(due)pri.push('💰 ₹'+due.toLocaleString('en-IN')+' total due pending है।');if(!pri.length)pri.push('🟢 आज कोई urgent renewal/due issue detect नहीं हुआ।');let box=document.getElementById('spPriority');if(box)box.innerHTML=pri.map(x=>'<div class="sp-item">'+x+'</div>').join('');spHealth()}
 function spSearchStudents(){let q=(document.getElementById('spSearch').value||'').toLowerCase().trim(),box=document.getElementById('spSearchResults');if(!q){box.innerHTML='Search any active student.';return}let rows=spRows().filter(x=>[x.seat,x.name,x.phone].join(' ').toLowerCase().includes(q)).slice(0,30);box.innerHTML=rows.length?rows.map(x=>`<div class="sp-item" onclick="spClose();showSection('seats');openSeatModal(${x.seat})"><b>${escapeHtml(x.name)}</b> • Seat ${x.seat}<br><span class="sp-muted">${escapeHtml(x.phone)} • ${x.sh} • Due ₹${x.due}</span></div>`).join(''):'No student found.'}
-function spMakeId(){let seat=Number(document.getElementById('spIdSeat').value),sh=document.getElementById('spIdShift').value,d=globalLibraryData[seat]||{},name=d['name_'+sh]||'';if(!name){showToast('No student found in selected seat/shift');return}let phone=d['phone_'+sh]||'',date=d['date_'+sh]||'',box=document.getElementById('sp-id');box.innerHTML=`<div class="sp-id"><div class="photo">👨‍🎓</div><div style="font-size:10px;opacity:.75">HARIOM SMART LIBRARY</div><h2>${escapeHtml(name)}</h2><div class="line">💺 Seat: <b>${seat}</b> • Shift: <b>${escapeHtml(sh)}</b></div><div class="line">📱 ${escapeHtml(phone||'Not added')}</div><div class="line">📅 Valid / Renewal: ${escapeHtml(date||'Not set')}</div><div class="line">📚 Smart Management System Pro</div><button class="sp-btn" style="margin-top:12px;background:#fff;color:#312e81" onclick="window.print()">Print ID Card</button></div>`}
+function spMakeId(){let seat=Number(document.getElementById('spIdSeat').value),sh=document.getElementById('spIdShift').value,d=globalLibraryData[seat]||{},name=d['name_'+sh]||'';if(!name){showToast('No student found in selected seat/shift');return}let phone=d['phone_'+sh]||'',date=d['date_'+sh]||'',box=document.getElementById('sp-id-output');box.innerHTML=`<div class="sp-id"><div class="photo">👨‍🎓</div><div style="font-size:10px;opacity:.75">HARIOM SMART LIBRARY</div><h2>${escapeHtml(name)}</h2><div class="line">💺 Seat: <b>${seat}</b> • Shift: <b>${escapeHtml(sh)}</b></div><div class="line">📱 ${escapeHtml(phone||'Not added')}</div><div class="line">📅 Valid / Renewal: ${escapeHtml(date||'Not set')}</div><div class="line">📚 Smart Management System Pro</div><button class="sp-btn" style="margin-top:12px;background:#fff;color:#312e81" onclick="window.print()">Print ID Card</button></div>`}
 function spFeeCalc(){let fee=Number(document.getElementById('spMonthlyFee').value)||0,paid=Number(document.getElementById('spPaid').value)||0,dis=Number(document.getElementById('spDiscount').value)||0,due=Math.max(0,fee-dis-paid),adv=Math.max(0,paid-(fee-dis));document.getElementById('spFeeResult').innerHTML=`Monthly ₹${fee.toLocaleString('en-IN')} − Discount ₹${dis.toLocaleString('en-IN')} − Paid ₹${paid.toLocaleString('en-IN')}<br><b>${due?'Due: ₹'+due.toLocaleString('en-IN'):'Fully Paid ✅'}</b>${adv?'<br>Advance: ₹'+adv.toLocaleString('en-IN'):''}`}
 function spHealth(){let rows=spRows(),issues=[],phones={};rows.forEach(x=>{if(!x.phone)issues.push('Seat '+x.seat+' ('+x.sh+'): phone missing');if(!x.date)issues.push('Seat '+x.seat+' ('+x.sh+'): renewal date missing');let p=x.phone.replace(/\D/g,'');if(p)phones[p]=(phones[p]||0)+1});let dup=Object.values(phones).filter(x=>x>1).length;if(dup)issues.push(dup+' duplicate phone number group(s) found');let score=Math.max(35,100-Math.min(60,issues.length*2));let e=document.getElementById('spHealthScore');if(e)e.innerText=score+'%';let b=document.getElementById('spHealthBar');if(b)b.style.width=score+'%';let t=document.getElementById('spHealthText');if(t)t.innerText=score>=90?'Excellent':score>=75?'Good':'Needs Review';let box=document.getElementById('spHealthIssues');if(box)box.innerHTML=(issues.slice(0,20).map(x=>'<div class="sp-item">⚠️ '+escapeHtml(x)+'</div>').join('')||'<div class="sp-item">✅ No obvious missing-data issue found.</div>')}
 </script>
@@ -4477,7 +4472,7 @@ const v15Features=[
 ];
 function v15Open(){document.getElementById('v15Panel').classList.add('show');v15LoadAll()}
 function v15Close(){document.getElementById('v15Panel').classList.remove('show')}
-function v15Tab(n,b){document.querySelectorAll('.v15-pane').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.v15-tabs button').forEach(x=>x.classList.remove('active'));document.getElementById('v15-'+n).classList.add('active');b.classList.add('active')}
+function v15Tab(n,b){const alias={payments:'finance',profiles:'students',profile:'students',fees:'finance'};n=alias[n]||n;const pane=document.getElementById('v15-'+n);if(!pane)return;document.querySelectorAll('.v15-pane').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.v15-tabs button').forEach(x=>x.classList.remove('active'));pane.classList.add('active');if(!b)b=Array.from(document.querySelectorAll('.v15-tabs button')).find(x=>(x.getAttribute('onclick')||'').includes("'"+n+"'"));if(b)b.classList.add('active')}
 function v15ModalClose(){document.getElementById('v15Modal').classList.remove('show')}
 function v15Modal(title,html){document.getElementById('v15ModalTitle').textContent=title;document.getElementById('v15ModalBody').innerHTML=html;document.getElementById('v15Modal').classList.add('show')}
 function v15Safe(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
@@ -4719,7 +4714,7 @@ document.addEventListener('DOMContentLoaded',mount);window.addEventListener('loa
 #urPanel{display:none;position:fixed;inset:0;z-index:3200;background:var(--bg);overflow:auto}#urPanel.show{display:block}.ur23-head{position:sticky;top:0;z-index:10;background:linear-gradient(125deg,#111827,#3730a3 55%,#7c3aed);color:#fff;padding:13px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 25px rgba(0,0,0,.18)}.ur23-head h2{font-size:15px;flex:1}.ur23-head small{display:block;font-size:8px;opacity:.8;margin-top:2px}.ur23-close{width:38px;height:38px;border:0;border-radius:12px;background:rgba(255,255,255,.15);color:#fff;font-size:20px}
 .ur23-wrap{max-width:900px;margin:auto;padding:13px 12px 105px}.ur23-note{padding:11px 12px;border:1px solid rgba(22,163,74,.18);background:rgba(22,163,74,.07);border-radius:15px;font-size:9px;line-height:1.55;margin-bottom:11px}.ur23-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:11px}.ur23-stat{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:11px;box-shadow:var(--soft)}.ur23-stat small{font-size:8px;color:var(--muted);font-weight:900}.ur23-stat b{display:block;font-size:19px;margin-top:4px}.ur23-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:13px;margin-bottom:10px;box-shadow:var(--shadow)}.ur23-card h3{font-size:13px;margin-bottom:9px}.ur23-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ur23-field{min-width:0}.ur23-field.full{grid-column:1/-1}.ur23-field label{display:block;font-size:8px;color:var(--muted);font-weight:800;margin:0 0 4px 2px}.ur23-in,.ur23-sel,.ur23-text{width:100%;padding:11px;border:1px solid var(--border);border-radius:11px;background:var(--bg);color:var(--text);outline:none}.ur23-text{min-height:65px;resize:vertical}.ur23-shifts{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}.ur23-check{display:flex;align-items:center;gap:7px;padding:9px;border:1px solid var(--border);background:var(--bg);border-radius:10px;font-size:9px;font-weight:800}.ur23-check input{accent-color:var(--primary)}
 .ur23-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.ur23-btn{border:0;border-radius:11px;padding:11px 10px;background:var(--primary);color:#fff;font-weight:900;font-size:9px}.ur23-btn.green{background:var(--success)}.ur23-btn.gray{background:#475569}.ur23-btn.red{background:var(--danger)}.ur23-btn.orange{background:#d97706}.ur23-autosave{font-size:8px;color:var(--muted);margin-top:8px;text-align:center}.ur23-autosave.on{color:var(--success);font-weight:900}.ur23-searchrow{display:grid;grid-template-columns:1fr auto;gap:7px}.ur23-filter{display:flex;gap:6px;overflow:auto;margin:8px 0 10px;scrollbar-width:none}.ur23-filter button{white-space:nowrap;border:1px solid var(--border);border-radius:999px;padding:7px 10px;background:var(--card);color:var(--text);font-size:8px;font-weight:900}.ur23-filter button.on{background:var(--primary);color:#fff;border-color:var(--primary)}
-.ur23-student{border:1px solid var(--border);border-radius:16px;padding:11px;margin-bottom:8px;background:var(--card);box-shadow:var(--soft);position:relative;overflow:hidden}.ur23-student:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:#16a34a}.ur23-student.due:before{background:#f59e0b}.ur23-student.expired:before{background:#dc2626}.ur23-student.archived{opacity:.65}.ur23-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.ur23-name{font-size:13px;font-weight:950}.ur23-meta{font-size:8.5px;color:var(--muted);line-height:1.55;margin-top:4px}.ur23-badges{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}.ur23-badge{padding:4px 6px;border-radius:999px;font-size:7px;font-weight:900;background:var(--bg);border:1px solid var(--border)}.ur23-badge.red{background:#fee2e2;color:#b91c1c}.ur23-badge.yellow{background:#fef3c7;color:#92400e}.ur23-badge.green{background:#dcfce7;color:#166534}.ur23-card-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:9px}.ur23-card-actions button{border:0;border-radius:9px;padding:8px 4px;font-size:7.5px;font-weight:900;background:var(--bg);color:var(--text);border:1px solid var(--border)}.ur23-empty{text-align:center;padding:25px 10px;color:var(--muted);font-size:10px}.ur23-section-label{font-size:9px;font-weight:950;letter-spacing:.5px;color:var(--primary);margin:8px 0 2px;grid-column:1/-1}
+.ur23-student{border:1px solid var(--border);border-radius:16px;padding:11px;margin-bottom:8px;background:var(--card);box-shadow:var(--soft);position:relative;overflow:hidden}.ur23-student:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:#16a34a}.ur23-student.due:before{background:#f59e0b}.ur23-student.expired:before{background:#dc2626}.ur23-student.archived{opacity:.65}.ur23-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.ur23-name{font-size:13px;font-weight:950}.ur23-meta{font-size:8.5px;color:var(--muted);line-height:1.55;margin-top:4px}.ur23-badges{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}.ur23-badge{padding:4px 6px;border-radius:999px;font-size:7px;font-weight:900;background:var(--bg);border:1px solid var(--border)}.ur23-badge.red{background:#fee2e2;color:#b91c1c}.ur23-badge.yellow{background:#fef3c7;color:#92400e}.ur23-badge.green{background:#dcfce7;color:#166534}.ur23-card-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:9px}.ur23-card-actions button{border:0;border-radius:9px;padding:8px 4px;font-size:7.5px;font-weight:900;background:var(--bg);color:var(--text);border:1px solid var(--border)}.ur23-card-actions button.danger{background:#fee2e2;color:#b91c1c;border-color:#fecaca}body.dark .ur23-card-actions button.danger{background:rgba(127,29,29,.35);color:#fecaca;border-color:rgba(248,113,113,.35)}.ur23-empty{text-align:center;padding:25px 10px;color:var(--muted);font-size:10px}.ur23-section-label{font-size:9px;font-weight:950;letter-spacing:.5px;color:var(--primary);margin:8px 0 2px;grid-column:1/-1}
 @media(min-width:700px){.ur23-stats{grid-template-columns:repeat(4,1fr)}.ur23-grid{grid-template-columns:repeat(4,1fr)}.ur23-field.full{grid-column:1/-1}.ur23-shifts{grid-template-columns:repeat(5,1fr)}.ur23-card-actions{grid-template-columns:repeat(6,1fr)}}
 @media(max-width:390px){.ur23-card-actions{grid-template-columns:repeat(2,1fr)}.ur23-portal-grid{gap:5px}.ur23-ur-mini{padding:7px 3px}}
 </style>
@@ -4824,6 +4819,37 @@ document.addEventListener('DOMContentLoaded',mount);window.addEventListener('loa
   };
   window.ur23Edit=function(key){const d=ur23Data[key];if(!d)return;ur23EditKey=key;fillForm(d);$("ur23SaveBtn").textContent="✅ Update Now";$("ur23AutoState").textContent="Auto Save ON — changes save automatically";$("ur23AutoState").className="ur23-autosave on";$("ur23FormCard").scrollIntoView({behavior:"smooth",block:"start"})};
   window.ur23Archive=function(key){if(!adminOK())return;if(!confirm("Student ko archive/left mark करें? Record delete नहीं होगा."))return;database.ref(URBASE+"/"+key).update({status:"Left / Archived",archivedAt:Date.now(),updatedAt:Date.now()}).then(()=>toast("Record archived safely"))};
+  window.ur23Remove=async function(key){
+    if(!adminOK())return;
+    const d=ur23Data[key];if(!d)return toast("Student record not found");
+    const who=(d.name||"This student")+(d.phone?" • "+d.phone:"");
+    if(!confirm("🗑️ "+who+" ko Unreserved Register se remove karna hai?\n\nArchive nahi — active list/counts se remove hoga."))return;
+    if(!confirm("Confirm REMOVE?\n\nSafety backup Recycle Bin me save hoga. Attendance history delete nahi hogi."))return;
+    try{
+      const ts=Date.now(), recycleKey=ts+"_"+key;
+      let att=null,seatSnap=null;
+      const reads=[database.ref(URATT+"/"+key).once("value")];
+      const legacy=!!d.legacyImportedV29&&Number(d.sourceSeat)>=64&&Number(d.sourceSeat)<=85&&Array.isArray(d.sourceShifts)&&d.sourceShifts.length;
+      if(legacy)reads.push(database.ref("library_v3/seats/"+Number(d.sourceSeat)).once("value"));
+      const snaps=await Promise.all(reads);att=snaps[0].val()||null;if(legacy)seatSnap=snaps[1].val()||null;
+      const updates={};
+      updates["library_v3/recycleBinV34/unreserved/"+recycleKey]={...d,_originalKey:key,_deletedAt:ts,_attendanceSnapshot:att,_legacySeatSnapshot:seatSnap||null,_reason:"Removed from Unreserved Register"};
+      updates[URBASE+"/"+key]=null;
+      if(legacy){
+        const seat=Number(d.sourceSeat), studentIdentity=(String(d.phone||"").replace(/\D/g,"")?"p:"+String(d.phone||"").replace(/\D/g,"")+"|n:":"n:")+String(d.name||"").trim().toLowerCase().replace(/\s+/g," ");
+        updates["library_v3/v29RemovedLegacy/"+recycleKey]={identity:studentIdentity,name:d.name||"",phone:d.phone||"",sourceSeat:seat,sourceShifts:d.sourceShifts||[],removedAt:ts,sourceKey:key};
+        d.sourceShifts.forEach(sh=>{
+          const currentName=String((seatSnap||{})["name_"+sh]||"").trim().toLowerCase().replace(/\s+/g," "),currentPhone=String((seatSnap||{})["phone_"+sh]||"").replace(/\D/g,"");
+          const sameName=currentName===String(d.name||"").trim().toLowerCase().replace(/\s+/g," "),wantPhone=String(d.phone||"").replace(/\D/g,"");
+          const samePhone=!wantPhone||!currentPhone||currentPhone===wantPhone;
+          if(sameName&&samePhone){["name_","phone_","fees_","due_","date_","paydate_"].forEach(pref=>{updates["library_v3/seats/"+seat+"/"+pref+sh]=null})}
+        });
+      }
+      await database.ref().update(updates);
+      if(ur23EditKey===key)ur23ResetForm();
+      toast(legacy?"✅ Student removed. Old 64–85 source record backed up + cleared safely.":"✅ Student removed. Backup saved in Recycle Bin.");
+    }catch(e){toast("❌ Remove failed: "+(e&&e.message||e))}
+  };
   window.ur23MarkToday=function(key){if(!adminOK())return;const ref=database.ref(URATT+"/"+key+"/"+todayKey());ref.set(!presentToday(key)).then(()=>toast(presentToday(key)?"Attendance updated":"Attendance updated"))};
   window.ur23RenewQuick=function(key){if(!adminOK())return;const d=ur23Data[key]||{},fee=Number(d.fee)||0;const amount=prompt("Paid amount ₹",String(fee));if(amount===null)return;const renewal=prompt("New renewal date (YYYY-MM-DD)",d.renewal||todayKey());if(renewal===null)return;const paid=Math.max(0,Number(amount)||0);database.ref(URBASE+"/"+key).update({paid,fee,due:Math.max(0,fee-paid),paymentDate:todayKey(),renewal,status:"Active",updatedAt:Date.now()}).then(()=>toast("✅ Payment / renewal updated"))};
   window.ur23WhatsApp=function(key){const d=ur23Data[key]||{},p=String(d.phone||"").replace(/\D/g,"");if(!p)return toast("Phone number missing");const msg=`Hariom Library: Namaste ${d.name||"Student"}, aapka renewal/payment status check kar lijiye. Renewal: ${d.renewal||"not set"}, Due: ₹${Number(d.due||0)}.`;window.open("https://wa.me/91"+p+"?text="+encodeURIComponent(msg),"_blank")};
@@ -4834,7 +4860,7 @@ document.addEventListener('DOMContentLoaded',mount);window.addEventListener('loa
     arr=arr.filter(d=>{const archived=d.status==="Left / Archived",st=dateState(d.renewal),due=Number(d.due||0)>0;if(ur23Filter==="active")return !archived&&d.status==="Active"&&st!=="expired";if(ur23Filter==="due")return !archived&&due;if(ur23Filter==="expired")return !archived&&st==="expired";if(ur23Filter==="today")return presentToday(d.key);if(ur23Filter==="archived")return archived;return true});
     arr.sort((a,b)=>{const aa=a.status==="Left / Archived"?3:dateState(a.renewal)==="expired"?0:Number(a.due||0)>0?1:2,bb=b.status==="Left / Archived"?3:dateState(b.renewal)==="expired"?0:Number(b.due||0)>0?1:2;return aa-bb||String(a.renewal||"9999").localeCompare(String(b.renewal||"9999"))});
     const box=$("ur23List");if(!box)return;if(!arr.length){box.innerHTML='<div class="ur23-empty">No matching flexible students.</div>';return}
-    box.innerHTML=arr.map(d=>{const st=dateState(d.renewal),due=Number(d.due||0),arch=d.status==="Left / Archived",cls=arch?"archived":st==="expired"?"expired":due>0?"due":"",badges=[`<span class="ur23-badge">${esc(d.plan||"Flexible")}</span>`];if(st==="expired")badges.push('<span class="ur23-badge red">MONTH EXPIRED</span>');else if(st==="soon")badges.push('<span class="ur23-badge yellow">RENEW SOON</span>');else badges.push('<span class="ur23-badge green">ACTIVE MONTH</span>');if(due>0)badges.push(`<span class="ur23-badge yellow">DUE ₹${due.toLocaleString("en-IN")}</span>`);if(presentToday(d.key))badges.push('<span class="ur23-badge green">PRESENT TODAY</span>');const shifts=(d.shifts||[]).join(" • ")||"Shift not set";return `<div class="ur23-student ${cls}"><div class="ur23-top"><div><div class="ur23-name">${esc(d.name||"Unnamed")}</div><div class="ur23-meta">📞 ${esc(d.phone||"-")}<br>🕒 ${esc(shifts)} • ${Number(d.daysWeek||7)} days/week<br>📅 Join ${esc(d.joining||"-")} • Renew ${esc(d.renewal||"-")}<br>💰 Fee ₹${Number(d.fee||0).toLocaleString("en-IN")} • Paid ₹${Number(d.paid||0).toLocaleString("en-IN")} • Due ₹${due.toLocaleString("en-IN")}<br>📚 This month: <b>${monthPresentCount(d.key)} days</b> • Total recorded: ${totalPresentCount(d.key)} days${d.note?`<br>📝 ${esc(d.note)}`:""}</div></div><div class="ur23-badges">${badges.join("")}</div></div><div class="ur23-card-actions"><button onclick="ur23Edit('${d.key}')">✏️ Edit</button><button onclick="ur23MarkToday('${d.key}')">${presentToday(d.key)?"↩️ Undo Today":"✅ Present Today"}</button><button onclick="ur23RenewQuick('${d.key}')">💳 Pay / Renew</button><button onclick="ur23WhatsApp('${d.key}')">💬 WhatsApp</button>${arch?"":`<button onclick="ur23Archive('${d.key}')">📦 Archive</button>`}</div></div>`}).join("")
+    box.innerHTML=arr.map(d=>{const st=dateState(d.renewal),due=Number(d.due||0),arch=d.status==="Left / Archived",cls=arch?"archived":st==="expired"?"expired":due>0?"due":"",badges=[`<span class="ur23-badge">${esc(d.plan||"Flexible")}</span>`];if(st==="expired")badges.push('<span class="ur23-badge red">MONTH EXPIRED</span>');else if(st==="soon")badges.push('<span class="ur23-badge yellow">RENEW SOON</span>');else badges.push('<span class="ur23-badge green">ACTIVE MONTH</span>');if(due>0)badges.push(`<span class="ur23-badge yellow">DUE ₹${due.toLocaleString("en-IN")}</span>`);if(presentToday(d.key))badges.push('<span class="ur23-badge green">PRESENT TODAY</span>');const shifts=(d.shifts||[]).join(" • ")||"Shift not set";return `<div class="ur23-student ${cls}"><div class="ur23-top"><div><div class="ur23-name">${esc(d.name||"Unnamed")}</div><div class="ur23-meta">📞 ${esc(d.phone||"-")}<br>🕒 ${esc(shifts)} • ${Number(d.daysWeek||7)} days/week<br>📅 Join ${esc(d.joining||"-")} • Renew ${esc(d.renewal||"-")}<br>💰 Fee ₹${Number(d.fee||0).toLocaleString("en-IN")} • Paid ₹${Number(d.paid||0).toLocaleString("en-IN")} • Due ₹${due.toLocaleString("en-IN")}<br>📚 This month: <b>${monthPresentCount(d.key)} days</b> • Total recorded: ${totalPresentCount(d.key)} days${d.note?`<br>📝 ${esc(d.note)}`:""}</div></div><div class="ur23-badges">${badges.join("")}</div></div><div class="ur23-card-actions"><button onclick="ur23Edit('${d.key}')">✏️ Edit</button><button onclick="ur23MarkToday('${d.key}')">${presentToday(d.key)?"↩️ Undo Today":"✅ Present Today"}</button><button onclick="ur23RenewQuick('${d.key}')">💳 Pay / Renew</button><button onclick="ur23WhatsApp('${d.key}')">💬 WhatsApp</button>${arch?"":`<button onclick="ur23Archive('${d.key}')">📦 Archive</button>`}<button class="danger" onclick="ur23Remove('${d.key}')">🗑️ Remove</button></div></div>`}).join("")
   };
   function updateStats(){
     const vals=Object.entries(ur23Data).map(([key,d])=>({key,...d})),active=vals.filter(d=>d.status!=="Left / Archived").length,due=vals.filter(d=>d.status!=="Left / Archived").reduce((s,d)=>s+Number(d.due||0),0),expired=vals.filter(d=>d.status!=="Left / Archived"&&dateState(d.renewal)==="expired").length,today=vals.filter(d=>presentToday(d.key)).length;
@@ -4967,7 +4993,7 @@ body.dark #ur23List .ur23-student.v24-expired{background:linear-gradient(135deg,
   function statusPriority(s){return ({archived:0,active:1,soon:2,due:3,expired:4})[s]??1}
   function recordStatus(date,due,archived){if(archived)return "archived";const ds=dateStatus(date);if(ds==="expired")return "expired";if(Number(due||0)>0)return "due";if(ds==="soon")return "soon";return "active"}
   function addContact(map,raw){
-    const p=phone10(raw.phone), base=(raw.name||"Unnamed").trim(), key=p?"p:"+p:"n:"+base.toLowerCase()+"|"+raw.source;
+    const p=phone10(raw.phone), base=(raw.name||"Unnamed").trim(), nn=base.toLowerCase().replace(/\s+/g," "), seat=(String(raw.source||"").match(/Seat\s+(\d+)/i)||[])[1]||"", key=p?"p:"+p+"|n:"+nn:"n:"+nn+"|seat:"+seat+"|type:"+(raw.type||"");
     if(!map[key])map[key]={name:base,phone:p,sources:[],types:new Set(),status:raw.status||"active",renewal:raw.renewal||"",due:Number(raw.due||0)};
     const c=map[key]; if(base.length>c.name.length)c.name=base; if(raw.source&&!c.sources.includes(raw.source))c.sources.push(raw.source); if(raw.type)c.types.add(raw.type);
     if(statusPriority(raw.status)>statusPriority(c.status))c.status=raw.status; c.due=Math.max(c.due,Number(raw.due||0));
@@ -5120,14 +5146,26 @@ body.dark #ur23List .ur23-student.v24-expired{background:linear-gradient(135deg,
   function toast(m){if(typeof showToast==="function")showToast(m);else alert(m)}
   function phone10(p){let d=String(p||"").replace(/\D/g,"");if(d.length===12&&d.startsWith("91"))d=d.slice(2);if(d.length>10)d=d.slice(-10);return /^\d{10}$/.test(d)?d:""}
   function contacts(){
-    const map=new Map(),missing=[];
-    function add(name,phone,source){name=String(name||"").trim();if(!name)return;const p=phone10(phone);if(!p){missing.push({name,source});return}if(!map.has(p))map.set(p,{name,phone:p,sources:[source]});else{const x=map.get(p);if(!x.name&&name)x.name=name;if(!x.sources.includes(source))x.sources.push(source)}}
+    const chats=new Map(),students=new Map();
+    const normName=v=>String(v||"").trim().toLowerCase().replace(/\s+/g," ");
+    function add(name,phone,source){
+      name=String(name||"").trim();if(!name)return;
+      const p=phone10(phone),nn=normName(name),seat=(String(source||"").match(/Seat\s+(\d+)/i)||[])[1]||"";
+      const sk=p?"p:"+p+"|n:"+nn:"n:"+nn+"|seat:"+seat+"|source:"+String(source||"").split(" ")[0];
+      if(!students.has(sk))students.set(sk,{name,phone:p,source});
+      else if(!students.get(sk).phone&&p)students.get(sk).phone=p;
+      if(p){
+        if(!chats.has(p))chats.set(p,{name,phone:p,sources:[source]});
+        else{const x=chats.get(p);if(!x.sources.includes(source))x.sources.push(source)}
+      }
+    }
     Object.keys(seats||{}).forEach(k=>{const d=seats[k]||{};shifts.forEach(sh=>{if(d["name_"+sh])add(d["name_"+sh],d["phone_"+sh],"Seat "+k+" "+sh)})});
     Object.values(flex||{}).forEach(d=>{if(!d||d.status==="Left / Archived")return;add(d.name,d.phone,"Unreserved")});
     Object.values(profiles||{}).forEach(d=>{if(!d)return;const st=String(d.status||"Active").toLowerCase();if(["inactive","blocked","left / archived","archived"].includes(st))return;add(d.name,d.whatsapp||d.phone,"Digital Admission")});
-    return {rows:[...map.values()],missing};
+    const studentRows=[...students.values()],readyStudents=studentRows.filter(x=>x.phone).length,missingStudents=studentRows.length-readyStudents;
+    return {rows:[...chats.values()],studentRows,studentTotal:studentRows.length,readyStudents,missingStudents};
   }
-  function renderCounts(){const c=contacts();if($("v25StudentCount"))$("v25StudentCount").textContent=c.rows.length+c.missing.length;if($("v25ReadyCount"))$("v25ReadyCount").textContent=c.rows.length;if($("v25MissingCount"))$("v25MissingCount").textContent=c.missing.length;if($("v25RecipientLabel"))$("v25RecipientLabel").textContent=c.rows.length;document.querySelectorAll("[data-v25-ready]").forEach(x=>x.textContent=c.rows.length);document.querySelectorAll("[data-v25-total]").forEach(x=>x.textContent=c.rows.length+c.missing.length)}
+  function renderCounts(){const c=contacts();if($("v25StudentCount"))$("v25StudentCount").textContent=c.studentTotal;if($("v25ReadyCount"))$("v25ReadyCount").textContent=c.readyStudents;if($("v25MissingCount"))$("v25MissingCount").textContent=c.missingStudents;if($("v25RecipientLabel"))$("v25RecipientLabel").textContent=c.rows.length;document.querySelectorAll("[data-v25-ready]").forEach(x=>x.textContent=c.readyStudents);document.querySelectorAll("[data-v25-total]").forEach(x=>x.textContent=c.studentTotal)}
   function patchEntries(){
     const old=$("v24MasterEntry");
     if(old){old.className="v25-notice-entry";old.innerHTML=`<h3>📢 Direct WhatsApp Notice Box</h3><p>Fixed-seat + Unreserved Register ke sabhi valid numbers automatic collect honge. Ek notice likhiye aur ek button se sabhi ko direct WhatsApp bhejiye.</p><div class="v25-entry-counts"><div class="v25-entry-count"><b data-v25-total>0</b><span>STUDENTS</span></div><div class="v25-entry-count"><b data-v25-ready>0</b><span>WHATSAPP READY</span></div></div><button class="v25-entry-open" onclick="v25OpenNotice()">OPEN DIRECT NOTICE BOX →</button>`}
@@ -5487,7 +5525,7 @@ body.seat-modal-open #nativeToolDock{display:none!important}
       const d=(typeof globalLibraryData!=="undefined"?globalLibraryData:{})[i]||{};
       Object.keys(SHIFTS).forEach(sh=>{
         const name=d["name_"+sh]; if(!name)return;
-        rows.push({type:"fixed",seat:i,shift:sh,shiftLabel:SHIFTS[sh],name,phone:d["phone_"+sh]||"",fee:Number(d["fees_"+sh]||0),due:Number(d["due_"+sh]||0),renewal:d["date_"+sh]||"",paidDate:d["paydate_"+sh]||""});
+        {const paid=Number(d["fees_"+sh]||0),due=Number(d["due_"+sh]||0);rows.push({type:"fixed",seat:i,shift:sh,shiftLabel:SHIFTS[sh],name,phone:d["phone_"+sh]||"",fee:paid+due,paid,due,renewal:d["date_"+sh]||"",paidDate:d["paydate_"+sh]||""});}
       });
     }
     return rows;
@@ -5497,8 +5535,21 @@ body.seat-modal-open #nativeToolDock{display:none!important}
   }
   function sortRank(r){const s=statusInfo(r.renewal,r.due).key;return ({expired:0,due:1,soon:2,nodate:3,active:4})[s]??5;}
   function visibleRows(){
+    const normName=v=>String(v||"").trim().toLowerCase().replace(/\s+/g," "), map=new Map();
+    [...fixedRows(),...flexRows()].forEach(r=>{
+      const p=cleanPhone(r.phone),nn=normName(r.name),k=p?"p:"+p+"|n:"+nn:"n:"+nn+"|seat:"+String(r.seat||"")+"|type:"+r.type;
+      if(!map.has(k)){map.set(k,{...r,_labels:new Set(String(r.shiftLabel||"").split(" • ").filter(Boolean))});return}
+      const x=map.get(k);String(r.shiftLabel||"").split(" • ").filter(Boolean).forEach(v=>x._labels.add(v));
+      x.shiftLabel=[...x._labels].join(" • ");
+      if(x.type==="fixed"&&r.type==="fixed"&&String(x.seat)===String(r.seat)){
+        x.due=Number(x.due||0)+Number(r.due||0);x.fee=Number(x.fee||0)+Number(r.fee||0);x.paid=Number(x.paid||0)+Number(r.paid||0);
+      }else{
+        x.due=Math.max(Number(x.due||0),Number(r.due||0));x.fee=Math.max(Number(x.fee||0),Number(r.fee||0));x.paid=Math.max(Number(x.paid||0),Number(r.paid||0));
+      }
+      if(!x.renewal||(r.renewal&&r.renewal<x.renewal))x.renewal=r.renewal;
+    });
     const q=nativeStudentQuery.toLowerCase().trim();
-    return [...fixedRows(),...flexRows()].filter(r=>{
+    return [...map.values()].map(r=>{delete r._labels;return r}).filter(r=>{
       const st=statusInfo(r.renewal,r.due).key;
       if(nativeStudentFilter!=="all"&&st!==nativeStudentFilter)return false;
       if(!q)return true;
@@ -5509,8 +5560,8 @@ body.seat-modal-open #nativeToolDock{display:none!important}
     const st=statusInfo(r.renewal,r.due);
     const place=r.type==="fixed"?`Seat ${r.seat} • ${r.shiftLabel}`:`Unreserved • ${r.shiftLabel}`;
     const phone=cleanPhone(r.phone);
-    const fee=Number(r.fee||0),due=Number(r.due||0),paid=r.type==="flex"?Number(r.paid||0):fee,totalFee=r.type==="flex"?fee:(fee+due);
-    const open=r.type==="fixed"?`nativeOpenFixed(${Number(r.seat)})`:`nativeOpenFlex('${esc(r.key)}')`;
+    const fee=Number(r.fee||0),due=Number(r.due||0),paid=Number(r.paid||0),totalFee=fee;
+    const open=r.type==="fixed"?`nativeOpenFixed(${Number(r.seat)})`:r.type==="profile"?`v15ProfileForm('${esc(r.profileKey||"")}')`:`nativeOpenFlex('${esc(r.key)}')`;
     return `<div class="native-student-card ${st.key}" data-native-status="${st.key}">
       <div class="native-student-top">
         <div class="native-avatar">${esc(initial(r.name))}</div>
@@ -5789,7 +5840,7 @@ body.dark #seatsGrid .seat{background:#101827!important;border-color:#27344a!imp
     if(d<t)return "expired"; if(d<=soon)return "soon"; return "active";
   }
   function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(36)}
-  function identity(name,phone){const p=digits(phone);return p?"p:"+p:"n:"+trim(name).toLowerCase().replace(/\s+/g," ")}
+  function identity(name,phone){const p=digits(phone),n=trim(name).toLowerCase().replace(/\s+/g," ");return p?"p:"+p+"|n:"+n:"n:"+n}
   function labelsFor(sh){if(sh==="all")return ["Morning","Noon","Afternoon","Evening"];return SHIFT_LABEL[sh]?[SHIFT_LABEL[sh]]:[]}
   function earliest(a,b){if(!a)return b||"";if(!b)return a;const da=parseDate(a),db=parseDate(b);if(!da)return b;if(!db)return a;return da<=db?a:b}
   function latest(a,b){if(!a)return b||"";if(!b)return a;const da=parseDate(a),db=parseDate(b);if(!da)return b;if(!db)return a;return da>=db?a:b}
@@ -5872,18 +5923,14 @@ body.dark #seatsGrid .seat{background:#101827!important;border-color:#27344a!imp
     if(typeof isAdminVerified!=="undefined"&&!isAdminVerified){setSyncNote("🔐 <b>Old 64–85 students:</b> Admin login ke baad automatic import hoga.","warn");return}
     syncRunning=true;setSyncNote("⏳ <b>Old 64–85 students:</b> checking old Firebase records…","");
     try{
-      const [seatSnap,flexSnap]=await Promise.all([database.ref(SEATS).once("value"),database.ref(BASE).once("value")]);
-      const legacy=buildLegacyRows(seatSnap.val()||{}),existing=flexSnap.val()||{};
+      const [seatSnap,flexSnap,removedSnap]=await Promise.all([database.ref(SEATS).once("value"),database.ref(BASE).once("value"),database.ref("library_v3/v29RemovedLegacy").once("value")]);
+      const legacy=buildLegacyRows(seatSnap.val()||{}),existing=flexSnap.val()||{},removed=Object.values(removedSnap.val()||{});
       const vals=Object.values(existing);
       const updates={};let add=0,skip=0;
       legacy.forEach(r=>{
-        const same=vals.some(x=>{
-          if(!x)return false;
-          const xi=identity(x.name,x.phone);
-          if(digits(r.phone)&&digits(x.phone))return digits(r.phone)===digits(x.phone);
-          return Number(x.sourceSeat||0)===Number(r.seat)&&xi===r.identity;
-        });
-        if(existing[r.key]||same){skip++;return}
+        const removedBefore=removed.some(x=>x&&Number(x.sourceSeat||0)===Number(r.seat)&&String(x.identity||"")===String(r.identity));
+        const same=vals.some(x=>x&&identity(x.name,x.phone)===r.identity);
+        if(removedBefore||existing[r.key]||same){skip++;return}
         updates[r.key]={
           name:r.name,phone:r.phone,plan:r.shifts.length>1?(r.shifts.length+" Shifts"):"1 Shift",daysWeek:7,shifts:r.shifts,
           joining:"",renewal:r.renewal,fee:r.fee,paid:r.paid,due:r.due,paymentDate:r.paymentDate,status:"Active",
@@ -6000,40 +6047,44 @@ body.dark .v30-tool-icon{filter:saturate(.9) brightness(.9)}
       const d=data[seat]||data[String(seat)]||{};
       Object.keys(SHIFTS).forEach(sh=>{
         const name=String(d["name_"+sh]||"").trim();if(!name)return;
-        out.push({type:"fixed",seat,shift:sh,shiftLabel:SHIFTS[sh],name,phone:d["phone_"+sh]||"",fee:Number(d["fees_"+sh]||0),paid:Number(d["fees_"+sh]||0),due:Number(d["due_"+sh]||0),renewal:d["date_"+sh]||"",paidDate:d["paydate_"+sh]||""});
+        const paid=Number(d["fees_"+sh]||0),due=Number(d["due_"+sh]||0);
+        out.push({type:"fixed",seat,shift:sh,shiftLabel:SHIFTS[sh],name,phone:d["phone_"+sh]||"",fee:paid+due,paid,due,renewal:d["date_"+sh]||"",paidDate:d["paydate_"+sh]||""});
       });
     }
     return out;
   }
   function flexRaw(){return Object.entries(flex||{}).filter(([,d])=>d&&d.status!=="Left / Archived").map(([key,d])=>({type:"flex",key,name:d.name||"Unnamed",phone:d.phone||"",fee:Number(d.fee||0),paid:Number(d.paid||0),due:Number(d.due||0),renewal:d.renewal||"",paidDate:d.paymentDate||"",shiftLabel:Array.isArray(d.shifts)&&d.shifts.length?d.shifts.join(" • "):(d.plan||"Flexible"),plan:d.plan||"Flexible",legacyImportedV29:!!d.legacyImportedV29,sourceSeat:Number(d.sourceSeat||0),updatedAt:Number(d.updatedAt||d.createdAt||0)}))}
+  function profileRaw(){return Object.entries(profiles||{}).filter(([,d])=>{if(!d||!String(d.name||"").trim())return false;const st=norm(d.status||"active");return !["inactive","blocked","left / archived","archived"].includes(st)}).map(([profileKey,d])=>({type:"profile",profileKey,name:d.name||"Unnamed",phone:d.whatsapp||d.phone||"",fee:Number(d.fee||0),paid:Number(d.paid||0),due:Number(d.due||0),renewal:d.expiry||d.renewal||"",paidDate:d.paymentDate||"",shiftLabel:d.shift||d.plan||"Digital Admission",plan:d.plan||"Digital Admission",seat:Number(d.seat||0)||"",studentId:d.studentId||"",updatedAt:Number(d.updatedAt||d.createdAt||0)}))}
   function collapseFixed(list){
     const map=new Map();
     list.forEach(r=>{
       const id=identity(r),k=id+"|seat:"+r.seat;
       if(!map.has(k)){map.set(k,{...r,shifts:[r.shiftLabel],shiftLabel:r.shiftLabel});return}
-      const x=map.get(k);if(!x.shifts.includes(r.shiftLabel))x.shifts.push(r.shiftLabel);x.shiftLabel=x.shifts.join(" • ");x.fee=Math.max(Number(x.fee||0),Number(r.fee||0));x.paid=Math.max(Number(x.paid||0),Number(r.paid||0));x.due=Math.max(Number(x.due||0),Number(r.due||0));
+      const x=map.get(k);if(!x.shifts.includes(r.shiftLabel))x.shifts.push(r.shiftLabel);x.shiftLabel=x.shifts.join(" • ");x.fee=Number(x.fee||0)+Number(r.fee||0);x.paid=Number(x.paid||0)+Number(r.paid||0);x.due=Number(x.due||0)+Number(r.due||0);
       if(!x.renewal||(r.renewal&&String(r.renewal)<String(x.renewal)))x.renewal=r.renewal;
     });
     return [...map.values()]
   }
   function uniqueRows(){
-    const fr=collapseFixed(fixedRaw()),xr=flexRaw();
+    const fr=collapseFixed(fixedRaw()),xr=flexRaw(),pr=profileRaw();
     // Seats 64–85 were the old unreserved area. If the same student now exists
-    // in the Unreserved Register, show the student only once even if the old
-    // imported flag/source-seat metadata is missing or older.
+    // in the Unreserved Register, show the student only once.
     const flexIdentity=new Set(xr.map(r=>identity(r)));
     const importedBySeat=new Set(xr.filter(r=>r.sourceSeat>=64&&r.sourceSeat<=85).map(r=>identity(r)+"|"+r.sourceSeat));
-    const keptFixed=fr.filter(r=>{
-      if(!(r.seat>=64&&r.seat<=85)) return true;
-      const id=identity(r);
-      return !(flexIdentity.has(id)||importedBySeat.has(id+"|"+r.seat));
+    const keptFixed=fr.filter(r=>{if(!(r.seat>=64&&r.seat<=85))return true;const id=identity(r);return !(flexIdentity.has(id)||importedBySeat.has(id+"|"+r.seat))});
+    const flexMap=new Map();xr.forEach(r=>{const id=identity(r),old=flexMap.get(id);if(!old||r.updatedAt>=old.updatedAt)flexMap.set(id,r)});
+    const profileMap=new Map();pr.forEach(r=>{const id=identity(r),old=profileMap.get(id);if(!old||r.updatedAt>=old.updatedAt)profileMap.set(id,r)});
+    const master=new Map(),rank={profile:1,fixed:2,flex:3};
+    [...keptFixed,...flexMap.values(),...profileMap.values()].forEach(r=>{
+      const id=identity(r),old=master.get(id);
+      if(!old){master.set(id,{...r,_rank:rank[r.type]||0});return}
+      const rr=rank[r.type]||0;
+      if(rr>old._rank){const keep={fee:old.fee,paid:old.paid,due:old.due,renewal:old.renewal,profileKey:old.profileKey||r.profileKey};Object.assign(old,r);old._rank=rr;old.profileKey=keep.profileKey}
+      old.fee=Math.max(Number(old.fee||0),Number(r.fee||0));old.paid=Math.max(Number(old.paid||0),Number(r.paid||0));old.due=Math.max(Number(old.due||0),Number(r.due||0));
+      if(!old.renewal||(r.renewal&&String(r.renewal)<String(old.renewal)))old.renewal=r.renewal;
+      if(!old.profileKey&&r.profileKey)old.profileKey=r.profileKey;if(!old.studentId&&r.studentId)old.studentId=r.studentId;
     });
-    // If the flex register itself contains an accidental duplicate, keep the newest record only.
-    const flexMap=new Map();
-    xr.forEach(r=>{const id=identity(r);const old=flexMap.get(id);if(!old||r.updatedAt>=old.updatedAt)flexMap.set(id,r)});
-    const all=[...keptFixed,...flexMap.values()];
-    all.forEach(r=>{r.uid="v30_"+hash(identity(r)+"|"+(r.type==="flex"?("f:"+r.key):("s:"+r.seat)));r.mediaKey=mediaKey(r)});
-    return all;
+    const all=[...master.values()];all.forEach(r=>{delete r._rank;r.uid="v30_"+hash(identity(r));r.mediaKey=mediaKey(r)});return all;
   }
   function visibleRows(){
     const search=norm(q);
@@ -6044,12 +6095,14 @@ body.dark .v30-tool-icon{filter:saturate(.9) brightness(.9)}
     }).sort((a,b)=>{const rank={expired:0,due:1,soon:2,nodate:3,active:4};return (rank[statusInfo(a).key]??9)-(rank[statusInfo(b).key]??9)||String(a.renewal||"9999").localeCompare(String(b.renewal||"9999"))||String(a.name).localeCompare(String(b.name))})
   }
   function findProfile(r){
-    const p=phone(r.phone),n=norm(r.name),vals=Object.values(profiles||{});
-    return vals.find(x=>x&&p&&phone(x.phone)===p&&norm(x.name)===n)||vals.find(x=>x&&p&&phone(x.phone)===p)||vals.find(x=>x&&norm(x.name)===n)||null
+    const p=phone(r.phone),n=norm(r.name),vals=Object.values(profiles||{}).filter(Boolean);
+    const exact=vals.find(x=>p&&phone(x.whatsapp||x.phone)===p&&norm(x.name)===n);if(exact)return exact;
+    const byName=vals.filter(x=>norm(x.name)===n);if(byName.length===1)return byName[0];
+    const byPhone=p?vals.filter(x=>phone(x.whatsapp||x.phone)===p):[];return byPhone.length===1?byPhone[0]:null
   }
   function photoFor(r){return (media[r.mediaKey]&&media[r.mediaKey].photo)||((findProfile(r)||{}).photo)||""}
   function initial(n){return (String(n||"S").trim()[0]||"S").toUpperCase()}
-  function place(r){return r.type==="fixed"?`Seat ${r.seat} • ${r.shiftLabel}`:`Unreserved • ${r.shiftLabel}`}
+  function place(r){if(r.type==="fixed")return `Seat ${r.seat} • ${r.shiftLabel}`;if(r.type==="profile")return `Digital Admission${r.seat?" • Seat "+r.seat:""} • ${r.shiftLabel}`;return `Unreserved • ${r.shiftLabel}`}
   function card(r){
     const st=statusInfo(r),ph=phone(r.phone),pic=photoFor(r),fee=Number(r.fee||0),paid=Number(r.paid||0),due=Number(r.due||0);
     const open=r.type==="fixed"?`nativeOpenFixed(${Number(r.seat)})`:`nativeOpenFlex('${esc(r.key)}')`;
@@ -6104,7 +6157,7 @@ body.dark .v30-tool-icon{filter:saturate(.9) brightness(.9)}
     const im=await loadImage(pic);x.save();rounded(x,250,282,300,330,30);x.clip();if(im){const scale=Math.max(300/im.width,330/im.height),w=im.width*scale,h=im.height*scale;x.drawImage(im,250+(300-w)/2,282+(330-h)/2,w,h)}else{x.fillStyle="#dbeafe";x.fillRect(250,282,300,330)}x.restore();x.strokeStyle="#cbd5e1";x.lineWidth=5;rounded(x,250,282,300,330,30);x.stroke();
     const name=String(r.name||"Student");const fs=fitText(x,name,690,52);x.font=`900 ${fs}px Arial`;x.fillStyle="#0f172a";x.textAlign="center";x.fillText(name,400,690);x.textAlign="left";
     const sid="HL-"+hash(identity(r)).toUpperCase().slice(0,8);x.font="700 24px Arial";x.fillStyle="#64748b";x.textAlign="center";x.fillText("Student ID: "+sid,400,738);x.textAlign="left";
-    const fields=[["MOBILE",phone(r.phone)||"Not added"],["SEAT / TYPE",r.type==="fixed"?"Seat "+r.seat:"Unreserved"],["SHIFT",r.shiftLabel||"-"],["VALID / RENEWAL",r.renewal||"Not set"]];
+    const fields=[["MOBILE",phone(r.phone)||"Not added"],["SEAT / TYPE",r.type==="fixed"?"Seat "+r.seat:(r.type==="profile"?(r.seat?"Digital • Seat "+r.seat:"Digital Admission"):"Unreserved")],["SHIFT",r.shiftLabel||"-"],["VALID / RENEWAL",r.renewal||"Not set"]];
     let y=790;fields.forEach(([k,v])=>{x.fillStyle="#64748b";x.font="800 18px Arial";x.fillText(k,75,y);x.fillStyle="#0f172a";x.font="800 27px Arial";x.fillText(String(v),75,y+35);x.strokeStyle="#e2e8f0";x.lineWidth=2;x.beginPath();x.moveTo(75,y+57);x.lineTo(725,y+57);x.stroke();y+=92});
     x.fillStyle="#0f172a";x.fillRect(0,1110,800,90);x.fillStyle="#fff";x.font="700 18px Arial";x.textAlign="center";x.fillText("Hariom Library • Smart Management System",400,1148);x.font="500 15px Arial";x.fillStyle="#cbd5e1";x.fillText("This card is generated from the live library record",400,1178);x.textAlign="left";
     downloadCanvas(c,`Hariom_ID_${safeName(r.name)}.png`)
@@ -6114,14 +6167,14 @@ body.dark .v30-tool-icon{filter:saturate(.9) brightness(.9)}
     x.fillStyle="#ffffff";x.fillRect(0,0,900,1200);x.fillStyle="#1d4ed8";x.fillRect(0,0,900,180);x.fillStyle="#fff";x.font="900 44px Arial";x.fillText("HARIOM LIBRARY",55,78);x.font="700 24px Arial";x.fillText("ADMISSION / MEMBERSHIP SLIP",56,126);x.font="500 17px Arial";x.fillStyle="#dbeafe";x.fillText("Generated: "+today(),57,157);
     if(im){x.save();rounded(x,650,205,180,210,22);x.clip();const s=Math.max(180/im.width,210/im.height),w=im.width*s,h=im.height*s;x.drawImage(im,650+(180-w)/2,205+(210-h)/2,w,h);x.restore()}else{x.fillStyle="#dbeafe";rounded(x,650,205,180,210,22);x.fill();x.fillStyle="#1d4ed8";x.font="900 76px Arial";x.textAlign="center";x.fillText(initial(r.name),740,335);x.textAlign="left"}
     x.fillStyle="#0f172a";x.font="900 42px Arial";x.fillText(String(r.name||"Student"),55,255);x.fillStyle="#64748b";x.font="700 23px Arial";x.fillText(place(r),55,300);x.fillText("Mobile: "+(phone(r.phone)||"Not added"),55,338);
-    const due=Number(r.due||0),data=[["Plan / Monthly Fee","₹"+Number(r.fee||0).toLocaleString("en-IN")],["Paid","₹"+Number(r.paid||0).toLocaleString("en-IN")],["Due","₹"+due.toLocaleString("en-IN")],["Renewal / Month End",r.renewal||"Not set"],["Payment Date",r.paidDate||"Not set"],["Membership Type",r.type==="fixed"?"Reserved Seat":"Unreserved / Flexible"]];
+    const due=Number(r.due||0),data=[["Plan / Monthly Fee","₹"+Number(r.fee||0).toLocaleString("en-IN")],["Paid","₹"+Number(r.paid||0).toLocaleString("en-IN")],["Due","₹"+due.toLocaleString("en-IN")],["Renewal / Month End",r.renewal||"Not set"],["Payment Date",r.paidDate||"Not set"],["Membership Type",r.type==="fixed"?"Reserved Seat":(r.type==="profile"?"Digital Admission":"Unreserved / Flexible")]];
     let y=470;data.forEach(([k,v],i)=>{x.fillStyle=i%2?"#f8fafc":"#f1f5f9";rounded(x,55,y,790,92,16);x.fill();x.fillStyle="#64748b";x.font="800 18px Arial";x.fillText(k,78,y+34);x.fillStyle="#0f172a";x.font="900 27px Arial";x.fillText(String(v),78,y+69);y+=104});
     x.fillStyle="#dcfce7";rounded(x,55,1100,790,58,18);x.fill();x.fillStyle="#166534";x.font="800 18px Arial";x.textAlign="center";x.fillText("Thank you for choosing Hariom Library",450,1137);x.textAlign="left";
     downloadCanvas(c,`Hariom_Slip_${safeName(r.name)}.png`)
   }
   window.v30DownloadId=function(uid){const r=rowsById[uid];if(r)makeId(r)};
   window.v30DownloadSlip=function(uid){const r=rowsById[uid];if(r)makeSlip(r)};
-  window.v30Welcome=function(uid){const r=rowsById[uid];if(!r)return;const p=phone(r.phone);if(!p)return alert("Student mobile number nahi hai");const msg=`Namaste ${r.name} 👋\n\nHariom Library me aapka swagat hai.\n📚 Membership: ${r.type==="fixed"?"Seat "+r.seat:"Unreserved"}\n🕒 Shift: ${r.shiftLabel||"-"}\n📅 Renewal: ${r.renewal||"Not set"}\n💰 Fee: ₹${Number(r.fee||0)}${Number(r.due||0)>0?`\n⚠️ Due: ₹${Number(r.due||0)}`:""}\n\nThank you 🙏\nHariom Library`;window.open("https://wa.me/91"+p+"?text="+encodeURIComponent(msg),"_blank")};
+  window.v30Welcome=function(uid){const r=rowsById[uid];if(!r)return;const p=phone(r.phone);if(!p)return alert("Student mobile number nahi hai");const msg=`Namaste ${r.name} 👋\n\nHariom Library me aapka swagat hai.\n📚 Membership: ${r.type==="fixed"?"Seat "+r.seat:(r.type==="profile"?"Digital Admission":"Unreserved")}\n🕒 Shift: ${r.shiftLabel||"-"}\n📅 Renewal: ${r.renewal||"Not set"}\n💰 Fee: ₹${Number(r.fee||0)}${Number(r.due||0)>0?`\n⚠️ Due: ₹${Number(r.due||0)}`:""}\n\nThank you 🙏\nHariom Library`;window.open("https://wa.me/91"+p+"?text="+encodeURIComponent(msg),"_blank")};
   function init(){
     const inp=$("v30PhotoInput");if(inp&&!inp.dataset.bound){inp.dataset.bound="1";inp.addEventListener("change",photoPicked)}
     bindSearch();render();setTimeout(()=>{bindSearch();render()},500);
@@ -6185,7 +6238,7 @@ body.dark{background:linear-gradient(180deg,#050914,#08111f 42%,#07101c 100%) fi
 <div class="v31-lock" id="v31Lock"><div class="v31-lock-card"><div class="v31-lock-logo">📚</div><h2>Hariom Library</h2><p>Device PIN lock is enabled for this browser.</p><input id="v31PinInput" type="password" inputmode="numeric" maxlength="6" placeholder="••••"><button onclick="v31Unlock()">UNLOCK APP</button><div id="v31PinMsg" style="font-size:8px;color:#fecaca;margin-top:8px"></div></div></div>
 <div id="v31Toast"></div>
 <div id="v31Panel">
-  <div class="v31-appbar"><button class="v31-icon-btn" onclick="v31Close()">‹</button><div class="v31-appbar-title"><b>Hariom Library Pro OS</b><span id="v31TopSub">Realtime • Firebase • V31.1</span></div><button class="v31-icon-btn" onclick="v31OpenModule('command')">⌘</button><button class="v31-icon-btn" onclick="toggleTheme();v31SyncTheme()">◐</button></div>
+  <div class="v31-appbar"><button class="v31-icon-btn" onclick="v31Close()">‹</button><div class="v31-appbar-title"><b>Hariom Library Pro OS</b><span id="v31TopSub">Realtime • Firebase • Final</span></div><button class="v31-icon-btn" onclick="v31OpenModule('command')">⌘</button><button class="v31-icon-btn" onclick="toggleTheme();v31SyncTheme()">◐</button></div>
   <div class="v31-body">
     <div id="v31-main-home" class="v31-pane on"></div>
     <div id="v31-main-students" class="v31-pane"></div>
@@ -6223,8 +6276,8 @@ function statusDate(v){if(!v)return 'nodate';try{const s=typeof getDateStatus===
 function branchRecord(x){return !x||!x.branch||x.branch===state.branch}
 function db(path){return database.ref(BASE+(path?'/'+path:''))}
 function audit(action,detail,student){if(typeof database==='undefined')return;db('audit').push({action,detail:detail||'',student:student||'',branch:state.branch,time:Date.now()})}
-function photoFor(s){const k='student_'+hash(iden(s));if(state.media[k]?.photo)return state.media[k].photo;const p=Object.values(state.profiles||{}).find(x=>x&&digits(x.phone)&&digits(x.phone)===digits(s.phone));return p?.photo||''}
-function profileFor(s){const p=digits(s.phone),n=norm(s.name);return Object.values(state.profiles||{}).find(x=>x&&p&&digits(x.phone)===p)||Object.values(state.profiles||{}).find(x=>x&&norm(x.name)===n)||{}}
+function profileFor(s){const p=digits(s.phone),n=norm(s.name),vals=Object.values(state.profiles||{}).filter(Boolean);const exact=vals.find(x=>p&&digits(x.whatsapp||x.phone)===p&&norm(x.name)===n);if(exact)return exact;const byName=vals.filter(x=>norm(x.name)===n);if(byName.length===1)return byName[0];const byPhone=p?vals.filter(x=>digits(x.whatsapp||x.phone)===p):[];return byPhone.length===1?byPhone[0]:{}}
+function photoFor(s){const k='student_'+hash(iden(s));if(state.media[k]?.photo)return state.media[k].photo;return profileFor(s)?.photo||''}
 function extrasFor(s){return state.v31.studentExtras?.[studentKey(s)]||{}}
 function allStudents(){
   const fixed=[],data=typeof globalLibraryData!=='undefined'?globalLibraryData:{};const max=Number(typeof TOTAL_SEATS!=='undefined'?TOTAL_SEATS:105);
@@ -6232,16 +6285,18 @@ function allStudents(){
     const d=data[seat]||data[String(seat)]||{};
     Object.entries(SH).forEach(([sh,label])=>{
       const name=String(d['name_'+sh]||'').trim();if(!name)return;
-      fixed.push({type:'fixed',seat,shift:sh,shiftLabel:label,name,phone:d['phone_'+sh]||'',fee:Number(d['fees_'+sh]||0),paid:Number(d['fees_'+sh]||0),due:Number(d['due_'+sh]||0),renewal:d['date_'+sh]||'',paidDate:d['paydate_'+sh]||'',sourceRefs:[{seat,shift:sh}],updatedAt:0})
+      const paid=Number(d['fees_'+sh]||0),due=Number(d['due_'+sh]||0);
+      fixed.push({type:'fixed',seat,shift:sh,shiftLabel:label,name,phone:d['phone_'+sh]||'',fee:paid+due,paid,due,renewal:d['date_'+sh]||'',paidDate:d['paydate_'+sh]||'',sourceRefs:[{seat,shift:sh}],updatedAt:0})
     })
   }
   const fMap=new Map();
   fixed.forEach(r=>{
-    const k=(digits(r.phone)?'p:'+digits(r.phone):'n:'+norm(r.name))+'|seat:'+r.seat;
+    const p=digits(r.phone),n=norm(r.name);
+    const k=p?'p:'+p+'|n:'+n:'n:'+n+'|seat:'+r.seat;
     if(!fMap.has(k))fMap.set(k,{...r,shifts:[r.shiftLabel]});
     else{
       const x=fMap.get(k);x.sourceRefs.push(...r.sourceRefs);if(!x.shifts.includes(r.shiftLabel))x.shifts.push(r.shiftLabel);x.shiftLabel=x.shifts.join(' • ');
-      x.due=Math.max(Number(x.due||0),Number(r.due||0));x.fee=Math.max(Number(x.fee||0),Number(r.fee||0));x.paid=Math.max(Number(x.paid||0),Number(r.paid||0));
+      x.due=Number(x.due||0)+Number(r.due||0);x.fee=Number(x.fee||0)+Number(r.fee||0);x.paid=Number(x.paid||0)+Number(r.paid||0);
       if(!x.renewal||(r.renewal&&r.renewal<x.renewal))x.renewal=r.renewal;
     }
   });
@@ -6253,12 +6308,12 @@ function allStudents(){
     if(!d||!String(d.name||'').trim())return false;const st=norm(d.status||'active');return !['inactive','blocked','left / archived','archived'].includes(st)
   }).map(([key,d])=>({type:'profile',key:'profile_'+key,name:d.name||'Unnamed',phone:d.whatsapp||d.phone||'',fee:Number(d.fee||0),paid:Number(d.paid||0),due:Number(d.due||0),renewal:d.expiry||d.renewal||'',paidDate:d.paymentDate||'',shiftLabel:d.shift||d.plan||'Digital Admission',plan:d.plan||'',seat:Number(d.seat||0)||'',updatedAt:Number(d.updatedAt||d.createdAt||0),studentId:d.studentId||''}));
 
-  // Final master dedupe: same valid mobile = one student across Reserved, Unreserved and Digital Admission.
-  // When mobile is missing, keep records separate by name + seat/type to avoid merging different people accidentally.
+  // Final master dedupe: same phone + same student name = one person across Reserved, Unreserved and Digital Admission.
+  // A shared family phone with different student names stays as separate students.
   const raw=[...kept,...xm.values(),...profiles],master=new Map();
   const rank={profile:1,fixed:2,flex:3};
   raw.forEach(r=>{
-    const p=digits(r.phone),n=norm(r.name),k=p?'p:'+p:'n:'+n+'|'+String(r.seat||'')+'|'+String(r.type||'');
+    const p=digits(r.phone),n=norm(r.name),k=p?'p:'+p+'|n:'+n:'n:'+n+'|seat:'+String(r.seat||'')+'|type:'+String(r.type||'');
     if(!master.has(k)){master.set(k,{...r,_rank:rank[r.type]||0,_labels:new Set(String(r.shiftLabel||'').split(' • ').filter(Boolean))});return}
     const x=master.get(k),rr=rank[r.type]||0;
     if(rr>x._rank){
@@ -6392,7 +6447,7 @@ function installModule(){const standalone=window.matchMedia('(display-mode: stan
 window.v31Install=async function(){if(state.installPrompt){state.installPrompt.prompt();await state.installPrompt.userChoice;state.installPrompt=null}else alert('Browser install prompt abhi available nahi hai. Chrome menu → Add to Home screen / Install app try karein.')}
 
 function branchModule(){setSheet('🏢 Multi Library',`<div class="v31-card"><h3>Current V31 Branch</h3><select id="v31BranchSel" class="v31-select"><option ${state.branch==='Hariom Library'?'selected':''}>Hariom Library</option><option ${state.branch==='Takshila Library'?'selected':''}>Takshila Library</option></select><button class="v31-btn" style="width:100%;margin-top:8px" onclick="v31SaveBranch()">SWITCH BRANCH</button><p class="v31-sub" style="margin-top:8px">Existing original seat database remains shared/unchanged. New V31 attendance, finance and operation records are tagged with the selected branch.</p></div>`)}
-window.v31SaveBranch=function(){state.branch=$('v31BranchSel').value;localStorage.setItem('v31_branch',state.branch);$('v31TopSub').textContent=state.branch+' • Realtime • V31';toast('Branch switched');v31SheetClose();renderAll()}
+window.v31SaveBranch=function(){state.branch=$('v31BranchSel').value;localStorage.setItem('v31_branch',state.branch);$('v31TopSub').textContent=state.branch+' • Realtime • Final';toast('Branch switched');v31SheetClose();renderAll()}
 function birthdayModule(){const now=new Date(),rows=state.students.map(s=>({s,dob:s.extra?.dob||s.profile?.dob||''})).filter(x=>x.dob).map(x=>({...x,d:new Date(x.dob+'T00:00:00')})).filter(x=>x.d.getMonth()===now.getMonth()).sort((a,b)=>a.d.getDate()-b.d.getDate());setSheet('🎂 Birthday Center',`<div class="v31-list">${rows.map(x=>`<div class="v31-item"><div class="v31-item-top"><div><b>${esc(x.s.name)}</b><br><small>${String(x.d.getDate()).padStart(2,'0')} ${x.d.toLocaleString('en-IN',{month:'short'})}</small></div><button class="v31-btn green" onclick="v31BirthdayWA('${x.s.studentKey}')">Greet</button></div></div>`).join('')||'<div class="v31-empty">No DOB-based birthdays found this month. Add DOB in Student 360.</div>'}</div>`)}
 window.v31BirthdayWA=function(k){const s=getStudent(k),p=digits(s?.phone);if(!p)return toast('Mobile missing');window.open('https://wa.me/91'+p+'?text='+encodeURIComponent(`Happy Birthday ${s.name} 🎉\nHariom Library ki taraf se aapko bahut bahut shubhkamnayein! 📚✨`),'_blank')}
 
@@ -6491,8 +6546,8 @@ body.dark .v32-compose{background:#0f172a;color:#f8fafc;box-shadow:inset 0 0 0 1
 (function(){
  const $=id=>document.getElementById(id), phone10=p=>{let d=String(p||'').replace(/\D/g,'');if(d.length===12&&d.startsWith('91'))d=d.slice(2);if(d.length>10)d=d.slice(-10);return /^\d{10}$/.test(d)?d:''};
  let seats={},flex={},profiles={};
- function getContacts(){const map=new Map(),missing=[];const add=(name,phone,source)=>{name=String(name||'').trim();if(!name)return;const p=phone10(phone);if(!p){missing.push({name,source});return}if(!map.has(p))map.set(p,{name,phone:p,sources:[source]});else{const x=map.get(p);if(!x.sources.includes(source))x.sources.push(source)}};['all','m','n','an','e','night'].forEach(sh=>Object.keys(seats||{}).forEach(k=>{const d=seats[k]||{};if(d['name_'+sh])add(d['name_'+sh],d['phone_'+sh],'Seat '+k)}));Object.values(flex||{}).forEach(d=>{if(!d||d.status==='Left / Archived')return;add(d.name,d.phone,'Unreserved')});Object.values(profiles||{}).forEach(d=>{if(!d)return;const st=String(d.status||'Active').toLowerCase();if(['inactive','blocked','left / archived','archived'].includes(st))return;add(d.name,d.whatsapp||d.phone,'Admission')});return {rows:[...map.values()],missing}}
- function update(){const c=getContacts(),total=c.rows.length+c.missing.length;['v32Total'].forEach(id=>{$(id)&&($(id).textContent=total)});$('v32Ready')&&($('v32Ready').textContent=c.rows.length);$('v32Missing')&&($('v32Missing').textContent=c.missing.length);$('v32Recipients')&&($('v32Recipients').textContent=c.rows.length+' personal chats');const old=$('v25NoticeText'),t=$('v32NoticeText');if(old&&t&&document.activeElement!==t&&old.value&&t.value!==old.value)t.value=old.value;chars()}
+ function getContacts(){const chats=new Map(),students=new Map(),normName=v=>String(v||'').trim().toLowerCase().replace(/\s+/g,' ');const add=(name,phone,source)=>{name=String(name||'').trim();if(!name)return;const p=phone10(phone),nn=normName(name),seat=(String(source||'').match(/Seat\s+(\d+)/i)||[])[1]||'',sk=p?'p:'+p+'|n:'+nn:'n:'+nn+'|seat:'+seat+'|type:'+String(source||'').split(' ')[0];if(!students.has(sk))students.set(sk,{name,phone:p,source});else if(!students.get(sk).phone&&p)students.get(sk).phone=p;if(p){if(!chats.has(p))chats.set(p,{name,phone:p,sources:[source]});else{const x=chats.get(p);if(!x.sources.includes(source))x.sources.push(source)}}};['all','m','n','an','e','night'].forEach(sh=>Object.keys(seats||{}).forEach(k=>{const d=seats[k]||{};if(d['name_'+sh])add(d['name_'+sh],d['phone_'+sh],'Seat '+k)}));Object.values(flex||{}).forEach(d=>{if(!d||d.status==='Left / Archived')return;add(d.name,d.phone,'Unreserved')});Object.values(profiles||{}).forEach(d=>{if(!d)return;const st=String(d.status||'Active').toLowerCase();if(['inactive','blocked','left / archived','archived'].includes(st))return;add(d.name,d.whatsapp||d.phone,'Admission')});const studentRows=[...students.values()],readyStudents=studentRows.filter(x=>x.phone).length;return {rows:[...chats.values()],students:studentRows,total:studentRows.length,readyStudents,missing:studentRows.length-readyStudents}}
+ function update(){const c=getContacts(),total=c.total;['v32Total'].forEach(id=>{$(id)&&($(id).textContent=total)});$('v32Ready')&&($('v32Ready').textContent=c.readyStudents);$('v32Missing')&&($('v32Missing').textContent=c.missing);$('v32Recipients')&&($('v32Recipients').textContent=c.rows.length+' unique personal chats');const old=$('v25NoticeText'),t=$('v32NoticeText');if(old&&t&&document.activeElement!==t&&old.value&&t.value!==old.value)t.value=old.value;chars()}
  function chars(){const t=$('v32NoticeText');if(!t)return;$('v32Chars')&&($('v32Chars').textContent=t.value.length+'/900')}
  function mount(){const home=$('homeSection');if(!home||$('v32NoticeCard'))return;const box=document.createElement('div');box.id='v32NoticeCard';box.className='v32-notice';box.innerHTML=`<div class="v32-top"><div class="v32-title"><div class="v32-icon">💬</div><div><h3>Direct Student Notice</h3><p>Reserved + Unreserved + New Admissions • numbers auto-sync</p></div></div><div class="v32-live"><i></i> LIVE CONTACTS</div></div><div class="v32-stats"><div class="v32-stat"><b id="v32Total">0</b><span>STUDENTS</span></div><div class="v32-stat"><b id="v32Ready">0</b><span>WHATSAPP READY</span></div><div class="v32-stat"><b id="v32Missing">0</b><span>NUMBER MISSING</span></div></div><div class="v32-compose"><div class="v32-compose-head"><b>📢 Write one notice</b><span id="v32Recipients">0 personal chats</span></div><div class="v32-templates"><button class="v32-template" onclick="v32Template('general')">General</button><button class="v32-template" onclick="v32Template('payment')">Payment</button><button class="v32-template" onclick="v32Template('timing')">Timing</button><button class="v32-template" onclick="v32Template('holiday')">Holiday</button><button class="v32-template" onclick="v32Template('urgent')">Urgent</button></div><textarea id="v32NoticeText" maxlength="900" placeholder="Notice likhiye...">Hariom Library Notice: Sabhi students kripya is suchna ko dhyan se padhein. Adhik jankari ke liye library admin se sampark karein.</textarea><div class="v32-meta"><span>Personal WhatsApp notice</span><b id="v32Chars">0/900</b></div></div><label class="v32-consent"><input id="v32Consent" type="checkbox"><span>Sirf enrolled students ko bheje jinhone library WhatsApp updates receive karne ki permission di hai.</span></label><div class="v32-actions"><button id="v32Send" class="v32-send" onclick="v32SendFrontNotice()">📢 SEND TO ALL PERSONALLY</button><button class="v32-more" onclick="v25OpenNotice()" aria-label="Open full notice center">⋯</button></div><div class="v32-foot"><div id="v32Status" class="v32-status"><i></i><span>Direct sender connects on send</span></div><button onclick="v25OpenNotice()">History / Test / Setup</button></div>`;
  const launch=$('v31Launch'); if(launch) launch.after(box); else {const w=home.querySelector('.welcome');w?.after(box)};
@@ -6546,24 +6601,28 @@ body.v34-gate-only .v33-student-card{max-width:430px;margin:auto}
   function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
   function phone10(p){let d=String(p||'').replace(/\D/g,'');if(d.length===12&&d.startsWith('91'))d=d.slice(2);if(d.length>10)d=d.slice(-10);return /^\d{10}$/.test(d)?d:''}
   function rememberedGatePhone(){let p='';try{p=localStorage.getItem('hariom_v34_gate_phone')||localStorage.getItem('hariom_v33_gate_phone')||''}catch(e){}if(!p){const m=document.cookie.match(/(?:^|; )hariom_gate_phone=([^;]+)/);if(m)p=decodeURIComponent(m[1])}return phone10(p)}
-  function rememberGatePhone(p){p=phone10(p);if(!p)return;try{localStorage.setItem('hariom_v34_gate_phone',p);localStorage.setItem('hariom_v33_gate_phone',p)}catch(e){}document.cookie='hariom_gate_phone='+encodeURIComponent(p)+'; Max-Age=31536000; Path=/; SameSite=Lax'}
-  function forgetRememberedGatePhone(){try{localStorage.removeItem('hariom_v34_gate_phone');localStorage.removeItem('hariom_v33_gate_phone')}catch(e){}document.cookie='hariom_gate_phone=; Max-Age=0; Path=/; SameSite=Lax'}
+  function rememberedGateKey(){try{return localStorage.getItem('hariom_v35_gate_student_key')||''}catch(e){return ''}}
+  function rememberGateStudent(s){const p=phone10(s?.phone),k=String(s?.studentKey||'');if(!p||!k)return;try{localStorage.setItem('hariom_v34_gate_phone',p);localStorage.setItem('hariom_v33_gate_phone',p);localStorage.setItem('hariom_v35_gate_student_key',k)}catch(e){}document.cookie='hariom_gate_phone='+encodeURIComponent(p)+'; Max-Age=31536000; Path=/; SameSite=Lax'}
+  function forgetRememberedGatePhone(){try{localStorage.removeItem('hariom_v34_gate_phone');localStorage.removeItem('hariom_v33_gate_phone');localStorage.removeItem('hariom_v35_gate_student_key')}catch(e){}document.cookie='hariom_gate_phone=; Max-Age=0; Path=/; SameSite=Lax'}
   function toast(m){if(typeof showToast==='function')showToast(m);else alert(m)}
   function adminOK(){if(typeof isAdminVerified!=='undefined'&&!isAdminVerified){toast('⚠️ Admin verification required');return false}return true}
   function istParts(ts){const d=ts?new Date(ts):new Date(),parts=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Kolkata',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).formatToParts(d),o={};parts.forEach(p=>{if(p.type!=='literal')o[p.type]=p.value});return {year:o.year,month:o.month,day:o.day,date:o.year+'-'+o.month+'-'+o.day,time:o.hour+':'+o.minute+':'+o.second}}
   function nowPath(){return istParts(Date.now())}
   function shiftText(v){if(Array.isArray(v))return v.map(x=>SHIFT_LABEL[x]||x).join(' • ');return SHIFT_LABEL[v]||String(v||'-')}
-  function addKnown(map,name,phone,meta){const p=phone10(phone);name=String(name||'').trim();if(!p||!name)return;const old=map.get(p);const row={name,phone:p,seat:meta.seat||'',shift:meta.shift||'',source:meta.source||'',studentKey:meta.studentKey||p,studentId:meta.studentId||''};if(!old||meta.priority>(old.priority||0))map.set(p,{...row,priority:meta.priority||0})}
+  function keyHash(s){let h=2166136261;for(let i=0;i<String(s).length;i++){h^=String(s).charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(36)}
+  function nameNorm(v){return String(v||'').trim().toLowerCase().replace(/\s+/g,' ')}
+  function addKnown(map,name,phone,meta){const p=phone10(phone);name=String(name||'').trim();if(!p||!name)return;let byName=map.get(p);if(!byName){byName=new Map();map.set(p,byName)}const nk=nameNorm(name),row={name,phone:p,seat:meta.seat||'',shift:meta.shift||'',source:meta.source||'',studentKey:meta.studentKey||('gate_'+keyHash(p+'|'+nk)),studentId:meta.studentId||'',priority:meta.priority||0},old=byName.get(nk);if(!old||row.priority>Number(old.priority||0))byName.set(nk,row)}
   function knownStudents(){const map=new Map();
     Object.entries(profiles||{}).forEach(([k,d])=>{if(!d)return;const st=String(d.status||'Active').toLowerCase();if(['inactive','blocked','left / archived','archived'].includes(st))return;addKnown(map,d.name,d.whatsapp||d.phone,{seat:d.seat,shift:d.shift,source:'Digital Admission',studentKey:'profile_'+k,studentId:d.studentId,priority:1})});
-    Object.keys(seats||{}).forEach(seat=>{const d=seats[seat]||{};const seen={};SHIFTS.forEach(sh=>{const n=d['name_'+sh],p=phone10(d['phone_'+sh]);if(!n||!p)return;if(!seen[p])seen[p]={name:n,phone:p,shifts:[]};seen[p].shifts.push(sh)});Object.values(seen).forEach(x=>addKnown(map,x.name,x.phone,{seat,shift:x.shifts,source:'Reserved',studentKey:'seat_'+seat+'_'+x.phone,priority:2}))});
+    Object.keys(seats||{}).forEach(seat=>{const d=seats[seat]||{},seen={};SHIFTS.forEach(sh=>{const n=String(d['name_'+sh]||'').trim(),p=phone10(d['phone_'+sh]);if(!n||!p)return;const sk=p+'|'+nameNorm(n);if(!seen[sk])seen[sk]={name:n,phone:p,shifts:[]};if(!seen[sk].shifts.includes(sh))seen[sk].shifts.push(sh)});Object.values(seen).forEach(x=>addKnown(map,x.name,x.phone,{seat,shift:x.shifts,source:'Reserved',studentKey:'seat_'+seat+'_'+keyHash(x.phone+'|'+nameNorm(x.name)),priority:2}))});
     Object.entries(flex||{}).forEach(([k,d])=>{if(!d||d.status==='Left / Archived')return;addKnown(map,d.name,d.phone,{seat:'Unreserved',shift:d.shifts||d.plan,source:'Unreserved',studentKey:'ur_'+k,priority:3})});
-    return map;
+    const result=new Map();map.forEach((byName,p)=>result.set(p,[...byName.values()]));return result;
   }
-  function resolveStudent(p){return knownStudents().get(phone10(p))||null}
+  function resolveCandidates(p){return knownStudents().get(phone10(p))||[]}
+  function resolveStudent(p,key){const a=resolveCandidates(p);if(key){const x=a.find(s=>s.studentKey===key);if(x)return x}return a.length===1?a[0]:null}
   function gateUrl(){const u=new URL(location.href);u.hash='';u.search='';u.searchParams.set('gate','present');return u.toString()}
   function currentTodayPath(){const n=nowPath();return BASE+'/years/'+n.year+'/'+n.month+'/'+n.day}
-  function activeKnownCount(){return knownStudents().size}
+  function activeKnownCount(){let n=0;knownStudents().forEach(a=>n+=a.length);return n}
   function formatTime(ts){if(!ts)return '-';return new Date(Number(ts)).toLocaleTimeString('en-IN',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit'})}
   function renderFront(){const card=$('v33GateCard');if(!card)return;const vals=Object.values(todayData||{}).filter(Boolean).sort((a,b)=>Number(b.lastSeenAt||b.firstSeenAt||0)-Number(a.lastSeenAt||a.firstSeenAt||0)),latest=vals[0];$('v33TodayCount').textContent=vals.length;$('v33KnownCount').textContent=activeKnownCount();$('v33ScanCount').textContent=vals.reduce((s,x)=>s+Number(x.scans||1),0);const live=$('v33LiveEntry');if(latest){const initial=(latest.name||'?').trim().charAt(0).toUpperCase()||'✓';live.innerHTML='<div class="v33-avatar">'+esc(initial)+'</div><div class="v33-live-main"><b>'+esc(latest.name||'Student')+'</b><span>'+esc(latest.source||'Student')+(latest.seat?' • '+esc(String(latest.seat)):'')+' • '+esc(shiftText(latest.shift))+'<br>Last scan '+esc(formatTime(latest.lastSeenAt||latest.firstSeenAt))+'</span></div><div class="v33-present">PRESENT</div>'}else live.innerHTML='<div class="v33-avatar">✓</div><div class="v33-live-main"><b>Waiting for first scan</b><span>Gate QR scan hote hi student ka naam yahin live dikhega.</span></div><div class="v33-present">LIVE</div>';
     const feed=$('v33MiniFeed');feed.innerHTML=vals.slice(0,4).map(x=>'<div class="v33-mini-row"><b>✅ '+esc(x.name||'Student')+'</b><span>'+esc(formatTime(x.lastSeenAt||x.firstSeenAt))+'</span></div>').join('')||'';
@@ -6580,30 +6639,21 @@ body.v34-gate-only .v33-student-card{max-width:430px;margin:auto}
   window.v33PrintGateQR=function(){const box=$('v33QrBox');if(!box)return;const c=box.querySelector('canvas'),im=box.querySelector('img'),src=c?c.toDataURL('image/png'):(im?im.src:'');if(!src)return toast('QR abhi load ho raha hai');const w=window.open('','_blank','width=520,height=700');if(!w)return toast('Popup blocked');w.document.write('<!doctype html><html><head><title>Hariom Gate QR</title><style>body{font-family:Arial;text-align:center;padding:35px}img{width:320px;height:320px}.box{border:3px solid #111;border-radius:24px;padding:25px}h1{margin:0 0 8px}p{font-size:14px}b{font-size:20px}</style></head><body><div class="box"><h1>Hariom Library</h1><b>SMART GATE ATTENDANCE</b><p>Gate par enter karne se pahle QR scan karein</p><img src="'+src+'"><p>Scan → Verify → Present</p></div><script>onload=()=>{setTimeout(()=>print(),250)}<\/script></body></html>');w.document.close()};
   window.v33OpenToday=function(){if(!adminOK())return;const vals=Object.values(todayData||{}).filter(Boolean).sort((a,b)=>Number(b.firstSeenAt||0)-Number(a.firstSeenAt||0));openModal('✅ Today Attendance','<div class="v33-panel"><h3>'+vals.length+' students present today</h3><p class="v33-muted">First scan time permanent attendance time hai. Repeat scan sirf scan count / last seen update karta hai.</p></div><div class="v33-log">'+(vals.map(x=>'<div class="v33-log-row"><div><b>'+esc(x.name||'Student')+'</b><br><small>'+esc(x.source||'')+(x.seat?' • '+esc(String(x.seat)):'')+' • '+esc(shiftText(x.shift))+'<br>'+esc(x.phone||'')+'</small></div><div class="v33-days">'+esc(formatTime(x.firstSeenAt))+'<br><small>'+Number(x.scans||1)+' scan</small></div></div>').join('')||'<div class="v33-muted">No attendance yet today.</div>')+'</div>')};
   function flattenYear(y,node){const out=[];Object.entries(node||{}).forEach(([m,days])=>Object.entries(days||{}).forEach(([d,students])=>Object.values(students||{}).forEach(x=>{if(x)out.push({...x,date:x.date||y+'-'+m+'-'+d})})));return out.sort((a,b)=>String(b.date).localeCompare(String(a.date))||Number(b.firstSeenAt||0)-Number(a.firstSeenAt||0))}
-  function yearSummary(rows){const map=new Map();rows.forEach(x=>{const p=phone10(x.phone)||x.studentKey||x.name;if(!p)return;const a=map.get(p)||{phone:x.phone||'',name:x.name||'Student',seat:x.seat||'',shift:x.shift||'',source:x.source||'',dates:new Set(),first:'',last:''};a.dates.add(x.date);if(!a.first||x.date<a.first)a.first=x.date;if(!a.last||x.date>a.last)a.last=x.date;map.set(p,a)});return [...map.values()].sort((a,b)=>b.dates.size-a.dates.size||a.name.localeCompare(b.name))}
+  function yearSummary(rows){const map=new Map();rows.forEach(x=>{const k=String(x.studentKey||'')||((phone10(x.phone)||'no-phone')+'|'+nameNorm(x.name));if(!k)return;const a=map.get(k)||{phone:x.phone||'',name:x.name||'Student',seat:x.seat||'',shift:x.shift||'',source:x.source||'',dates:new Set(),first:'',last:''};a.dates.add(x.date);if(!a.first||x.date<a.first)a.first=x.date;if(!a.last||x.date>a.last)a.last=x.date;map.set(k,a)});return [...map.values()].sort((a,b)=>b.dates.size-a.dates.size||a.name.localeCompare(b.name))}
   function renderYearbook(){const q=($('v33YearSearch')?.value||'').toLowerCase().trim(),rows=yearRows.filter(x=>!q||[x.name,x.phone,x.seat,shiftText(x.shift),x.source,x.date].join(' ').toLowerCase().includes(q)),sum=yearSummary(rows);$('v33YearDays').textContent=new Set(rows.map(x=>x.date)).size;$('v33YearStudents').textContent=sum.length;$('v33YearRecords').textContent=rows.length;const s=$('v33YearSummary');if(s)s.innerHTML=sum.slice(0,200).map(x=>'<div class="v33-summary-row"><div><b>'+esc(x.name)+'</b><br><small>'+esc(x.phone||'')+(x.seat?' • '+esc(String(x.seat)):'')+' • '+esc(x.source||'')+'<br>'+esc(x.first)+' → '+esc(x.last)+'</small></div><div class="v33-days">'+x.dates.size+' days</div></div>').join('')||'<div class="v33-muted">No matching records.</div>';const l=$('v33YearLog');if(l)l.innerHTML=rows.slice(0,1200).map(x=>'<div class="v33-log-row"><div><b>✅ '+esc(x.name||'Student')+'</b><br><small>'+esc(x.date)+' • '+esc(x.phone||'')+(x.seat?' • '+esc(String(x.seat)):'')+' • '+esc(shiftText(x.shift))+'</small></div><div class="v33-days">'+esc(formatTime(x.firstSeenAt))+'</div></div>').join('')||'<div class="v33-muted">No attendance records in this year.</div>'}
   window.v33LoadYear=function(y){yearSelected=Number(y)||new Date().getFullYear();const body=$('v33YearSummary');if(body)body.innerHTML='<div class="v33-muted">Loading year history…</div>';database.ref(BASE+'/years/'+yearSelected).once('value').then(s=>{yearRows=flattenYear(String(yearSelected),s.val()||{});renderYearbook()}).catch(e=>toast('Year history load error: '+e.message))};
   window.v33OpenYearbook=function(){if(!adminOK())return;const cy=Number(nowPath().year),opts=Array.from({length:6},(_,i)=>cy-i).map(y=>'<option value="'+y+'" '+(y===cy?'selected':'')+'>'+y+'</option>').join('');openModal('📅 Attendance Yearbook','<div class="v33-year-toolbar"><select id="v33YearSelect" class="v33-select" onchange="v33LoadYear(this.value)">'+opts+'</select><input id="v33YearSearch" class="v33-input" placeholder="Search student, mobile, seat, date…" oninput="v33YearFilter()"></div><div class="v33-year-kpis"><div class="v33-year-kpi"><b id="v33YearStudents">0</b><span>STUDENTS</span></div><div class="v33-year-kpi"><b id="v33YearDays">0</b><span>OPEN DAYS</span></div><div class="v33-year-kpi"><b id="v33YearRecords">0</b><span>PRESENT RECORDS</span></div></div><div class="v33-grid2" style="margin-bottom:10px"><button class="v33-action green" onclick="v33ExportYearCSV()">⬇ EXPORT YEAR CSV</button><button class="v33-action ghost" onclick="v33ShowGateQR()">▦ GATE QR</button></div><div class="v33-panel"><h3>Student yearly summary</h3><div id="v33YearSummary" class="v33-summary"><div class="v33-muted">Loading…</div></div></div><div class="v33-panel"><h3>Full daily attendance log</h3><p class="v33-muted" style="margin-bottom:7px">Record delete button intentionally nahi diya gaya hai.</p><div id="v33YearLog" class="v33-log"></div></div>');v33LoadYear(cy)};
   window.v33YearFilter=function(){renderYearbook()};
   window.v33ExportYearCSV=function(){if(!yearRows.length)return toast('Is year me attendance record nahi hai');const cols=['date','name','phone','seat','shift','source','firstSeenAt','lastSeenAt','scans'],csv=[cols.join(','),...yearRows.map(x=>cols.map(c=>'"'+String(c==='shift'?shiftText(x[c]):c.endsWith('At')&&x[c]?new Date(Number(x[c])).toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}):(x[c]??'')).replace(/"/g,'""')+'"').join(','))].join('\n'),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='Hariom_Gate_Attendance_'+yearSelected+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
-  async function savePresent(s){const n=nowPath(),key=phone10(s.phone),ref=database.ref(BASE+'/years/'+n.year+'/'+n.month+'/'+n.day+'/'+key),ts=Date.now();let first=false;await ref.transaction(cur=>{if(cur){return {...cur,lastSeenAt:ts,scans:Number(cur.scans||1)+1}}first=true;return {name:s.name,phone:key,seat:s.seat||'',shift:s.shift||'',source:s.source||'',studentKey:s.studentKey||key,studentId:s.studentId||'',date:n.date,year:n.year,month:n.month,day:n.day,present:true,firstSeenAt:ts,lastSeenAt:ts,scans:1,createdAt:ts}});await database.ref(BASE+'/events/'+n.year+'/'+n.month).push().set({name:s.name,phone:key,seat:s.seat||'',shift:s.shift||'',source:s.source||'',studentKey:s.studentKey||key,date:n.date,time:ts,type:first?'PRESENT':'RESCAN'});return first}
-  async function gateCheck(phone,auto){
-    phone=phone10(phone);const state=$('v33GateState'),form=$('v33GateForm'),change=document.querySelector('.v33-change');
-    if(!phone){state.className='v33-student-state';state.innerHTML='<p>Valid 10-digit registered mobile number daliye.</p>';return}
-    const s=resolveStudent(phone);if(!s){state.className='v33-student-state';state.innerHTML='<p><b>Student not found.</b><br>Ye number Reserved / Unreserved / Digital Admission list me registered nahi mila. Admin se mobile number check karwayein.</p>';return}
-    state.className='v33-student-state';state.innerHTML='<p>⏳ '+esc(s.name)+' ka attendance save ho raha hai…</p>';
-    try{
-      const first=await savePresent(s);rememberGatePhone(phone);$('v33GatePhone').value=phone;if(form)form.style.display='none';if(change)change.style.display='none';
-      state.className='v33-student-state v33-success';state.innerHTML='<h3>✅ PRESENT</h3><b>'+esc(s.name)+'</b><p>'+esc(s.source||'Student')+(s.seat?' • '+esc(String(s.seat)):'')+' • '+esc(shiftText(s.shift))+'<br>'+esc(nowPath().date)+' • '+esc(nowPath().time)+(first?'':'<br>Already present today • scan time updated')+'</p><div class="v34-auto-note">Is phone par registration remember ho gaya hai. Agli baar gate QR scan karte hi number dobara nahi maangega.</div>';
-      try{navigator.vibrate&&navigator.vibrate([90,40,90])}catch(e){}if(auto)toast('✅ '+s.name+' Present')
-    }catch(e){state.className='v33-student-state';state.innerHTML='<p><b>Attendance save failed.</b><br>'+esc(e.message||e)+'</p>'}
-  }
-  window.v33GateCheckIn=function(){gateCheck($('v33GatePhone').value,false)};
-  window.v33ForgetGateStudent=function(){forgetRememberedGatePhone();const form=$('v33GateForm'),change=document.querySelector('.v33-change');if(form)form.style.display='block';if(change)change.style.display='none';$('v33GatePhone').value='';$('v33GateState').className='v33-student-state';$('v33GateState').innerHTML='<p>Registered mobile number enter karke is phone ko attendance ke liye register karein.</p>';$('v33GatePhone').focus()};
-  async function openGateMode(){
-    document.body.classList.add('v34-gate-only');const overlay=$('v33GateStudent');overlay.style.display='block';overlay.setAttribute('aria-hidden','false');document.body.style.overflow='auto';const form=$('v33GateForm'),change=document.querySelector('.v33-change');if(change)change.style.display='none';
-    try{const vals=await Promise.all([database.ref('library_v3/seats').once('value'),database.ref('library_v3/unreservedStudentsV23').once('value'),database.ref('library_v3/v15/profiles').once('value')]);seats=vals[0].val()||{};flex=vals[1].val()||{};profiles=vals[2].val()||{};const saved=rememberedGatePhone();if(saved){if(form)form.style.display='none';$('v33GatePhone').value=saved;await gateCheck(saved,true)}else{if(form)form.style.display='block';$('v33GateState').innerHTML='<p>First time sirf apna registered mobile number daliye. Is phone par save ho jayega; future scans automatic PRESENT mark karenge.</p>';$('v33GatePhone').focus()}}catch(e){$('v33GateState').innerHTML='<p>Firebase connect nahi hua. Internet check karke QR dobara scan karein.</p>'}
-  }
+  async function savePresent(s){const n=nowPath(),phone=phone10(s.phone),legacy=todayData&&todayData[phone],useLegacy=legacy&&nameNorm(legacy.name)===nameNorm(s.name),key=useLegacy?phone:String(s.studentKey||('gate_'+keyHash(phone+'|'+nameNorm(s.name)))),ref=database.ref(BASE+'/years/'+n.year+'/'+n.month+'/'+n.day+'/'+key),ts=Date.now();let first=false;await ref.transaction(cur=>{if(cur){return {...cur,lastSeenAt:ts,scans:Number(cur.scans||1)+1,studentKey:s.studentKey||cur.studentKey||key}}first=true;return {name:s.name,phone,seat:s.seat||'',shift:s.shift||'',source:s.source||'',studentKey:s.studentKey||key,studentId:s.studentId||'',date:n.date,year:n.year,month:n.month,day:n.day,present:true,firstSeenAt:ts,lastSeenAt:ts,scans:1,createdAt:ts}});await database.ref(BASE+'/events/'+n.year+'/'+n.month).push().set({name:s.name,phone,seat:s.seat||'',shift:s.shift||'',source:s.source||'',studentKey:s.studentKey||key,date:n.date,time:ts,type:first?'PRESENT':'RESCAN'});return first}
+  let pendingGateCandidates=[];
+  function candidateButtons(list){return '<div style="margin-top:12px;display:grid;gap:8px">'+list.map(s=>'<button class="v33-check-btn" style="background:#fff;color:#0f172a;border:1px solid #cbd5e1" onclick="v33ChooseGateStudent(\''+esc(s.studentKey)+'\')">👤 '+esc(s.name)+(s.seat?' • '+esc(String(s.seat)):'')+' • '+esc(s.source||'Student')+'</button>').join('')+'</div>'}
+  async function markResolvedStudent(s,auto){const state=$('v33GateState'),form=$('v33GateForm'),change=document.querySelector('.v33-change');state.className='v33-student-state';state.innerHTML='<p>⏳ '+esc(s.name)+' ka attendance save ho raha hai…</p>';try{const first=await savePresent(s);rememberGateStudent(s);$('v33GatePhone').value=phone10(s.phone);if(form)form.style.display='none';if(change)change.style.display='none';state.className='v33-student-state v33-success';state.innerHTML='<h3>✅ PRESENT</h3><b>'+esc(s.name)+'</b><p>'+esc(s.source||'Student')+(s.seat?' • '+esc(String(s.seat)):'')+' • '+esc(shiftText(s.shift))+'<br>'+esc(nowPath().date)+' • '+esc(nowPath().time)+(first?'':'<br>Already present today • scan time updated')+'</p><div class="v34-auto-note">Is phone par ye student remember ho gaya hai. Agli baar gate QR scan karte hi attendance automatic mark hogi.</div>';try{navigator.vibrate&&navigator.vibrate([90,40,90])}catch(e){}if(auto)toast('✅ '+s.name+' Present')}catch(e){state.className='v33-student-state';state.innerHTML='<p><b>Attendance save failed.</b><br>'+esc(e.message||e)+'</p>'}}
+  async function gateCheck(phone,auto,preferredKey){phone=phone10(phone);const state=$('v33GateState');if(!phone){state.className='v33-student-state';state.innerHTML='<p>Valid 10-digit registered mobile number daliye.</p>';return}const candidates=resolveCandidates(phone);if(!candidates.length){state.className='v33-student-state';state.innerHTML='<p><b>Student not found.</b><br>Ye number Reserved / Unreserved / Digital Admission list me registered nahi mila. Admin se mobile number check karwayein.</p>';return}let s=preferredKey?candidates.find(x=>x.studentKey===preferredKey):null;if(!s&&candidates.length===1)s=candidates[0];if(!s){pendingGateCandidates=candidates;state.className='v33-student-state';state.innerHTML='<p><b>Is mobile number par '+candidates.length+' students mile.</b><br>First time apna naam select karein. Is phone par selection remember ho jayega.</p>'+candidateButtons(candidates);return}pendingGateCandidates=[];await markResolvedStudent(s,auto)}
+  window.v33ChooseGateStudent=function(key){const s=pendingGateCandidates.find(x=>x.studentKey===key);if(s)markResolvedStudent(s,false)};
+  window.v33GateCheckIn=function(){gateCheck($('v33GatePhone').value,false,'')};
+  window.v33ForgetGateStudent=function(){forgetRememberedGatePhone();pendingGateCandidates=[];const form=$('v33GateForm'),change=document.querySelector('.v33-change');if(form)form.style.display='block';if(change)change.style.display='none';$('v33GatePhone').value='';$('v33GateState').className='v33-student-state';$('v33GateState').innerHTML='<p>Registered mobile number enter karke is phone ko attendance ke liye register karein.</p>';$('v33GatePhone').focus()};
+  async function openGateMode(){document.body.classList.add('v34-gate-only');const overlay=$('v33GateStudent');overlay.style.display='block';overlay.setAttribute('aria-hidden','false');document.body.style.overflow='auto';const form=$('v33GateForm'),change=document.querySelector('.v33-change');if(change)change.style.display='none';try{const vals=await Promise.all([database.ref('library_v3/seats').once('value'),database.ref('library_v3/unreservedStudentsV23').once('value'),database.ref('library_v3/v15/profiles').once('value')]);seats=vals[0].val()||{};flex=vals[1].val()||{};profiles=vals[2].val()||{};const saved=rememberedGatePhone(),savedKey=rememberedGateKey();if(saved&&savedKey&&resolveStudent(saved,savedKey)){if(form)form.style.display='none';$('v33GatePhone').value=saved;await gateCheck(saved,true,savedKey)}else{if(saved&&!savedKey&&resolveCandidates(saved).length===1){if(form)form.style.display='none';$('v33GatePhone').value=saved;await gateCheck(saved,true,'')}else{if(form)form.style.display='block';$('v33GateState').innerHTML='<p>First time sirf apna registered mobile number daliye. Agar family number par ek se zyada student hain to ek baar naam select hoga. Future scans automatic PRESENT mark karenge.</p>';$('v33GatePhone').focus()}}}catch(e){$('v33GateState').innerHTML='<p>Firebase connect nahi hua. Internet check karke QR dobara scan karein.</p>'}}
   function init(){mountFront();if(typeof database==='undefined')return;database.ref('library_v3/seats').on('value',s=>{seats=s.val()||{};renderFront()});database.ref('library_v3/unreservedStudentsV23').on('value',s=>{flex=s.val()||{};renderFront()});database.ref('library_v3/v15/profiles').on('value',s=>{profiles=s.val()||{};renderFront()});database.ref(currentTodayPath()).on('value',s=>{todayData=s.val()||{};renderFront()});const q=new URLSearchParams(location.search);if(q.get('gate')==='present')setTimeout(openGateMode,80)}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();window.addEventListener('load',()=>setTimeout(()=>{mountFront();renderFront()},250));
 })();
@@ -6627,11 +6677,14 @@ body.v34-gate-only .v33-student-card{max-width:430px;margin:auto}
     let lastBack=0,handling=false;
     try{history.pushState({hariomV34Guard:1},'',location.href)}catch(e){}
     const closeTopLayer=()=>{
-      const v33=document.getElementById('v33Modal');if(v33?.classList.contains('show')&&typeof v33CloseModal==='function'){v33CloseModal();return true}
-      const sh=document.getElementById('v31Sheet');if(sh?.classList.contains('show')&&typeof v31SheetClose==='function'){v31SheetClose();return true}
-      const p=document.getElementById('v31Panel');if(p?.classList.contains('show')&&typeof v31Close==='function'){v31Close();return true}
-      const seat=document.getElementById('seatModal');if(seat?.classList.contains('show')&&typeof closeModal==='function'){closeModal();return true}
-      const vm=document.getElementById('v15Modal');if(vm?.classList.contains('show')&&typeof v15ModalClose==='function'){v15ModalClose();return true}
+      const checks=[
+        ['v34AuthGate',null],
+        ['v33Modal','v33CloseModal'],['v31Sheet','v31SheetClose'],['v15Modal','v15ModalClose'],
+        ['ultimatePanel','closeUltimate'],['nxPanel','nxClose'],['superPanel','spClose'],['ai14Panel','ai14Close'],
+        ['v25NoticePanel','v25CloseNotice'],['v24ContactPanel','v24CloseContacts'],['urPanel','ur23Close'],
+        ['v15Panel','v15Close'],['v31Panel','v31Close'],['seatModal','closeModal']
+      ];
+      for(const [id,fn] of checks){const el=document.getElementById(id);if(!el)continue;const open=el.classList.contains('show')||el.style.display==='block'||el.getAttribute('aria-hidden')==='false';if(open&&fn&&typeof window[fn]==='function'){window[fn]();return true}}
       return false;
     };
     const backHandler=()=>{
@@ -6684,6 +6737,101 @@ body.v34-gate-only .v33-student-card{max-width:430px;margin:auto}
 </script>
 <!-- ===== END V34 ===== -->
 
+
+<!-- ===== HARIOM V34.3 — PAYMENT + MULTI-SHIFT TOTAL FIX ===== -->
+<!-- Existing UI/data preserved: fees_* is treated as PAID; plan fee = paid + due. -->
+<!-- ===== HARIOM V34.2 — SINGLE MASTER STUDENT COUNT ENGINE ===== -->
+<script id="v34-2-master-count-engine">
+(function(){
+  'use strict';
+  if(typeof database==='undefined')return;
+  const SH=['all','m','n','an','e','night'], norm=v=>String(v||'').trim().toLowerCase().replace(/\s+/g,' ');
+  const phone10=v=>{let d=String(v||'').replace(/\D/g,'');if(d.length===12&&d.startsWith('91'))d=d.slice(2);if(d.length>10)d=d.slice(-10);return /^\d{10}$/.test(d)?d:''};
+  let seats={},flex={},profiles={};
+
+  function dateState(date){
+    if(!date)return 'nodate';
+    try{
+      if(typeof getDateStatus==='function'){const s=getDateStatus(date);return s==='alert'?'soon':s}
+      const t=new Date();t.setHours(0,0,0,0);const d=new Date(date+'T00:00:00');const soon=new Date(t);soon.setDate(soon.getDate()+3);
+      if(d<t)return 'expired';if(d<=soon)return 'soon';return 'active';
+    }catch(e){return 'active'}
+  }
+  function build(){
+    const m=new Map();
+    function add(r){
+      const name=String(r.name||'').trim();if(!name)return;
+      const p=phone10(r.phone),n=norm(name);
+      const k=p?'p:'+p+'|n:'+n:'n:'+n+'|seat:'+String(r.seat||'')+'|type:'+String(r.type||'');
+      if(!m.has(k)){m.set(k,{...r,name,phone:p,_labels:new Set(r.shiftLabel?[r.shiftLabel]:[])});return}
+      const x=m.get(k);
+      if(r.shiftLabel)x._labels.add(r.shiftLabel);
+      x.shiftLabel=[...x._labels].join(' • ')||x.shiftLabel||'';
+      if(x.type==='fixed'&&r.type==='fixed'&&String(x.seat||'')===String(r.seat||'')){
+        x.due=Number(x.due||0)+Number(r.due||0);
+        x.fee=Number(x.fee||0)+Number(r.fee||0);
+        x.paid=Number(x.paid||0)+Number(r.paid||0);
+      }else{
+        x.due=Math.max(Number(x.due||0),Number(r.due||0));
+        x.fee=Math.max(Number(x.fee||0),Number(r.fee||0));
+        x.paid=Math.max(Number(x.paid||0),Number(r.paid||0));
+      }
+      if(!x.renewal||(r.renewal&&r.renewal<x.renewal))x.renewal=r.renewal;
+      if(!x.phone&&p)x.phone=p;
+    }
+    Object.keys(seats||{}).forEach(k=>{
+      const d=seats[k]||{},seat=Number(k)||k;
+      SH.forEach(sh=>{const name=d['name_'+sh];if(name){const paid=Number(d['fees_'+sh]||0),due=Number(d['due_'+sh]||0);add({type:'fixed',seat,name,phone:d['phone_'+sh]||'',paid,due,fee:paid+due,renewal:d['date_'+sh]||'',shiftLabel:sh})}});
+    });
+    Object.values(flex||{}).forEach(d=>{if(!d||d.status==='Left / Archived')return;add({type:'flex',seat:Number(d.sourceSeat||0)||'',name:d.name,phone:d.phone,paid:Number(d.paid||0),due:Number(d.due||0),fee:Number(d.fee||0),renewal:d.renewal||'',shiftLabel:Array.isArray(d.shifts)?d.shifts.join(' • '):(d.plan||'Flexible')})});
+    Object.values(profiles||{}).forEach(d=>{if(!d||!String(d.name||'').trim())return;const st=norm(d.status||'active');if(['inactive','blocked','left / archived','archived'].includes(st))return;add({type:'profile',seat:Number(d.seat||0)||'',name:d.name,phone:d.whatsapp||d.phone||'',paid:Number(d.paid||0),due:Number(d.due||0),fee:Number(d.fee||0),renewal:d.expiry||d.renewal||'',shiftLabel:d.shift||d.plan||'Digital Admission'})});
+    const rows=[...m.values()].map(x=>{delete x._labels;x.state=dateState(x.renewal);return x});
+    return rows;
+  }
+
+  function sync(){
+    const rows=build(), total=rows.length, readyStudents=rows.filter(x=>x.phone).length, missing=total-readyStudents;
+    const uniqueChats=new Set(rows.map(x=>x.phone).filter(Boolean)).size;
+    const due=rows.reduce((s,x)=>s+Number(x.due||0),0), expired=rows.filter(x=>x.state==='expired').length;
+    let occupiedSeats=0;Object.keys(seats||{}).forEach(k=>{const d=seats[k]||{};if(SH.some(sh=>String(d['name_'+sh]||'').trim()))occupiedSeats++});
+
+    // Main Pro OS launch card.
+    const launch=document.getElementById('v31Launch');
+    if(launch){
+      const s=launch.querySelector('[data-k="students"]'),d=launch.querySelector('[data-k="due"]'),e=launch.querySelector('[data-k="expired"]');
+      if(s)s.textContent=total;if(d)d.textContent='₹'+due.toLocaleString('en-IN');if(e)e.textContent=expired;
+    }
+
+    // Front WhatsApp card: student count is PERSON count; recipients can be fewer when a number is shared.
+    const set=(id,val)=>{const e=document.getElementById(id);if(e)e.textContent=val};
+    set('v32Total',total);set('v32Ready',readyStudents);set('v32Missing',missing);set('v32Recipients',uniqueChats+' unique personal chats');
+    set('v25StudentCount',total);set('v25ReadyCount',readyStudents);set('v25MissingCount',missing);set('v25RecipientLabel',uniqueChats);
+    document.querySelectorAll('[data-v25-total],[data-v24-master-total]').forEach(e=>e.textContent=total);
+    document.querySelectorAll('[data-v25-ready],[data-v24-master-phone]').forEach(e=>e.textContent=readyStudents);
+
+    // Old dashboard number used to be SHIFT booking count. Make it a real student count to stop 134-vs-111 confusion.
+    const ab=document.getElementById('activeBookings');
+    if(ab){ab.textContent=total;const card=ab.closest('.stat-card'),title=card&&card.querySelector('.stat-title');if(title)title.textContent='TOTAL STUDENTS'}
+    const td=document.getElementById('totalDue');if(td)td.textContent='₹'+due.toLocaleString('en-IN');
+    const vac=document.getElementById('vacantSeats');if(vac)vac.textContent=Math.max(0,105-occupiedSeats);
+
+    // Expose one master number for every newer module.
+    window.HARIOM_MASTER_STUDENTS=rows;
+    window.HARIOM_MASTER_TOTAL=total;
+    window.HARIOM_MASTER_UNIQUE_CHATS=uniqueChats;
+  }
+
+  database.ref('library_v3/seats').on('value',s=>{seats=s.val()||{};sync()});
+  database.ref('library_v3/unreservedStudentsV23').on('value',s=>{flex=s.val()||{};sync()});
+  database.ref('library_v3/v15/profiles').on('value',s=>{profiles=s.val()||{};sync()});
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(sync,250));
+  window.addEventListener('load',()=>{setTimeout(sync,500);setTimeout(sync,1800)});
+  window.v34SyncMasterCounts=sync;
+})();
+</script>
+<!-- ===== END V34.2 MASTER COUNT ENGINE ===== -->
+
+<!-- ===== HARIOM LIBRARY FINAL V35 — A TO Z AUDIT PATCH ===== -->
 <script id="v31-pwa-register">if('serviceWorker' in navigator && location.protocol.startsWith('http')){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}</script>
 
 </body>
