@@ -23,6 +23,7 @@ content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="./firebase-auth-config.js"></script>
 
 <!-- Excel -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -2412,16 +2413,61 @@ id="toast">
 
 /* FIREBASE CONFIG */
 
-const firebaseConfig = {
-
-databaseURL:
-"https://hariom-library-3c480-default-rtdb.firebaseio.com/"
-
-};
+const firebaseConfig = Object.assign({
+  databaseURL:"https://hariom-library-3c480-default-rtdb.firebaseio.com/",
+  authDomain:"hariom-library-3c480.firebaseapp.com",
+  projectId:"hariom-library-3c480"
+}, window.HARIOM_AUTH_CONFIG||{});
 
 firebase.initializeApp(firebaseConfig);
 
 const database = firebase.database();
+
+/* ===== V36 TENANT ROUTER ===== */
+(function(){
+  'use strict';
+  const SESSION_KEY='hl_v36_session', q=new URLSearchParams(location.search);
+  const gateMode=q.get('gate')==='present';
+  const clean=v=>String(v||'').replace(/[^A-Za-z0-9_-]/g,'').slice(0,80);
+  let s={}; try{s=JSON.parse(localStorage.getItem(SESSION_KEY)||'{}')||{}}catch(e){}
+  const gateLib=clean(q.get('lib')||'');
+  const libraryId=gateMode?(gateLib||'hariom_master'):clean(s.libraryId||'');
+  const mode=gateMode?(libraryId==='hariom_master'?'master':'tenant'):(s.mode||'locked');
+  window.HL36={
+    sessionKey:SESSION_KEY, gateMode, libraryId:libraryId||'__locked__', mode,
+    libraryName:String(s.libraryName||'Hariom Library'),
+    seatCount:Math.max(1,Math.min(2000,Number(s.seatCount||105)||105)),
+    phone:String(s.phone||''), uid:String(s.uid||'')
+  };
+
+  const nativeRef=database.ref.bind(database);
+  window.HL36.rawRef=nativeRef;
+
+  function route(path){
+    path=String(path==null?'':path).replace(/^\/+/,'');
+    if(!path)return '';
+    if(path.startsWith('platform/')||path.startsWith('tenants/'))return path;
+    if(path==='library_v3'||path.startsWith('library_v3/')){
+      return window.HL36.mode==='master'?path:'tenants/'+window.HL36.libraryId+'/'+path;
+    }
+    return path;
+  }
+  database.ref=function(path){
+    if(path==null||path===''){
+      const root=nativeRef();
+      if(window.HL36.mode!=='master'){
+        const nativeUpdate=root.update.bind(root);
+        root.update=function(values,onComplete){
+          const mapped={};
+          Object.entries(values||{}).forEach(([k,v])=>mapped[route(k)]=v);
+          return nativeUpdate(mapped,onComplete);
+        };
+      }
+      return root;
+    }
+    return nativeRef(route(path));
+  };
+})();
 
 
 /* IMPORTANT DATA PATH
@@ -2435,7 +2481,7 @@ library_v3/waiting
 */
 
 
-const TOTAL_SEATS = 105;
+let TOTAL_SEATS = Number(window.HL36?.seatCount||105);
 
 
 const allowedAdmins = [
@@ -2492,7 +2538,7 @@ const seat =
 document.createElement("div");
 
 const isUR =
-i>=64 && i<=85;
+(window.HL36?.mode==='master') && i>=64 && i<=85;
 
 seat.className =
 "seat" +
@@ -4242,7 +4288,7 @@ function renderInventory(){let box=document.getElementById('inventoryList');if(!
 function addVisitor(){if(!uAdmin())return;let name=document.getElementById('visitorName').value.trim(),phone=document.getElementById('visitorPhone').value.trim(),purpose=document.getElementById('visitorPurpose').value.trim();if(!name){showToast('Visitor name required');return}database.ref(UBASE+'/visitors').push().set({name,phone,purpose,createdAt:new Date().toISOString(),date:todayKey()}).then(()=>{document.getElementById('visitorName').value='';showToast('Visitor added')})}
 function renderVisitors(){let box=document.getElementById('visitorList');if(!box)return;let rows=Object.entries(uVisitors).map(([k,v])=>({k,...v})).sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));box.innerHTML=rows.length?rows.slice(0,30).map(x=>`<div class="u-list-item"><div><b>${safeKeyText(x.name)}</b><br><span class="u-muted">${safeKeyText(x.phone)} • ${safeKeyText(x.purpose)}</span></div><span class="u-muted">${formatDateTime(x.createdAt)}</span></div>`).join(''):'<div class="u-muted">No visitors.</div>'}
 function removeUltimate(type,key){if(!uAdmin())return;if(confirm('Delete this item?'))database.ref(UBASE+'/'+type+'/'+key).remove()}
-function universalSearch(){let q=(document.getElementById('uSearchInput').value||'').toLowerCase().trim(),box=document.getElementById('uSearchResults');if(!q){box.innerHTML='Type to search all 105 seats.';return}let out=[];for(let i=1;i<=TOTAL_SEATS;i++){let d=globalLibraryData[i]||{};['all','m','n','an','e','night'].forEach(sh=>{let name=d['name_'+sh]||'',phone=d['phone_'+sh]||'',due=Number(d['due_'+sh])||0;if(name&&(String(i).includes(q)||name.toLowerCase().includes(q)||phone.includes(q)||String(due).includes(q)))out.push({i,sh,name,phone,due,date:d['date_'+sh]||''})})}box.innerHTML=out.length?out.slice(0,50).map(x=>`<div class="u-search-result" onclick="closeUltimate();showSection('seats');openSeatModal(${x.i})"><b>Seat ${x.i} • ${safeKeyText(x.name)}</b><br><span class="u-muted">${safeKeyText(x.sh)} • ${safeKeyText(x.phone)} • Due ₹${x.due} • Renewal ${safeKeyText(x.date)}</span></div>`).join(''):'No matching student found.'}
+function universalSearch(){let q=(document.getElementById('uSearchInput').value||'').toLowerCase().trim(),box=document.getElementById('uSearchResults');if(!q){box.innerHTML='Type to search all '+TOTAL_SEATS+' seats.';return}let out=[];for(let i=1;i<=TOTAL_SEATS;i++){let d=globalLibraryData[i]||{};['all','m','n','an','e','night'].forEach(sh=>{let name=d['name_'+sh]||'',phone=d['phone_'+sh]||'',due=Number(d['due_'+sh])||0;if(name&&(String(i).includes(q)||name.toLowerCase().includes(q)||phone.includes(q)||String(due).includes(q)))out.push({i,sh,name,phone,due,date:d['date_'+sh]||''})})}box.innerHTML=out.length?out.slice(0,50).map(x=>`<div class="u-search-result" onclick="closeUltimate();showSection('seats');openSeatModal(${x.i})"><b>Seat ${x.i} • ${safeKeyText(x.name)}</b><br><span class="u-muted">${safeKeyText(x.sh)} • ${safeKeyText(x.phone)} • Due ₹${x.due} • Renewal ${safeKeyText(x.date)}</span></div>`).join(''):'No matching student found.'}
 function getUltimateStats(){let bookings=0,due=0,occupiedSeats=0,shiftCounts={all:0,m:0,n:0,an:0,e:0,night:0};for(let i=1;i<=TOTAL_SEATS;i++){let d=globalLibraryData[i]||{},has=false;Object.keys(shiftCounts).forEach(sh=>{if(d['name_'+sh]){bookings++;has=true;shiftCounts[sh]++;due+=Number(d['due_'+sh])||0}});if(has)occupiedSeats++}return{bookings,due,occupiedSeats,shiftCounts}}
 function renderUltimateKPIs(){let st=getUltimateStats(),occ=Math.round(st.occupiedSeats/TOTAL_SEATS*100),todayIn=Object.values(uAttendanceData).filter(x=>x.date===todayKey()&&x.type==='in').length;let vals={uOccupancy:occ+'%',uCollection:'₹'+getMonthCollection().toLocaleString('en-IN'),uDue:'₹'+st.due.toLocaleString('en-IN'),uAttendance:todayIn};Object.entries(vals).forEach(([id,v])=>{let e=document.getElementById(id);if(e)e.innerText=v})}
 function renderSmartSuggestions(){let box=document.getElementById('uSuggestions');if(!box)return;let st=getUltimateStats(),expired=0,soon=0;Object.values(globalLibraryData).forEach(d=>['all','m','n','an','e','night'].forEach(sh=>{if(d['name_'+sh]){let x=getDateStatus(d['date_'+sh]);if(x==='expired')expired++;if(x==='alert')soon++}}));let arr=[];if(expired)arr.push(`🔴 ${expired} booking(s) expired — renewal follow-up करें.`);if(soon)arr.push(`🟡 ${soon} booking(s) अगले 3 दिन में renew होंगे.`);if(st.due)arr.push(`💰 Total pending due ₹${st.due.toLocaleString('en-IN')} है — collection follow-up करें.`);let vacant=TOTAL_SEATS-st.occupiedSeats;if(vacant>20)arr.push(`📣 ${vacant} seats vacant हैं — admission campaign/WhatsApp promotion useful हो सकता है.`);if(!arr.length)arr.push('🟢 कोई urgent issue detect नहीं हुआ. Library data healthy दिख रहा है.');box.innerHTML=arr.map(x=>`<div class="u-suggestion">${x}</div>`).join('')}
@@ -4395,7 +4441,7 @@ window.addEventListener('load',function(){
   if(g.children.length===0 && typeof TOTAL_SEATS!=='undefined'){
     for(let i=1;i<=TOTAL_SEATS;i++){
       const seat=document.createElement('div');
-      const isUR=i>=64&&i<=85;
+      const isUR=(window.HL36?.mode==='master')&&i>=64&&i<=85;
       seat.className='seat'+(isUR?' unreserved-seat':'');
       seat.id='seat-'+i;
       seat.onclick=()=>openSeatModal(i);
@@ -4706,7 +4752,7 @@ document.addEventListener('DOMContentLoaded',mount);window.addEventListener('loa
 <!-- ===== HARIOM V23 UNRESERVED FLEX REGISTER ===== -->
 <style id="v23-unreserved-style">
 /* Keep legacy 64–85 seat DOM nodes alive for old Firebase data/UI calculations, but do not show fixed cards. */
-#seatsGrid .v23-legacy-ur-seat{display:none !important;}
+body:not(.v361-tenant) #seatsGrid .v23-legacy-ur-seat{display:none !important;}
 .v23-ur-portal{grid-column:1/-1 !important;display:block !important;position:relative;overflow:hidden;border:1px solid rgba(99,102,241,.25);border-radius:22px;padding:16px;margin:4px 0 8px;background:linear-gradient(135deg,rgba(79,70,229,.14),rgba(14,165,233,.10),var(--card));box-shadow:0 12px 30px rgba(15,23,42,.10);cursor:pointer;min-height:0 !important}
 .v23-ur-portal:before{content:"";position:absolute;width:120px;height:120px;border-radius:50%;right:-44px;top:-55px;background:rgba(139,92,246,.14)}
 .v23-ur-title{font-size:16px;font-weight:950;letter-spacing:-.3px;position:relative;z-index:1}.v23-ur-sub{font-size:10px;color:var(--muted);line-height:1.5;margin-top:5px;max-width:82%;position:relative;z-index:1}
@@ -4829,7 +4875,7 @@ document.addEventListener('DOMContentLoaded',mount);window.addEventListener('loa
       const ts=Date.now(), recycleKey=ts+"_"+key;
       let att=null,seatSnap=null;
       const reads=[database.ref(URATT+"/"+key).once("value")];
-      const legacy=!!d.legacyImportedV29&&Number(d.sourceSeat)>=64&&Number(d.sourceSeat)<=85&&Array.isArray(d.sourceShifts)&&d.sourceShifts.length;
+      const legacy=window.HL36?.mode==='master'&&!!d.legacyImportedV29&&Number(d.sourceSeat)>=64&&Number(d.sourceSeat)<=85&&Array.isArray(d.sourceShifts)&&d.sourceShifts.length;
       if(legacy)reads.push(database.ref("library_v3/seats/"+Number(d.sourceSeat)).once("value"));
       const snaps=await Promise.all(reads);att=snaps[0].val()||null;if(legacy)seatSnap=snaps[1].val()||null;
       const updates={};
@@ -4852,7 +4898,7 @@ document.addEventListener('DOMContentLoaded',mount);window.addEventListener('loa
   };
   window.ur23MarkToday=function(key){if(!adminOK())return;const ref=database.ref(URATT+"/"+key+"/"+todayKey());ref.set(!presentToday(key)).then(()=>toast(presentToday(key)?"Attendance updated":"Attendance updated"))};
   window.ur23RenewQuick=function(key){if(!adminOK())return;const d=ur23Data[key]||{},fee=Number(d.fee)||0;const amount=prompt("Paid amount ₹",String(fee));if(amount===null)return;const renewal=prompt("New renewal date (YYYY-MM-DD)",d.renewal||todayKey());if(renewal===null)return;const paid=Math.max(0,Number(amount)||0);database.ref(URBASE+"/"+key).update({paid,fee,due:Math.max(0,fee-paid),paymentDate:todayKey(),renewal,status:"Active",updatedAt:Date.now()}).then(()=>toast("✅ Payment / renewal updated"))};
-  window.ur23WhatsApp=function(key){const d=ur23Data[key]||{},p=String(d.phone||"").replace(/\D/g,"");if(!p)return toast("Phone number missing");const msg=`Hariom Library: Namaste ${d.name||"Student"}, aapka renewal/payment status check kar lijiye. Renewal: ${d.renewal||"not set"}, Due: ₹${Number(d.due||0)}.`;window.open("https://wa.me/91"+p+"?text="+encodeURIComponent(msg),"_blank")};
+  window.ur23WhatsApp=function(key){const d=ur23Data[key]||{},p=String(d.phone||"").replace(/\D/g,"");if(!p)return toast("Phone number missing");const msg=`${String(window.HL36?.libraryName||"Hariom Library")}: Namaste ${d.name||"Student"}, aapka renewal/payment status check kar lijiye. Renewal: ${d.renewal||"not set"}, Due: ₹${Number(d.due||0)}.`;window.open("https://wa.me/91"+p+"?text="+encodeURIComponent(msg),"_blank")};
   window.ur23SetFilter=function(type,btn){ur23Filter=type;document.querySelectorAll("#ur23Filters button").forEach(x=>x.classList.remove("on"));if(btn)btn.classList.add("on");ur23Render()};
   window.ur23Render=function(){
     const q=($("ur23Search")?.value||"").toLowerCase().trim(),today=todayKey();let arr=Object.entries(ur23Data).map(([key,d])=>({key,...d}));
@@ -5001,7 +5047,7 @@ body.dark #ur23List .ur23-student.v24-expired{background:linear-gradient(135deg,
   }
   function allContacts(){
     const map={};
-    for(let i=1;i<=105;i++){
+    for(let i=1;i<=Number(TOTAL_SEATS||105);i++){
       const d=v24Seats[i]||v24Seats[String(i)]||{};
       [["all","Full Day"],["m","Morning"],["n","Noon"],["an","Afternoon"],["e","Evening"],["night","Night"]].forEach(([sh,label])=>{
         const name=d["name_"+sh]||"", phone=d["phone_"+sh]||""; if(!name&&!phone)return;
@@ -5905,7 +5951,7 @@ body.dark #seatsGrid .seat{background:#101827!important;border-color:#27344a!imp
     if(currentMainFilter==="expired"&&n){p.classList.add("v29-filter-match");if(title)title.textContent="🔴 Unreserved Expired Students ("+n+")";if(sub)sub.textContent="Tap to open only expired unreserved students."}
     else if(currentMainFilter==="due"&&n){p.classList.add("v29-due-match");if(title)title.textContent="🟠 Unreserved Due Students ("+n+")";if(sub)sub.textContent="Tap to open unreserved students with pending due."}
     else if(currentMainFilter==="soon"&&n){p.classList.add("v29-soon-match");if(title)title.textContent="🟡 Unreserved Renew Soon ("+n+")";if(sub)sub.textContent="Tap to open unreserved students nearing renewal."}
-    else {if(title)title.textContent="🪑 Unreserved Student Register";if(sub)sub.textContent="Flexible seating for old 64–85 records and new unreserved students. Old Firebase seat data stays safe."}
+    else {if(title)title.textContent="🪑 Unreserved Student Register";if(sub)sub.textContent=window.HL36?.mode==='master'?"Flexible seating for old 64–85 records and new unreserved students.":"Flexible / unreserved students."}
     p.onclick=function(){
       if(typeof ur23Open==="function")ur23Open();
       const mode=currentMainFilter;
@@ -5919,6 +5965,7 @@ body.dark #seatsGrid .seat{background:#101827!important;border-color:#27344a!imp
   }
 
   async function syncLegacy(){
+    if(window.HL36?.mode!=='master')return;
     if(syncRunning||typeof database==="undefined")return;
     if(typeof isAdminVerified!=="undefined"&&!isAdminVerified){setSyncNote("🔐 <b>Old 64–85 students:</b> Admin login ke baad automatic import hoga.","warn");return}
     syncRunning=true;setSyncNote("⏳ <b>Old 64–85 students:</b> checking old Firebase records…","");
@@ -6070,8 +6117,9 @@ body.dark .v30-tool-icon{filter:saturate(.9) brightness(.9)}
     // Seats 64–85 were the old unreserved area. If the same student now exists
     // in the Unreserved Register, show the student only once.
     const flexIdentity=new Set(xr.map(r=>identity(r)));
-    const importedBySeat=new Set(xr.filter(r=>r.sourceSeat>=64&&r.sourceSeat<=85).map(r=>identity(r)+"|"+r.sourceSeat));
-    const keptFixed=fr.filter(r=>{if(!(r.seat>=64&&r.seat<=85))return true;const id=identity(r);return !(flexIdentity.has(id)||importedBySeat.has(id+"|"+r.seat))});
+    const legacyMaster=window.HL36?.mode==='master';
+    const importedBySeat=new Set(legacyMaster?xr.filter(r=>r.sourceSeat>=64&&r.sourceSeat<=85).map(r=>identity(r)+"|"+r.sourceSeat):[]);
+    const keptFixed=legacyMaster?fr.filter(r=>{if(!(r.seat>=64&&r.seat<=85))return true;const id=identity(r);return !(flexIdentity.has(id)||importedBySeat.has(id+"|"+r.seat))}):fr;
     const flexMap=new Map();xr.forEach(r=>{const id=identity(r),old=flexMap.get(id);if(!old||r.updatedAt>=old.updatedAt)flexMap.set(id,r)});
     const profileMap=new Map();pr.forEach(r=>{const id=identity(r),old=profileMap.get(id);if(!old||r.updatedAt>=old.updatedAt)profileMap.set(id,r)});
     const master=new Map(),rank={profile:1,fixed:2,flex:3};
@@ -6301,8 +6349,8 @@ function allStudents(){
     }
   });
   const flex=Object.entries(state.flex||{}).filter(([,d])=>d&&d.status!=='Left / Archived').map(([key,d])=>({type:'flex',key,name:d.name||'Unnamed',phone:d.phone||'',fee:Number(d.fee||0),paid:Number(d.paid||0),due:Number(d.due||0),renewal:d.renewal||'',paidDate:d.paymentDate||'',shiftLabel:Array.isArray(d.shifts)&&d.shifts.length?d.shifts.join(' • '):(d.plan||'Flexible'),plan:d.plan||'Flexible',sourceSeat:Number(d.sourceSeat||0),updatedAt:Number(d.updatedAt||d.createdAt||0)}));
-  const flexIds=new Set(flex.map(iden));
-  const kept=[...fMap.values()].filter(r=>!(r.seat>=64&&r.seat<=85&&flexIds.has(iden(r))));
+  const flexIds=new Set(flex.map(iden)),legacyMaster=window.HL36?.mode==='master';
+  const kept=legacyMaster?[...fMap.values()].filter(r=>!(r.seat>=64&&r.seat<=85&&flexIds.has(iden(r)))):[...fMap.values()];
   const xm=new Map();flex.forEach(r=>{const k=iden(r),o=xm.get(k);if(!o||r.updatedAt>=o.updatedAt)xm.set(k,r)});
   const profiles=Object.entries(state.profiles||{}).filter(([,d])=>{
     if(!d||!String(d.name||'').trim())return false;const st=norm(d.status||'active');return !['inactive','blocked','left / archived','archived'].includes(st)
@@ -6362,7 +6410,7 @@ function renderHome(){
  <div class="v31-card"><h3>🧠 Smart Local Summary <small>No external AI upload</small></h3><div class="v31-item">${smartSummary()}</div><div class="v31-actions" style="margin-top:8px"><button class="v31-btn ghost" onclick="v31OpenModule('health')">🩺 Data Health</button><button class="v31-btn ghost" onclick="v31OpenModule('analytics')">📈 Analytics</button></div></div>`
 }
 function priorityHtml(){const a=[];if(expiredCount())a.push(`<div class="v31-item"><span class="v31-badge red">EXPIRED</span> <b>${expiredCount()} membership(s)</b><br><small>Renewal follow-up needed.</small></div>`);if(soonCount())a.push(`<div class="v31-item"><span class="v31-badge amber">RENEW SOON</span> <b>${soonCount()} membership(s)</b><br><small>Near renewal date.</small></div>`);if(dueSum())a.push(`<div class="v31-item"><span class="v31-badge amber">DUE</span> <b>${money(dueSum())}</b><br><small>Pending in live student records.</small></div>`);const open=Object.values(state.v31.complaints||{}).filter(x=>x&&x.status!=='Resolved'&&branchRecord(x)).length;if(open)a.push(`<div class="v31-item"><span class="v31-badge red">HELPDESK</span> <b>${open} open ticket(s)</b></div>`);return a.join('')||'<div class="v31-ok">✅ No urgent due/expiry/helpdesk issue detected.</div>'}
-function smartSummary(){const occ=occupied(),vac=Math.max(0,105-occ),col=monthCollection();let x=`${state.students.length} unique students are visible. ${occ}/105 fixed seats are currently used and ${vac} are vacant. `;if(dueSum())x+=`${money(dueSum())} total due is pending. `;if(expiredCount())x+=`${expiredCount()} students are expired. `;x+=`V31 ledger collection this month is ${money(col)}.`;return esc(x)}
+function smartSummary(){const occ=occupied(),vac=Math.max(0,Number(TOTAL_SEATS||105)-occ),col=monthCollection();let x=`${state.students.length} unique students are visible. ${occ}/${Number(TOTAL_SEATS||105)} fixed seats are currently used and ${vac} are vacant. `;if(dueSum())x+=`${money(dueSum())} total due is pending. `;if(expiredCount())x+=`${expiredCount()} students are expired. `;x+=`V31 ledger collection this month is ${money(col)}.`;return esc(x)}
 function collectionChart(){const vals={};Object.values(state.v31.ledger||{}).filter(branchRecord).forEach(x=>{if(!x.date)return;const m=String(x.date).slice(5,7);vals[m]=(vals[m]||0)+Number(x.amount||0)});const months=['04','05','06','07','08','09'];const mx=Math.max(1,...months.map(m=>vals[m]||0));return `<div class="v31-chart">${months.map(m=>`<div class="v31-chart-col"><i style="height:${Math.max(4,Math.round((vals[m]||0)/mx*100))}%"></i><span>${m}</span></div>`).join('')}</div>`}
 
 let studentSearch='',studentFilter='all';
@@ -6426,7 +6474,7 @@ window.v31SendOne=function(k){const s=getStudent(k),p=digits(s?.phone),tpl=$('v3
 
 function dataHealth(){const issues=[],phones={};state.students.forEach(s=>{if(!digits(s.phone))issues.push({t:'Missing mobile',s:s.name});if(!s.renewal)issues.push({t:'Renewal date missing',s:s.name});const p=digits(s.phone);if(p)(phones[p]??=[]).push(s.name)});Object.entries(phones).forEach(([p,n])=>{if(new Set(n).size>1)issues.push({t:'Duplicate phone '+p,s:[...new Set(n)].join(', ')})});const score=Math.max(0,100-Math.min(70,issues.length*2));return{issues,score}}
 function healthModule(){const h=dataHealth();setSheet('🩺 Data Health',`<div class="v31-kpis"><div class="v31-kpi"><span>HEALTH SCORE</span><b>${h.score}%</b></div><div class="v31-kpi"><span>ISSUES</span><b>${h.issues.length}</b></div></div><div class="v31-bar"><i style="width:${h.score}%"></i></div><div class="v31-list" style="margin-top:10px">${h.issues.slice(0,80).map(x=>`<div class="v31-item"><span class="v31-badge amber">CHECK</span> <b>${esc(x.t)}</b><br><small>${esc(x.s)}</small></div>`).join('')||'<div class="v31-ok">✅ No obvious missing mobile, renewal or duplicate-phone issue.</div>'}</div>`)}
-function analyticsModule(){const shift={};state.students.forEach(s=>String(s.shiftLabel||'Unknown').split(' • ').forEach(v=>shift[v]=(shift[v]||0)+1));setSheet('📈 Analytics',`<div class="v31-kpis"><div class="v31-kpi"><span>OCCUPIED FIXED</span><b>${occupied()}</b></div><div class="v31-kpi"><span>VACANT FIXED</span><b>${Math.max(0,105-occupied())}</b></div><div class="v31-kpi"><span>EXPIRED</span><b>${expiredCount()}</b></div><div class="v31-kpi"><span>RENEW SOON</span><b>${soonCount()}</b></div></div><div class="v31-card"><h3>Shift Popularity</h3><div class="v31-list">${Object.entries(shift).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="v31-item"><div class="v31-item-top"><b>${esc(k)}</b><b>${v}</b></div><div class="v31-bar" style="margin-top:7px"><i style="width:${Math.min(100,v/Math.max(1,state.students.length)*100)}%"></i></div></div>`).join('')}</div></div><div class="v31-card"><h3>Collection Trend</h3>${collectionChart()}</div>`)}
+function analyticsModule(){const shift={};state.students.forEach(s=>String(s.shiftLabel||'Unknown').split(' • ').forEach(v=>shift[v]=(shift[v]||0)+1));setSheet('📈 Analytics',`<div class="v31-kpis"><div class="v31-kpi"><span>OCCUPIED FIXED</span><b>${occupied()}</b></div><div class="v31-kpi"><span>VACANT FIXED</span><b>${Math.max(0,Number(TOTAL_SEATS||105)-occupied())}</b></div><div class="v31-kpi"><span>EXPIRED</span><b>${expiredCount()}</b></div><div class="v31-kpi"><span>RENEW SOON</span><b>${soonCount()}</b></div></div><div class="v31-card"><h3>Shift Popularity</h3><div class="v31-list">${Object.entries(shift).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="v31-item"><div class="v31-item-top"><b>${esc(k)}</b><b>${v}</b></div><div class="v31-bar" style="margin-top:7px"><i style="width:${Math.min(100,v/Math.max(1,state.students.length)*100)}%"></i></div></div>`).join('')}</div></div><div class="v31-card"><h3>Collection Trend</h3>${collectionChart()}</div>`)}
 
 function backupModule(){setSheet('💾 Backup & Restore',`<div class="v31-card"><h3>Full Firebase Export</h3><p class="v31-sub">Downloads a read-only JSON copy of your current library_v3 data. Export does not modify live data.</p><button class="v31-btn" style="width:100%;margin-top:8px" onclick="v31FullBackup()">DOWNLOAD FULL JSON BACKUP</button></div><div class="v31-card"><h3>V31 Safe Import</h3><p class="v31-sub">Imports only the V31 Pro OS namespace from a V31 backup. It does not overwrite seats or waiting-list data.</p><button class="v31-btn ghost" style="width:100%;margin-top:8px" onclick="$('v31ImportFile').click()">IMPORT V31 JSON</button></div><div class="v31-card"><h3>Restore Point</h3><button class="v31-btn dark" style="width:100%" onclick="v31MakeRestorePoint()">CREATE V31 RESTORE POINT</button></div>`)}
 window.v31FullBackup=async function(){const snap=await database.ref('library_v3').once('value');const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),library_v3:snap.val()||{}},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Hariom_Full_Backup_'+isoDate()+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);audit('Backup','Full JSON export');toast('Backup downloaded')}
@@ -6446,14 +6494,14 @@ window.v31Unlock=function(){const p=$('v31PinInput').value;if(pinHash(p)===local
 function installModule(){const standalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone;setSheet('⬇️ Install App',`<div class="${standalone?'v31-ok':'v31-warning'}">${standalone?'✅ App is running in installed/standalone mode.':'This website can be installed like an app when the browser provides the Install App option.'}</div><button class="v31-btn" style="width:100%;margin-top:9px" onclick="v31Install()" ${standalone?'disabled':''}>INSTALL HARIOM LIBRARY</button><div class="v31-sub" style="margin-top:8px">For best PWA behavior upload the included manifest.json and sw.js next to index.html on GitHub Pages.</div>`)}
 window.v31Install=async function(){if(state.installPrompt){state.installPrompt.prompt();await state.installPrompt.userChoice;state.installPrompt=null}else alert('Browser install prompt abhi available nahi hai. Chrome menu → Add to Home screen / Install app try karein.')}
 
-function branchModule(){setSheet('🏢 Multi Library',`<div class="v31-card"><h3>Current V31 Branch</h3><select id="v31BranchSel" class="v31-select"><option ${state.branch==='Hariom Library'?'selected':''}>Hariom Library</option><option ${state.branch==='Takshila Library'?'selected':''}>Takshila Library</option></select><button class="v31-btn" style="width:100%;margin-top:8px" onclick="v31SaveBranch()">SWITCH BRANCH</button><p class="v31-sub" style="margin-top:8px">Existing original seat database remains shared/unchanged. New V31 attendance, finance and operation records are tagged with the selected branch.</p></div>`)}
+function branchModule(){setSheet('🏢 Multi Library',`<div class="v31-card"><h3>V36 Multi-Library Account</h3><p class="v31-sub">Har library ka alag data aur alag seat count hota hai. Existing Hariom master data safe rehta hai.</p><button class="v31-btn" style="width:100%;margin-top:8px" onclick="v31SheetClose();v36AccountSwitch()">SWITCH / CREATE LIBRARY</button><button class="v31-btn ghost" style="width:100%;margin-top:8px" onclick="v31SheetClose();v36OpenAccount()">ACCOUNT & DEVICE SETTINGS</button></div>`)}
 window.v31SaveBranch=function(){state.branch=$('v31BranchSel').value;localStorage.setItem('v31_branch',state.branch);$('v31TopSub').textContent=state.branch+' • Realtime • Final';toast('Branch switched');v31SheetClose();renderAll()}
 function birthdayModule(){const now=new Date(),rows=state.students.map(s=>({s,dob:s.extra?.dob||s.profile?.dob||''})).filter(x=>x.dob).map(x=>({...x,d:new Date(x.dob+'T00:00:00')})).filter(x=>x.d.getMonth()===now.getMonth()).sort((a,b)=>a.d.getDate()-b.d.getDate());setSheet('🎂 Birthday Center',`<div class="v31-list">${rows.map(x=>`<div class="v31-item"><div class="v31-item-top"><div><b>${esc(x.s.name)}</b><br><small>${String(x.d.getDate()).padStart(2,'0')} ${x.d.toLocaleString('en-IN',{month:'short'})}</small></div><button class="v31-btn green" onclick="v31BirthdayWA('${x.s.studentKey}')">Greet</button></div></div>`).join('')||'<div class="v31-empty">No DOB-based birthdays found this month. Add DOB in Student 360.</div>'}</div>`)}
 window.v31BirthdayWA=function(k){const s=getStudent(k),p=digits(s?.phone);if(!p)return toast('Mobile missing');window.open('https://wa.me/91'+p+'?text='+encodeURIComponent(`Happy Birthday ${s.name} 🎉\nHariom Library ki taraf se aapko bahut bahut shubhkamnayein! 📚✨`),'_blank')}
 
 function certificateModule(){setSheet('🏅 Certificates',`<div class="v31-card">${pickStudent()}<div class="v31-grid" style="margin-top:8px"><button class="v31-btn" onclick="v31CertPicked('membership')">Membership Certificate</button><button class="v31-btn green" onclick="v31CertPicked('nodue')">No-Dues Certificate</button></div></div>`)}
 window.v31CertPicked=function(t){const k=$('v31PickStudent').value;if(!k)return toast('Select student');v31Certificate(k,t)}
-window.v31Certificate=function(k,type){const s=getStudent(k);if(!s)return;if(type==='nodue'&&Number(s.due)>0)return alert('No-Dues certificate cannot be generated because current due is '+money(s.due));const c=document.createElement('canvas');c.width=1400;c.height=1000;const x=c.getContext('2d');x.fillStyle='#f8fafc';x.fillRect(0,0,1400,1000);x.strokeStyle='#155eef';x.lineWidth=14;x.strokeRect(28,28,1344,944);x.strokeStyle='#93c5fd';x.lineWidth=3;x.strokeRect(52,52,1296,896);x.fillStyle='#0b1220';x.textAlign='center';x.font='900 56px Georgia';x.fillText('HARIOM LIBRARY',700,150);x.fillStyle='#155eef';x.font='900 36px Arial';x.fillText(type==='nodue'?'NO-DUES CERTIFICATE':'MEMBERSHIP CERTIFICATE',700,220);x.fillStyle='#475569';x.font='500 26px Arial';x.fillText('This is to certify that',700,315);x.fillStyle='#0f172a';x.font='900 54px Georgia';x.fillText(String(s.name),700,400);x.fillStyle='#475569';x.font='500 26px Arial';x.fillText(type==='nodue'?'has no pending library fee in the current live record.':'is recorded as a member of Hariom Library.',700,475);x.font='700 24px Arial';x.fillText((s.type==='fixed'?'Seat '+s.seat:'Unreserved')+' • '+(s.shiftLabel||'-')+' • Renewal: '+(s.renewal||'-'),700,545);x.fillStyle='#64748b';x.font='500 20px Arial';x.fillText('Generated on '+isoDate()+' • Verification ID '+studentKey(s).toUpperCase(),700,800);x.textAlign='left';x.fillStyle='#0f172a';x.font='700 19px Arial';x.fillText('Authorized Signature',1030,880);downloadCanvas31(c,(type==='nodue'?'No_Dues_':'Membership_')+safeFile(s.name)+'.png');saveObj('certificates',{studentKey:k,student:s.name,type,date:isoDate(),time:Date.now()});audit('Certificate',type,s.name)}
+window.v31Certificate=function(k,type){const s=getStudent(k);if(!s)return;if(type==='nodue'&&Number(s.due)>0)return alert('No-Dues certificate cannot be generated because current due is '+money(s.due));const c=document.createElement('canvas');c.width=1400;c.height=1000;const x=c.getContext('2d');x.fillStyle='#f8fafc';x.fillRect(0,0,1400,1000);x.strokeStyle='#155eef';x.lineWidth=14;x.strokeRect(28,28,1344,944);x.strokeStyle='#93c5fd';x.lineWidth=3;x.strokeRect(52,52,1296,896);x.fillStyle='#0b1220';x.textAlign='center';x.font='900 56px Georgia';x.fillText(String(window.HL36?.libraryName||'Hariom Library').toUpperCase(),700,150);x.fillStyle='#155eef';x.font='900 36px Arial';x.fillText(type==='nodue'?'NO-DUES CERTIFICATE':'MEMBERSHIP CERTIFICATE',700,220);x.fillStyle='#475569';x.font='500 26px Arial';x.fillText('This is to certify that',700,315);x.fillStyle='#0f172a';x.font='900 54px Georgia';x.fillText(String(s.name),700,400);x.fillStyle='#475569';x.font='500 26px Arial';x.fillText(type==='nodue'?'has no pending library fee in the current live record.':'is recorded as a member of '+String(window.HL36?.libraryName||'Hariom Library')+'.',700,475);x.font='700 24px Arial';x.fillText((s.type==='fixed'?'Seat '+s.seat:'Unreserved')+' • '+(s.shiftLabel||'-')+' • Renewal: '+(s.renewal||'-'),700,545);x.fillStyle='#64748b';x.font='500 20px Arial';x.fillText('Generated on '+isoDate()+' • Verification ID '+studentKey(s).toUpperCase(),700,800);x.textAlign='left';x.fillStyle='#0f172a';x.font='700 19px Arial';x.fillText('Authorized Signature',1030,880);downloadCanvas31(c,(type==='nodue'?'No_Dues_':'Membership_')+safeFile(s.name)+'.png');saveObj('certificates',{studentKey:k,student:s.name,type,date:isoDate(),time:Date.now()});audit('Certificate',type,s.name)}
 
 function calendarModule(){const rows=state.students.filter(s=>s.renewal).sort((a,b)=>String(a.renewal).localeCompare(String(b.renewal))).slice(0,100);setSheet('📅 Renewal Calendar',`<div class="v31-list">${rows.map(s=>`<div class="v31-item"><div class="v31-item-top"><div><b>${esc(s.name)}</b><br><small>${esc(s.type==='fixed'?'Seat '+s.seat:'Unreserved')} • ${esc(s.shiftLabel)}</small></div><span class="v31-badge ${s.state==='expired'?'red':s.state==='soon'?'amber':'green'}">${esc(s.renewal)}</span></div></div>`).join('')||'<div class="v31-empty">No renewal dates.</div>'}</div>`)}
 function smartModule(){setSheet('🧠 Smart Local Search',`<div class="v31-card"><input id="v31SmartQ" class="v31-in" placeholder="Example: due students / expired / noon / seat 12 / phone 7488"><button class="v31-btn" style="width:100%;margin-top:8px" onclick="v31SmartRun()">SEARCH LIVE DATA</button></div><div id="v31SmartResult"></div>`)}
@@ -6553,7 +6601,7 @@ body.dark .v32-compose{background:#0f172a;color:#f8fafc;box-shadow:inset 0 0 0 1
  const launch=$('v31Launch'); if(launch) launch.after(box); else {const w=home.querySelector('.welcome');w?.after(box)};
  const t=$('v32NoticeText');t?.addEventListener('input',()=>{chars();const old=$('v25NoticeText');if(old)old.value=t.value;try{localStorage.setItem('hariom_v25_notice',t.value)}catch(e){}});try{const saved=localStorage.getItem('hariom_v25_notice');if(saved)t.value=saved}catch(e){}chars();update();
  }
- window.v32Template=function(type){const m={general:'Hariom Library Notice: Sabhi students kripya is suchna ko dhyan se padhein. Adhik jankari ke liye library admin se sampark karein.',payment:'Hariom Library Payment Reminder: Jinka monthly fee / renewal pending hai, kripya payment complete karein. Payment ho chuka ho to is notice ko ignore karein.',timing:'Hariom Library Timing Notice: Library timing / shift me update hai. Kripya naye timing ko follow karein aur zarurat par admin se sampark karein.',holiday:'Hariom Library Holiday Notice: Library schedule me temporary holiday / timing change rahega. Kripya notice ke anusaar planning karein.',urgent:'Hariom Library Urgent Notice: Sabhi students kripya is zaroori suchna par turant dhyan dein aur zarurat hone par admin se sampark karein.'},t=$('v32NoticeText');if(!t)return;t.value=m[type]||m.general;t.dispatchEvent(new Event('input'))}
+ window.v32Template=function(type){const N=String(window.HL36?.libraryName||'Hariom Library'),m={general:N+' Notice: Sabhi students kripya is suchna ko dhyan se padhein. Adhik jankari ke liye library admin se sampark karein.',payment:N+' Payment Reminder: Jinka monthly fee / renewal pending hai, kripya payment complete karein. Payment ho chuka ho to is notice ko ignore karein.',timing:N+' Timing Notice: Library timing / shift me update hai. Kripya naye timing ko follow karein aur zarurat par admin se sampark karein.',holiday:N+' Holiday Notice: Library schedule me temporary holiday / timing change rahega. Kripya notice ke anusaar planning karein.',urgent:N+' Urgent Notice: Sabhi students kripya is zaroori suchna par turant dhyan dein aur zarurat hone par admin se sampark karein.'},t=$('v32NoticeText');if(!t)return;t.value=m[type]||m.general;t.dispatchEvent(new Event('input'))}
  window.v32SendFrontNotice=function(){const t=$('v32NoticeText'),old=$('v25NoticeText');if(!t||!t.value.trim())return typeof showToast==='function'?showToast('Notice message likhiye'):alert('Notice message likhiye');if(!$('v32Consent')?.checked)return typeof showToast==='function'?showToast('Permission checkbox tick kijiye'):alert('Permission checkbox tick kijiye');if(old){old.value=t.value;old.dispatchEvent(new Event('input'))}const c=$('v25Confirm');if(c)c.checked=true;const st=$('v32Status');if(st){st.className='v32-status';st.querySelector('span').textContent='Connecting direct sender…'};if(typeof window.v25SendAllNotice==='function')window.v25SendAllNotice();else if(typeof showToast==='function')showToast('Direct sender module load nahi hua')}
  function init(){mount();update();if(typeof database!=='undefined'){database.ref('library_v3/seats').on('value',s=>{seats=s.val()||{};update()});database.ref('library_v3/unreservedStudentsV23').on('value',s=>{flex=s.val()||{};update()});database.ref('library_v3/v15/profiles').on('value',s=>{profiles=s.val()||{};update()});database.ref('library_v3/whatsappBroadcastHistory').limitToLast(1).on('value',s=>{const vals=s.val()||{},d=Object.values(vals).sort((a,b)=>Number(b.createdAt||0)-Number(a.createdAt||0))[0],st=$('v32Status');if(!st||!d)return;const state=String(d.status||'').toLowerCase();st.className='v32-status '+(['sent','partial'].includes(state)?'ready':state==='failed'?'error':'');st.querySelector('span').textContent=state==='sent'?`Last: ${Number(d.sentCount||0)} sent`:state==='partial'?`Last: ${Number(d.sentCount||0)} sent • ${Number(d.failedCount||0)} failed`:state==='failed'?'Last send failed • check setup':'Sending notice…'})}}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();window.addEventListener('load',()=>setTimeout(init,250));
@@ -6620,7 +6668,7 @@ body.v34-gate-only .v33-student-card{max-width:430px;margin:auto}
   }
   function resolveCandidates(p){return knownStudents().get(phone10(p))||[]}
   function resolveStudent(p,key){const a=resolveCandidates(p);if(key){const x=a.find(s=>s.studentKey===key);if(x)return x}return a.length===1?a[0]:null}
-  function gateUrl(){const u=new URL(location.href);u.hash='';u.search='';u.searchParams.set('gate','present');return u.toString()}
+  function gateUrl(){const u=new URL(location.href);u.hash='';u.search='';u.searchParams.set('gate','present');u.searchParams.set('lib',String(window.HL36?.libraryId||'hariom_master'));return u.toString()}
   function currentTodayPath(){const n=nowPath();return BASE+'/years/'+n.year+'/'+n.month+'/'+n.day}
   function activeKnownCount(){let n=0;knownStudents().forEach(a=>n+=a.length);return n}
   function formatTime(ts){if(!ts)return '-';return new Date(Number(ts)).toLocaleTimeString('en-IN',{timeZone:'Asia/Kolkata',hour:'2-digit',minute:'2-digit'})}
@@ -6636,7 +6684,7 @@ body.v34-gate-only .v33-student-card{max-width:430px;margin:auto}
   function loadQrLib(cb){if(typeof QRCode!=='undefined')return cb();const old=document.querySelector('script[data-v33-qrlib]');if(old){old.addEventListener('load',cb,{once:true});return}const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';s.dataset.v33Qrlib='1';s.onload=cb;s.onerror=()=>toast('QR library load nahi hua. Gate link copy karke QR generator use karein.');document.head.appendChild(s)}
   window.v33ShowGateQR=function(){if(!adminOK())return;const url=gateUrl();openModal('▦ Gate Attendance QR','<div class="v33-panel"><h3>Gate par ye QR print karke lagaiye</h3><p class="v33-muted">Student apne phone se QR scan karega. First time registered mobile number verify karega; uske baad isi phone se next scans par attendance turant mark ho jayegi.</p><div id="v33QrBox" class="v33-qr-wrap"></div><input id="v33GateLink" class="v33-link" readonly value="'+esc(url)+'"><div class="v33-grid2" style="margin-top:8px"><button class="v33-action ghost" onclick="v33CopyGateLink()">🔗 COPY LINK</button><button class="v33-action" onclick="v33PrintGateQR()">🖨 PRINT QR</button></div></div><div class="v33-panel"><h3>Data safety</h3><p class="v33-muted">Unknown mobile numbers reject honge. Ek student ka same-day record overwrite/delete nahi hota; first scan time safe rehta hai aur later scans count + last scan time update karte hain. Har scan ka separate event log bhi permanent save hota hai.</p></div>');loadQrLib(()=>{const b=$('v33QrBox');if(!b)return;b.innerHTML='';new QRCode(b,{text:url,width:230,height:230,colorDark:'#0f172a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H})})};
   window.v33CopyGateLink=async function(){const url=gateUrl();try{await navigator.clipboard.writeText(url);toast('Gate link copied')}catch(e){prompt('Gate link copy karein:',url)}};
-  window.v33PrintGateQR=function(){const box=$('v33QrBox');if(!box)return;const c=box.querySelector('canvas'),im=box.querySelector('img'),src=c?c.toDataURL('image/png'):(im?im.src:'');if(!src)return toast('QR abhi load ho raha hai');const w=window.open('','_blank','width=520,height=700');if(!w)return toast('Popup blocked');w.document.write('<!doctype html><html><head><title>Hariom Gate QR</title><style>body{font-family:Arial;text-align:center;padding:35px}img{width:320px;height:320px}.box{border:3px solid #111;border-radius:24px;padding:25px}h1{margin:0 0 8px}p{font-size:14px}b{font-size:20px}</style></head><body><div class="box"><h1>Hariom Library</h1><b>SMART GATE ATTENDANCE</b><p>Gate par enter karne se pahle QR scan karein</p><img src="'+src+'"><p>Scan → Verify → Present</p></div><script>onload=()=>{setTimeout(()=>print(),250)}<\/script></body></html>');w.document.close()};
+  window.v33PrintGateQR=function(){const box=$('v33QrBox');if(!box)return;const c=box.querySelector('canvas'),im=box.querySelector('img'),src=c?c.toDataURL('image/png'):(im?im.src:'');if(!src)return toast('QR abhi load ho raha hai');const w=window.open('','_blank','width=520,height=700');if(!w)return toast('Popup blocked');w.document.write('<!doctype html><html><head><title>'+esc(window.HL36?.libraryName||'Library')+' Gate QR</title><style>body{font-family:Arial;text-align:center;padding:35px}img{width:320px;height:320px}.box{border:3px solid #111;border-radius:24px;padding:25px}h1{margin:0 0 8px}p{font-size:14px}b{font-size:20px}</style></head><body><div class="box"><h1>'+esc(window.HL36?.libraryName||'Hariom Library')+'</h1><b>SMART GATE ATTENDANCE</b><p>Gate par enter karne se pahle QR scan karein</p><img src="'+src+'"><p>Scan → Verify → Present</p></div><script>onload=()=>{setTimeout(()=>print(),250)}<\/script></body></html>');w.document.close()};
   window.v33OpenToday=function(){if(!adminOK())return;const vals=Object.values(todayData||{}).filter(Boolean).sort((a,b)=>Number(b.firstSeenAt||0)-Number(a.firstSeenAt||0));openModal('✅ Today Attendance','<div class="v33-panel"><h3>'+vals.length+' students present today</h3><p class="v33-muted">First scan time permanent attendance time hai. Repeat scan sirf scan count / last seen update karta hai.</p></div><div class="v33-log">'+(vals.map(x=>'<div class="v33-log-row"><div><b>'+esc(x.name||'Student')+'</b><br><small>'+esc(x.source||'')+(x.seat?' • '+esc(String(x.seat)):'')+' • '+esc(shiftText(x.shift))+'<br>'+esc(x.phone||'')+'</small></div><div class="v33-days">'+esc(formatTime(x.firstSeenAt))+'<br><small>'+Number(x.scans||1)+' scan</small></div></div>').join('')||'<div class="v33-muted">No attendance yet today.</div>')+'</div>')};
   function flattenYear(y,node){const out=[];Object.entries(node||{}).forEach(([m,days])=>Object.entries(days||{}).forEach(([d,students])=>Object.values(students||{}).forEach(x=>{if(x)out.push({...x,date:x.date||y+'-'+m+'-'+d})})));return out.sort((a,b)=>String(b.date).localeCompare(String(a.date))||Number(b.firstSeenAt||0)-Number(a.firstSeenAt||0))}
   function yearSummary(rows){const map=new Map();rows.forEach(x=>{const k=String(x.studentKey||'')||((phone10(x.phone)||'no-phone')+'|'+nameNorm(x.name));if(!k)return;const a=map.get(k)||{phone:x.phone||'',name:x.name||'Student',seat:x.seat||'',shift:x.shift||'',source:x.source||'',dates:new Set(),first:'',last:''};a.dates.add(x.date);if(!a.first||x.date<a.first)a.first=x.date;if(!a.last||x.date>a.last)a.last=x.date;map.set(k,a)});return [...map.values()].sort((a,b)=>b.dates.size-a.dates.size||a.name.localeCompare(b.name))}
@@ -6663,7 +6711,7 @@ body.v34-gate-only .v33-student-card{max-width:430px;margin:auto}
 
 <!-- ===== HARIOM V34 — MASTER COUNTS + DOUBLE BACK + OTP READY SECURITY ===== -->
 <style id="v34-security-style">
-#v34AuthGate{display:none;position:fixed;inset:0;z-index:20000;background:linear-gradient(155deg,#061225,#0b2b5d 60%,#155eef);padding:18px;color:#fff;overflow:auto}
+#v34AuthGate{display:none!important;position:fixed;inset:0;z-index:20000;background:linear-gradient(155deg,#061225,#0b2b5d 60%,#155eef);padding:18px;color:#fff;overflow:auto}
 #v34AuthGate.show{display:grid;place-items:center}.v34-auth-card{width:min(430px,100%);background:#fff;color:#0f172a;border-radius:28px;padding:22px;box-shadow:0 28px 80px rgba(0,0,0,.35)}.v34-auth-logo{width:58px;height:58px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(135deg,#155eef,#38bdf8);color:#fff;font-size:26px;margin-bottom:14px}.v34-auth-card h2{font-size:21px}.v34-auth-card p{font-size:10px;color:#64748b;line-height:1.5;margin:6px 0 15px}.v34-auth-in{width:100%;border:1.5px solid #cbd5e1;border-radius:15px;padding:14px;font-size:15px;outline:0;margin-bottom:9px}.v34-auth-in:focus{border-color:#155eef;box-shadow:0 0 0 4px #155eef18}.v34-auth-btn{width:100%;border:0;border-radius:15px;padding:14px;background:#155eef;color:#fff;font-weight:950;font-size:11px}.v34-auth-btn.green{background:#16a34a}.v34-auth-msg{margin-top:10px;padding:10px 12px;border-radius:13px;background:#f1f5f9;color:#475569;font-size:9px;line-height:1.45}.v34-auth-step{display:none}.v34-auth-step.on{display:block}
 </style>
 <div id="v34AuthGate" aria-hidden="true"><div class="v34-auth-card"><div class="v34-auth-logo">🔐</div><h2>Hariom Library Secure Login</h2><p>Sirf approved admin mobile numbers. OTP ek baar verify hone ke baad Firebase is device par session remember rakhega.</p><div id="v34AuthPhoneStep" class="v34-auth-step on"><input id="v34AuthPhone" class="v34-auth-in" type="tel" inputmode="numeric" maxlength="10" placeholder="Approved 10-digit mobile number"><div id="v34Recaptcha"></div><button class="v34-auth-btn" onclick="v34SendOtp()">SEND OTP</button></div><div id="v34AuthOtpStep" class="v34-auth-step"><input id="v34AuthOtp" class="v34-auth-in" type="tel" inputmode="numeric" maxlength="6" placeholder="6-digit OTP"><button class="v34-auth-btn green" onclick="v34VerifyOtp()">VERIFY & OPEN APP</button></div><div id="v34AuthMsg" class="v34-auth-msg">OTP security will activate after Firebase Phone Authentication web config is connected.</div></div></div>
@@ -6712,7 +6760,7 @@ body.v34-gate-only .v33-student-card{max-width:430px;margin:auto}
   let auth=null,confirmation=null,recaptcha=null;
   const p10=v=>{let d=String(v||'').replace(/\D/g,'');if(d.length>10)d=d.slice(-10);return /^\d{10}$/.test(d)?d:''};
   const allowed=()=>new Set((Array.isArray(window.HARIOM_OTP_ADMINS)?window.HARIOM_OTP_ADMINS:(typeof allowedAdmins!=='undefined'?allowedAdmins:[])).map(p10).filter(Boolean));
-  const configured=()=>!gateMode&&window.HARIOM_AUTH_CONFIG.apiKey&&typeof firebase!=='undefined'&&typeof firebase.auth==='function';
+  const configured=()=>false; // V36 universal OTP replaces old V34 admin-only login.
   const msg=t=>{const e=document.getElementById('v34AuthMsg');if(e)e.textContent=t};
   const showGate=()=>{const e=document.getElementById('v34AuthGate');if(e){e.classList.add('show');e.setAttribute('aria-hidden','false')}};
   const hideGate=()=>{const e=document.getElementById('v34AuthGate');if(e){e.classList.remove('show');e.setAttribute('aria-hidden','true')}};
@@ -6813,7 +6861,7 @@ body.v34-gate-only .v33-student-card{max-width:430px;margin:auto}
     const ab=document.getElementById('activeBookings');
     if(ab){ab.textContent=total;const card=ab.closest('.stat-card'),title=card&&card.querySelector('.stat-title');if(title)title.textContent='TOTAL STUDENTS'}
     const td=document.getElementById('totalDue');if(td)td.textContent='₹'+due.toLocaleString('en-IN');
-    const vac=document.getElementById('vacantSeats');if(vac)vac.textContent=Math.max(0,105-occupiedSeats);
+    const vac=document.getElementById('vacantSeats');if(vac)vac.textContent=Math.max(0,Number(TOTAL_SEATS||105)-occupiedSeats);
 
     // Expose one master number for every newer module.
     window.HARIOM_MASTER_STUDENTS=rows;
@@ -6833,6 +6881,337 @@ body.v34-gate-only .v33-student-card{max-width:430px;margin:auto}
 
 <!-- ===== HARIOM LIBRARY FINAL V35 — A TO Z AUDIT PATCH ===== -->
 <script id="v31-pwa-register">if('serviceWorker' in navigator && location.protocol.startsWith('http')){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}</script>
+
+
+<!-- ===== HARIOM V36 — UNIVERSAL OTP + MULTI LIBRARY ===== -->
+<style id="v36-style">
+#v36Gate{display:none;position:fixed;inset:0;z-index:30000;background:linear-gradient(150deg,#071326,#0b2f67 58%,#1964e8);padding:16px;overflow:auto;color:#0f172a}
+#v36Gate.show{display:grid;place-items:center}.v36-card{width:min(460px,100%);background:#fff;border-radius:28px;padding:22px;box-shadow:0 30px 90px rgba(0,0,0,.42)}
+.v36-brand{display:flex;gap:12px;align-items:center;margin-bottom:14px}.v36-logo{width:60px;height:60px;border-radius:18px;background:linear-gradient(135deg,#155eef,#22c55e);display:grid;place-items:center;color:#fff;font-size:28px}
+.v36-card h2{font-size:21px;margin:0}.v36-step{display:none}.v36-step.on{display:block}
+.v36-in{width:100%;padding:14px;border:1.5px solid #cbd5e1;border-radius:15px;font-size:14px;outline:0;margin:0 0 9px;background:#fff;color:#0f172a}.v36-in:focus{border-color:#155eef;box-shadow:0 0 0 4px #155eef18}.v361-seat-pick{display:grid;grid-template-columns:1fr 118px;align-items:center;gap:10px;border:1.5px solid #cbd5e1;border-radius:15px;padding:5px 7px 5px 14px;margin-bottom:9px;background:#fff}.v361-seat-pick span{font-size:12px;font-weight:900;color:#334155}.v361-seat-pick .v36-in{margin:0;text-align:center;border:0;background:#f8fafc;padding:10px}.v361-seat-pick .v36-in:focus{box-shadow:none;background:#eff6ff}
+.v36-btn{width:100%;border:0;border-radius:15px;padding:14px;font-size:11px;font-weight:950;background:#155eef;color:#fff;margin-top:5px}.v36-btn.green{background:#16a34a}.v36-btn.dark{background:#0f172a}.v36-btn.ghost{background:#f1f5f9;color:#0f172a}
+.v36-msg{margin-top:10px;padding:11px;border-radius:14px;background:#f1f5f9;color:#475569;font-size:9px;line-height:1.5}.v36-warning{display:none;background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;border-radius:13px;padding:10px;font-size:9px;line-height:1.5;margin:9px 0}
+.v36-list{display:grid;gap:8px}.v36-lib{border:1px solid #dbe4f0;border-radius:16px;padding:13px;background:#fff;text-align:left;display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%}.v36-lib b{display:block;font-size:12px}.v36-lib span{font-size:8px;color:#64748b}.v36-pill{font-size:8px;font-weight:900;padding:6px 8px;border-radius:99px;background:#dbeafe;color:#1d4ed8;white-space:nowrap}
+body.v36-locked> :not(#v36Gate):not(script):not(style){visibility:hidden!important}body.v36-locked #v36Gate{visibility:visible!important}body.v34-gate-only #v36Gate,body.v34-gate-only #v36AccountBtn{display:none!important}
+#v36AccountBtn{position:fixed;right:14px;bottom:92px;z-index:8500;width:52px;height:52px;border-radius:18px;border:0;background:#0f172a;color:#fff;box-shadow:0 12px 35px #0005;font-size:21px}
+#v36AccountPanel{display:none;position:fixed;inset:0;z-index:29000;background:rgba(2,6,23,.72);padding:14px;overflow:auto}#v36AccountPanel.show{display:grid;place-items:center}
+.v36-account{width:min(470px,100%);background:#fff;border-radius:26px;padding:19px;color:#0f172a}.v36-account-top{display:flex;justify-content:space-between;align-items:center;gap:10px}.v36-x{border:0;background:#f1f5f9;width:38px;height:38px;border-radius:12px;font-size:20px}
+.v36-kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0}.v36-kpi{padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:15px}.v36-kpi b{font-size:16px;display:block}.v36-kpi span{font-size:8px;color:#64748b;font-weight:900}
+</style>
+
+<div id="v36Gate" aria-hidden="true">
+ <div class="v36-card">
+  <div class="v36-brand"><div class="v36-logo">📚</div><div><h2>Library Login</h2></div></div>
+  <div id="v36PhoneStep" class="v36-step on">
+   <input id="v361LibraryName" class="v36-in" maxlength="60" placeholder="Library name">
+   <div class="v361-seat-pick"><span>Total Seats</span><input id="v361LoginSeats" class="v36-in" type="number" min="1" max="2000" value="105" inputmode="numeric"></div>
+   <input id="v36Phone" class="v36-in" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
+   <div id="v36Recaptcha"></div>
+   <button class="v36-btn" onclick="v36SendOtp()">GET OTP</button>
+  </div>
+  <div id="v36OtpStep" class="v36-step">
+   <input id="v36Otp" class="v36-in" type="tel" inputmode="numeric" maxlength="6" placeholder="6-digit OTP">
+   <button class="v36-btn green" onclick="v36VerifyOtp()">VERIFY OTP</button>
+  </div>
+  <div id="v36ChooseStep" class="v36-step">
+   <h3 style="margin-bottom:8px">Choose your library</h3>
+   <div id="v36LibraryList" class="v36-list"></div>
+   <button class="v36-btn ghost" onclick="v36ShowCreate()">＋ CREATE ANOTHER LIBRARY</button>
+  </div>
+  <div id="v36CreateStep" class="v36-step">
+   <h3 style="margin-bottom:8px">New Library</h3>
+   <input id="v36LibraryName" class="v36-in" maxlength="60" placeholder="Library name">
+   <input id="v36SeatCount" class="v36-in" type="number" min="1" max="2000" placeholder="Total seats">
+   <button class="v36-btn green" onclick="v36CreateLibrary()">CREATE & OPEN LIBRARY</button>
+   <button class="v36-btn ghost" onclick="v36BackToLibraries()">BACK</button>
+  </div>
+  <div id="v36Msg" class="v36-msg" style="display:none"></div>
+ </div>
+</div>
+
+<button id="v36AccountBtn" onclick="v36OpenAccount()" title="Account & Library">👤</button>
+
+<div id="v36AccountPanel" aria-hidden="true">
+ <div class="v36-account">
+  <div class="v36-account-top"><div><b style="font-size:18px" id="v36AccLib">Library</b><div style="font-size:9px;color:#64748b" id="v36AccPhone"></div></div><button class="v36-x" onclick="v36CloseAccount()">×</button></div>
+  <div class="v36-kpis"><div class="v36-kpi"><b id="v36AccSeats">0</b><span>TOTAL SEATS</span></div><div class="v36-kpi"><b id="v36AccDevices">-</b><span>ACTIVE DEVICES / 4</span></div></div>
+  <button class="v36-btn" onclick="v36AccountSwitch()">SWITCH / CREATE LIBRARY</button>
+  <button class="v36-btn ghost" onclick="v36EditLibrary()">EDIT LIBRARY NAME / SEAT COUNT</button>
+  <button class="v36-btn ghost" onclick="v36RemoveOtherDevices()">REMOVE OTHER DEVICES</button>
+  <button class="v36-btn dark" onclick="v36Logout()">LOG OUT</button>
+  <div class="v36-msg">Logout ke baad is device par dobara OTP required hoga. Seat count kam karne par higher-seat data delete nahi hota.</div>
+ </div>
+</div>
+
+<script id="v36-js">
+(function(){
+ 'use strict';
+ const gateMode=new URLSearchParams(location.search).get('gate')==='present';
+ const SESSION='hl_v36_session', DEVICE='hl_v36_device_id', PENDING='hl_v361_login_setup', LAST='hl_v361_last_setup';
+ const $=id=>document.getElementById(id);
+ const p10=v=>{let d=String(v||'').replace(/\D/g,'');if(d.length>10)d=d.slice(-10);return /^\d{10}$/.test(d)?d:''};
+ const sid=v=>String(v||'').replace(/[^A-Za-z0-9_-]/g,'').slice(0,80);
+ const esc=v=>String(v||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+ const raw=path=>window.HL36?.rawRef?window.HL36.rawRef(path):firebase.database().ref(path);
+ const cfg=()=>window.HARIOM_AUTH_CONFIG||{};
+ const configured=()=>!!(cfg().apiKey&&cfg().appId&&typeof firebase!=='undefined'&&typeof firebase.auth==='function');
+ const masters=()=>new Set((window.HARIOM_MASTER_ADMINS||((typeof allowedAdmins!=='undefined')?allowedAdmins:[])).map(p10).filter(Boolean));
+ let auth=null,confirmation=null,recaptcha=null,currentUser=null,currentPhone='',libraries=[],deviceId='',deviceWatcher=null;
+
+ function getSession(){try{return JSON.parse(localStorage.getItem(SESSION)||'{}')||{}}catch(e){return{}}}
+ function setSession(s){localStorage.setItem(SESSION,JSON.stringify(s))}
+ function clearSession(){localStorage.removeItem(SESSION);localStorage.removeItem('hariom_library_admin')}
+ function getPending(){try{return JSON.parse(sessionStorage.getItem(PENDING)||'{}')||{}}catch(e){return{}}}
+ function setPending(v){sessionStorage.setItem(PENDING,JSON.stringify(v||{}));try{localStorage.setItem(LAST,JSON.stringify(v||{}))}catch(e){}}
+ function getLast(){try{return JSON.parse(localStorage.getItem(LAST)||'{}')||{}}catch(e){return{}}}
+ function getDeviceId(){let d=localStorage.getItem(DEVICE)||'';if(!d){d='d_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,10);localStorage.setItem(DEVICE,d)}return d}
+ function msg(t){
+   const e=$('v36Msg');if(!e)return;
+   e.textContent=String(t||'');e.style.display=t?'block':'none';
+ }
+ function step(id){['v36PhoneStep','v36OtpStep','v36ChooseStep','v36CreateStep'].forEach(x=>$(x)?.classList.toggle('on',x===id))}
+ function showGate(){if(gateMode)return;document.body.classList.add('v36-locked');$('v36Gate')?.classList.add('show');$('v36Gate')?.setAttribute('aria-hidden','false')}
+ function hideGate(){document.body.classList.remove('v36-locked');$('v36Gate')?.classList.remove('show');$('v36Gate')?.setAttribute('aria-hidden','true')}
+ function configWarning(){ return; }
+ function unlockLegacy(){
+   try{if(typeof isAdminVerified!=='undefined')isAdminVerified=true}catch(e){}
+   const c=$('adminCard');if(c)c.style.display='none';
+   try{typeof updateAdminStatus==='function'&&updateAdminStatus()}catch(e){}
+ }
+ function syncSeatUi(seat){
+   seat=Math.max(1,Number(seat||TOTAL_SEATS||105));
+   document.querySelectorAll('input[type=number][max="105"]').forEach(x=>{x.max=String(seat);if((x.placeholder||'').includes('105'))x.placeholder=x.placeholder.replace(/105/g,String(seat))});
+   document.querySelectorAll('[data-v361-total-seats]').forEach(x=>x.textContent=String(seat));
+   [...document.querySelectorAll('span,p,small,b,h1,h2,h3,div')].forEach(el=>{
+     if(el.children.length)return;
+     const t=el.textContent||'';
+     const repl=t
+       .replace(/Manage 105 seats/g,'Manage '+seat+' seats')
+       .replace(/all 105 seats/g,'all '+seat+' seats')
+       .replace(/OPEN 105 LIVE SEATS/g,'OPEN '+seat+' LIVE SEATS')
+       .replace(/105 Smart Seats/g,seat+' Smart Seats')
+       .replace(/105 live seats/g,seat+' live seats')
+       .replace(/Type to search all 105 seats/g,'Type to search all '+seat+' seats')
+       .replace(/Seat 1-105/g,'Seat 1-'+seat);
+     if(repl!==t)el.textContent=repl;
+   });
+   const stat=document.querySelector('#homeSection .stats-grid .stat-card:first-child .stat-value');if(stat)stat.textContent=String(seat);
+ }
+ function applyBrand(s){
+   const name=String(s.libraryName||'Library Pro'),seat=Math.max(1,Number(s.seatCount||105));
+   TOTAL_SEATS=seat;document.title=name+' • Library Pro';document.body.classList.toggle('v361-tenant',s.mode==='tenant');syncSeatUi(seat);
+   const brand=document.querySelector('.v33-student-brand h2');if(brand)brand.textContent=name;
+   const header=document.querySelector('.logo-area h2');if(header)header.textContent=name;
+   const welcome=document.querySelector('.welcome h2');if(welcome)welcome.textContent='Welcome to '+name+' 👋';
+   const pro=document.querySelector('#v31Launch h2');if(pro)pro.textContent=name+' Pro OS';
+   const v15h=document.querySelector('#v15Panel .v15-head h2');if(v15h)v15h.textContent=name+' • Nexus V15 Pro';
+   const notice=$('v32NoticeText');if(notice&&notice.value.startsWith('Hariom Library'))notice.value=notice.value.replace(/^Hariom Library/,name);
+   const quick=$('quickMessage');if(quick&&quick.value.startsWith('Hariom Library'))quick.value=quick.value.replace(/^Hariom Library/,name);
+   const exact=[...document.querySelectorAll('span,p,small,b,h1,h2,h3')];
+   exact.forEach(el=>{
+     if(el.children.length)return;
+     let t=el.textContent||'';
+     if(t==='105')el.textContent=String(seat);
+     else if(t.includes('Manage 105 seats'))el.textContent=t.replace('105',String(seat));
+     else if(t.includes('all 105 seats'))el.textContent=t.replace('105',String(seat));
+     else if(t.includes('OPEN 105 LIVE SEATS'))el.textContent=t.replace('105',String(seat));
+     else if(t.includes('105 Smart Seats'))el.textContent=t.replace('105',String(seat));
+   });
+ }
+ const v361Observer=new MutationObserver(()=>{const s=getSession();if(s.seatCount)syncSeatUi(s.seatCount)});
+ document.addEventListener('DOMContentLoaded',()=>{try{v361Observer.observe(document.body,{childList:true,subtree:true})}catch(e){}});
+ async function registerDevice(user){
+   deviceId=getDeviceId();const ref=raw('platform/devices/'+user.uid),info={phone:user.phoneNumber||'',lastSeenAt:Date.now(),userAgent:navigator.userAgent.slice(0,180)};
+   const r=await ref.transaction(cur=>{
+     cur=cur||{};
+     if(!cur[deviceId]&&Object.keys(cur).length>=4)return;
+     cur[deviceId]=info;return cur;
+   });
+   if(!r.committed)throw new Error('DEVICE_LIMIT');
+   if(deviceWatcher)deviceWatcher.off();
+   deviceWatcher=ref.child(deviceId);let first=true;
+   deviceWatcher.on('value',snap=>{if(first){first=false;return}if(!snap.exists())v36Logout()});
+   return Object.keys(r.snapshot.val()||{}).length;
+ }
+ async function loadLibraries(user){
+   const arr=[];
+   if(masters().has(currentPhone))arr.push({id:'hariom_master',name:'Hariom Library',seatCount:105,mode:'master'});
+   const s=await raw('platform/users/'+user.uid+'/libraries').once('value');
+   Object.entries(s.val()||{}).forEach(([id,d])=>{if(d&&id!=='hariom_master')arr.push({id,name:d.name||'My Library',seatCount:Number(d.seatCount||105),mode:'tenant'})});
+   libraries=arr;return arr;
+ }
+ function renderLibraries(){
+   const box=$('v36LibraryList');if(!box)return;
+   box.innerHTML=libraries.length?libraries.map(l=>'<button class="v36-lib" onclick="v36SelectLibrary(\''+sid(l.id)+'\')"><span><b>'+esc(l.name)+'</b><span>'+Number(l.seatCount||105)+' seats • '+(l.mode==='master'?'Hariom master data':'Personal library data')+'</span></span><i class="v36-pill">OPEN</i></button>').join(''):'<div class="v36-msg">No library yet. Create your first library.</div>';
+ }
+ window.v36SelectLibrary=async function(id){
+   let l=libraries.find(x=>x.id===id);if(!l||!currentUser)return;
+   l=await applyRequestedSeats(l);
+   const s={uid:currentUser.uid,phone:currentPhone,libraryId:l.id,libraryName:l.name,seatCount:Number(l.seatCount||105),mode:l.mode};
+   setSession(s);if(l.mode==='master')localStorage.setItem('hariom_library_admin',currentPhone);else localStorage.removeItem('hariom_library_admin');
+   location.href=location.pathname;
+ };
+ window.v36ShowCreate=function(){step('v36CreateStep');$('v36LibraryName').value='';$('v36SeatCount').value='';msg('Library name aur total seats set kijiye.')}
+ window.v36BackToLibraries=function(){if(libraries.length){renderLibraries();step('v36ChooseStep')}else step('v36CreateStep')}
+ window.v36CreateLibrary=async function(){
+   if(!currentUser)return msg('OTP session missing.');
+   const name=String($('v36LibraryName')?.value||'').trim(),seat=Number($('v36SeatCount')?.value||0);
+   if(name.length<2)return msg('Valid library name daliye.');if(!Number.isFinite(seat)||seat<1||seat>2000)return msg('Seats 1 se 2000 ke beech daliye.');
+   const id='lib_'+currentUser.uid.slice(0,8)+'_'+Date.now().toString(36);
+   const meta={name,seatCount:seat,ownerUid:currentUser.uid,ownerPhone:'+91'+currentPhone,createdAt:Date.now(),updatedAt:Date.now(),members:{[currentUser.uid]:true}};
+   const updates={};
+   updates['platform/libraries/'+id]=meta;
+   updates['platform/users/'+currentUser.uid+'/libraries/'+id]={name,seatCount:seat,role:'owner',createdAt:Date.now()};
+   await raw('').update(updates);
+   libraries.push({id,name,seatCount:seat,mode:'tenant'});v36SelectLibrary(id);
+ };
+ async function applyRequestedSeats(lib){
+   const p=getPending(),requested=Math.max(1,Math.min(2000,Number(p.seatCount||lib.seatCount||105)||105));
+   if(lib.mode==='tenant'&&Number(lib.seatCount||0)!==requested){
+     await raw('platform/libraries/'+lib.id).update({seatCount:requested,updatedAt:Date.now()});
+     await raw('platform/users/'+currentUser.uid+'/libraries/'+lib.id).update({seatCount:requested});
+   }
+   return {...lib,seatCount:requested};
+ }
+ async function createFirstLibraryFromLogin(user){
+   const p=getPending(),name=String(p.libraryName||'').trim(),seat=Math.max(1,Math.min(2000,Number(p.seatCount||105)||105));
+   if(name.length<2)throw new Error('Library name required');
+   const id='lib_'+user.uid.slice(0,8)+'_'+Date.now().toString(36);
+   const meta={name,seatCount:seat,ownerUid:user.uid,ownerPhone:'+91'+currentPhone,createdAt:Date.now(),updatedAt:Date.now(),members:{[user.uid]:true}};
+   const updates={};
+   updates['platform/libraries/'+id]=meta;
+   updates['platform/users/'+user.uid+'/libraries/'+id]={name,seatCount:seat,role:'owner',createdAt:Date.now()};
+   await raw('').update(updates);
+   return {id,name,seatCount:seat,mode:'tenant'};
+ }
+ async function proceed(user){
+   currentUser=user;currentPhone=p10(user.phoneNumber||'');if(!currentPhone)throw new Error('Phone missing');
+   try{await registerDevice(user)}catch(e){if(e.message==='DEVICE_LIMIT'){await auth.signOut();clearSession();showGate();step('v36PhoneStep');return msg('❌ Is number par 4 active devices already hain. Kisi purane device se logout karke phir try kijiye.')}throw e}
+   let libs=await loadLibraries(user),ses=getSession(),match=libs.find(x=>x.id===ses.libraryId);
+   if(match&&ses.uid===user.uid){
+     match=await applyRequestedSeats(match);
+     const fresh={uid:user.uid,phone:currentPhone,libraryId:match.id,libraryName:match.name,seatCount:match.seatCount,mode:match.mode};
+     setSession(fresh);if(match.mode==='master')localStorage.setItem('hariom_library_admin',currentPhone);
+     if(Number(window.HL36?.seatCount||0)!==Number(fresh.seatCount||0)||window.HL36?.libraryId!==fresh.libraryId)return location.reload();
+     unlockLegacy();applyBrand(fresh);hideGate();msg('');return;
+   }
+   if(libs.length===1){
+     let only=await applyRequestedSeats(libs[0]);
+     const fresh={uid:user.uid,phone:currentPhone,libraryId:only.id,libraryName:only.name,seatCount:only.seatCount,mode:only.mode};
+     setSession(fresh);if(only.mode==='master')localStorage.setItem('hariom_library_admin',currentPhone);
+     return location.reload();
+   }
+   if(libs.length>1){showGate();renderLibraries();step('v36ChooseStep');msg('');return}
+   const created=await createFirstLibraryFromLogin(user);
+   setSession({uid:user.uid,phone:currentPhone,libraryId:created.id,libraryName:created.name,seatCount:created.seatCount,mode:'tenant'});
+   location.reload();
+ }
+ async function init(){
+   if(gateMode){
+     const lib=String(window.HL36?.libraryId||'hariom_master');
+     if(lib!=='hariom_master'){try{const s=await raw('platform/libraries/'+lib).once('value'),d=s.val()||{};if(d.name){window.HL36.libraryName=d.name;setTimeout(()=>{const h=document.querySelector('.v33-student-brand h2');if(h)h.textContent=d.name},0)}}catch(e){}}
+     return;
+   }
+   configWarning();
+   if(!configured()){
+     const legacy=getSession(),lp=p10(legacy.phone||localStorage.getItem('hariom_library_admin')||'');
+     if(legacy.mode==='master'&&legacy.libraryId==='hariom_master'&&masters().has(lp)){currentPhone=lp;unlockLegacy();applyBrand(legacy);hideGate();return}
+     showGate();step('v36PhoneStep');msg('');return
+   }
+   auth=firebase.auth();window.HL36_AUTH=auth;
+   await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+   auth.onAuthStateChanged(async user=>{if(user){try{await proceed(user)}catch(e){console.error(e);showGate();msg('Login error: '+e.message)}}else{clearSession();showGate();step('v36PhoneStep');msg('')}});
+ }
+ window.v36SendOtp=async function(){
+   const libraryName=String($('v361LibraryName')?.value||'').trim(),seatCount=Number($('v361LoginSeats')?.value||0);
+   const phone=p10($('v36Phone')?.value);
+   if(libraryName.length<2)return msg('Library name daliye.');
+   if(!Number.isFinite(seatCount)||seatCount<1||seatCount>2000)return msg('Total seats 1 se 2000 ke beech daliye.');
+   if(!phone)return msg('Valid 10-digit mobile number daliye.');
+   setPending({libraryName,seatCount,phone});
+   if(!configured())return msg('OTP setup pending.');
+   try{
+     if(recaptcha){try{recaptcha.clear()}catch(e){}}
+     recaptcha=new firebase.auth.RecaptchaVerifier('v36Recaptcha',{size:'normal'});
+     confirmation=await auth.signInWithPhoneNumber('+91'+phone,recaptcha);
+     currentPhone=phone;step('v36OtpStep');msg('');
+   }catch(e){msg('OTP send failed: '+e.message)}
+ };
+ window.v36VerifyOtp=async function(){
+   const code=String($('v36Otp')?.value||'').trim();if(!confirmation||!/^\d{6}$/.test(code))return msg('Valid 6-digit OTP daliye.');
+   try{const r=await confirmation.confirm(code);await proceed(r.user)}catch(e){msg('OTP verify failed: '+e.message)}
+ };
+ window.v36TemporaryOwner=function(){
+   const phone=p10(localStorage.getItem('hariom_library_admin')||'');if(!phone||!masters().has(phone))return;
+   const p=getPending(),seat=Math.max(1,Math.min(2000,Number(p.seatCount||105)||105));
+   setSession({uid:'legacy',phone,libraryId:'hariom_master',libraryName:'Hariom Library',seatCount:seat,mode:'master'});location.reload();
+ };
+ window.v36OpenAccount=async function(){
+   const s=getSession();if(!s.libraryId)return showGate();
+   $('v36AccLib').textContent=s.libraryName||'Library';$('v36AccPhone').textContent='+91 '+(s.phone||'');$('v36AccSeats').textContent=Number(s.seatCount||105);
+   if(s.uid&&s.uid!=='legacy'){try{const x=await raw('platform/devices/'+s.uid).once('value');$('v36AccDevices').textContent=Object.keys(x.val()||{}).length+'/4'}catch(e){$('v36AccDevices').textContent='-/4'}}else $('v36AccDevices').textContent='TEMP';
+   $('v36AccountPanel').classList.add('show');$('v36AccountPanel').setAttribute('aria-hidden','false');
+ };
+ window.v36CloseAccount=function(){$('v36AccountPanel').classList.remove('show');$('v36AccountPanel').setAttribute('aria-hidden','true')}
+ window.v36AccountSwitch=async function(){
+   v36CloseAccount();if(!auth?.currentUser)return showGate();
+   currentUser=auth.currentUser;currentPhone=p10(currentUser.phoneNumber||'');await loadLibraries(currentUser);renderLibraries();showGate();step('v36ChooseStep');msg('Library switch kijiye ya nayi library banaiye.');
+ };
+ window.v36EditLibrary=async function(){
+   const s=getSession();if(!s.libraryId)return;
+   if(s.mode==='master'){const v=prompt('Hariom Library total seats:',String(s.seatCount||105));if(v===null)return;const n=Number(v);if(!Number.isFinite(n)||n<1||n>2000)return alert('Seats 1-2000');s.seatCount=n;setSession(s);return location.reload()}
+   const nm=prompt('Library name:',s.libraryName||'');if(nm===null)return;const sv=prompt('Total seats:',String(s.seatCount||105));if(sv===null)return;const n=Number(sv),name=String(nm||'').trim();if(!name||!Number.isFinite(n)||n<1||n>2000)return alert('Valid name and seats 1-2000 required');
+   await raw('platform/libraries/'+s.libraryId).update({name,seatCount:n,updatedAt:Date.now()});
+   await raw('platform/users/'+s.uid+'/libraries/'+s.libraryId).update({name,seatCount:n});
+   s.libraryName=name;s.seatCount=n;setSession(s);location.reload();
+ };
+ window.v36RemoveOtherDevices=async function(){
+   const s=getSession();if(!s.uid||s.uid==='legacy')return alert('Real OTP session required.');
+   if(!confirm('Current device ko chhodkar baaki registered devices remove karne hain?'))return;
+   const snap=await raw('platform/devices/'+s.uid).once('value'),all=snap.val()||{},updates={};
+   Object.keys(all).forEach(k=>{if(k!==getDeviceId())updates[k]=null});
+   await raw('platform/devices/'+s.uid).update(updates);$('v36AccDevices').textContent='1/4';if(typeof showToast==='function')showToast('Other devices removed');
+ };
+ window.v36Logout=async function(){
+   const s=getSession(),did=getDeviceId();
+   try{if(s.uid&&s.uid!=='legacy')await raw('platform/devices/'+s.uid+'/'+did).remove()}catch(e){}
+   try{await auth?.signOut()}catch(e){}
+   clearSession();location.href=location.pathname;
+ };
+ window.logoutAdmin=function(){v36Logout()};
+
+ document.addEventListener('DOMContentLoaded',()=>{
+   const last=getLast(),s=getSession();
+   if($('v361LibraryName'))$('v361LibraryName').value=String(s.libraryName||last.libraryName||'');
+   if($('v361LoginSeats'))$('v361LoginSeats').value=String(s.seatCount||last.seatCount||105);
+   if($('v36Phone'))$('v36Phone').value=String(last.phone||s.phone||'');
+   if(!gateMode&&s.libraryId){applyBrand(s);unlockLegacy()}else if(!gateMode)showGate();
+   const old=$('adminCard');if(old)old.style.display='none';configWarning();
+
+   // Rebrand dynamically-created ID cards/slips/receipts for personal libraries.
+   if(typeof window.v15Modal==='function'&&!window.v15Modal.__v36brand){
+     const oldModal=window.v15Modal;
+     const wrapped=function(){
+       const r=oldModal.apply(this,arguments);
+       setTimeout(()=>{
+         const name=getSession().libraryName||'Hariom Library',root=$('v15ModalBody');
+         if(root){
+           const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;
+           while((n=walker.nextNode())){
+             n.nodeValue=n.nodeValue.replace(/HARIOM LIBRARY/g,name.toUpperCase()).replace(/Hariom Library/g,name);
+           }
+         }
+       },0);
+       return r;
+     };
+     wrapped.__v36brand=true;window.v15Modal=wrapped;
+   }
+ });
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+<!-- ===== END V36 ===== -->
 
 </body>
 </html>
