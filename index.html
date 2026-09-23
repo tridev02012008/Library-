@@ -6902,17 +6902,17 @@ body.v36-locked> :not(#v36Gate):not(script):not(style){visibility:hidden!importa
 
 <div id="v36Gate" aria-hidden="true">
  <div class="v36-card">
-  <div class="v36-brand"><div class="v36-logo">📚</div><div><h2>Library Login</h2></div></div>
+  <div class="v36-brand"><div class="v36-logo">📚</div><div><h2>Library Pro Login</h2></div></div>
   <div id="v36PhoneStep" class="v36-step on">
    <input id="v361LibraryName" class="v36-in" maxlength="60" placeholder="Library name">
    <div class="v361-seat-pick"><span>Total Seats</span><input id="v361LoginSeats" class="v36-in" type="number" min="1" max="2000" value="105" inputmode="numeric"></div>
    <input id="v36Phone" class="v36-in" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
-   <div id="v36Recaptcha"></div>
-   <button class="v36-btn" onclick="v36SendOtp()">GET OTP</button>
+   <div id="v36Recaptcha" style="display:none"></div>
+   <button id="v36SendOtpBtn" class="v36-btn" onclick="v36SendOtp()">GET OTP</button>
   </div>
   <div id="v36OtpStep" class="v36-step">
    <input id="v36Otp" class="v36-in" type="tel" inputmode="numeric" maxlength="6" placeholder="6-digit OTP">
-   <button class="v36-btn green" onclick="v36VerifyOtp()">VERIFY OTP</button>
+   <button id="v36VerifyOtpBtn" class="v36-btn green" onclick="v36VerifyOtp()">VERIFY OTP</button>
   </div>
   <div id="v36ChooseStep" class="v36-step">
    <h3 style="margin-bottom:8px">Choose your library</h3>
@@ -7067,12 +7067,10 @@ body.v36-locked> :not(#v36Gate):not(script):not(style){visibility:hidden!importa
    libraries.push({id,name,seatCount:seat,mode:'tenant'});v36SelectLibrary(id);
  };
  async function applyRequestedSeats(lib){
-   const p=getPending(),requested=Math.max(1,Math.min(2000,Number(p.seatCount||lib.seatCount||105)||105));
-   if(lib.mode==='tenant'&&Number(lib.seatCount||0)!==requested){
-     await raw('platform/libraries/'+lib.id).update({seatCount:requested,updatedAt:Date.now()});
-     await raw('platform/users/'+currentUser.uid+'/libraries/'+lib.id).update({seatCount:requested});
-   }
-   return {...lib,seatCount:requested};
+   // V36.2 SAFETY: returning login must NEVER modify an existing library.
+   // Library name + seat count entered on Login are used only when the phone number
+   // has no library yet. Existing data/config is loaded from Firebase unchanged.
+   return {...lib,seatCount:Math.max(1,Math.min(2000,Number(lib.seatCount||105)||105))};
  }
  async function createFirstLibraryFromLogin(user){
    const p=getPending(),name=String(p.libraryName||'').trim(),seat=Math.max(1,Math.min(2000,Number(p.seatCount||105)||105));
@@ -7102,7 +7100,16 @@ body.v36-locked> :not(#v36Gate):not(script):not(style){visibility:hidden!importa
      setSession(fresh);if(only.mode==='master')localStorage.setItem('hariom_library_admin',currentPhone);
      return location.reload();
    }
-   if(libs.length>1){showGate();renderLibraries();step('v36ChooseStep');msg('');return}
+   if(libs.length>1){
+     const p=getPending(),wanted=String(p.libraryName||'').trim().toLowerCase();
+     const exact=libs.find(x=>String(x.name||'').trim().toLowerCase()===wanted);
+     if(exact){
+       const fresh={uid:user.uid,phone:currentPhone,libraryId:exact.id,libraryName:exact.name,seatCount:Number(exact.seatCount||105),mode:exact.mode};
+       setSession(fresh);if(exact.mode==='master')localStorage.setItem('hariom_library_admin',currentPhone);
+       return location.reload();
+     }
+     showGate();renderLibraries();step('v36ChooseStep');msg('');return
+   }
    const created=await createFirstLibraryFromLogin(user);
    setSession({uid:user.uid,phone:currentPhone,libraryId:created.id,libraryName:created.name,seatCount:created.seatCount,mode:'tenant'});
    location.reload();
@@ -7120,27 +7127,61 @@ body.v36-locked> :not(#v36Gate):not(script):not(style){visibility:hidden!importa
      showGate();step('v36PhoneStep');msg('');return
    }
    auth=firebase.auth();window.HL36_AUTH=auth;
+   try{auth.useDeviceLanguage()}catch(e){}
    await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
    auth.onAuthStateChanged(async user=>{if(user){try{await proceed(user)}catch(e){console.error(e);showGate();msg('Login error: '+e.message)}}else{clearSession();showGate();step('v36PhoneStep');msg('')}});
  }
  window.v36SendOtp=async function(){
    const libraryName=String($('v361LibraryName')?.value||'').trim(),seatCount=Number($('v361LoginSeats')?.value||0);
-   const phone=p10($('v36Phone')?.value);
+   const phone=p10($('v36Phone')?.value),btn=$('v36SendOtpBtn');
    if(libraryName.length<2)return msg('Library name daliye.');
    if(!Number.isFinite(seatCount)||seatCount<1||seatCount>2000)return msg('Total seats 1 se 2000 ke beech daliye.');
    if(!phone)return msg('Valid 10-digit mobile number daliye.');
    setPending({libraryName,seatCount,phone});
-   if(!configured())return msg('OTP setup pending.');
+   if(!configured())return msg('OTP service setup required.');
    try{
-     if(recaptcha){try{recaptcha.clear()}catch(e){}}
-     recaptcha=new firebase.auth.RecaptchaVerifier('v36Recaptcha',{size:'normal'});
+     if(btn){btn.disabled=true;btn.textContent='SENDING OTP...'}
+     msg('');
+     if(recaptcha){try{recaptcha.clear()}catch(e){} recaptcha=null}
+     recaptcha=new firebase.auth.RecaptchaVerifier('v36SendOtpBtn',{
+       size:'invisible',
+       callback:function(){},
+       'expired-callback':function(){msg('Verification expired. GET OTP dubara dabaiye.')}
+     });
      confirmation=await auth.signInWithPhoneNumber('+91'+phone,recaptcha);
      currentPhone=phone;step('v36OtpStep');msg('');
-   }catch(e){msg('OTP send failed: '+e.message)}
+     setTimeout(()=>$('v36Otp')?.focus(),100);
+   }catch(e){
+     try{recaptcha?.clear()}catch(_){}
+     recaptcha=null;
+     const code=String(e?.code||'');
+     if(code.includes('too-many-requests'))msg('Bahut OTP attempts ho gaye. Thodi der baad try kijiye.');
+     else if(code.includes('invalid-phone-number'))msg('Mobile number sahi daliye.');
+     else if(code.includes('operation-not-allowed'))msg('Firebase me Phone Authentication enable kijiye.');
+     else if(code.includes('unauthorized-domain'))msg('Firebase Authorized Domains me apni website domain add kijiye.');
+     else msg('OTP send nahi hua: '+(e?.message||'Unknown error'));
+   }finally{
+     if(btn){btn.disabled=false;btn.textContent='GET OTP'}
+   }
  };
  window.v36VerifyOtp=async function(){
-   const code=String($('v36Otp')?.value||'').trim();if(!confirmation||!/^\d{6}$/.test(code))return msg('Valid 6-digit OTP daliye.');
-   try{const r=await confirmation.confirm(code);await proceed(r.user)}catch(e){msg('OTP verify failed: '+e.message)}
+   const code=String($('v36Otp')?.value||'').trim(),btn=$('v36VerifyOtpBtn');
+   if(!confirmation||!/^\d{6}$/.test(code))return msg('Valid 6-digit OTP daliye.');
+   try{
+     if(btn){btn.disabled=true;btn.textContent='VERIFYING...'}
+     msg('');
+     const r=await confirmation.confirm(code);
+     // Same verified phone number returns the same Firebase Auth user (uid),
+     // so the existing library mapping/data is loaded instead of recreated.
+     await proceed(r.user);
+   }catch(e){
+     const ec=String(e?.code||'');
+     if(ec.includes('invalid-verification-code'))msg('OTP galat hai. Sahi 6-digit OTP daliye.');
+     else if(ec.includes('code-expired'))msg('OTP expire ho gaya. GET OTP dubara kijiye.');
+     else msg('OTP verify nahi hua: '+(e?.message||'Unknown error'));
+   }finally{
+     if(btn){btn.disabled=false;btn.textContent='VERIFY OTP'}
+   }
  };
  window.v36TemporaryOwner=function(){
    const phone=p10(localStorage.getItem('hariom_library_admin')||'');if(!phone||!masters().has(phone))return;
@@ -7175,6 +7216,8 @@ body.v36-locked> :not(#v36Gate):not(script):not(style){visibility:hidden!importa
  };
  window.v36Logout=async function(){
    const s=getSession(),did=getDeviceId();
+   // Logout intentionally removes ONLY this device registration + Firebase Auth session.
+   // No library_v3 / tenants data is deleted here.
    try{if(s.uid&&s.uid!=='legacy')await raw('platform/devices/'+s.uid+'/'+did).remove()}catch(e){}
    try{await auth?.signOut()}catch(e){}
    clearSession();location.href=location.pathname;
