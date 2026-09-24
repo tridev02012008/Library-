@@ -1878,7 +1878,7 @@ Logout Admin
     <div class="quick-actions">
       <button class="quick-action" onclick="exportLibraryDataToExcel()">📊 Excel Backup<span>Students & fees</span></button>
       <button class="quick-action" onclick="downloadJsonBackup()">🗄️ JSON Backup<span>Seats + waiting + expenses</span></button>
-      <button class="quick-action" onclick="showSection('seats')">💺 Seat Map<span>Manage 105 seats</span></button>
+      <button class="quick-action" onclick="showSection('seats')">💺 Seat Map<span>Manage seats</span></button>
       <button class="quick-action" onclick="showSection('report')">📋 Waiting List<span>Manage queue</span></button>
     </div>
   </div>
@@ -2452,7 +2452,7 @@ const database = firebase.database();
     unreservedEnabled: mode==='master' ? true : !!s.unreservedEnabled,
     unreservedStart: mode==='master' ? 64 : Math.max(0,Number(s.unreservedStart||0)||0),
     unreservedEnd: mode==='master' ? 85 : Math.max(0,Number(s.unreservedEnd||0)||0),
-    phone:String(s.phone||''), uid:String(s.uid||'')
+    phone:String(s.phone||''), uid:String(s.uid||''), featurePlan: mode==='master'?'premium':String(s.featurePlan||'premium')
   };
 
   const nativeRef=database.ref.bind(database);
@@ -4042,7 +4042,7 @@ XLSX.writeFile(
 
 workbook,
 
-"Hariom_Library_Backup.xlsx"
+String(window.HL36?.libraryName||"Library").replace(/[^a-z0-9]+/gi,"_")+"_Backup.xlsx"
 
 );
 
@@ -5601,7 +5601,7 @@ body.seat-modal-open #nativeToolDock{display:none!important}
 (function(){
   "use strict";
   const $=id=>document.getElementById(id);
-  const SHIFTS={all:"Full Day",m:"Morning",n:"Noon",an:"Afternoon",e:"Evening",night:"Night"};
+  const SHIFTS={all:window.LP41_SHIFT_LABELS?.all||"Full Day",m:window.LP41_SHIFT_LABELS?.m||"Morning",n:window.LP41_SHIFT_LABELS?.n||"Noon",an:window.LP41_SHIFT_LABELS?.an||"Afternoon",e:window.LP41_SHIFT_LABELS?.e||"Evening",night:window.LP41_SHIFT_LABELS?.night||"Night"};
   let nativeFlexStudents={};
   let nativeStudentQuery="";
   let nativeStudentFilter="all";
@@ -6126,6 +6126,25 @@ body.dark .v30-tool-icon{filter:saturate(.9) brightness(.9)}
 }
 </style>
 <input id="v30PhotoInput" type="file" accept="image/*" capture="user" style="display:none">
+
+<script id="lp41-bootstrap">
+(function(){
+  try{
+    const saved=JSON.parse(localStorage.getItem('lp41_shift_labels')||'{}')||{};
+    window.LP41_SHIFT_LABELS={
+      all:String(saved.all||'Full Day'),
+      m:String(saved.m||'Morning'),
+      n:String(saved.n||'Noon'),
+      an:String(saved.an||'Afternoon'),
+      e:String(saved.e||'Evening'),
+      night:String(saved.night||'Night')
+    };
+  }catch(e){
+    window.LP41_SHIFT_LABELS={all:'Full Day',m:'Morning',n:'Noon',an:'Afternoon',e:'Evening',night:'Night'};
+  }
+})();
+</script>
+
 <script id="v30-student-unique-js">
 (function(){
   const FLEX="library_v3/unreservedStudentsV23";
@@ -6259,7 +6278,7 @@ body.dark .v30-tool-icon{filter:saturate(.9) brightness(.9)}
       return v30ChoosePhoto(r.uid,"id")
     }
 
-    const lib=String(window.HL36?.libraryName||"Library Pro").trim()||"Library Pro";
+    const br=window.LP41_BRANDING||{};const lib=String(br.libraryName||window.HL36?.libraryName||"Library Pro").trim()||"Library Pro";const libAddress=String(br.address||"");const libPhone=String(br.phone||"");const signName=String(br.signature||"Authorized Signature");
     const libId=String(window.HL36?.libraryId||"library");
     const prefix=(lib.split(/\s+/).map(x=>x[0]||"").join("").slice(0,4)||"LIB").toUpperCase();
     const sid=(prefix+"-"+hash(libId+"|"+identity(r)).toUpperCase().slice(0,8));
@@ -6275,8 +6294,8 @@ body.dark .v30-tool-icon{filter:saturate(.9) brightness(.9)}
 
     // Library monogram
     x.fillStyle="#ffffff";rounded(x,42,28,78,78,20);x.fill();
-    x.fillStyle="#0b1f44";x.font="900 30px Arial";x.textAlign="center";
-    x.fillText(prefix.slice(0,3),81,78);x.textAlign="left";
+    if(logo){x.save();rounded(x,47,33,68,68,16);x.clip();const ls=Math.min(68/logo.width,68/logo.height),lw=logo.width*ls,lh=logo.height*ls;x.drawImage(logo,47+(68-lw)/2,33+(68-lh)/2,lw,lh);x.restore()}
+    else{x.fillStyle="#0b1f44";x.font="900 30px Arial";x.textAlign="center";x.fillText(prefix.slice(0,3),81,78);x.textAlign="left"}
 
     // Dynamic library title
     let libSize=40;
@@ -6289,7 +6308,7 @@ body.dark .v30-tool-icon{filter:saturate(.9) brightness(.9)}
     x.fillStyle="#ffffff";x.font="900 18px Arial";x.textAlign="center";x.fillText("ACTIVE",882,69);x.textAlign="left";
 
     // Photo
-    const im=await loadImage(pic);
+    const im=await loadImage(pic),logo=await loadImage(br.logo||"");
     x.fillStyle="#ffffff";rounded(x,45,178,265,322,24);x.fill();
     x.save();rounded(x,58,191,239,270,18);x.clip();
     if(im){
@@ -6327,14 +6346,14 @@ body.dark .v30-tool-icon{filter:saturate(.9) brightness(.9)}
     // Footer / signature
     x.fillStyle="#ffffff";x.fillRect(0,548,1010,90);
     x.strokeStyle="#dbe2ea";x.beginPath();x.moveTo(0,548);x.lineTo(1010,548);x.stroke();
-    x.fillStyle="#475569";x.font="700 14px Arial";x.fillText("This card is valid only for the registered member.",45,579);
-    x.fillStyle="#0f172a";x.font="800 15px Arial";x.textAlign="right";x.fillText("Authorized Signature",955,579);
+    x.fillStyle="#475569";x.font="700 13px Arial";x.fillText((libAddress||"Registered member only")+(libPhone?" • "+libPhone:""),45,579);
+    x.fillStyle="#0f172a";x.font="800 15px Arial";x.textAlign="right";x.fillText(signName||"Authorized Signature",955,579);
     x.strokeStyle="#0f172a";x.lineWidth=1;x.beginPath();x.moveTo(790,600);x.lineTo(955,600);x.stroke();x.textAlign="left";
 
     downloadCanvas(c,`${safeName(lib)}_ID_${safeName(r.name)}.png`)
   }
   async function makeSlip(r){
-    const lib=String(window.HL36?.libraryName||"Library Pro").trim()||"Library Pro";
+    const br=window.LP41_BRANDING||{};const lib=String(br.libraryName||window.HL36?.libraryName||"Library Pro").trim()||"Library Pro";const libAddress=String(br.address||"");const libPhone=String(br.phone||"");const signName=String(br.signature||"Authorized Signature");
     const libId=String(window.HL36?.libraryId||"library");
     const receiptNo="SL-"+new Date().getFullYear()+"-"+hash(libId+"|"+identity(r)+"|"+Date.now()).toUpperCase().slice(0,8);
     const c=document.createElement("canvas");c.width=900;c.height=1280;const x=c.getContext("2d"),pic=photoFor(r),im=await loadImage(pic);
@@ -6347,7 +6366,7 @@ body.dark .v30-tool-icon{filter:saturate(.9) brightness(.9)}
     let libSize=42;while(libSize>25){x.font=`900 ${libSize}px Arial`;if(x.measureText(lib).width<=720)break;libSize-=2}
     x.fillStyle="#ffffff";x.font=`900 ${libSize}px Arial`;x.fillText(lib,55,82);
     x.fillStyle="#bfdbfe";x.font="800 21px Arial";x.fillText("ADMISSION / MEMBERSHIP SLIP",56,124);
-    x.font="600 15px Arial";x.fillText("Receipt No: "+receiptNo+"   •   Date: "+today(),56,158);
+    x.font="600 15px Arial";x.fillText("Receipt No: "+receiptNo+"   •   Date: "+today(),56,158);if(libAddress||libPhone){x.fillStyle="#475569";x.font="600 14px Arial";x.fillText((libAddress||"")+(libPhone?(libAddress?" • ":"")+libPhone:""),55,448)}
 
     // Photo
     if(im){
@@ -6403,7 +6422,7 @@ body.dark .v30-tool-icon{filter:saturate(.9) brightness(.9)}
     x.fillText("Computer-generated slip • Verify details with library administration.",76,1135);
 
     x.fillStyle="#0f172a";x.font="800 15px Arial";
-    x.fillText("Student Signature",75,1200);x.fillText("Authorized Signature",625,1200);
+    x.fillText("Student Signature",75,1200);x.fillText(signName||"Authorized Signature",625,1200);
     x.strokeStyle="#0f172a";x.beginPath();x.moveTo(75,1225);x.lineTo(260,1225);x.moveTo(625,1225);x.lineTo(820,1225);x.stroke();
 
     downloadCanvas(c,`${safeName(lib)}_Slip_${safeName(r.name)}.png`)
@@ -6513,7 +6532,7 @@ body.dark{background:linear-gradient(180deg,#050914,#08111f 42%,#07101c 100%) fi
 (function(){
 'use strict';
 const BASE='library_v3/v31', FLEX='library_v3/unreservedStudentsV23', MEDIA='library_v3/studentMediaV30', PROFILES='library_v3/v15/profiles';
-const SH={all:'Full Day',m:'Morning',n:'Noon',an:'Afternoon',e:'Evening',night:'Night'};
+const SH={all:window.LP41_SHIFT_LABELS?.all||'Full Day',m:window.LP41_SHIFT_LABELS?.m||'Morning',n:window.LP41_SHIFT_LABELS?.n||'Noon',an:window.LP41_SHIFT_LABELS?.an||'Afternoon',e:window.LP41_SHIFT_LABELS?.e||'Evening',night:window.LP41_SHIFT_LABELS?.night||'Night'};
 const state={flex:{},media:{},profiles:{},v31:{},students:[],branch:localStorage.getItem('v31_branch')||'Hariom Library',activeStudent:null,installPrompt:null};
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const digits=v=>String(v||'').replace(/\D/g,'').slice(-10), norm=v=>String(v||'').trim().toLowerCase().replace(/\s+/g,' ');
@@ -6658,7 +6677,18 @@ window.v31ScanQR=async function(){if(!('BarcodeDetector'in window))return alert(
 function paymentModule(k=''){setSheet('₹ Payment & Receipt',`<div class="v31-card">${pickStudent(k)}<div class="v31-grid" style="margin-top:8px"><input id="v31PayAmount" type="number" class="v31-in" placeholder="Amount ₹"><select id="v31PayMode" class="v31-select"><option>Cash</option><option>UPI</option><option>PhonePe</option><option>Google Pay</option><option>Paytm</option><option>Bank Transfer</option><option>Card</option></select><input id="v31PayDue" type="number" class="v31-in" placeholder="Remaining due (optional)"><input id="v31PayTxn" class="v31-in" placeholder="Txn ID / note"></div><button class="v31-btn green" style="width:100%;margin-top:8px" onclick="v31SavePayment()">SAVE PAYMENT + RECEIPT</button></div>`)}
 window.v31SavePayment=async function(){const k=$('v31PickStudent').value,s=getStudent(k),amount=Number($('v31PayAmount').value||0);if(!s||amount<=0)return toast('Student and valid amount required');const mode=$('v31PayMode').value,txn=$('v31PayTxn').value.trim(),dueVal=$('v31PayDue').value,remaining=dueVal===''?Math.max(0,Number(s.due||0)-amount):Math.max(0,Number(dueVal));const rec={studentKey:k,student:s.name,phone:digits(s.phone),amount,mode,txn,due:remaining,kind:'Payment',date:isoDate(),time:Date.now(),receiptNo:'HLR-'+Date.now().toString().slice(-9)};const ref=await saveObj('ledger',rec);await applyMoneyToStudent(s,amount,remaining);audit('Payment',rec.receiptNo+' '+money(amount),s.name);toast('Payment saved');makeReceipt({...rec,key:ref.key});paymentModule(k)}
 async function applyMoneyToStudent(s,amount,due){if(s.type==='flex'&&s.key){const old=state.flex[s.key]||{};return database.ref(FLEX+'/'+s.key).update({paid:Number(old.paid||0)+amount,due,updatedAt:Date.now()})}const ups={};(s.sourceRefs||[]).forEach(r=>{ups[`library_v3/seats/${r.seat}/fees_${r.shift}`]=Number((globalLibraryData[r.seat]||{})['fees_'+r.shift]||0)+amount;ups[`library_v3/seats/${r.seat}/due_${r.shift}`]=due});return database.ref().update(ups)}
-function makeReceipt(r){const c=document.createElement('canvas');c.width=900;c.height=1150;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,900,1150);x.fillStyle='#0b1220';x.fillRect(0,0,900,190);x.fillStyle='#fff';x.font='900 42px Arial';x.fillText('HARIOM LIBRARY',55,80);x.font='700 24px Arial';x.fillText('PAYMENT RECEIPT',55,126);x.fillStyle='#dbeafe';x.font='600 18px Arial';x.fillText(r.receiptNo,55,160);const rows=[['Student',r.student],['Mobile',r.phone||'-'],['Date',r.date],['Payment Mode',r.mode],['Amount',money(r.amount)],['Remaining Due',money(r.due)],['Transaction / Note',r.txn||'-']];let y=250;rows.forEach(([a,b])=>{x.fillStyle='#64748b';x.font='800 18px Arial';x.fillText(a.toUpperCase(),65,y);x.fillStyle='#0f172a';x.font='900 29px Arial';x.fillText(String(b),65,y+38);x.strokeStyle='#e2e8f0';x.beginPath();x.moveTo(65,y+57);x.lineTo(835,y+57);x.stroke();y+=105});x.fillStyle='#dcfce7';x.fillRect(55,1030,790,65);x.fillStyle='#166534';x.textAlign='center';x.font='800 18px Arial';x.fillText('Payment recorded in Library Pro',450,1070);downloadCanvas31(c,'Hariom_Receipt_'+safeFile(r.student)+'_'+r.receiptNo+'.png')}
+function makeReceipt(r){
+ const br=window.LP41_BRANDING||{},lib=String(br.libraryName||window.HL36?.libraryName||'Library Pro'),addr=String(br.address||''),phone=String(br.phone||''),sign=String(br.signature||'Authorized Signature');
+ const c=document.createElement('canvas');c.width=900;c.height=1150;const x=c.getContext('2d');
+ x.fillStyle='#fff';x.fillRect(0,0,900,1150);x.fillStyle='#0b1220';x.fillRect(0,0,900,205);
+ x.fillStyle='#fff';let fs=42;while(fs>26){x.font=`900 ${fs}px Arial`;if(x.measureText(lib).width<=780)break;fs-=2}x.fillText(lib,55,76);
+ x.font='700 24px Arial';x.fillText('PAYMENT RECEIPT',55,120);x.fillStyle='#dbeafe';x.font='600 17px Arial';x.fillText(r.receiptNo,55,153);
+ if(addr||phone)x.fillText((addr||'')+(phone?(addr?' • ':'')+phone:''),55,181);
+ const rows=[['Student',r.student],['Mobile',r.phone||'-'],['Date',r.date],['Payment Mode',r.mode],['Amount',money(r.amount)],['Remaining Due',money(r.due)],['Transaction / Note',r.txn||'-']];
+ let y=255;rows.forEach(([a,b])=>{x.fillStyle='#64748b';x.font='800 18px Arial';x.fillText(a.toUpperCase(),65,y);x.fillStyle='#0f172a';x.font='900 29px Arial';x.fillText(String(b),65,y+38);x.strokeStyle='#e2e8f0';x.beginPath();x.moveTo(65,y+57);x.lineTo(835,y+57);x.stroke();y+=105});
+ x.fillStyle='#f1f5f9';x.fillRect(55,1015,790,82);x.fillStyle='#475569';x.textAlign='left';x.font='700 14px Arial';x.fillText('Computer-generated receipt',75,1048);x.textAlign='right';x.fillStyle='#0f172a';x.fillText(sign,825,1048);x.beginPath();x.moveTo(650,1072);x.lineTo(825,1072);x.stroke();x.textAlign='left';
+ downloadCanvas31(c,safeFile(lib)+'_Receipt_'+safeFile(r.student)+'_'+r.receiptNo+'.png')
+}
 function downloadCanvas31(c,name){c.toBlob(b=>{if(!b)return;const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500)},'image/png')}
 function safeFile(s){return String(s||'file').replace(/[^a-z0-9_-]+/gi,'_').slice(0,45)}
 
@@ -7230,7 +7260,7 @@ body.v36-locked> :not(#v36Gate):not(script):not(style){visibility:hidden!importa
      seatCount:session.seatCount,uid:session.uid||'',
      unreservedEnabled:!!session.unreservedEnabled,
      unreservedStart:Number(session.unreservedStart||0),
-     unreservedEnd:Number(session.unreservedEnd||0)
+     unreservedEnd:Number(session.unreservedEnd||0),featurePlan:String(session.featurePlan||'premium')
    });
    applyBrand(session);unlockLegacy();hideGate();
    if(isOwner(currentUser)){$('v37SellerBtn').style.display='block';clearInterval(v382LicenseTimer);const b=document.getElementById('v382LicenseBanner');if(b)b.className='v382-license-banner'}
@@ -7257,11 +7287,11 @@ body.v36-locked> :not(#v36Gate):not(script):not(style){visibility:hidden!importa
    const urEnabled=(p.unreservedEnabled!==undefined)?!!p.unreservedEnabled:!!lic.unreservedEnabled;
    const urStart=Math.max(0,Number((p.unreservedStart!==undefined?p.unreservedStart:lic.unreservedStart)||0));
    const urEnd=Math.max(0,Number((p.unreservedEnd!==undefined?p.unreservedEnd:lic.unreservedEnd)||0));
-   const session={uid,licenseId:lic.licenseId||'',libraryId:uid,libraryName:p.libraryName||lic.libraryName||'My Library',seatCount:Math.max(1,Number(p.seatCount||lic.seatCount||105)),unreservedEnabled:urEnabled,unreservedStart:urStart,unreservedEnd:urEnd,mode:'tenant',expiresAt:Number(lic.expiresAt||0),graceDays:Math.max(0,Math.min(7,Number(lic.graceDays??2))),graceUntil:graceUntilTs(lic),supportPhone:lic.supportPhone||'',deviceLimit:limit};
+   const session={uid,licenseId:lic.licenseId||'',libraryId:uid,libraryName:p.libraryName||lic.libraryName||'My Library',seatCount:Math.max(1,Number(p.seatCount||lic.seatCount||105)),unreservedEnabled:urEnabled,unreservedStart:urStart,unreservedEnd:urEnd,mode:'tenant',expiresAt:Number(lic.expiresAt||0),graceDays:Math.max(0,Math.min(7,Number(lic.graceDays??2))),graceUntil:graceUntilTs(lic),supportPhone:lic.supportPhone||'',deviceLimit:limit,featurePlan:String(lic.featurePlan||'premium')};
    openApp(session);return true
  }
  function watchDevice(uid,did,fp){try{deviceWatcher?.off()}catch(e){}deviceWatcher=raw('platform/devices/'+uid+'/'+did);deviceWatcher.on('value',snap=>{const d=snap.val();if(d&&d.status==='approved'&&(!d.fingerprint||d.fingerprint===fp)){location.reload()}else if(d&&d.status==='rejected'){lockReason('<b>Device rejected</b><br>Seller se contact kijiye.')}})}
- async function proceed(user){currentUser=user;if(isOwner(user)){const session={uid:user.uid,licenseId:'OWNER',libraryId:'hariom_master',libraryName:'Hariom Library',seatCount:105,unreservedEnabled:true,unreservedStart:64,unreservedEnd:85,mode:'master',deviceLimit:99};openApp(session);return}await ensureCustomer(user)}
+ async function proceed(user){currentUser=user;if(isOwner(user)){const session={uid:user.uid,licenseId:'OWNER',libraryId:'hariom_master',libraryName:'Hariom Library',seatCount:105,unreservedEnabled:true,unreservedStart:64,unreservedEnd:85,mode:'master',deviceLimit:99,featurePlan:'premium'};openApp(session);return}await ensureCustomer(user)}
 
  window.v37Login=async function(){
    const id=cleanId($('v37LicenseId')?.value),pass=String($('v37Password')?.value||''),btn=$('v37LoginBtn');
@@ -7384,6 +7414,7 @@ body.v36-locked> :not(#v36Gate):not(script):not(style){visibility:hidden!importa
     </div>
     <div class="v38-row"><input id="v38SupportPhone" class="v38-in" inputmode="numeric" maxlength="15" placeholder="Renewal / support mobile"><input id="v38GraceDays" class="v38-in" type="number" min="0" max="7" value="2" placeholder="Grace days (default 2)"></div>
     <div class="v38-row"><select id="v38Plan" class="v38-in" onchange="v38PlanChanged()"><option value="1m">1 Month</option><option value="3m">3 Months</option><option value="6m">6 Months</option><option value="1y" selected>1 Year</option><option value="lifetime">Lifetime</option><option value="custom">Custom Expiry</option></select><input id="v38Expiry" class="v38-in" type="date"></div>
+    <div class="v38-row"><select id="v41FeaturePlan" class="v38-in"><option value="basic">Basic Software</option><option value="pro">Pro Software</option><option value="premium" selected>Premium Software</option></select><div class="v38-in" style="display:flex;align-items:center;color:#64748b;font-size:10px">Feature access plan</div></div>
     <div class="v38-row"><input id="v38Amount" class="v38-in" type="number" min="0" step="1" placeholder="Sale amount ₹"><select id="v38Payment" class="v38-in"><option value="paid">Paid</option><option value="pending">Payment Pending</option><option value="partial">Partial</option></select></div>
     <input id="v38Notes" class="v38-in" placeholder="Notes (optional)">
     <button id="v38CreateBtn" class="v38-btn green" style="width:100%;margin-top:7px" onclick="v38CreateCustomer()">CREATE & SAVE CUSTOMER</button>
@@ -7603,9 +7634,9 @@ function v385RestoreLastLogin(){
 }
 
 window.v38CreateCustomer=async function(){
- if(!vaultUnlocked||!isOwner())return;const id=cleanId($('v38NewId').value),pass=String($('v38NewPass').value||''),buyerName=$('v38BuyerName').value.trim(),phone=$('v38BuyerPhone').value.trim(),libraryName=$('v38LibraryName').value.trim(),address=$('v38BuyerAddress').value.trim(),seats=Number($('v38Seats').value),deviceLimit=Number($('v38Devices').value),unreservedEnabled=!!$('v39HasUnreserved')?.checked,unreservedStart=unreservedEnabled?Number($('v39UrStart')?.value||0):0,unreservedEnd=unreservedEnabled?Number($('v39UrEnd')?.value||0):0,supportPhone=$('v38SupportPhone').value.trim(),graceDays=Math.max(0,Math.min(7,Number($('v38GraceDays').value||2))),plan=$('v38Plan').value,expiresAt=plan==='lifetime'?0:expiryMs($('v38Expiry').value),saleAmount=Number($('v38Amount').value||0),paymentStatus=$('v38Payment').value,notes=$('v38Notes').value.trim(),m=$('v38CreateMsg'),btn=$('v38CreateBtn');
+ if(!vaultUnlocked||!isOwner())return;const id=cleanId($('v38NewId').value),pass=String($('v38NewPass').value||''),buyerName=$('v38BuyerName').value.trim(),phone=$('v38BuyerPhone').value.trim(),libraryName=$('v38LibraryName').value.trim(),address=$('v38BuyerAddress').value.trim(),seats=Number($('v38Seats').value),deviceLimit=Number($('v38Devices').value),unreservedEnabled=!!$('v39HasUnreserved')?.checked,unreservedStart=unreservedEnabled?Number($('v39UrStart')?.value||0):0,unreservedEnd=unreservedEnabled?Number($('v39UrEnd')?.value||0):0,supportPhone=$('v38SupportPhone').value.trim(),graceDays=Math.max(0,Math.min(7,Number($('v38GraceDays').value||2))),plan=$('v38Plan').value,featurePlan=String($('v41FeaturePlan')?.value||'premium'),expiresAt=plan==='lifetime'?0:expiryMs($('v38Expiry').value),saleAmount=Number($('v38Amount').value||0),paymentStatus=$('v38Payment').value,notes=$('v38Notes').value.trim(),m=$('v38CreateMsg'),btn=$('v38CreateBtn');
  if(id===OWNER_ID||id.length<3)return m.textContent='Valid unique Library ID daliye.';if(pass.length<6)return m.textContent='Password minimum 6 characters.';if(!buyerName)return m.textContent='Customer name required.';if(!libraryName)return m.textContent='Library name required.';if(!Number.isFinite(seats)||seats<1||seats>2000)return m.textContent='Seats 1–2000.';if(!Number.isFinite(deviceLimit)||deviceLimit<1||deviceLimit>10)return m.textContent='Device limit 1–10.';if(unreservedEnabled&&(!Number.isFinite(unreservedStart)||!Number.isFinite(unreservedEnd)||unreservedStart<1||unreservedEnd>seats||unreservedStart>unreservedEnd))return m.textContent='Unreserved range total seats ke andar valid rakhiye.';if(!Number.isFinite(graceDays)||graceDays<0||graceDays>7)return m.textContent='Grace days 0–7 rakhiye.';if(plan!=='lifetime'&&!expiresAt)return m.textContent='Expiry date select kijiye.';
- try{btn.disabled=true;btn.textContent='CREATING...';m.textContent='';const ex=await raw('platform/licenseIds/'+id).once('value');if(ex.exists())throw new Error('Library ID already exists.');const authCreated=await v385CreateSecondaryUser(id,pass);const uid=authCreated.uid,now=Date.now(),graceUntil=expiresAt?expiresAt+graceDays*V38_DAY:0,lic={licenseId:id,libraryName,seatCount:seats,deviceLimit,unreservedEnabled,unreservedStart,unreservedEnd,expiresAt,graceDays,graceUntil,supportPhone,status:'active',plan,authEmail:authCreated.email,createdAt:now,updatedAt:now};const up={};up['platform/licensesByUid/'+uid]=lic;up['platform/licenseIds/'+id]=uid;up['tenants/'+uid+'/meta/profile']={libraryName,seatCount:seats,unreservedEnabled,unreservedStart,unreservedEnd,createdAt:now,updatedAt:now};await firebase.database().ref().update(up);await savePrivate(uid,{licenseId:id,password:pass,buyerName,phone,address,libraryName,seats,deviceLimit,unreservedEnabled,unreservedStart,unreservedEnd,plan,expiresAt,graceDays,graceUntil,supportPhone,saleAmount,paymentStatus,notes,authEmail:authCreated.email,soldAt:now});localStorage.setItem('lp_v38_support_phone',supportPhone||'');v385ShowLastLogin({licenseId:id,password:pass,libraryName,buyerName});m.innerHTML='✅ CUSTOMER CREATED SUCCESSFULLY • ID: <b>'+esc(id)+'</b> • '+esc(libraryName)+' • Login box me ID/password save dikh raha hai.';await v38LoadCustomers();alert('✅ CUSTOMER CREATED SUCCESSFULLY\n\nLibrary: '+libraryName+'\nLibrary ID: '+id+'\nPassword: '+pass+'\nSeats: '+seats+'\nUnreserved: '+(unreservedEnabled?(unreservedStart+'–'+unreservedEnd):'No')+'\nDevice limit: '+deviceLimit+'\nExpiry: '+(expiresAt?dateFmt(expiresAt):'Lifetime')+'\n\nAb customer ko normal app link + ID + Password bhejiye. First login par Device Approval Request Seller Center ke TOP me dikhegi.');['v38NewId','v38NewPass','v38BuyerName','v38BuyerPhone','v38LibraryName','v38BuyerAddress','v38Amount','v38Notes'].forEach(x=>{if($(x))$(x).value=''});$('v38Seats').value='105';$('v38Devices').value='1';if($('v39HasUnreserved'))$('v39HasUnreserved').checked=false;if($('v39UrStart'))$('v39UrStart').value='';if($('v39UrEnd'))$('v39UrEnd').value='';v39ToggleUnreservedFields();$('v38GraceDays').value='2';$('v38Plan').value='1y';$('v38Payment').value='paid';v38PlanChanged();setTimeout(()=>document.getElementById('v38CustomerList')?.scrollIntoView({behavior:'smooth',block:'start'}),150)}catch(e){m.textContent='❌ '+String(e.message||e).replace('EMAIL_EXISTS','This ID already has an account.')}finally{btn.disabled=false;btn.textContent='CREATE & SAVE CUSTOMER'}
+ try{btn.disabled=true;btn.textContent='CREATING...';m.textContent='';const ex=await raw('platform/licenseIds/'+id).once('value');if(ex.exists())throw new Error('Library ID already exists.');const authCreated=await v385CreateSecondaryUser(id,pass);const uid=authCreated.uid,now=Date.now(),graceUntil=expiresAt?expiresAt+graceDays*V38_DAY:0,lic={licenseId:id,libraryName,seatCount:seats,deviceLimit,unreservedEnabled,unreservedStart,unreservedEnd,expiresAt,graceDays,graceUntil,supportPhone,status:'active',plan,featurePlan,authEmail:authCreated.email,createdAt:now,updatedAt:now};const up={};up['platform/licensesByUid/'+uid]=lic;up['platform/licenseIds/'+id]=uid;up['tenants/'+uid+'/meta/profile']={libraryName,seatCount:seats,unreservedEnabled,unreservedStart,unreservedEnd,createdAt:now,updatedAt:now};await firebase.database().ref().update(up);await savePrivate(uid,{licenseId:id,password:pass,buyerName,phone,address,libraryName,seats,deviceLimit,unreservedEnabled,unreservedStart,unreservedEnd,plan,featurePlan,expiresAt,graceDays,graceUntil,supportPhone,saleAmount,paymentStatus,notes,authEmail:authCreated.email,soldAt:now});localStorage.setItem('lp_v38_support_phone',supportPhone||'');v385ShowLastLogin({licenseId:id,password:pass,libraryName,buyerName});m.innerHTML='✅ CUSTOMER CREATED SUCCESSFULLY • ID: <b>'+esc(id)+'</b> • '+esc(libraryName)+' • Login box me ID/password save dikh raha hai.';await v38LoadCustomers();alert('✅ CUSTOMER CREATED SUCCESSFULLY\n\nLibrary: '+libraryName+'\nLibrary ID: '+id+'\nPassword: '+pass+'\nSeats: '+seats+'\nUnreserved: '+(unreservedEnabled?(unreservedStart+'–'+unreservedEnd):'No')+'\nDevice limit: '+deviceLimit+'\nExpiry: '+(expiresAt?dateFmt(expiresAt):'Lifetime')+'\n\nAb customer ko normal app link + ID + Password bhejiye. First login par Device Approval Request Seller Center ke TOP me dikhegi.');['v38NewId','v38NewPass','v38BuyerName','v38BuyerPhone','v38LibraryName','v38BuyerAddress','v38Amount','v38Notes'].forEach(x=>{if($(x))$(x).value=''});$('v38Seats').value='105';$('v38Devices').value='1';if($('v39HasUnreserved'))$('v39HasUnreserved').checked=false;if($('v39UrStart'))$('v39UrStart').value='';if($('v39UrEnd'))$('v39UrEnd').value='';v39ToggleUnreservedFields();$('v38GraceDays').value='2';$('v38Plan').value='1y';if($('v41FeaturePlan'))$('v41FeaturePlan').value='premium';$('v38Payment').value='paid';v38PlanChanged();setTimeout(()=>document.getElementById('v38CustomerList')?.scrollIntoView({behavior:'smooth',block:'start'}),150)}catch(e){m.textContent='❌ '+String(e.message||e).replace('EMAIL_EXISTS','This ID already has an account.')}finally{btn.disabled=false;btn.textContent='CREATE & SAVE CUSTOMER'}
 };
 
 async function loadPrivateRecords(){
@@ -7775,7 +7806,7 @@ window.v38LoadCustomers=async function(){
        '<div class="v38-meta">Customer: '+esc(pv.buyerName||'Not saved')+' • '+esc(pv.phone||'-')+
        '<br>Plan: '+esc(pv.plan||x.plan||'-')+' • Expiry: '+esc(dateFmt(x.expiresAt||pv.expiresAt))+
        ' • Grace till: '+esc((x.expiresAt||pv.expiresAt)?dateFmt(graceUntil(x.expiresAt?x:{...x,expiresAt:pv.expiresAt,graceUntil:pv.graceUntil,graceDays:pv.graceDays})):'Lifetime')+
-       ' • Seats: '+Number(x.seatCount||pv.seats||105)+' • Unreserved: '+(((x.unreservedEnabled!==undefined)?x.unreservedEnabled:pv.unreservedEnabled)?((x.unreservedStart||pv.unreservedStart||'?')+'–'+(x.unreservedEnd||pv.unreservedEnd||'?')):'No')+' • Devices: '+Number(x.deviceLimit||pv.deviceLimit||1)+
+       ' • Software: '+String(x.featurePlan||pv.featurePlan||'premium').toUpperCase()+' • Seats: '+Number(x.seatCount||pv.seats||105)+' • Unreserved: '+(((x.unreservedEnabled!==undefined)?x.unreservedEnabled:pv.unreservedEnabled)?((x.unreservedStart||pv.unreservedStart||'?')+'–'+(x.unreservedEnd||pv.unreservedEnd||'?')):'No')+' • Devices: '+Number(x.deviceLimit||pv.deviceLimit||1)+
        '<br>Sale: '+money(pv.saleAmount||0)+' • Payment: '+esc(pay)+
        (pv.address?'<br>Address: '+esc(pv.address):'')+(pv.notes?'<br>Note: '+esc(pv.notes):'')+
        '</div></div><span class="v38-badge '+cls+'">'+st+'</span></div>'+
@@ -7789,6 +7820,7 @@ window.v38LoadCustomers=async function(){
        '<button class="v38-btn sm" onclick="v38Renew(\''+x.uid+'\')">RENEW</button>'+
        '<button class="v38-btn amber sm" onclick="v38EditSale(\''+x.uid+'\')">SELLER DETAILS</button>'+
        '<button class="v38-btn gray sm" onclick="v38EditLibrary(\''+x.uid+'\')">LIBRARY SETTINGS</button>'+
+       '<button class="v38-btn gray sm" onclick="v41SetCustomerPlan(\''+x.uid+'\')">SOFTWARE PLAN</button>'+
        '<button class="v38-btn red sm" onclick="v39DeleteCustomer(\''+x.uid+'\')">🗑 DELETE CUSTOMER</button></div>'+
        devHtml+'</div>';
    }).join('');
@@ -7974,7 +8006,7 @@ function boot(){hideLegacySeller();try{firebase.auth().onAuthStateChanged(maybeS
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
 </script>
-<!-- ===== V40 COMPACT RENEWAL CENTER + DYNAMIC ID/SLIP ===== -->
+<!-- ===== V41 BUSINESS SUITE ===== -->
 <!-- ===== END V39 ===== -->
 
 <!-- ===== V40 COMPACT RENEWAL CENTER + OWNER-ONLY WHATSAPP ===== -->
@@ -8130,5 +8162,505 @@ body.v361-tenant #v25NoticePanel{display:none!important}
 })();
 </script>
 <!-- ===== END V40 ===== -->
+
+<!-- ===== LIBRARY PRO V41 BUSINESS SUITE ===== -->
+<style id="lp41-style">
+/* Hide old duplicate demo/feature-center launchers. Their data/functions remain intact. */
+.ultimate-fab,.nx-fab,.super-fab,.ai14-fab,.v15-fab{display:none!important}
+#v20Center{display:none!important}
+
+.lp41-seat-zone{position:absolute;right:5px;top:5px;z-index:3;max-width:70%;padding:3px 6px;border-radius:999px;background:rgba(15,23,42,.88);color:#fff;font-size:6px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+.seat{position:relative}
+
+.lp41-home{margin:10px 0 14px;padding:12px;border:1px solid rgba(79,70,229,.18);border-radius:19px;background:var(--card);box-shadow:0 10px 26px rgba(15,23,42,.07)}
+.lp41-home-top{display:flex;align-items:center;justify-content:space-between;gap:9px}.lp41-home-title{display:flex;align-items:center;gap:9px}.lp41-home-ico{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#0f172a,#4f46e5);color:#fff;display:grid;place-items:center;font-size:18px}.lp41-home h3{font-size:13px;margin:0}.lp41-sub{font-size:7.7px;color:var(--muted);margin-top:2px}.lp41-plan{font-size:7px;font-weight:950;border-radius:999px;padding:5px 8px;background:#eef2ff;color:#4338ca}
+.lp41-home-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:9px}.lp41-mini{border:1px solid var(--border);background:var(--bg);border-radius:11px;padding:8px 5px;text-align:center}.lp41-mini b{display:block;font-size:12px}.lp41-mini span{font-size:5.8px;color:var(--muted);font-weight:900}
+.lp41-open{width:100%;border:0;border-radius:11px;padding:10px;margin-top:8px;background:linear-gradient(135deg,#0f172a,#4f46e5);color:#fff;font-size:8.5px;font-weight:950}
+
+#lp41Panel{display:none;position:fixed;inset:0;z-index:9800;background:var(--bg);overflow:auto}#lp41Panel.show{display:block}
+.lp41-head{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:9px;padding:12px 13px;background:linear-gradient(120deg,#0b1220,#1d4ed8,#5b21b6);color:#fff;box-shadow:0 8px 25px rgba(0,0,0,.2)}.lp41-head h2{font-size:15px;flex:1}.lp41-head small{display:block;font-size:7px;opacity:.8}.lp41-close{width:39px;height:39px;border:0;border-radius:12px;background:#ffffff20;color:#fff;font-size:20px}
+.lp41-wrap{max-width:900px;margin:auto;padding:11px 11px 110px}.lp41-tabs{display:flex;gap:6px;overflow:auto;scrollbar-width:none;margin:2px 0 10px}.lp41-tab{white-space:nowrap;border:1px solid var(--border);border-radius:999px;background:var(--card);color:var(--text);padding:8px 10px;font-size:7.5px;font-weight:900}.lp41-tab.on{background:#1d4ed8;color:#fff;border-color:#1d4ed8}.lp41-tab.lock{opacity:.42}
+.lp41-pane{display:none}.lp41-pane.on{display:block}.lp41-card{background:var(--card);border:1px solid var(--border);border-radius:17px;padding:12px;margin-bottom:9px;box-shadow:0 8px 20px rgba(15,23,42,.05)}.lp41-card h3{font-size:12px;margin:0 0 8px}.lp41-note{font-size:7.8px;line-height:1.5;color:var(--muted)}
+.lp41-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.lp41-full{grid-column:1/-1}.lp41-in,.lp41-select,.lp41-text{width:100%;border:1px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text);padding:10px;font-size:9px}.lp41-text{min-height:80px;resize:vertical}.lp41-btn{border:0;border-radius:10px;padding:10px 11px;background:#1d4ed8;color:#fff;font-size:8px;font-weight:900}.lp41-btn.green{background:#059669}.lp41-btn.red{background:#dc2626}.lp41-btn.gray{background:#475569}.lp41-btn.amber{background:#d97706}.lp41-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.lp41-kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.lp41-kpi{border:1px solid var(--border);border-radius:13px;padding:10px;background:var(--bg)}.lp41-kpi span{font-size:6.5px;color:var(--muted);font-weight:900}.lp41-kpi b{display:block;font-size:16px;margin-top:4px}
+.lp41-list{display:grid;gap:7px}.lp41-item{border:1px solid var(--border);border-radius:12px;padding:9px;font-size:8px;line-height:1.5}.lp41-item b{font-size:9px}.lp41-row{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.lp41-badge{padding:4px 7px;border-radius:999px;background:#eef2ff;color:#4338ca;font-size:6px;font-weight:900}.lp41-badge.green{background:#dcfce7;color:#166534}.lp41-badge.amber{background:#fef3c7;color:#92400e}.lp41-badge.red{background:#fee2e2;color:#b91c1c}
+.lp41-shift{display:grid;grid-template-columns:34px 1.2fr .8fr .8fr .75fr;gap:5px;align-items:center;margin-bottom:6px}.lp41-shift input{min-width:0}.lp41-shift .lp41-check{width:18px;height:18px}
+.lp41-section-line{display:grid;grid-template-columns:1.2fr .6fr .6fr .7fr auto;gap:5px;margin-bottom:6px}
+.lp41-preview{overflow:auto;border:1px solid var(--border);border-radius:12px;margin-top:8px}.lp41-preview table{width:100%;border-collapse:collapse;font-size:7px;min-width:620px}.lp41-preview th,.lp41-preview td{padding:7px;border-bottom:1px solid var(--border);text-align:left}.lp41-preview th{background:var(--bg)}
+.lp41-logo-preview{width:74px;height:74px;border:1px solid var(--border);border-radius:16px;object-fit:contain;background:#fff}
+.lp41-online{display:inline-flex;align-items:center;gap:5px;font-size:7px;font-weight:900}.lp41-dot{width:8px;height:8px;border-radius:50%;background:#16a34a}.lp41-off .lp41-dot{background:#dc2626}
+.lp41-locked{padding:28px 12px;text-align:center;color:var(--muted);font-size:9px}
+.lp41-staff-reception #nav-business,.lp41-staff-reception #nav-settings,.lp41-staff-reception #v31Launch{display:none!important}
+.lp41-staff-accountant #nav-seats,.lp41-staff-accountant #v31Launch{display:none!important}
+.lp41-staff-viewer #nav-business,.lp41-staff-viewer #nav-settings,.lp41-staff-viewer #v31Launch{display:none!important}
+.lp41-basic #v31Launch{display:none!important}
+@media(min-width:700px){.lp41-kpis{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:520px){.lp41-shift{grid-template-columns:28px 1fr 1fr}.lp41-shift .lp41-time2,.lp41-shift .lp41-fee{grid-column:auto}.lp41-section-line{grid-template-columns:1fr 1fr}.lp41-section-line button{grid-column:1/-1}}
+</style>
+
+<div id="lp41Panel" aria-hidden="true">
+  <div class="lp41-head"><div>⚙️</div><h2>Business Setup & Control<small id="lp41HeadSub"></small></h2><button class="lp41-close" onclick="lp41Close()">×</button></div>
+  <div class="lp41-wrap">
+    <div id="lp41Tabs" class="lp41-tabs"></div>
+
+    <section class="lp41-pane on" data-pane="overview">
+      <div class="lp41-card">
+        <div class="lp41-row"><div><h3>Library Setup</h3><div class="lp41-note">Branding, seats, shifts and sections.</div></div><span id="lp41PlanBadge" class="lp41-badge">PREMIUM</span></div>
+        <div class="lp41-actions"><button class="lp41-btn green" onclick="lp41Wizard()">START SETUP WIZARD</button><button class="lp41-btn" onclick="lp41Tab('branding')">BRANDING</button><button class="lp41-btn gray" onclick="lp41Tab('sections')">SEAT LAYOUT</button></div>
+      </div>
+      <div id="lp41OverviewKpis" class="lp41-kpis"></div>
+      <div class="lp41-card"><h3>Quick Management</h3><div class="lp41-actions"><button class="lp41-btn" onclick="lp41Tab('report')">BUSINESS REPORT</button><button class="lp41-btn" onclick="lp41Tab('import')">IMPORT STUDENTS</button><button class="lp41-btn" onclick="lp41Tab('backup')">BACKUP</button><button class="lp41-btn" onclick="lp41Tab('support')">SUPPORT</button></div></div>
+    </section>
+
+    <section class="lp41-pane" data-pane="branding">
+      <div class="lp41-card"><h3>🎨 Library Branding</h3>
+        <div class="lp41-grid">
+          <input id="lp41BrandName" class="lp41-in lp41-full" placeholder="Library name">
+          <input id="lp41BrandOwner" class="lp41-in" placeholder="Owner / manager name">
+          <input id="lp41BrandPhone" class="lp41-in" placeholder="Library mobile">
+          <input id="lp41BrandEmail" class="lp41-in" placeholder="Email">
+          <input id="lp41BrandUpi" class="lp41-in" placeholder="UPI ID">
+          <input id="lp41BrandSign" class="lp41-in" placeholder="Signature name">
+          <textarea id="lp41BrandAddress" class="lp41-text lp41-full" placeholder="Full address"></textarea>
+          <textarea id="lp41BrandFooter" class="lp41-text lp41-full" placeholder="Receipt / slip footer note"></textarea>
+        </div>
+        <div class="lp41-actions"><img id="lp41LogoPreview" class="lp41-logo-preview" alt=""><button class="lp41-btn gray" onclick="document.getElementById('lp41LogoFile').click()">UPLOAD LOGO</button><input id="lp41LogoFile" type="file" accept="image/*" style="display:none" onchange="lp41LogoPicked(event)"><button class="lp41-btn green" onclick="lp41SaveBranding()">SAVE BRANDING</button></div>
+      </div>
+    </section>
+
+    <section class="lp41-pane" data-pane="shifts">
+      <div class="lp41-card"><h3>🕒 Custom Shift Builder</h3><div class="lp41-note">Existing 6 shift slots stay compatible with old data; you can rename them and set timing/default fee.</div><div id="lp41ShiftRows" style="margin-top:9px"></div><button class="lp41-btn green" onclick="lp41SaveShifts()">SAVE SHIFTS & RELOAD</button></div>
+    </section>
+
+    <section class="lp41-pane" data-pane="sections">
+      <div class="lp41-card"><h3>🪑 Seat Sections / Zones</h3><div class="lp41-note">Example: AC Hall 1–60, Girls Section 61–100. Optional prefix gives display alias like A-12 while internal seat number stays safe.</div><div id="lp41SectionRows"></div><div class="lp41-actions"><button class="lp41-btn gray" onclick="lp41AddSection()">+ ADD SECTION</button><button class="lp41-btn green" onclick="lp41SaveSections()">SAVE LAYOUT</button></div></div>
+      <div class="lp41-card"><h3>Jump to Section</h3><div id="lp41SectionJump" class="lp41-actions"></div></div>
+    </section>
+
+    <section class="lp41-pane" data-pane="import">
+      <div class="lp41-card"><h3>📥 Excel / CSV Import</h3><div class="lp41-note">Supported columns: Name, Mobile, Seat, Shift, Paid, Due, Renewal. Existing occupied seat/shift records are skipped; they are never overwritten.</div><div class="lp41-actions"><button class="lp41-btn gray" onclick="lp41DownloadTemplate()">DOWNLOAD TEMPLATE</button><button class="lp41-btn" onclick="document.getElementById('lp41ImportFile').click()">CHOOSE EXCEL / CSV</button><input id="lp41ImportFile" type="file" accept=".xlsx,.xls,.csv" style="display:none" onchange="lp41ReadImport(event)"></div><div id="lp41ImportSummary" class="lp41-note" style="margin-top:8px"></div><div id="lp41ImportPreview" class="lp41-preview" style="display:none"></div><button id="lp41ImportBtn" class="lp41-btn green" style="display:none;width:100%;margin-top:8px" onclick="lp41RunImport()">IMPORT SAFE RECORDS</button></div>
+    </section>
+
+    <section class="lp41-pane" data-pane="staff">
+      <div class="lp41-card"><h3>👥 Staff Workspace</h3><div class="lp41-note">App-level staff mode for daily use. Owner/customer admin account remains the master account.</div>
+        <div class="lp41-grid"><input id="lp41StaffName" class="lp41-in" placeholder="Staff name"><input id="lp41StaffId" class="lp41-in" placeholder="Staff ID"><input id="lp41StaffPin" class="lp41-in" inputmode="numeric" maxlength="6" placeholder="4–6 digit PIN"><select id="lp41StaffRole" class="lp41-select"><option value="manager">Manager</option><option value="reception">Reception</option><option value="accountant">Accountant</option><option value="viewer">Viewer</option></select></div>
+        <div class="lp41-actions"><button class="lp41-btn green" onclick="lp41AddStaff()">ADD STAFF</button><button class="lp41-btn gray" onclick="lp41StaffLogin()">START STAFF MODE</button><button class="lp41-btn red" onclick="lp41StaffLogout()">EXIT STAFF MODE</button></div>
+      </div>
+      <div class="lp41-card"><h3>Staff List</h3><div id="lp41StaffList" class="lp41-list"></div></div>
+    </section>
+
+    <section class="lp41-pane" data-pane="report">
+      <div class="lp41-card"><div class="lp41-row"><h3>📊 Business Report</h3><button class="lp41-btn gray" onclick="lp41LoadReport()">REFRESH</button></div><div id="lp41ReportKpis" class="lp41-kpis"></div></div>
+      <div class="lp41-card"><h3>Due & Renewal Risk</h3><div id="lp41DueAging" class="lp41-list"></div></div>
+      <div class="lp41-card"><h3>Shift Occupancy</h3><div id="lp41ShiftReport" class="lp41-list"></div><div class="lp41-actions"><button class="lp41-btn" onclick="lp41ExportReport()">DOWNLOAD REPORT CSV</button><button class="lp41-btn gray" onclick="window.print()">PRINT</button></div></div>
+    </section>
+
+    <section class="lp41-pane" data-pane="backup">
+      <div class="lp41-card"><h3>☁️ Automatic Cloud Backup</h3><div class="lp41-note">A compact daily restore point is created when the app opens. Last 7 daily snapshots are kept.</div><div class="lp41-actions"><button class="lp41-btn green" onclick="lp41BackupNow()">BACKUP NOW</button><button class="lp41-btn" onclick="lp41RenderBackups()">REFRESH LIST</button></div></div>
+      <div class="lp41-card"><h3>Restore Points</h3><div id="lp41BackupList" class="lp41-list"></div></div>
+    </section>
+
+    <section class="lp41-pane" data-pane="support">
+      <div class="lp41-card"><h3>🎧 Customer Support</h3><div class="lp41-grid"><select id="lp41SupportCat" class="lp41-select"><option>App Problem</option><option>Login</option><option>Data</option><option>Payment / Receipt</option><option>Seat / Student</option><option>Other</option></select><select id="lp41SupportPri" class="lp41-select"><option>Normal</option><option>High</option><option>Urgent</option></select><textarea id="lp41SupportMsg" class="lp41-text lp41-full" placeholder="Problem details"></textarea></div><button class="lp41-btn green" style="width:100%;margin-top:7px" onclick="lp41SubmitSupport()">CREATE SUPPORT TICKET</button></div>
+      <div class="lp41-card"><h3>My Tickets</h3><div id="lp41SupportList" class="lp41-list"></div></div>
+    </section>
+
+    <section class="lp41-pane" data-pane="system">
+      <div class="lp41-card"><h3>📱 App & Sync</h3><div class="lp41-row"><div><b>Library Pro V41</b><div class="lp41-note" id="lp41VersionInfo"></div></div><div id="lp41Online" class="lp41-online"><i class="lp41-dot"></i><span>ONLINE</span></div></div><div class="lp41-actions"><button class="lp41-btn" onclick="lp41UpdateApp()">CHECK / APPLY UPDATE</button><button class="lp41-btn gray" onclick="lp41FlushQueue()">SYNC OFFLINE QUEUE</button></div><div id="lp41QueueInfo" class="lp41-note" style="margin-top:8px"></div></div>
+      <div class="lp41-card"><h3>🎫 Student Digital Pass</h3><div class="lp41-note">Safe admin-generated read-only student pass. No public database access is opened.</div><div class="lp41-grid"><input id="lp41PassSearch" class="lp41-in lp41-full" placeholder="Student name or mobile"><input id="lp41PassName" class="lp41-in" placeholder="Student name"><input id="lp41PassMobile" class="lp41-in" placeholder="Mobile"><input id="lp41PassSeat" class="lp41-in" placeholder="Seat / type"><input id="lp41PassRenew" class="lp41-in" placeholder="Renewal date"></div><button class="lp41-btn green" style="width:100%;margin-top:7px" onclick="lp41MakePass()">DOWNLOAD STUDENT PASS</button></div>
+    </section>
+
+    <section class="lp41-pane" data-pane="owner">
+      <div class="lp41-card"><h3>💼 Seller Software Plans</h3><div class="lp41-note">Basic / Pro / Premium can be changed from each customer card inside Private Seller Center.</div><button class="lp41-btn green" onclick="v37OpenSeller()">OPEN PRIVATE SELLER CENTER</button></div>
+    </section>
+  </div>
+</div>
+
+<div id="lp41Wizard" style="display:none;position:fixed;inset:0;z-index:9900;background:rgba(2,6,23,.7);padding:12px;overflow:auto">
+ <div style="max-width:620px;margin:25px auto;background:var(--card);color:var(--text);border-radius:22px;padding:15px">
+  <div class="lp41-row"><div><h3 style="font-size:15px">🚀 First Setup Wizard</h3><div class="lp41-note">Complete the library setup in one place.</div></div><button class="lp41-close" onclick="lp41WizardClose()">×</button></div>
+  <div class="lp41-grid" style="margin-top:10px">
+   <input id="lp41WName" class="lp41-in lp41-full" placeholder="Library name">
+   <input id="lp41WSeats" class="lp41-in" type="number" min="1" max="2000" placeholder="Total seats">
+   <select id="lp41WUnreserved" class="lp41-select" onchange="lp41WToggleUR()"><option value="no">No unreserved seats</option><option value="yes">Has unreserved seats</option></select>
+   <input id="lp41WUrStart" class="lp41-in" type="number" placeholder="Unreserved start" style="display:none">
+   <input id="lp41WUrEnd" class="lp41-in" type="number" placeholder="Unreserved end" style="display:none">
+   <input id="lp41WPhone" class="lp41-in" placeholder="Library phone">
+   <input id="lp41WOwner" class="lp41-in" placeholder="Owner / manager">
+   <textarea id="lp41WAddress" class="lp41-text lp41-full" placeholder="Library address"></textarea>
+  </div>
+  <button class="lp41-btn green" style="width:100%;margin-top:9px" onclick="lp41WizardSave()">SAVE SETUP & RELOAD</button>
+ </div>
+</div>
+
+<script id="lp41-js">
+(function(){
+'use strict';
+const VER='41.0',BASE='library_v3/v41',DAY=86400000;
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const digits=v=>String(v||'').replace(/\D/g,'').slice(-10);
+const norm=v=>String(v||'').trim().toLowerCase().replace(/\s+/g,' ');
+const db=p=>database.ref(BASE+(p?'/'+p:''));
+let cfg={branding:{},shifts:{},sections:[],staff:{}},importRows=[],reportCache=null;
+window.LP41_BRANDING=window.LP41_BRANDING||{libraryName:String(window.HL36?.libraryName||'Library Pro')};
+
+function plan(){return window.HL36?.mode==='master'?'premium':String(window.HL36?.featurePlan||'premium').toLowerCase()}
+const rank={basic:1,pro:2,premium:3};
+function need(p){return (rank[plan()]||3)>=(rank[p]||1)}
+function hash(v){let h=2166136261;for(let i=0;i<String(v).length;i++){h^=String(v).charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(36)}
+function iso(d=new Date()){return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)}
+function money(v){return '₹'+Number(v||0).toLocaleString('en-IN')}
+function alertToast(t){if(typeof showToast==='function')showToast(t);else alert(t)}
+function sessionObj(){try{return JSON.parse(localStorage.getItem(window.HL36?.sessionKey||'hl_v36_session')||'{}')||{}}catch(e){return{}}}
+function updateSession(o){const k=window.HL36?.sessionKey||'hl_v36_session',x={...sessionObj(),...o};localStorage.setItem(k,JSON.stringify(x));Object.assign(window.HL36||{},o)}
+function queueKey(){return 'lp41_queue_'+String(window.HL36?.libraryId||'default')}
+function queue(){try{return JSON.parse(localStorage.getItem(queueKey())||'[]')||[]}catch(e){return[]}}
+function setQueue(a){localStorage.setItem(queueKey(),JSON.stringify(a));queueInfo()}
+async function safeSet(path,value,mode='set'){
+  if(!navigator.onLine){const q=queue();q.push({path,value,mode,time:Date.now()});setQueue(q);throw new Error('Offline: change queued')}
+  try{const r=db(path);if(mode==='update')await r.update(value);else await r.set(value);return true}
+  catch(e){const q=queue();q.push({path,value,mode,time:Date.now()});setQueue(q);throw e}
+}
+async function flushQueue(){
+ const q=queue();if(!q.length){queueInfo();return 0}if(!navigator.onLine)return 0;
+ const left=[];let ok=0;
+ for(const x of q){try{const r=db(x.path);if(x.mode==='update')await r.update(x.value);else await r.set(x.value);ok++}catch(e){left.push(x)}}
+ setQueue(left);return ok
+}
+window.lp41FlushQueue=async()=>{const n=await flushQueue();alertToast(n?'✅ '+n+' queued change(s) synced':'No queued change synced');queueInfo()};
+
+function queueInfo(){const e=$('lp41QueueInfo');if(e)e.textContent='Offline queue: '+queue().length+' pending change(s).'}
+function onlineUi(){const e=$('lp41Online');if(!e)return;e.classList.toggle('lp41-off',!navigator.onLine);e.querySelector('span').textContent=navigator.onLine?'ONLINE':'OFFLINE';queueInfo()}
+
+function defaultShifts(){
+ const L=window.LP41_SHIFT_LABELS||{};
+ return {
+  all:{enabled:true,label:L.all||'Full Day',start:'06:00',end:'22:00',fee:0},
+  m:{enabled:true,label:L.m||'Morning',start:'06:00',end:'10:00',fee:0},
+  n:{enabled:true,label:L.n||'Noon',start:'10:00',end:'14:00',fee:0},
+  an:{enabled:true,label:L.an||'Afternoon',start:'14:00',end:'18:00',fee:0},
+  e:{enabled:true,label:L.e||'Evening',start:'18:00',end:'22:00',fee:0},
+  night:{enabled:true,label:L.night||'Night',start:'22:00',end:'06:00',fee:0}
+ }
+}
+function normalizedSections(v){return Array.isArray(v)?v.filter(x=>x&&x.name&&Number(x.start)>0&&Number(x.end)>=Number(x.start)).slice(0,20):[]}
+
+async function loadCfg(){
+ try{
+  const s=await db('settings').once('value'),v=s.val()||{};
+  cfg.branding=v.branding||{};
+  cfg.shifts={...defaultShifts(),...(v.shifts||{})};
+  cfg.sections=normalizedSections(v.sections||[]);
+  window.LP41_BRANDING={...cfg.branding,libraryName:String(cfg.branding.libraryName||window.HL36?.libraryName||'Library Pro')};
+  const labels={};Object.entries(cfg.shifts).forEach(([k,x])=>labels[k]=String(x?.label||defaultShifts()[k]?.label||k));
+  const old=localStorage.getItem('lp41_shift_labels')||'';
+  const neu=JSON.stringify(labels);
+  localStorage.setItem('lp41_shift_labels',neu);
+  renderAll();
+  if(old&&old!==neu&&!sessionStorage.getItem('lp41_shift_reload')){
+    sessionStorage.setItem('lp41_shift_reload','1');location.reload();return
+  }
+ }catch(e){console.warn('V41 settings load',e);cfg.shifts=defaultShifts();renderAll()}
+}
+
+function tabs(){
+ const owner=window.HL36?.mode==='master';
+ const data=[
+  ['overview','🏠 Overview','basic'],['branding','🎨 Branding','basic'],['shifts','🕒 Shifts','basic'],['sections','🪑 Sections','basic'],
+  ['import','📥 Import','pro'],['staff','👥 Staff','pro'],['report','📊 Report','pro'],['backup','☁️ Backup','pro'],['support','🎧 Support','basic'],['system','📱 System','basic']
+ ];
+ if(owner)data.push(['owner','💼 Seller','premium']);
+ const box=$('lp41Tabs');if(!box)return;
+ box.innerHTML=data.map(x=>`<button class="lp41-tab ${x[0]==='overview'?'on':''} ${need(x[2])?'':'lock'}" onclick="lp41Tab('${x[0]}','${x[2]}')">${x[1]}</button>`).join('')
+}
+window.lp41Tab=function(name,req='basic'){
+ if(!need(req)){alert('🔒 This feature needs '+String(req).toUpperCase()+' software plan.');return}
+ document.querySelectorAll('.lp41-pane').forEach(x=>x.classList.toggle('on',x.dataset.pane===name));
+ document.querySelectorAll('.lp41-tab').forEach(x=>x.classList.toggle('on',(x.getAttribute('onclick')||'').includes("'"+name+"'")));
+ if(name==='report')lp41LoadReport();
+ if(name==='backup')lp41RenderBackups();
+ if(name==='support')renderSupport();
+ if(name==='staff')renderStaff()
+};
+window.lp41Open=function(){const p=$('lp41Panel');p.classList.add('show');p.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';renderAll()};
+window.lp41Close=function(){const p=$('lp41Panel');p.classList.remove('show');p.setAttribute('aria-hidden','true');document.body.style.overflow=''};
+
+function mountHome(){
+ const home=$('homeSection');if(!home||$('lp41Home'))return;
+ const c=document.createElement('div');c.id='lp41Home';c.className='lp41-home';
+ c.innerHTML=`<div class="lp41-home-top"><div class="lp41-home-title"><div class="lp41-home-ico">⚙️</div><div><h3>Business Setup & Control</h3><div class="lp41-sub">Branding • Shifts • Sections • Import • Reports</div></div></div><span id="lp41HomePlan" class="lp41-plan">PREMIUM</span></div>
+ <div class="lp41-home-grid"><div class="lp41-mini"><b id="lp41HomeSections">0</b><span>SECTIONS</span></div><div class="lp41-mini"><b id="lp41HomeShifts">6</b><span>SHIFTS</span></div><div class="lp41-mini"><b id="lp41HomeQueue">0</b><span>SYNC QUEUE</span></div></div>
+ <button class="lp41-open" onclick="lp41Open()">OPEN BUSINESS SETUP</button>`;
+ const renew=$('v40cCard');if(renew)renew.after(c);else home.appendChild(c)
+}
+function renderHome(){
+ const pl=plan().toUpperCase();if($('lp41HomePlan'))$('lp41HomePlan').textContent=pl;if($('lp41PlanBadge'))$('lp41PlanBadge').textContent=pl;
+ if($('lp41HomeSections'))$('lp41HomeSections').textContent=cfg.sections.length;
+ if($('lp41HomeShifts'))$('lp41HomeShifts').textContent=Object.values(cfg.shifts||{}).filter(x=>x?.enabled!==false).length;
+ if($('lp41HomeQueue'))$('lp41HomeQueue').textContent=queue().length;
+ if($('lp41HeadSub'))$('lp41HeadSub').textContent=String(window.HL36?.libraryName||'Library Pro')+' • '+pl;
+ document.body.classList.remove('lp41-basic','lp41-pro','lp41-premium');document.body.classList.add('lp41-'+plan())
+}
+function overview(){
+ const b=cfg.branding||{},sections=cfg.sections.length,sh=Object.values(cfg.shifts||{}).filter(x=>x?.enabled!==false).length;
+ const box=$('lp41OverviewKpis');if(box)box.innerHTML=`<div class="lp41-kpi"><span>LIBRARY</span><b>${esc(b.libraryName||window.HL36?.libraryName||'Library')}</b></div><div class="lp41-kpi"><span>TOTAL SEATS</span><b>${Number(window.HL36?.seatCount||105)}</b></div><div class="lp41-kpi"><span>ACTIVE SHIFTS</span><b>${sh}</b></div><div class="lp41-kpi"><span>SECTIONS</span><b>${sections}</b></div>`
+}
+
+function fillBranding(){
+ const b=cfg.branding||{};
+ const set=(id,v)=>{if($(id))$(id).value=v||''};
+ set('lp41BrandName',b.libraryName||window.HL36?.libraryName||'');set('lp41BrandOwner',b.owner);set('lp41BrandPhone',b.phone);set('lp41BrandEmail',b.email);set('lp41BrandUpi',b.upi);set('lp41BrandSign',b.signature);set('lp41BrandAddress',b.address);set('lp41BrandFooter',b.footer);
+ if($('lp41LogoPreview')){$('lp41LogoPreview').src=b.logo||'';$('lp41LogoPreview').style.display=b.logo?'block':'none'}
+}
+function compressImage(file,max=420,q=.78){return new Promise((resolve,reject)=>{const rd=new FileReader();rd.onload=e=>{const im=new Image();im.onload=()=>{const sc=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.width*sc));c.height=Math.max(1,Math.round(im.height*sc));c.getContext('2d').drawImage(im,0,0,c.width,c.height);resolve(c.toDataURL('image/jpeg',q))};im.onerror=reject;im.src=e.target.result};rd.onerror=reject;rd.readAsDataURL(file)})}
+window.lp41LogoPicked=async function(e){const f=e.target.files?.[0];if(!f)return;try{cfg.branding.logo=await compressImage(f);fillBranding()}catch(err){alert('Logo load failed: '+err.message)}};
+window.lp41SaveBranding=async function(){
+ const b={...cfg.branding,libraryName:$('lp41BrandName').value.trim(),owner:$('lp41BrandOwner').value.trim(),phone:$('lp41BrandPhone').value.trim(),email:$('lp41BrandEmail').value.trim(),upi:$('lp41BrandUpi').value.trim(),signature:$('lp41BrandSign').value.trim(),address:$('lp41BrandAddress').value.trim(),footer:$('lp41BrandFooter').value.trim(),updatedAt:Date.now()};
+ if(b.libraryName.length<2)return alert('Valid library name required.');
+ cfg.branding=b;window.LP41_BRANDING=b;
+ try{await safeSet('settings/branding',b)}catch(e){if(!String(e.message).includes('Offline'))console.warn(e)}
+ if(window.HL36?.mode==='tenant'){try{await database.ref('tenants/'+window.HL36.uid+'/meta/profile').update({libraryName:b.libraryName,updatedAt:Date.now()})}catch(e){}}
+ updateSession({libraryName:b.libraryName});renderAll();alertToast('✅ Branding saved')
+};
+
+function renderShifts(){
+ const box=$('lp41ShiftRows');if(!box)return;cfg.shifts={...defaultShifts(),...(cfg.shifts||{})};
+ const order=['all','m','n','an','e','night'];
+ box.innerHTML=order.map(k=>{const x=cfg.shifts[k]||{};return `<div class="lp41-shift"><input class="lp41-check" id="lp41ShOn_${k}" type="checkbox" ${x.enabled!==false?'checked':''}><input class="lp41-in" id="lp41ShName_${k}" value="${esc(x.label||k)}"><input class="lp41-in" id="lp41ShStart_${k}" type="time" value="${esc(x.start||'')}"><input class="lp41-in lp41-time2" id="lp41ShEnd_${k}" type="time" value="${esc(x.end||'')}"><input class="lp41-in lp41-fee" id="lp41ShFee_${k}" type="number" min="0" value="${Number(x.fee||0)}" placeholder="Fee"></div>`}).join('')
+}
+window.lp41SaveShifts=async function(){
+ const o={};['all','m','n','an','e','night'].forEach(k=>o[k]={enabled:!!$('lp41ShOn_'+k)?.checked,label:String($('lp41ShName_'+k)?.value||'').trim()||defaultShifts()[k].label,start:$('lp41ShStart_'+k)?.value||'',end:$('lp41ShEnd_'+k)?.value||'',fee:Number($('lp41ShFee_'+k)?.value||0)});
+ cfg.shifts=o;const labels={};Object.entries(o).forEach(([k,v])=>labels[k]=v.label);localStorage.setItem('lp41_shift_labels',JSON.stringify(labels));
+ try{await safeSet('settings/shifts',o)}catch(e){}
+ alert('✅ Shifts saved. App reload hoga so new names har screen par apply ho sake.');location.reload()
+};
+
+function renderSections(){
+ const box=$('lp41SectionRows');if(!box)return;box.innerHTML='';
+ cfg.sections.forEach((x,i)=>addSectionRow(x,i));
+ renderSectionJump();decorateSeats()
+}
+function addSectionRow(x={},idx){
+ const box=$('lp41SectionRows');if(!box)return;const d=document.createElement('div');d.className='lp41-section-line';d.dataset.index=idx;
+ d.innerHTML=`<input class="lp41-in lp41-sec-name" placeholder="Section name" value="${esc(x.name||'')}"><input class="lp41-in lp41-sec-start" type="number" min="1" placeholder="Start" value="${esc(x.start||'')}"><input class="lp41-in lp41-sec-end" type="number" min="1" placeholder="End" value="${esc(x.end||'')}"><input class="lp41-in lp41-sec-prefix" placeholder="Prefix A" value="${esc(x.prefix||'')}"><button class="lp41-btn red" onclick="this.parentElement.remove()">×</button>`;box.appendChild(d)
+}
+window.lp41AddSection=function(){addSectionRow({},document.querySelectorAll('#lp41SectionRows .lp41-section-line').length)};
+window.lp41SaveSections=async function(){
+ const max=Number(window.HL36?.seatCount||105),a=[];
+ document.querySelectorAll('#lp41SectionRows .lp41-section-line').forEach(r=>{const name=r.querySelector('.lp41-sec-name').value.trim(),start=Number(r.querySelector('.lp41-sec-start').value),end=Number(r.querySelector('.lp41-sec-end').value),prefix=r.querySelector('.lp41-sec-prefix').value.trim().slice(0,6);if(name&&start>=1&&end>=start&&end<=max)a.push({name,start,end,prefix})});
+ a.sort((x,y)=>x.start-y.start);cfg.sections=a;
+ try{await safeSet('settings/sections',a)}catch(e){}
+ renderSections();renderHome();alertToast('✅ Seat layout saved')
+};
+function sectionFor(n){return cfg.sections.find(x=>Number(n)>=Number(x.start)&&Number(n)<=Number(x.end))}
+function decorateSeats(){
+ document.querySelectorAll('.seat[id^="seat-"]').forEach(el=>{
+  const n=Number(String(el.id).replace('seat-','')),sec=sectionFor(n);let b=el.querySelector('.lp41-seat-zone');
+  if(!sec){if(b)b.remove();return}
+  if(!b){b=document.createElement('span');b.className='lp41-seat-zone';el.appendChild(b)}
+  const alias=sec.prefix?(sec.prefix+'-'+String(n).padStart(2,'0')):'';
+  b.textContent=sec.name+(alias?' • '+alias:'')
+ })
+}
+function renderSectionJump(){const box=$('lp41SectionJump');if(!box)return;box.innerHTML=cfg.sections.map(x=>`<button class="lp41-btn gray" onclick="lp41JumpSeat(${Number(x.start)})">${esc(x.name)}</button>`).join('')||'<span class="lp41-note">No sections configured.</span>'}
+window.lp41JumpSeat=function(n){lp41Close();if(typeof showSection==='function')showSection('seats');setTimeout(()=>document.getElementById('seat-'+n)?.scrollIntoView({behavior:'smooth',block:'center'}),180)};
+
+function shiftLabelsApply(){
+ const L=window.LP41_SHIFT_LABELS||{},map={'Full Day':L.all,'All Shift':L.all,'Morning':L.m,'Morning Shift':L.m,'Noon':L.n,'Noon Shift':L.n,'Afternoon':L.an,'Afternoon Shift':L.an,'Evening':L.e,'Evening Shift':L.e,'Night':L.night,'Night Shift':L.night};
+ document.querySelectorAll('option,button,label,.shift-name,.seat-shift-title').forEach(el=>{if(el.children.length)return;const t=(el.textContent||'').trim();if(map[t]&&map[t]!==t)el.textContent=map[t]})
+}
+
+function colMap(row){
+ const keys=Object.keys(row||{}),find=arr=>keys.find(k=>arr.includes(norm(k).replace(/[^a-z0-9]/g,'')));
+ return {name:find(['name','student','studentname']),phone:find(['mobile','phone','mobilenumber','whatsapp']),seat:find(['seat','seatno','seatnumber']),shift:find(['shift','timing']),paid:find(['paid','feespaid','payment','amountpaid']),due:find(['due','remainingdue','balancedue']),renew:find(['renewal','renewaldate','expiry','monthend','date']),type:find(['type','seattype'])}
+}
+function shiftKey(v){
+ const q=norm(v),L=window.LP41_SHIFT_LABELS||{};
+ const all={all:['all','full','fullday','allshift',norm(L.all)],m:['m','morning',norm(L.m)],n:['n','noon',norm(L.n)],an:['an','afternoon',norm(L.an)],e:['e','evening',norm(L.e)],night:['night','nights',norm(L.night)]};
+ return Object.keys(all).find(k=>all[k].some(x=>q===x||q.includes(x)))||'m'
+}
+window.lp41DownloadTemplate=function(){
+ const rows=[{Name:'Rahul Kumar',Mobile:'9876543210',Seat:1,Shift:window.LP41_SHIFT_LABELS?.m||'Morning',Paid:500,Due:200,Renewal:iso(),Type:'Reserved'},{Name:'Anjali',Mobile:'9876543211',Seat:'',Shift:window.LP41_SHIFT_LABELS?.e||'Evening',Paid:700,Due:0,Renewal:iso(),Type:'Unreserved'}];
+ const ws=XLSX.utils.json_to_sheet(rows),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Students');XLSX.writeFile(wb,'Library_Pro_Import_Template.xlsx')
+};
+window.lp41ReadImport=async function(e){
+ const f=e.target.files?.[0];if(!f)return;
+ try{
+  const data=await f.arrayBuffer(),wb=XLSX.read(data,{type:'array'}),ws=wb.Sheets[wb.SheetNames[0]],rows=XLSX.utils.sheet_to_json(ws,{defval:'',raw:false});
+  if(!rows.length)throw new Error('No rows found');
+  const m=colMap(rows[0]);if(!m.name)throw new Error('Name / Student Name column required');
+  importRows=rows.map((r,i)=>({row:i+2,name:String(r[m.name]||'').trim(),phone:digits(m.phone?r[m.phone]:''),seat:Number(m.seat?r[m.seat]:0)||0,shift:shiftKey(m.shift?r[m.shift]:''),paid:Number(m.paid?r[m.paid]:0)||0,due:Number(m.due?r[m.due]:0)||0,renewal:String(m.renew?r[m.renew]:'').trim(),type:String(m.type?r[m.type]:'').trim()})).filter(x=>x.name);
+  $('lp41ImportSummary').textContent=importRows.length+' valid named row(s) ready. Existing occupied shift will be skipped.';
+  $('lp41ImportPreview').style.display='block';$('lp41ImportBtn').style.display='block';
+  $('lp41ImportPreview').innerHTML='<table><thead><tr><th>Row</th><th>Name</th><th>Mobile</th><th>Seat</th><th>Shift</th><th>Paid</th><th>Due</th><th>Renewal</th></tr></thead><tbody>'+importRows.slice(0,20).map(x=>`<tr><td>${x.row}</td><td>${esc(x.name)}</td><td>${esc(x.phone)}</td><td>${x.seat||'-'}</td><td>${esc(window.LP41_SHIFT_LABELS?.[x.shift]||x.shift)}</td><td>${x.paid}</td><td>${x.due}</td><td>${esc(x.renewal||'-')}</td></tr>`).join('')+'</tbody></table>'
+ }catch(err){alert('Import file error: '+err.message)}
+};
+window.lp41RunImport=async function(){
+ if(!navigator.onLine)return alert('Student import ke liye internet connection required.');
+ if(!importRows.length)return;
+ if(!confirm(importRows.length+' row(s) import karna hai? Existing occupied seat/shift overwrite nahi hoga.'))return;
+ let ok=0,skip=0,bad=0;const max=Number(window.HL36?.seatCount||105),ur=typeof window.LP_GET_UR_RANGE==='function'?window.LP_GET_UR_RANGE():null;
+ for(const r of importRows){
+  try{
+   const isUR=/unreserved|flex/i.test(r.type)||(ur&&r.seat>=ur.start&&r.seat<=ur.end);
+   if(isUR){
+    await database.ref('library_v3/unreservedStudentsV23').push({name:r.name,phone:r.phone,plan:'Imported',daysWeek:7,shifts:[r.shift],joining:iso(),renewal:r.renewal,fee:r.paid+r.due,paid:r.paid,due:r.due,paymentDate:'',status:'Active',note:'Imported by V41',createdAt:Date.now(),updatedAt:Date.now()});ok++;continue
+   }
+   if(r.seat<1||r.seat>max){bad++;continue}
+   const ref=database.ref('library_v3/seats/'+r.seat),snap=await ref.once('value'),d=snap.val()||{};
+   if(String(d['name_'+r.shift]||'').trim()){skip++;continue}
+   const u={};u['name_'+r.shift]=r.name;u['phone_'+r.shift]=r.phone;u['fees_'+r.shift]=r.paid;u['due_'+r.shift]=r.due;u['date_'+r.shift]=r.renewal;
+   await ref.update(u);ok++
+  }catch(e){bad++}
+ }
+ alert(`✅ Import complete\n\nImported: ${ok}\nOccupied skipped: ${skip}\nInvalid/failed: ${bad}`);importRows=[];$('lp41ImportBtn').style.display='none';$('lp41ImportPreview').style.display='none'
+};
+
+function pinHash(id,pin){return hash(String(window.HL36?.libraryId||'')+'|'+String(id).toUpperCase()+'|'+String(pin))}
+window.lp41AddStaff=async function(){
+ const name=$('lp41StaffName').value.trim(),id=$('lp41StaffId').value.trim().toUpperCase().replace(/[^A-Z0-9_-]/g,''),pin=$('lp41StaffPin').value.trim(),role=$('lp41StaffRole').value;
+ if(!name||id.length<2||!/^\d{4,6}$/.test(pin))return alert('Staff name, ID and 4–6 digit PIN required.');
+ const rec={name,id,role,pinHash:pinHash(id,pin),active:true,createdAt:Date.now()};
+ try{await safeSet('staff/'+id,rec)}catch(e){}
+ $('lp41StaffName').value='';$('lp41StaffId').value='';$('lp41StaffPin').value='';renderStaff();alertToast('✅ Staff saved')
+};
+async function renderStaff(){
+ const box=$('lp41StaffList');if(!box)return;try{const ss=await db('staff').once('value'),v=ss.val()||{};cfg.staff=v;box.innerHTML=Object.values(v).map(x=>`<div class="lp41-item"><div class="lp41-row"><div><b>${esc(x.name)} • ${esc(x.id)}</b><br><span class="lp41-note">${esc(String(x.role||'staff').toUpperCase())}</span></div><div class="lp41-actions" style="margin:0"><button class="lp41-btn red" onclick="lp41RemoveStaff('${esc(x.id)}')">REMOVE</button></div></div></div>`).join('')||'<div class="lp41-note">No staff account yet.</div>'}catch(e){box.innerHTML='<div class="lp41-note">Staff list load failed.</div>'}
+}
+window.lp41RemoveStaff=async function(id){if(!confirm('Remove '+id+'?'))return;await db('staff/'+id).remove();renderStaff()};
+window.lp41StaffLogin=async function(){
+ const id=prompt('Staff ID:');if(id===null)return;const pin=prompt('Staff PIN:');if(pin===null)return;
+ try{const ss=await db('staff/'+String(id).trim().toUpperCase()).once('value'),x=ss.val();if(!x||!x.active||x.pinHash!==pinHash(x.id,pin))return alert('Invalid staff ID / PIN');sessionStorage.setItem('lp41_staff_mode',JSON.stringify({id:x.id,name:x.name,role:x.role}));applyStaff();lp41Close();alert('✅ Staff mode active: '+x.name+' • '+String(x.role).toUpperCase())}catch(e){alert(e.message)}
+};
+window.lp41StaffLogout=function(){sessionStorage.removeItem('lp41_staff_mode');applyStaff();alertToast('Staff mode closed')};
+function staffMode(){try{return JSON.parse(sessionStorage.getItem('lp41_staff_mode')||'null')}catch(e){return null}}
+function applyStaff(){
+ document.body.classList.remove('lp41-staff-manager','lp41-staff-reception','lp41-staff-accountant','lp41-staff-viewer');
+ const x=staffMode();if(x)document.body.classList.add('lp41-staff-'+x.role)
+}
+const oldShow=window.showSection;
+if(typeof oldShow==='function'&&!window.__lp41ShowWrapped){
+ window.__lp41ShowWrapped=true;window.showSection=function(sec){const x=staffMode();if(x){const allow={manager:['home','seats','students','report','business','settings'],reception:['home','seats','students','report'],accountant:['home','students','report','business'],viewer:['home','students','report']}[x.role]||['home'];if(!allow.includes(sec)){alert('🔒 '+String(x.role).toUpperCase()+' role me ye section allowed nahi hai.');return}}return oldShow.apply(this,arguments)}
+}
+
+function studentRowsFromData(seats,flex){
+ const out=[];Object.entries(seats||{}).forEach(([seat,d])=>['all','m','n','an','e','night'].forEach(sh=>{if(d?.['name_'+sh])out.push({name:d['name_'+sh],phone:digits(d['phone_'+sh]),seat,shift:sh,paid:Number(d['fees_'+sh]||0),due:Number(d['due_'+sh]||0),renewal:d['date_'+sh]||''})}));
+ Object.values(flex||{}).forEach(d=>{if(d&&d.status!=='Left / Archived')out.push({name:d.name,phone:digits(d.phone),seat:'Unreserved',shift:(d.shifts||[]).join(' • '),paid:Number(d.paid||0),due:Number(d.due||0),renewal:d.renewal||''})});return out
+}
+window.lp41LoadReport=async function(){
+ if(!need('pro'))return alert('PRO plan required.');
+ try{
+  const [ss,fs,ls,es]=await Promise.all([database.ref('library_v3/seats').once('value'),database.ref('library_v3/unreservedStudentsV23').once('value'),database.ref('library_v3/v31/ledger').once('value'),database.ref('library_v3/v31/expenses').once('value')]);
+  const seats=ss.val()||{},flex=fs.val()||{},ledger=ls.val()||{},expenses=es.val()||{},rows=studentRowsFromData(seats,flex),now=Date.now(),month=iso().slice(0,7);
+  const occupied=new Set(rows.filter(x=>x.seat!=='Unreserved').map(x=>String(x.seat))).size,total=Number(window.HL36?.seatCount||105),due=rows.reduce((a,x)=>a+x.due,0);
+  const col=Object.values(ledger).filter(x=>String(x?.date||'').startsWith(month)).reduce((a,x)=>a+Number(x.amount||0),0),exp=Object.values(expenses).filter(x=>String(x?.date||'').startsWith(month)).reduce((a,x)=>a+Number(x.amount||0),0);
+  const aging=[0,0,0];rows.forEach(x=>{if(!x.due)return;const t=Date.parse(x.renewal||'');const age=Number.isFinite(t)?Math.max(0,Math.floor((now-t)/DAY)):0;if(age<=7)aging[0]+=x.due;else if(age<=30)aging[1]+=x.due;else aging[2]+=x.due});
+  const shifts={};rows.forEach(x=>String(x.shift||'Unknown').split(' • ').forEach(v=>{if(v)shifts[v]=(shifts[v]||0)+1}));
+  reportCache={rows,occupied,total,due,col,exp,profit:col-exp,aging,shifts};
+  $('lp41ReportKpis').innerHTML=`<div class="lp41-kpi"><span>OCCUPANCY</span><b>${occupied}/${total}</b></div><div class="lp41-kpi"><span>TOTAL DUE</span><b>${money(due)}</b></div><div class="lp41-kpi"><span>MONTH COLLECTION</span><b>${money(col)}</b></div><div class="lp41-kpi"><span>NET</span><b>${money(col-exp)}</b></div>`;
+  $('lp41DueAging').innerHTML=`<div class="lp41-item"><b>0–7 days</b> • ${money(aging[0])}</div><div class="lp41-item"><b>8–30 days</b> • ${money(aging[1])}</div><div class="lp41-item"><b>30+ days</b> • ${money(aging[2])}</div>`;
+  $('lp41ShiftReport').innerHTML=Object.entries(shifts).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="lp41-item"><div class="lp41-row"><b>${esc(window.LP41_SHIFT_LABELS?.[k]||k)}</b><span class="lp41-badge">${v}</span></div></div>`).join('')||'<div class="lp41-note">No student data.</div>'
+ }catch(e){alert('Report load failed: '+e.message)}
+};
+window.lp41ExportReport=function(){
+ if(!reportCache)return lp41LoadReport().then(lp41ExportReport);
+ const rows=reportCache.rows.map(x=>({Name:x.name,Mobile:x.phone,Seat:x.seat,Shift:window.LP41_SHIFT_LABELS?.[x.shift]||x.shift,Paid:x.paid,Due:x.due,Renewal:x.renewal}));
+ const ws=XLSX.utils.json_to_sheet(rows),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Business Report');XLSX.writeFile(wb,String(window.HL36?.libraryName||'Library')+'_Business_Report_'+iso()+'.xlsx')
+};
+
+async function snapshotData(){
+ const paths=['seats','waiting','unreservedStudentsV23','v15/profiles','v31/ledger','v31/expenses','v41/settings'];
+ const out={createdAt:Date.now(),version:VER};for(const p of paths){try{out[p]=(await database.ref('library_v3/'+p).once('value')).val()||{}}catch(e){out[p]={}}}return out
+}
+window.lp41BackupNow=async function(silent=false){
+ if(!need('pro')){if(!silent)alert('PRO plan required.');return}
+ if(!navigator.onLine){if(!silent)alert('Backup needs internet.');return}
+ try{
+  const key=iso(),data=await snapshotData();await db('backups/'+key).set(data);
+  const bs=await db('backups').once('value'),keys=Object.keys(bs.val()||{}).sort();for(const k of keys.slice(0,Math.max(0,keys.length-7)))await db('backups/'+k).remove();
+  localStorage.setItem('lp41_last_backup_'+String(window.HL36?.libraryId||''),String(Date.now()));
+  if(!silent){alertToast('✅ Cloud backup created');lp41RenderBackups()}
+ }catch(e){if(!silent)alert('Backup failed: '+e.message)}
+};
+async function autoBackup(){if(!need('pro')||!navigator.onLine)return;const k='lp41_last_backup_'+String(window.HL36?.libraryId||''),last=Number(localStorage.getItem(k)||0);if(Date.now()-last>20*60*60*1000)lp41BackupNow(true)}
+window.lp41RenderBackups=async function(){
+ const box=$('lp41BackupList');if(!box)return;try{const ss=await db('backups').once('value'),v=ss.val()||{};box.innerHTML=Object.entries(v).sort((a,b)=>b[0].localeCompare(a[0])).map(([k,x])=>`<div class="lp41-item"><div class="lp41-row"><div><b>${esc(k)}</b><br><span class="lp41-note">V${esc(x.version||'?')} • ${x.createdAt?new Date(x.createdAt).toLocaleString('en-IN'):''}</span></div><button class="lp41-btn red" onclick="lp41RestoreBackup('${k}')">RESTORE</button></div></div>`).join('')||'<div class="lp41-note">No V41 restore point yet.</div>'}catch(e){box.innerHTML='<div class="lp41-note">Backup list unavailable.</div>'}
+};
+window.lp41RestoreBackup=async function(k){
+ if(!confirm('Restore '+k+' backup? Current data will be overwritten only for backed-up modules.'))return;
+ try{const ss=await db('backups/'+k).once('value'),x=ss.val();if(!x)return alert('Backup not found');const map={'seats':'seats','waiting':'waiting','unreservedStudentsV23':'unreservedStudentsV23','v15/profiles':'v15/profiles','v31/ledger':'v31/ledger','v31/expenses':'v31/expenses','v41/settings':'v41/settings'},up={};Object.entries(map).forEach(([src,dst])=>{if(x[src]!==undefined)up['library_v3/'+dst]=x[src]});await database.ref().update(up);alert('✅ Restore complete. App reload hoga.');location.reload()}catch(e){alert('Restore failed: '+e.message)}
+};
+
+window.lp41SubmitSupport=async function(){
+ const msg=$('lp41SupportMsg').value.trim();if(!msg)return alert('Problem details required.');
+ const key=db('supportTickets').push().key,t={id:key,category:$('lp41SupportCat').value,priority:$('lp41SupportPri').value,message:msg,status:'Open',libraryId:String(window.HL36?.libraryId||''),libraryName:String(window.HL36?.libraryName||''),createdAt:Date.now(),version:VER};
+ try{await safeSet('supportTickets/'+key,t);$('lp41SupportMsg').value='';renderSupport();alertToast('✅ Support ticket saved')}catch(e){alert('Ticket queued/offline. Internet aate hi sync hoga.')}
+};
+async function renderSupport(){
+ const box=$('lp41SupportList');if(!box)return;try{const ss=await db('supportTickets').once('value'),v=ss.val()||{};box.innerHTML=Object.values(v).sort((a,b)=>Number(b.createdAt||0)-Number(a.createdAt||0)).slice(0,30).map(x=>`<div class="lp41-item"><div class="lp41-row"><div><b>${esc(x.category)} • ${esc(x.priority)}</b><br><span class="lp41-note">${esc(x.message)}<br>${new Date(x.createdAt||0).toLocaleString('en-IN')}</span></div><span class="lp41-badge ${x.status==='Closed'?'green':'amber'}">${esc(x.status||'Open')}</span></div></div>`).join('')||'<div class="lp41-note">No support ticket.</div>'}catch(e){box.innerHTML='<div class="lp41-note">Tickets unavailable.</div>'}
+}
+
+window.lp41Wizard=function(){
+ const b=cfg.branding||{},x=sessionObj();$('lp41WName').value=b.libraryName||window.HL36?.libraryName||'';$('lp41WSeats').value=Number(window.HL36?.seatCount||105);$('lp41WPhone').value=b.phone||'';$('lp41WOwner').value=b.owner||'';$('lp41WAddress').value=b.address||'';
+ const has=!!window.HL36?.unreservedEnabled;$('lp41WUnreserved').value=has?'yes':'no';$('lp41WUrStart').value=window.HL36?.unreservedStart||'';$('lp41WUrEnd').value=window.HL36?.unreservedEnd||'';lp41WToggleUR();$('lp41Wizard').style.display='block'
+};
+window.lp41WizardClose=function(){$('lp41Wizard').style.display='none'};
+window.lp41WToggleUR=function(){const on=$('lp41WUnreserved').value==='yes';$('lp41WUrStart').style.display=on?'block':'none';$('lp41WUrEnd').style.display=on?'block':'none'};
+window.lp41WizardSave=async function(){
+ const name=$('lp41WName').value.trim(),seats=Number($('lp41WSeats').value),ur=$('lp41WUnreserved').value==='yes',us=ur?Number($('lp41WUrStart').value):0,ue=ur?Number($('lp41WUrEnd').value):0;
+ if(name.length<2||seats<1||seats>2000)return alert('Valid library name and seats 1–2000 required.');
+ if(ur&&(us<1||ue<us||ue>seats))return alert('Valid unreserved range required.');
+ cfg.branding={...cfg.branding,libraryName:name,phone:$('lp41WPhone').value.trim(),owner:$('lp41WOwner').value.trim(),address:$('lp41WAddress').value.trim(),updatedAt:Date.now()};
+ try{await safeSet('settings/branding',cfg.branding);if(window.HL36?.mode==='tenant')await database.ref('tenants/'+window.HL36.uid+'/meta/profile').update({libraryName:name,seatCount:seats,unreservedEnabled:ur,unreservedStart:us,unreservedEnd:ue,updatedAt:Date.now()})}catch(e){}
+ updateSession({libraryName:name,seatCount:seats,unreservedEnabled:ur,unreservedStart:us,unreservedEnd:ue});alert('✅ Setup saved. App reload hoga.');location.reload()
+};
+
+window.v41SetCustomerPlan=async function(uid){
+ if(window.HL36?.mode!=='master')return;
+ try{
+  const ss=await window.HL36.rawRef('platform/licensesByUid/'+uid).once('value'),l=ss.val()||{},cur=String(l.featurePlan||'premium').toLowerCase();
+  const v=prompt('Software plan: BASIC / PRO / PREMIUM',cur.toUpperCase());if(v===null)return;const p=String(v).trim().toLowerCase();if(!['basic','pro','premium'].includes(p))return alert('Use BASIC, PRO or PREMIUM.');
+  await window.HL36.rawRef('platform/licensesByUid/'+uid).update({featurePlan:p,updatedAt:Date.now()});alert('✅ Software plan changed to '+p.toUpperCase()+'. Customer next login/reload par new access dekhega.');if(typeof v38LoadCustomers==='function')v38LoadCustomers()
+ }catch(e){alert('Plan update failed: '+e.message)}
+};
+
+function applyVersionMeta(){
+ const info=$('lp41VersionInfo');if(info)info.textContent='Current version '+VER+' • '+String(window.HL36?.libraryName||'Library Pro');
+ try{database.ref('library_v3/v41/meta').update({appVersion:VER,lastSeen:Date.now(),libraryId:String(window.HL36?.libraryId||'')})}catch(e){}
+}
+window.lp41UpdateApp=async function(){
+ try{if('serviceWorker'in navigator){const rs=await navigator.serviceWorker.getRegistrations();for(const r of rs)await r.update()}if('caches'in window){const ks=await caches.keys();for(const k of ks)await caches.delete(k)}alert('✅ Update cache cleared. App reload hoga.');location.reload(true)}catch(e){location.reload()}
+};
+
+function passFind(){
+ const q=norm($('lp41PassSearch')?.value||'');if(!q)return;
+ const data=typeof globalLibraryData!=='undefined'?globalLibraryData:{};
+ for(const [seat,d] of Object.entries(data)){for(const sh of ['all','m','n','an','e','night']){const name=d?.['name_'+sh]||'',phone=d?.['phone_'+sh]||'';if(name&&(norm(name).includes(q)||digits(phone).includes(digits(q)))){$('lp41PassName').value=name;$('lp41PassMobile').value=digits(phone);$('lp41PassSeat').value='Seat '+seat+' • '+(window.LP41_SHIFT_LABELS?.[sh]||sh);$('lp41PassRenew').value=d?.['date_'+sh]||'';return}}}
+}
+window.lp41MakePass=function(){
+ passFind();const name=$('lp41PassName').value.trim();if(!name)return alert('Student name required.');
+ const br=window.LP41_BRANDING||{},lib=String(br.libraryName||window.HL36?.libraryName||'Library Pro'),c=document.createElement('canvas');c.width=900;c.height=560;const x=c.getContext('2d');
+ x.fillStyle='#fff';x.fillRect(0,0,900,560);x.fillStyle='#0b1f44';x.fillRect(0,0,900,145);x.fillStyle='#fff';x.font='900 38px Arial';x.fillText(lib,45,66);x.font='700 20px Arial';x.fillText('STUDENT DIGITAL PASS',45,105);
+ x.fillStyle='#0f172a';x.font='900 40px Arial';x.fillText(name,45,215);x.fillStyle='#64748b';x.font='700 21px Arial';x.fillText('Mobile: '+($('lp41PassMobile').value||'-'),45,270);x.fillText('Seat / Shift: '+($('lp41PassSeat').value||'-'),45,312);x.fillText('Renewal: '+($('lp41PassRenew').value||'-'),45,354);
+ x.fillStyle='#eff6ff';x.fillRect(45,405,810,85);x.fillStyle='#1e3a8a';x.font='700 17px Arial';x.fillText((br.address||'')+(br.phone?(br.address?' • ':'')+br.phone:''),65,442);x.fillText('Read-only pass generated by Library Pro • '+iso(),65,472);
+ c.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=lib.replace(/[^a-z0-9]+/gi,'_')+'_Student_Pass_'+name.replace(/[^a-z0-9]+/gi,'_')+'.png';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1200)},'image/png')
+};
+$('lp41PassSearch')?.addEventListener('change',passFind);
+
+function renderAll(){
+ tabs();renderHome();overview();fillBranding();renderShifts();renderSections();applyStaff();onlineUi();applyVersionMeta()
+}
+function init(){
+ mountHome();renderAll();loadCfg();autoBackup();renderSupport();onlineUi();applyStaff();
+ setInterval(()=>{decorateSeats();shiftLabelsApply()},1800);
+ window.addEventListener('online',()=>{onlineUi();flushQueue();autoBackup()});window.addEventListener('offline',onlineUi)
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+window.addEventListener('load',()=>setTimeout(init,350));
+})();
+</script>
+<!-- ===== END V41 ===== -->
+
 </body>
 </html>
