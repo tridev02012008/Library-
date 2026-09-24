@@ -11,13 +11,13 @@ content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Hariom Library">
+<meta name="apple-mobile-web-app-title" content="Library Pro">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
-<meta name="description" content="Hariom Library smart management app for students, seats, attendance, fees and notices.">
+<meta name="description" content="Library Pro multi-tenant library management app.">
 
-<title>Hariom Library</title>
+<title>Library Pro</title>
 
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -6912,47 +6912,75 @@ body.v36-locked> :not(#v36Gate):not(script):not(style){visibility:hidden!importa
 .v36-kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0}.v36-kpi{padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:15px}.v36-kpi b{font-size:16px;display:block}.v36-kpi span{font-size:8px;color:#64748b;font-weight:900}
 </style>
 
+<style id="v37-license-style">
+#v36Gate .v36-card{max-width:430px}
+.v37-login-note{font-size:11px;line-height:1.55;color:#64748b;margin-top:10px;text-align:center}
+.v37-login-note b{color:#0f172a}
+.v37-status{padding:14px;border:1px solid #e2e8f0;background:#f8fafc;border-radius:14px;margin:12px 0;font-size:12px;line-height:1.55;color:#334155}
+.v37-status.pending{background:#fff7ed;border-color:#fed7aa;color:#9a3412}
+.v37-status.blocked{background:#fef2f2;border-color:#fecaca;color:#991b1b}
+#v37SellerBtn{display:none;position:fixed;right:14px;bottom:132px;z-index:9500;border:0;border-radius:16px;background:#111827;color:#fff;padding:12px 15px;font-weight:900;box-shadow:0 10px 30px rgba(15,23,42,.25)}
+#v37SellerPanel{display:none;position:fixed;inset:0;z-index:99995;background:rgba(15,23,42,.55);padding:14px;overflow:auto}
+#v37SellerPanel.show{display:block}
+.v37-seller{max-width:980px;margin:10px auto;background:#f8fafc;border-radius:22px;padding:14px;min-height:calc(100vh - 48px)}
+.v37-seller-head{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#111827;color:#fff;padding:14px;border-radius:18px;position:sticky;top:0;z-index:2}
+.v37-seller-head h2{font-size:17px}.v37-seller-head p{font-size:10px;opacity:.75;margin-top:3px}
+.v37-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.v37-card{background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:14px;margin-top:12px}.v37-card h3{font-size:14px;margin-bottom:10px}.v37-input{width:100%;border:1px solid #cbd5e1;background:#fff;border-radius:12px;padding:11px 12px;margin:5px 0;font-size:13px}.v37-btn{border:0;border-radius:12px;padding:10px 12px;font-weight:900;font-size:11px;cursor:pointer;background:#4f46e5;color:#fff}.v37-btn.green{background:#16a34a}.v37-btn.red{background:#dc2626}.v37-btn.dark{background:#111827}.v37-btn.gray{background:#e2e8f0;color:#0f172a}.v37-btn.sm{padding:7px 9px;font-size:9px}.v37-list{display:grid;gap:8px}.v37-license{border:1px solid #e2e8f0;border-radius:15px;padding:12px;background:#fff}.v37-license-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.v37-license b{font-size:13px}.v37-meta{font-size:10px;color:#64748b;margin-top:4px;line-height:1.5}.v37-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}.v37-badge{display:inline-block;border-radius:999px;padding:4px 8px;font-size:8px;font-weight:900;background:#dcfce7;color:#166534}.v37-badge.off{background:#fee2e2;color:#991b1b}.v37-device{display:flex;gap:8px;align-items:center;justify-content:space-between;border-top:1px dashed #e2e8f0;padding-top:8px;margin-top:8px}.v37-device-info{font-size:9px;color:#475569;min-width:0}.v37-empty{text-align:center;color:#94a3b8;font-size:11px;padding:18px}
+@media(max-width:650px){.v37-grid{grid-template-columns:1fr}.v37-seller{padding:8px}.v37-seller-head{border-radius:14px}}
+</style>
+
 <div id="v36Gate" aria-hidden="true">
  <div class="v36-card">
-  <div class="v36-brand"><div class="v36-logo">📚</div><div><h2>Library Pro Login</h2></div></div>
-  <div id="v36PhoneStep" class="v36-step on">
-   <input id="v361LibraryName" class="v36-in" maxlength="60" placeholder="Library name">
-   <div class="v361-seat-pick"><span>Total Seats</span><input id="v361LoginSeats" class="v36-in" type="number" min="1" max="2000" value="105" inputmode="numeric"></div>
-   <input id="v36Phone" class="v36-in" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
-   <div id="v36Recaptcha" aria-hidden="true"></div>
-   <button id="v36SendOtpBtn" class="v36-btn" onclick="v36SendOtp()">GET OTP</button>
+  <div class="v36-brand"><div class="v36-logo">📚</div><div><h2>Library Pro</h2></div></div>
+  <div id="v37LoginStep" class="v36-step on">
+   <input id="v37LicenseId" class="v36-in" maxlength="30" autocomplete="username" placeholder="User ID">
+   <input id="v37Password" class="v36-in" type="password" maxlength="80" autocomplete="current-password" placeholder="Password">
+   <button id="v37LoginBtn" class="v36-btn" onclick="v37Login()">LOGIN</button>
+   
   </div>
-  <div id="v36OtpStep" class="v36-step">
-   <input id="v36Otp" class="v36-in" type="tel" inputmode="numeric" maxlength="6" placeholder="6-digit OTP">
-   <button id="v36VerifyOtpBtn" class="v36-btn green" onclick="v36VerifyOtp()">VERIFY OTP</button>
+  <div id="v37PendingStep" class="v36-step">
+   <div id="v37PendingBox" class="v37-status pending"><b>Device approval required</b><br>Seller ko request bhej di gayi hai.</div>
+   <button class="v36-btn ghost" onclick="v36Logout()">LOG OUT</button>
   </div>
-  <div id="v36ChooseStep" class="v36-step">
-   <h3 style="margin-bottom:8px">Choose your library</h3>
-   <div id="v36LibraryList" class="v36-list"></div>
-   <button class="v36-btn ghost" onclick="v36ShowCreate()">＋ CREATE ANOTHER LIBRARY</button>
-  </div>
-  <div id="v36CreateStep" class="v36-step">
-   <h3 style="margin-bottom:8px">New Library</h3>
-   <input id="v36LibraryName" class="v36-in" maxlength="60" placeholder="Library name">
-   <input id="v36SeatCount" class="v36-in" type="number" min="1" max="2000" placeholder="Total seats">
-   <button class="v36-btn green" onclick="v36CreateLibrary()">CREATE & OPEN LIBRARY</button>
-   <button class="v36-btn ghost" onclick="v36BackToLibraries()">BACK</button>
+  <div id="v37BlockedStep" class="v36-step">
+   <div id="v37BlockedBox" class="v37-status blocked"><b>Access blocked</b></div>
+   <button class="v36-btn ghost" onclick="v36Logout()">LOG OUT</button>
   </div>
   <div id="v36Msg" class="v36-msg" style="display:none"></div>
  </div>
 </div>
 
-<button id="v36AccountBtn" onclick="v36OpenAccount()" title="Account & Library">👤</button>
+<button id="v36AccountBtn" onclick="v36OpenAccount()" title="Account & License">👤</button>
+<button id="v37SellerBtn" onclick="v37OpenSeller()">💼 SELLER PANEL</button>
 
 <div id="v36AccountPanel" aria-hidden="true">
  <div class="v36-account">
   <div class="v36-account-top"><div><b style="font-size:18px" id="v36AccLib">Library</b><div style="font-size:9px;color:#64748b" id="v36AccPhone"></div></div><button class="v36-x" onclick="v36CloseAccount()">×</button></div>
-  <div class="v36-kpis"><div class="v36-kpi"><b id="v36AccSeats">0</b><span>TOTAL SEATS</span></div><div class="v36-kpi"><b id="v36AccDevices">-</b><span>ACTIVE DEVICES / 4</span></div></div>
-  <button class="v36-btn" onclick="v36AccountSwitch()">SWITCH / CREATE LIBRARY</button>
-  <button class="v36-btn ghost" onclick="v36EditLibrary()">EDIT LIBRARY NAME / SEAT COUNT</button>
-  <button class="v36-btn ghost" onclick="v36RemoveOtherDevices()">REMOVE OTHER DEVICES</button>
+  <div class="v36-kpis"><div class="v36-kpi"><b id="v36AccSeats">0</b><span>TOTAL SEATS</span></div><div class="v36-kpi"><b id="v36AccDevices">-</b><span>DEVICE STATUS</span></div></div>
+  <button class="v36-btn" onclick="v36EditLibrary()">EDIT LIBRARY NAME / SEAT COUNT</button>
+  <button class="v36-btn ghost" onclick="v37ChangePassword()">CHANGE PASSWORD</button>
   <button class="v36-btn dark" onclick="v36Logout()">LOG OUT</button>
-  <div class="v36-msg">Logout ke baad is device par dobara OTP required hoga. Seat count kam karne par higher-seat data delete nahi hota.</div>
+  <div class="v36-msg">Data cloud me rahega. App uninstall hone par library data delete nahi hota.</div>
+ </div>
+</div>
+
+<div id="v37SellerPanel" aria-hidden="true">
+ <div class="v37-seller">
+  <div class="v37-seller-head"><div><h2>Library Pro • Seller Control</h2><p>Create customer, approve device, suspend/renew license</p></div><button class="v37-btn gray" onclick="v37CloseSeller()">✕ CLOSE</button></div>
+  <div class="v37-grid">
+   <div class="v37-card">
+    <h3>➕ Sell / Create New Library</h3>
+    <input id="v37NewId" class="v37-input" placeholder="Library ID e.g. LP1001" maxlength="24">
+    <input id="v37NewPass" class="v37-input" type="text" placeholder="Initial password (min 6 chars)" maxlength="80">
+    <input id="v37NewName" class="v37-input" placeholder="Library name" maxlength="80">
+    <div class="v37-grid"><input id="v37NewSeats" class="v37-input" type="number" min="1" max="2000" value="105" placeholder="Seats"><input id="v37NewDevices" class="v37-input" type="number" min="1" max="10" value="1" placeholder="Devices"></div>
+    <label style="font-size:10px;color:#64748b">License expiry</label><input id="v37NewExpiry" class="v37-input" type="date">
+    <button id="v37CreateBtn" class="v37-btn green" style="width:100%;margin-top:6px" onclick="v37CreateCustomer()">CREATE CUSTOMER</button>
+    <div id="v37CreateMsg" class="v37-meta" style="margin-top:8px"></div>
+   </div>
+   <div class="v37-card"><h3>📊 Seller Summary</h3><div id="v37SellerStats" class="v37-grid"></div><div class="v37-meta" style="margin-top:10px">Passwords Firebase Authentication handle karta hai. Customer data har UID ke separate tenant me save hota hai.</div></div>
+  </div>
+  <div class="v37-card"><h3>🏢 Customers & Device Requests</h3><div id="v37CustomerList" class="v37-list"><div class="v37-empty">Loading...</div></div></div>
  </div>
 </div>
 
@@ -6960,322 +6988,247 @@ body.v36-locked> :not(#v36Gate):not(script):not(style){visibility:hidden!importa
 (function(){
  'use strict';
  const gateMode=new URLSearchParams(location.search).get('gate')==='present';
- const SESSION='hl_v36_session', DEVICE='hl_v36_device_id', PENDING='hl_v361_login_setup', LAST='hl_v361_last_setup';
+ const SESSION='hl_v36_session', DEVICE='lp_v37_device_id', LAST_ID='lp_v37_last_id';
+ const OWNER_EMAIL='owner@librarypro.app';
  const $=id=>document.getElementById(id);
- const p10=v=>{let d=String(v||'').replace(/\D/g,'');if(d.length>10)d=d.slice(-10);return /^\d{10}$/.test(d)?d:''};
- const sid=v=>String(v||'').replace(/[^A-Za-z0-9_-]/g,'').slice(0,80);
- const esc=v=>String(v||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
- const raw=path=>window.HL36?.rawRef?window.HL36.rawRef(path):firebase.database().ref(path);
+ const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+ const cleanId=v=>String(v||'').trim().toUpperCase().replace(/[^A-Z0-9_-]/g,'').slice(0,24);
  const cfg=()=>window.HARIOM_AUTH_CONFIG||{};
- const configured=()=>!!(cfg().apiKey&&cfg().appId&&typeof firebase!=='undefined'&&typeof firebase.auth==='function');
- const masters=()=>new Set((window.HARIOM_MASTER_ADMINS||((typeof allowedAdmins!=='undefined')?allowedAdmins:[])).map(p10).filter(Boolean));
- let auth=null,confirmation=null,recaptcha=null,currentUser=null,currentPhone='',libraries=[],deviceId='',deviceWatcher=null;
+ const raw=path=>window.HL36?.rawRef?window.HL36.rawRef(path):firebase.database().ref(path);
+ let auth=null,currentUser=null,currentLicense=null,deviceWatcher=null;
 
  function getSession(){try{return JSON.parse(localStorage.getItem(SESSION)||'{}')||{}}catch(e){return{}}}
- function setSession(s){localStorage.setItem(SESSION,JSON.stringify(s))}
+ function setSession(s){localStorage.setItem(SESSION,JSON.stringify(s||{}))}
  function clearSession(){localStorage.removeItem(SESSION);localStorage.removeItem('hariom_library_admin')}
- function getPending(){try{return JSON.parse(sessionStorage.getItem(PENDING)||'{}')||{}}catch(e){return{}}}
- function setPending(v){sessionStorage.setItem(PENDING,JSON.stringify(v||{}));try{localStorage.setItem(LAST,JSON.stringify(v||{}))}catch(e){}}
- function getLast(){try{return JSON.parse(localStorage.getItem(LAST)||'{}')||{}}catch(e){return{}}}
- function getDeviceId(){let d=localStorage.getItem(DEVICE)||'';if(!d){d='d_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,10);localStorage.setItem(DEVICE,d)}return d}
- function msg(t){
-   const e=$('v36Msg');if(!e)return;
-   e.textContent=String(t||'');e.style.display=t?'block':'none';
- }
- function step(id){['v36PhoneStep','v36OtpStep','v36ChooseStep','v36CreateStep'].forEach(x=>$(x)?.classList.toggle('on',x===id))}
+ function getDeviceId(){let d=localStorage.getItem(DEVICE)||'';if(!d){d='dev_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,12);localStorage.setItem(DEVICE,d)}return d}
+ function emailFor(id){id=cleanId(id);return id==='OWNER'?OWNER_EMAIL:'lp.'+id.toLowerCase().replace(/_/g,'-')+'@librarypro.app'}
+ function msg(t){const e=$('v36Msg');if(!e)return;e.textContent=String(t||'');e.style.display=t?'block':'none'}
+ function step(id){['v37LoginStep','v37PendingStep','v37BlockedStep'].forEach(x=>$(x)?.classList.toggle('on',x===id))}
  function showGate(){if(gateMode)return;document.body.classList.add('v36-locked');$('v36Gate')?.classList.add('show');$('v36Gate')?.setAttribute('aria-hidden','false')}
  function hideGate(){document.body.classList.remove('v36-locked');$('v36Gate')?.classList.remove('show');$('v36Gate')?.setAttribute('aria-hidden','true')}
- function configWarning(){ return; }
- function unlockLegacy(){
-   try{if(typeof isAdminVerified!=='undefined')isAdminVerified=true}catch(e){}
-   const c=$('adminCard');if(c)c.style.display='none';
-   try{typeof updateAdminStatus==='function'&&updateAdminStatus()}catch(e){}
- }
- function syncSeatUi(seat){
-   seat=Math.max(1,Number(seat||TOTAL_SEATS||105));
-   document.querySelectorAll('input[type=number][max="105"]').forEach(x=>{x.max=String(seat);if((x.placeholder||'').includes('105'))x.placeholder=x.placeholder.replace(/105/g,String(seat))});
-   document.querySelectorAll('[data-v361-total-seats]').forEach(x=>x.textContent=String(seat));
-   [...document.querySelectorAll('span,p,small,b,h1,h2,h3,div')].forEach(el=>{
-     if(el.children.length)return;
-     const t=el.textContent||'';
-     const repl=t
-       .replace(/Manage 105 seats/g,'Manage '+seat+' seats')
-       .replace(/all 105 seats/g,'all '+seat+' seats')
-       .replace(/OPEN 105 LIVE SEATS/g,'OPEN '+seat+' LIVE SEATS')
-       .replace(/105 Smart Seats/g,seat+' Smart Seats')
-       .replace(/105 live seats/g,seat+' live seats')
-       .replace(/Type to search all 105 seats/g,'Type to search all '+seat+' seats')
-       .replace(/Seat 1-105/g,'Seat 1-'+seat);
-     if(repl!==t)el.textContent=repl;
-   });
-   const stat=document.querySelector('#homeSection .stats-grid .stat-card:first-child .stat-value');if(stat)stat.textContent=String(seat);
- }
- function applyBrand(s){
-   const name=String(s.libraryName||'Library Pro'),seat=Math.max(1,Number(s.seatCount||105));
-   TOTAL_SEATS=seat;document.title=name+' • Library Pro';document.body.classList.toggle('v361-tenant',s.mode==='tenant');syncSeatUi(seat);
-   const brand=document.querySelector('.v33-student-brand h2');if(brand)brand.textContent=name;
-   const header=document.querySelector('.logo-area h2');if(header)header.textContent=name;
-   const welcome=document.querySelector('.welcome h2');if(welcome)welcome.textContent='Welcome to '+name+' 👋';
-   const pro=document.querySelector('#v31Launch h2');if(pro)pro.textContent=name+' Pro OS';
-   const v15h=document.querySelector('#v15Panel .v15-head h2');if(v15h)v15h.textContent=name+' • Nexus V15 Pro';
-   const notice=$('v32NoticeText');if(notice&&notice.value.startsWith('Hariom Library'))notice.value=notice.value.replace(/^Hariom Library/,name);
-   const quick=$('quickMessage');if(quick&&quick.value.startsWith('Hariom Library'))quick.value=quick.value.replace(/^Hariom Library/,name);
-   const exact=[...document.querySelectorAll('span,p,small,b,h1,h2,h3')];
-   exact.forEach(el=>{
-     if(el.children.length)return;
-     let t=el.textContent||'';
-     if(t==='105')el.textContent=String(seat);
-     else if(t.includes('Manage 105 seats'))el.textContent=t.replace('105',String(seat));
-     else if(t.includes('all 105 seats'))el.textContent=t.replace('105',String(seat));
-     else if(t.includes('OPEN 105 LIVE SEATS'))el.textContent=t.replace('105',String(seat));
-     else if(t.includes('105 Smart Seats'))el.textContent=t.replace('105',String(seat));
-   });
- }
- const v361Observer=new MutationObserver(()=>{const s=getSession();if(s.seatCount)syncSeatUi(s.seatCount)});
- document.addEventListener('DOMContentLoaded',()=>{try{v361Observer.observe(document.body,{childList:true,subtree:true})}catch(e){}});
- async function registerDevice(user){
-   deviceId=getDeviceId();const ref=raw('platform/devices/'+user.uid),info={phone:user.phoneNumber||'',lastSeenAt:Date.now(),userAgent:navigator.userAgent.slice(0,180)};
-   const r=await ref.transaction(cur=>{
-     cur=cur||{};
-     if(!cur[deviceId]&&Object.keys(cur).length>=4)return;
-     cur[deviceId]=info;return cur;
-   });
-   if(!r.committed)throw new Error('DEVICE_LIMIT');
-   if(deviceWatcher)deviceWatcher.off();
-   deviceWatcher=ref.child(deviceId);let first=true;
-   deviceWatcher.on('value',snap=>{if(first){first=false;return}if(!snap.exists())v36Logout()});
-   return Object.keys(r.snapshot.val()||{}).length;
- }
- async function loadLibraries(user){
-   const arr=[];
-   if(masters().has(currentPhone))arr.push({id:'hariom_master',name:'Hariom Library',seatCount:105,mode:'master'});
-   const s=await raw('platform/users/'+user.uid+'/libraries').once('value');
-   Object.entries(s.val()||{}).forEach(([id,d])=>{if(d&&id!=='hariom_master')arr.push({id,name:d.name||'My Library',seatCount:Number(d.seatCount||105),mode:'tenant'})});
-   libraries=arr;return arr;
- }
- function renderLibraries(){
-   const box=$('v36LibraryList');if(!box)return;
-   box.innerHTML=libraries.length?libraries.map(l=>'<button class="v36-lib" onclick="v36SelectLibrary(\''+sid(l.id)+'\')"><span><b>'+esc(l.name)+'</b><span>'+Number(l.seatCount||105)+' seats • '+(l.mode==='master'?'Hariom master data':'Personal library data')+'</span></span><i class="v36-pill">OPEN</i></button>').join(''):'<div class="v36-msg">No library yet. Create your first library.</div>';
- }
- window.v36SelectLibrary=async function(id){
-   let l=libraries.find(x=>x.id===id);if(!l||!currentUser)return;
-   l=await applyRequestedSeats(l);
-   const s={uid:currentUser.uid,phone:currentPhone,libraryId:l.id,libraryName:l.name,seatCount:Number(l.seatCount||105),mode:l.mode};
-   setSession(s);if(l.mode==='master')localStorage.setItem('hariom_library_admin',currentPhone);else localStorage.removeItem('hariom_library_admin');
-   location.href=location.pathname;
- };
- window.v36ShowCreate=function(){step('v36CreateStep');$('v36LibraryName').value='';$('v36SeatCount').value='';msg('Library name aur total seats set kijiye.')}
- window.v36BackToLibraries=function(){if(libraries.length){renderLibraries();step('v36ChooseStep')}else step('v36CreateStep')}
- window.v36CreateLibrary=async function(){
-   if(!currentUser)return msg('OTP session missing.');
-   const name=String($('v36LibraryName')?.value||'').trim(),seat=Number($('v36SeatCount')?.value||0);
-   if(name.length<2)return msg('Valid library name daliye.');if(!Number.isFinite(seat)||seat<1||seat>2000)return msg('Seats 1 se 2000 ke beech daliye.');
-   const id='lib_'+currentUser.uid.slice(0,8)+'_'+Date.now().toString(36);
-   const meta={name,seatCount:seat,ownerUid:currentUser.uid,ownerPhone:'+91'+currentPhone,createdAt:Date.now(),updatedAt:Date.now(),members:{[currentUser.uid]:true}};
-   const updates={};
-   updates['platform/libraries/'+id]=meta;
-   updates['platform/users/'+currentUser.uid+'/libraries/'+id]={name,seatCount:seat,role:'owner',createdAt:Date.now()};
-   await raw('').update(updates);
-   libraries.push({id,name,seatCount:seat,mode:'tenant'});v36SelectLibrary(id);
- };
- async function applyRequestedSeats(lib){
-   // V36.2 SAFETY: returning login must NEVER modify an existing library.
-   // Library name + seat count entered on Login are used only when the phone number
-   // has no library yet. Existing data/config is loaded from Firebase unchanged.
-   return {...lib,seatCount:Math.max(1,Math.min(2000,Number(lib.seatCount||105)||105))};
- }
- async function createFirstLibraryFromLogin(user){
-   const p=getPending(),name=String(p.libraryName||'').trim(),seat=Math.max(1,Math.min(2000,Number(p.seatCount||105)||105));
-   if(name.length<2)throw new Error('Library name required');
-   const id='lib_'+user.uid.slice(0,8)+'_'+Date.now().toString(36);
-   const meta={name,seatCount:seat,ownerUid:user.uid,ownerPhone:'+91'+currentPhone,createdAt:Date.now(),updatedAt:Date.now(),members:{[user.uid]:true}};
-   const updates={};
-   updates['platform/libraries/'+id]=meta;
-   updates['platform/users/'+user.uid+'/libraries/'+id]={name,seatCount:seat,role:'owner',createdAt:Date.now()};
-   await raw('').update(updates);
-   return {id,name,seatCount:seat,mode:'tenant'};
- }
- async function proceed(user){
-   currentUser=user;currentPhone=p10(user.phoneNumber||'');if(!currentPhone)throw new Error('Phone missing');
-   try{await registerDevice(user)}catch(e){if(e.message==='DEVICE_LIMIT'){await auth.signOut();clearSession();showGate();step('v36PhoneStep');return msg('❌ Is number par 4 active devices already hain. Kisi purane device se logout karke phir try kijiye.')}throw e}
-   let libs=await loadLibraries(user),ses=getSession(),match=libs.find(x=>x.id===ses.libraryId);
-   if(match&&ses.uid===user.uid){
-     match=await applyRequestedSeats(match);
-     const fresh={uid:user.uid,phone:currentPhone,libraryId:match.id,libraryName:match.name,seatCount:match.seatCount,mode:match.mode};
-     setSession(fresh);if(match.mode==='master')localStorage.setItem('hariom_library_admin',currentPhone);
-     if(Number(window.HL36?.seatCount||0)!==Number(fresh.seatCount||0)||window.HL36?.libraryId!==fresh.libraryId)return location.reload();
-     unlockLegacy();applyBrand(fresh);hideGate();msg('');return;
+ function unlockLegacy(){try{if(typeof isAdminVerified!=='undefined')isAdminVerified=true}catch(e){}const c=$('adminCard');if(c)c.style.display='none';try{typeof updateAdminStatus==='function'&&updateAdminStatus()}catch(e){}}
+ function isOwner(user){return String(user?.email||'').toLowerCase()===OWNER_EMAIL}
+ function fmtDate(ts){if(!ts)return 'Lifetime';try{return new Date(Number(ts)).toLocaleDateString('en-IN')}catch(e){return '-'}}
+ function expired(lic){return !!(lic?.expiresAt&&Number(lic.expiresAt)<Date.now())}
+ async function fingerprint(){const s=[navigator.userAgent,navigator.platform||'',screen.width+'x'+screen.height,navigator.language||''].join('|');try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('').slice(0,24)}catch(e){return btoa(unescape(encodeURIComponent(s))).slice(0,24)}}
+ function syncSeatUi(seat){seat=Math.max(1,Math.min(2000,Number(seat||105)||105));try{TOTAL_SEATS=seat}catch(e){}document.querySelectorAll('input[type=number][max="105"]').forEach(x=>{x.max=String(seat)});const stat=document.querySelector('#homeSection .stats-grid .stat-card:first-child .stat-value');if(stat)stat.textContent=String(seat);document.querySelectorAll('[data-v361-total-seats]').forEach(x=>x.textContent=String(seat))}
+ function applyBrand(s){const name=String(s.libraryName||'Library Pro'),seat=Math.max(1,Number(s.seatCount||105));syncSeatUi(seat);document.title=name+' • Library Pro';document.body.classList.toggle('v361-tenant',s.mode==='tenant');const h=document.querySelector('.logo-area h2');if(h)h.textContent=name;const w=document.querySelector('.welcome h2');if(w)w.textContent='Welcome to '+name+' 👋';const sb=document.querySelector('.v33-student-brand h2');if(sb)sb.textContent=name;const pro=document.querySelector('#v31Launch h2');if(pro)pro.textContent=name+' Pro OS'}
+ function openApp(session){setSession(session);applyBrand(session);unlockLegacy();hideGate();if(isOwner(currentUser)){$('v37SellerBtn').style.display='block'}else{$('v37SellerBtn').style.display='none'}}
+ function lockReason(text,type='blocked'){showGate();step(type==='pending'?'v37PendingStep':'v37BlockedStep');const box=$(type==='pending'?'v37PendingBox':'v37BlockedBox');if(box)box.innerHTML=text;msg('')}
+
+ async function ensureCustomer(user){
+   const uid=user.uid, licSnap=await raw('platform/licensesByUid/'+uid).once('value'), lic=licSnap.val();currentLicense=lic||null;
+   if(!lic){lockReason('<b>License not found</b><br>Seller se contact kijiye.');return false}
+   if(lic.status!=='active'){lockReason('<b>License suspended</b><br>Seller se renewal/activation ke liye contact kijiye.');return false}
+   if(expired(lic)){lockReason('<b>License expired</b><br>Expiry: '+esc(fmtDate(lic.expiresAt))+'<br>Seller se renew karwaiye.');return false}
+   const did=getDeviceId(), fp=await fingerprint(), dref=raw('platform/devices/'+uid+'/'+did), ds=await dref.once('value'), d=ds.val();
+   if(!d){
+     const req={status:'pending',deviceId:did,fingerprint:fp,label:(navigator.platform||'Device')+' • '+(navigator.userAgent.includes('Mobile')?'Mobile':'Computer'),requestedAt:Date.now(),lastSeenAt:Date.now()};
+     try{await dref.set(req)}catch(e){console.error(e);lockReason('<b>Device request failed</b><br>'+esc(e.message));return false}
+     watchDevice(uid,did,fp);lockReason('<b>Device approval required</b><br>Request seller ko bhej di gayi hai.<br><small>Library ID: '+esc(lic.licenseId||'')+'</small>','pending');return false
    }
-   if(libs.length===1){
-     let only=await applyRequestedSeats(libs[0]);
-     const fresh={uid:user.uid,phone:currentPhone,libraryId:only.id,libraryName:only.name,seatCount:only.seatCount,mode:only.mode};
-     setSession(fresh);if(only.mode==='master')localStorage.setItem('hariom_library_admin',currentPhone);
-     return location.reload();
-   }
-   if(libs.length>1){
-     const p=getPending(),wanted=String(p.libraryName||'').trim().toLowerCase();
-     const exact=libs.find(x=>String(x.name||'').trim().toLowerCase()===wanted);
-     if(exact){
-       const fresh={uid:user.uid,phone:currentPhone,libraryId:exact.id,libraryName:exact.name,seatCount:Number(exact.seatCount||105),mode:exact.mode};
-       setSession(fresh);if(exact.mode==='master')localStorage.setItem('hariom_library_admin',currentPhone);
-       return location.reload();
-     }
-     showGate();renderLibraries();step('v36ChooseStep');msg('');return
-   }
-   const created=await createFirstLibraryFromLogin(user);
-   setSession({uid:user.uid,phone:currentPhone,libraryId:created.id,libraryName:created.name,seatCount:created.seatCount,mode:'tenant'});
-   location.reload();
+   if(d.status!=='approved'){watchDevice(uid,did,fp);lockReason('<b>'+(d.status==='rejected'?'Device rejected':'Device approval pending')+'</b><br>Seller approval ke bina app open nahi hoga.','pending');return false}
+   if(d.fingerprint&&d.fingerprint!==fp){lockReason('<b>Device verification mismatch</b><br>Seller se device reset karwaiye.');return false}
+   const approved=await raw('platform/devices/'+uid).once('value');const active=Object.values(approved.val()||{}).filter(x=>x&&x.status==='approved').length;const limit=Math.max(1,Number(lic.deviceLimit||1));
+   if(active>limit){lockReason('<b>Device limit exceeded</b><br>Allowed devices: '+limit);return false}
+   const ps=await raw('tenants/'+uid+'/meta/profile').once('value'), p=ps.val()||{};
+   const session={uid,licenseId:lic.licenseId||'',libraryId:uid,libraryName:p.libraryName||lic.libraryName||'My Library',seatCount:Math.max(1,Number(p.seatCount||lic.seatCount||105)),mode:'tenant',expiresAt:Number(lic.expiresAt||0),deviceLimit:limit};
+   openApp(session);return true
  }
+ function watchDevice(uid,did,fp){try{deviceWatcher?.off()}catch(e){}deviceWatcher=raw('platform/devices/'+uid+'/'+did);deviceWatcher.on('value',snap=>{const d=snap.val();if(d&&d.status==='approved'&&(!d.fingerprint||d.fingerprint===fp)){location.reload()}else if(d&&d.status==='rejected'){lockReason('<b>Device rejected</b><br>Seller se contact kijiye.')}})}
+ async function proceed(user){currentUser=user;if(isOwner(user)){const session={uid:user.uid,licenseId:'OWNER',libraryId:'hariom_master',libraryName:'Hariom Library',seatCount:105,mode:'master',deviceLimit:99};openApp(session);return}await ensureCustomer(user)}
+
+ window.v37Login=async function(){
+   const id=cleanId($('v37LicenseId')?.value),pass=String($('v37Password')?.value||''),btn=$('v37LoginBtn');
+   if(id.length<3)return msg('Valid Library ID daliye.');if(pass.length<6)return msg('Password kam se kam 6 characters ka hona chahiye.');
+   localStorage.setItem(LAST_ID,id);try{btn.disabled=true;btn.textContent='CHECKING...';msg('');await auth.signInWithEmailAndPassword(emailFor(id),pass)}catch(e){const c=String(e.code||'');if(c.includes('invalid-credential')||c.includes('wrong-password')||c.includes('user-not-found'))msg('Library ID ya password galat hai.');else if(c.includes('operation-not-allowed'))msg('Firebase me Email/Password sign-in enable kijiye.');else msg('Login failed: '+(e.message||'Unknown error'))}finally{btn.disabled=false;btn.textContent='LOGIN'}};
+ window.v36Logout=async function(){try{deviceWatcher?.off()}catch(e){}clearSession();try{await auth?.signOut()}catch(e){}location.href=location.pathname};window.logoutAdmin=window.v36Logout;
+ window.v36OpenAccount=async function(){const s=getSession();if(!s.libraryId)return showGate();$('v36AccLib').textContent=s.libraryName||'Library';$('v36AccPhone').textContent='ID: '+(s.licenseId||'OWNER')+(s.expiresAt?' • Exp: '+fmtDate(s.expiresAt):'');$('v36AccSeats').textContent=Number(s.seatCount||105);if(s.mode==='master')$('v36AccDevices').textContent='SELLER';else{try{const d=await raw('platform/devices/'+s.uid+'/'+getDeviceId()).once('value');$('v36AccDevices').textContent=(d.val()?.status||'unknown').toUpperCase()}catch(e){$('v36AccDevices').textContent='-'}}$('v36AccountPanel').classList.add('show');$('v36AccountPanel').setAttribute('aria-hidden','false')};
+ window.v36CloseAccount=function(){$('v36AccountPanel').classList.remove('show');$('v36AccountPanel').setAttribute('aria-hidden','true')};
+ window.v36EditLibrary=async function(){const s=getSession();if(!s.libraryId)return;const nm=prompt('Library name:',s.libraryName||'');if(nm===null)return;const sv=prompt('Total seats (1-2000):',String(s.seatCount||105));if(sv===null)return;const name=String(nm||'').trim(),n=Number(sv);if(name.length<2||!Number.isFinite(n)||n<1||n>2000)return alert('Valid name and seats 1-2000 required');if(s.mode==='tenant')await raw('tenants/'+s.uid+'/meta/profile').update({libraryName:name,seatCount:n,updatedAt:Date.now()});s.libraryName=name;s.seatCount=n;setSession(s);location.reload()};
+ window.v37ChangePassword=async function(){if(!auth?.currentUser)return;const p=prompt('New password (minimum 6 characters):');if(p===null)return;if(String(p).length<6)return alert('Minimum 6 characters.');try{await auth.currentUser.updatePassword(String(p));alert('Password changed successfully.')}catch(e){alert('Password change failed. Logout karke dobara login kijiye aur try kare.\n'+e.message)}};
+
+ window.v37OpenSeller=async function(){if(!currentUser||!isOwner(currentUser))return alert('Seller account required.');$('v37SellerPanel').classList.add('show');$('v37SellerPanel').setAttribute('aria-hidden','false');if(!$('v37NewExpiry').value){const d=new Date();d.setFullYear(d.getFullYear()+1);$('v37NewExpiry').value=d.toISOString().slice(0,10)}await v37LoadCustomers()};
+ window.v37CloseSeller=function(){$('v37SellerPanel').classList.remove('show');$('v37SellerPanel').setAttribute('aria-hidden','true')};
+ function expiryMs(v){if(!v)return 0;const d=new Date(v+'T23:59:59');return d.getTime()||0}
+ window.v37CreateCustomer=async function(){
+   if(!currentUser||!isOwner(currentUser))return;const id=cleanId($('v37NewId').value),pass=String($('v37NewPass').value||''),name=String($('v37NewName').value||'').trim(),seats=Number($('v37NewSeats').value),deviceLimit=Number($('v37NewDevices').value),expiresAt=expiryMs($('v37NewExpiry').value),m=$('v37CreateMsg'),btn=$('v37CreateBtn');
+   if(id==='OWNER'||id.length<3)return m.textContent='Valid unique Library ID daliye.';if(pass.length<6)return m.textContent='Password minimum 6 characters.';if(name.length<2)return m.textContent='Library name required.';if(!Number.isFinite(seats)||seats<1||seats>2000)return m.textContent='Seats 1-2000.';if(!Number.isFinite(deviceLimit)||deviceLimit<1||deviceLimit>10)return m.textContent='Device limit 1-10.';
+   try{btn.disabled=true;btn.textContent='CREATING...';m.textContent='';const exists=await raw('platform/licenseIds/'+id).once('value');if(exists.exists())throw new Error('Library ID already exists.');const res=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key='+encodeURIComponent(cfg().apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:emailFor(id),password:pass,returnSecureToken:true})});const data=await res.json();if(!res.ok)throw new Error(data?.error?.message||'Account creation failed');const uid=data.localId,now=Date.now(),lic={licenseId:id,libraryName:name,seatCount:seats,deviceLimit,expiresAt,status:'active',createdAt:now,updatedAt:now};const up={};up['platform/licensesByUid/'+uid]=lic;up['platform/licenseIds/'+id]=uid;up['tenants/'+uid+'/meta/profile']={libraryName:name,seatCount:seats,createdAt:now,updatedAt:now};await raw('').update(up);m.innerHTML='✅ Created: <b>'+esc(id)+'</b> • Password customer ko abhi de dijiye. Password database me save nahi kiya gaya.';$('v37NewId').value='';$('v37NewPass').value='';$('v37NewName').value='';await v37LoadCustomers()}catch(e){m.textContent='❌ '+String(e.message||e).replace('EMAIL_EXISTS','This Library ID already has an auth account.')}finally{btn.disabled=false;btn.textContent='CREATE CUSTOMER'}};
+ async function v37LoadCustomers(){
+   const list=$('v37CustomerList');if(!list)return;list.innerHTML='<div class="v37-empty">Loading...</div>';try{const [ls,ds]=await Promise.all([raw('platform/licensesByUid').once('value'),raw('platform/devices').once('value')]),licenses=ls.val()||{},devices=ds.val()||{},arr=Object.entries(licenses).map(([uid,l])=>({uid,...l})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));const active=arr.filter(x=>x.status==='active'&&!expired(x)).length,pending=Object.values(devices).reduce((n,g)=>n+Object.values(g||{}).filter(d=>d?.status==='pending').length,0);$('v37SellerStats').innerHTML='<div class="v36-kpi"><b>'+arr.length+'</b><span>TOTAL CUSTOMERS</span></div><div class="v36-kpi"><b>'+active+'</b><span>ACTIVE LICENSES</span></div><div class="v36-kpi"><b>'+pending+'</b><span>PENDING DEVICES</span></div><div class="v36-kpi"><b>'+arr.filter(expired).length+'</b><span>EXPIRED</span></div>';if(!arr.length){list.innerHTML='<div class="v37-empty">No customers yet.</div>';return}list.innerHTML=arr.map(l=>{const dev=devices[l.uid]||{},devHtml=Object.entries(dev).map(([did,d])=>'<div class="v37-device"><div class="v37-device-info"><b>'+esc(d.label||'Device')+'</b><br>'+esc(String(d.status||'pending').toUpperCase())+' • '+esc(did.slice(-10))+'</div><div class="v37-actions">'+(d.status!=='approved'?'<button class="v37-btn green sm" onclick="v37Device(\''+l.uid+'\',\''+did+'\',\'approved\')">APPROVE</button>':'')+'<button class="v37-btn red sm" onclick="v37RemoveDevice(\''+l.uid+'\',\''+did+'\')">REMOVE</button></div></div>').join('')||'<div class="v37-meta">No device request yet.</div>';return '<div class="v37-license"><div class="v37-license-top"><div><b>'+esc(l.libraryName||'Library')+' • '+esc(l.licenseId||'')+'</b><div class="v37-meta">Seats: '+Number(l.seatCount||105)+' • Device limit: '+Number(l.deviceLimit||1)+' • Expiry: '+esc(fmtDate(l.expiresAt))+'</div></div><span class="v37-badge '+(l.status==='active'&&!expired(l)?'':'off')+'">'+(l.status==='active'&&!expired(l)?'ACTIVE':(expired(l)?'EXPIRED':'SUSPENDED'))+'</span></div><div class="v37-actions"><button class="v37-btn '+(l.status==='active'?'red':'green')+' sm" onclick="v37ToggleLicense(\''+l.uid+'\',\''+(l.status==='active'?'suspended':'active')+'\')">'+(l.status==='active'?'SUSPEND':'ACTIVATE')+'</button><button class="v37-btn sm" onclick="v37Renew(\''+l.uid+'\')">RENEW / EXPIRY</button><button class="v37-btn gray sm" onclick="v37EditCustomer(\''+l.uid+'\')">EDIT</button></div>'+devHtml+'</div>'}).join('')}catch(e){list.innerHTML='<div class="v37-empty">Load failed: '+esc(e.message)+'</div>'}}
+ window.v37ToggleLicense=async function(uid,status){await raw('platform/licensesByUid/'+uid).update({status,updatedAt:Date.now()});await v37LoadCustomers()};
+ window.v37Renew=async function(uid){const s=await raw('platform/licensesByUid/'+uid).once('value'),l=s.val()||{},cur=l.expiresAt?new Date(l.expiresAt).toISOString().slice(0,10):'';const v=prompt('New expiry date YYYY-MM-DD (blank = lifetime):',cur);if(v===null)return;const x=v?expiryMs(v):0;if(v&&!x)return alert('Invalid date');await raw('platform/licensesByUid/'+uid).update({expiresAt:x,status:'active',updatedAt:Date.now()});await v37LoadCustomers()};
+ window.v37EditCustomer=async function(uid){const [ls,ps]=await Promise.all([raw('platform/licensesByUid/'+uid).once('value'),raw('tenants/'+uid+'/meta/profile').once('value')]),l=ls.val()||{},p=ps.val()||{};const name=prompt('Library name:',p.libraryName||l.libraryName||'');if(name===null)return;const sv=prompt('Seats:',String(p.seatCount||l.seatCount||105));if(sv===null)return;const dv=prompt('Device limit:',String(l.deviceLimit||1));if(dv===null)return;const seats=Number(sv),deviceLimit=Number(dv);if(!String(name).trim()||seats<1||seats>2000||deviceLimit<1||deviceLimit>10)return alert('Invalid values');await Promise.all([raw('platform/licensesByUid/'+uid).update({libraryName:String(name).trim(),seatCount:seats,deviceLimit,updatedAt:Date.now()}),raw('tenants/'+uid+'/meta/profile').update({libraryName:String(name).trim(),seatCount:seats,updatedAt:Date.now()})]);await v37LoadCustomers()};
+ window.v37Device=async function(uid,did,status){await raw('platform/devices/'+uid+'/'+did).update({status,approvedAt:Date.now(),approvedBy:currentUser.uid});await v37LoadCustomers()};
+ window.v37RemoveDevice=async function(uid,did){if(!confirm('Is device ko remove karna hai?'))return;await raw('platform/devices/'+uid+'/'+did).remove();await v37LoadCustomers()};
+
  async function init(){
-   if(gateMode){
-     const lib=String(window.HL36?.libraryId||'hariom_master');
-     if(lib!=='hariom_master'){try{const s=await raw('platform/libraries/'+lib).once('value'),d=s.val()||{};if(d.name){window.HL36.libraryName=d.name;setTimeout(()=>{const h=document.querySelector('.v33-student-brand h2');if(h)h.textContent=d.name},0)}}catch(e){}}
-     return;
-   }
-   configWarning();
-   if(!configured()){
-     const legacy=getSession(),lp=p10(legacy.phone||localStorage.getItem('hariom_library_admin')||'');
-     if(legacy.mode==='master'&&legacy.libraryId==='hariom_master'&&masters().has(lp)){currentPhone=lp;unlockLegacy();applyBrand(legacy);hideGate();return}
-     showGate();step('v36PhoneStep');msg('');return
-   }
-   auth=firebase.auth();window.HL36_AUTH=auth;
-   try{auth.useDeviceLanguage()}catch(e){}
-   await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-   auth.onAuthStateChanged(async user=>{if(user){try{await proceed(user)}catch(e){console.error(e);showGate();msg('Login error: '+e.message)}}else{clearSession();showGate();step('v36PhoneStep');msg('')}});
+   if(gateMode)return;showGate();step('v37LoginStep');const last=localStorage.getItem(LAST_ID)||'';if($('v37LicenseId'))$('v37LicenseId').value=last;const old=$('adminCard');if(old)old.style.display='none';
+   if(!cfg().apiKey||typeof firebase==='undefined'||typeof firebase.auth!=='function'){msg('Firebase config missing.');return}
+   auth=firebase.auth();window.HL36_AUTH=auth;await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);auth.onAuthStateChanged(async user=>{if(!user){clearSession();showGate();step('v37LoginStep');$('v37SellerBtn').style.display='none';return}try{await proceed(user)}catch(e){console.error(e);lockReason('<b>Login check failed</b><br>'+esc(e.message))}})
  }
- window.v36SendOtp=async function(){
-   const libraryName=String($('v361LibraryName')?.value||'').trim(),seatCount=Number($('v361LoginSeats')?.value||0);
-   const phone=p10($('v36Phone')?.value),btn=$('v36SendOtpBtn');
-   if(libraryName.length<2)return msg('Library name daliye.');
-   if(!Number.isFinite(seatCount)||seatCount<1||seatCount>2000)return msg('Total seats 1 se 2000 ke beech daliye.');
-   if(!phone)return msg('Valid 10-digit mobile number daliye.');
-   setPending({libraryName,seatCount,phone});
-   if(!configured())return msg('OTP service setup required.');
-   try{
-     if(btn){btn.disabled=true;btn.textContent='SENDING OTP...'}
-     msg('');
-     // Always use a fresh DOM host. Reusing the same element can trigger
-     // "reCAPTCHA has already been rendered in this element" on mobile/PWA.
-     if(recaptcha){try{recaptcha.clear()}catch(e){} recaptcha=null}
-     const oldRecaptchaHost=$('v36Recaptcha');
-     if(oldRecaptchaHost&&oldRecaptchaHost.parentNode){
-       const freshHost=document.createElement('div');
-       freshHost.id='v36Recaptcha';
-       freshHost.setAttribute('aria-hidden','true');
-       oldRecaptchaHost.parentNode.replaceChild(freshHost,oldRecaptchaHost);
-     }
-     recaptcha=new firebase.auth.RecaptchaVerifier('v36Recaptcha',{
-       size:'invisible',
-       callback:function(){},
-       'expired-callback':function(){msg('Verification expired. GET OTP dubara dabaiye.')}
-     });
-     confirmation=await auth.signInWithPhoneNumber('+91'+phone,recaptcha);
-     currentPhone=phone;step('v36OtpStep');msg('');
-     setTimeout(()=>$('v36Otp')?.focus(),100);
-   }catch(e){
-     try{recaptcha?.clear()}catch(_){}
-     recaptcha=null;
-     const code=String(e?.code||'');
-     if(code.includes('too-many-requests'))msg('Bahut OTP attempts ho gaye. Thodi der baad try kijiye.');
-     else if(code.includes('invalid-phone-number'))msg('Mobile number sahi daliye.');
-     else if(code.includes('operation-not-allowed'))msg('Firebase me Phone Authentication enable kijiye.');
-     else if(code.includes('unauthorized-domain'))msg('Firebase Authorized Domains me apni website domain add kijiye.');
-     else msg('OTP send nahi hua: '+(e?.message||'Unknown error'));
-   }finally{
-     if(btn){btn.disabled=false;btn.textContent='GET OTP'}
-   }
- };
- window.v36VerifyOtp=async function(){
-   const code=String($('v36Otp')?.value||'').trim(),btn=$('v36VerifyOtpBtn');
-   if(!confirmation||!/^\d{6}$/.test(code))return msg('Valid 6-digit OTP daliye.');
-   try{
-     if(btn){btn.disabled=true;btn.textContent='VERIFYING...'}
-     msg('');
-     const r=await confirmation.confirm(code);
-     // Same verified phone number returns the same Firebase Auth user (uid),
-     // so the existing library mapping/data is loaded instead of recreated.
-     await proceed(r.user);
-   }catch(e){
-     const ec=String(e?.code||'');
-     if(ec.includes('invalid-verification-code'))msg('OTP galat hai. Sahi 6-digit OTP daliye.');
-     else if(ec.includes('code-expired'))msg('OTP expire ho gaya. GET OTP dubara kijiye.');
-     else msg('OTP verify nahi hua: '+(e?.message||'Unknown error'));
-   }finally{
-     if(btn){btn.disabled=false;btn.textContent='VERIFY OTP'}
-   }
- };
- window.v36TemporaryOwner=function(){
-   const phone=p10(localStorage.getItem('hariom_library_admin')||'');if(!phone||!masters().has(phone))return;
-   const p=getPending(),seat=Math.max(1,Math.min(2000,Number(p.seatCount||105)||105));
-   setSession({uid:'legacy',phone,libraryId:'hariom_master',libraryName:'Hariom Library',seatCount:seat,mode:'master'});location.reload();
- };
- window.v36OpenAccount=async function(){
-   const s=getSession();if(!s.libraryId)return showGate();
-   $('v36AccLib').textContent=s.libraryName||'Library';$('v36AccPhone').textContent='+91 '+(s.phone||'');$('v36AccSeats').textContent=Number(s.seatCount||105);
-   if(s.uid&&s.uid!=='legacy'){try{const x=await raw('platform/devices/'+s.uid).once('value');$('v36AccDevices').textContent=Object.keys(x.val()||{}).length+'/4'}catch(e){$('v36AccDevices').textContent='-/4'}}else $('v36AccDevices').textContent='TEMP';
-   $('v36AccountPanel').classList.add('show');$('v36AccountPanel').setAttribute('aria-hidden','false');
- };
- window.v36CloseAccount=function(){$('v36AccountPanel').classList.remove('show');$('v36AccountPanel').setAttribute('aria-hidden','true')}
- window.v36AccountSwitch=async function(){
-   v36CloseAccount();if(!auth?.currentUser)return showGate();
-   currentUser=auth.currentUser;currentPhone=p10(currentUser.phoneNumber||'');await loadLibraries(currentUser);renderLibraries();showGate();step('v36ChooseStep');msg('Library switch kijiye ya nayi library banaiye.');
- };
- window.v36EditLibrary=async function(){
-   const s=getSession();if(!s.libraryId)return;
-   if(s.mode==='master'){const v=prompt('Hariom Library total seats:',String(s.seatCount||105));if(v===null)return;const n=Number(v);if(!Number.isFinite(n)||n<1||n>2000)return alert('Seats 1-2000');s.seatCount=n;setSession(s);return location.reload()}
-   const nm=prompt('Library name:',s.libraryName||'');if(nm===null)return;const sv=prompt('Total seats:',String(s.seatCount||105));if(sv===null)return;const n=Number(sv),name=String(nm||'').trim();if(!name||!Number.isFinite(n)||n<1||n>2000)return alert('Valid name and seats 1-2000 required');
-   await raw('platform/libraries/'+s.libraryId).update({name,seatCount:n,updatedAt:Date.now()});
-   await raw('platform/users/'+s.uid+'/libraries/'+s.libraryId).update({name,seatCount:n});
-   s.libraryName=name;s.seatCount=n;setSession(s);location.reload();
- };
- window.v36RemoveOtherDevices=async function(){
-   const s=getSession();if(!s.uid||s.uid==='legacy')return alert('Real OTP session required.');
-   if(!confirm('Current device ko chhodkar baaki registered devices remove karne hain?'))return;
-   const snap=await raw('platform/devices/'+s.uid).once('value'),all=snap.val()||{},updates={};
-   Object.keys(all).forEach(k=>{if(k!==getDeviceId())updates[k]=null});
-   await raw('platform/devices/'+s.uid).update(updates);$('v36AccDevices').textContent='1/4';if(typeof showToast==='function')showToast('Other devices removed');
- };
- window.v36Logout=async function(){
-   const s=getSession(),did=getDeviceId();
-   // Logout intentionally removes ONLY this device registration + Firebase Auth session.
-   // No library_v3 / tenants data is deleted here.
-   try{if(s.uid&&s.uid!=='legacy')await raw('platform/devices/'+s.uid+'/'+did).remove()}catch(e){}
-   try{await auth?.signOut()}catch(e){}
-   clearSession();location.href=location.pathname;
- };
- window.logoutAdmin=function(){v36Logout()};
-
- document.addEventListener('DOMContentLoaded',()=>{
-   const last=getLast(),s=getSession();
-   if($('v361LibraryName'))$('v361LibraryName').value=String(s.libraryName||last.libraryName||'');
-   if($('v361LoginSeats'))$('v361LoginSeats').value=String(s.seatCount||last.seatCount||105);
-   if($('v36Phone'))$('v36Phone').value=String(last.phone||s.phone||'');
-   if(!gateMode&&s.libraryId){applyBrand(s);unlockLegacy()}else if(!gateMode)showGate();
-   const old=$('adminCard');if(old)old.style.display='none';configWarning();
-
-   // Rebrand dynamically-created ID cards/slips/receipts for personal libraries.
-   if(typeof window.v15Modal==='function'&&!window.v15Modal.__v36brand){
-     const oldModal=window.v15Modal;
-     const wrapped=function(){
-       const r=oldModal.apply(this,arguments);
-       setTimeout(()=>{
-         const name=getSession().libraryName||'Hariom Library',root=$('v15ModalBody');
-         if(root){
-           const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;
-           while((n=walker.nextNode())){
-             n.nodeValue=n.nodeValue.replace(/HARIOM LIBRARY/g,name.toUpperCase()).replace(/Hariom Library/g,name);
-           }
-         }
-       },0);
-       return r;
-     };
-     wrapped.__v36brand=true;window.v15Modal=wrapped;
-   }
- });
+ document.addEventListener('DOMContentLoaded',()=>{const s=getSession();if(s.libraryId){applyBrand(s);unlockLegacy()}const old=$('adminCard');if(old)old.style.display='none'});
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
 <!-- ===== END V36 ===== -->
+
+
+<!-- ===== V38 PRIVATE SELLER VAULT ===== -->
+<style id="v38-private-style">
+#v37SellerBtn,#v37SellerPanel{display:none!important}
+#v38VaultGate,#v38PrivateSellerPanel{display:none;position:fixed;inset:0;z-index:120000;background:rgba(2,6,23,.78);padding:14px;overflow:auto}
+#v38VaultGate.show{display:grid;place-items:center}#v38PrivateSellerPanel.show{display:block}
+.v38-vault-card{width:min(420px,100%);background:#fff;border-radius:24px;padding:20px;color:#0f172a;box-shadow:0 24px 70px rgba(0,0,0,.28)}
+.v38-vault-icon{width:54px;height:54px;border-radius:17px;background:#111827;color:#fff;display:grid;place-items:center;font-size:25px;margin-bottom:12px}
+.v38-vault-card h2{font-size:19px}.v38-vault-card p{font-size:11px;color:#64748b;line-height:1.5;margin:7px 0 12px}
+.v38-in{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:12px;margin:5px 0;background:#fff;color:#0f172a;font-size:13px}
+.v38-btn{border:0;border-radius:12px;padding:10px 12px;font-weight:900;font-size:11px;background:#4f46e5;color:#fff;cursor:pointer}.v38-btn.green{background:#16a34a}.v38-btn.red{background:#dc2626}.v38-btn.dark{background:#111827}.v38-btn.gray{background:#e2e8f0;color:#0f172a}.v38-btn.amber{background:#d97706}.v38-btn.sm{padding:7px 9px;font-size:9px}
+.v38-seller{max-width:1040px;margin:0 auto;background:#f8fafc;border-radius:24px;padding:12px;min-height:calc(100vh - 28px);color:#0f172a}
+.v38-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 15px;border-radius:18px;background:#0f172a;color:#fff;position:sticky;top:0;z-index:4}.v38-head h2{font-size:17px}.v38-head p{font-size:9px;opacity:.72;margin-top:3px}
+.v38-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.v38-card{background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:14px;margin-top:10px}.v38-card h3{font-size:13px;margin-bottom:8px}
+.v38-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.v38-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.v38-meta{font-size:10px;color:#64748b;line-height:1.55}.v38-msg{font-size:10px;margin-top:7px;min-height:15px;font-weight:700}
+.v38-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.v38-stat{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:11px}.v38-stat b{display:block;font-size:17px}.v38-stat span{font-size:8px;color:#64748b;font-weight:900}
+.v38-customer{background:#fff;border:1px solid #e2e8f0;border-radius:17px;padding:12px;margin-top:8px}.v38-top{display:flex;justify-content:space-between;gap:9px;align-items:flex-start}.v38-title{font-size:13px;font-weight:900}.v38-badge{font-size:8px;font-weight:900;border-radius:999px;padding:5px 8px;background:#dcfce7;color:#166534}.v38-badge.off{background:#fee2e2;color:#991b1b}.v38-badge.warn{background:#fef3c7;color:#92400e}
+.v38-secret{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#f1f5f9;border-radius:9px;padding:6px 8px;font-size:10px;display:inline-block;max-width:100%;overflow:auto}.v38-device{border-top:1px dashed #e2e8f0;margin-top:8px;padding-top:8px;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.v38-search{display:flex;gap:7px;margin-top:8px}.v38-search input{flex:1}.v38-empty{text-align:center;color:#94a3b8;padding:20px;font-size:11px}
+@media(max-width:680px){.v38-grid,.v38-row{grid-template-columns:1fr}.v38-stats{grid-template-columns:repeat(2,1fr)}.v38-seller{padding:7px}.v38-head{border-radius:14px}}
+</style>
+
+<div id="v38VaultGate" aria-hidden="true">
+ <div class="v38-vault-card">
+  <div class="v38-vault-icon">🔐</div>
+  <h2>Private Seller Vault</h2>
+  <p id="v38VaultText">Private PIN enter kijiye.</p>
+  <input id="v38VaultPin" class="v38-in" type="password" inputmode="numeric" maxlength="12" placeholder="Private PIN">
+  <input id="v38VaultPin2" class="v38-in" type="password" inputmode="numeric" maxlength="12" placeholder="Confirm PIN" style="display:none">
+  <button id="v38VaultBtn" class="v38-btn dark" style="width:100%;margin-top:7px" onclick="v38VaultSubmit()">UNLOCK</button>
+  <button class="v38-btn gray" style="width:100%;margin-top:7px" onclick="v38VaultClose()">CLOSE</button>
+  <div id="v38VaultMsg" class="v38-msg"></div>
+ </div>
+</div>
+
+<div id="v38PrivateSellerPanel" aria-hidden="true">
+ <div class="v38-seller">
+  <div class="v38-head"><div><h2>Private Seller Center</h2><p>Customer licenses • credentials • expiry • devices</p></div><div class="v38-actions" style="margin:0"><button class="v38-btn gray sm" onclick="v38ExportSellerCSV()">EXPORT</button><button class="v38-btn red sm" onclick="v38LockVault()">LOCK</button></div></div>
+  <div class="v38-grid">
+   <div class="v38-card">
+    <h3>➕ New Customer / Sell App</h3>
+    <div class="v38-row"><div><input id="v38NewId" class="v38-in" placeholder="Library ID"><button class="v38-btn gray sm" onclick="v38GenerateId()">AUTO ID</button></div><div><input id="v38NewPass" class="v38-in" type="text" placeholder="Password"><button class="v38-btn gray sm" onclick="v38GeneratePass()">GEN PASSWORD</button></div></div>
+    <input id="v38BuyerName" class="v38-in" placeholder="Customer / owner name">
+    <div class="v38-row"><input id="v38BuyerPhone" class="v38-in" inputmode="numeric" maxlength="15" placeholder="Mobile number"><input id="v38LibraryName" class="v38-in" placeholder="Library name"></div>
+    <input id="v38BuyerAddress" class="v38-in" placeholder="Address / area">
+    <div class="v38-row"><input id="v38Seats" class="v38-in" type="number" min="1" max="2000" value="105" placeholder="Seats"><input id="v38Devices" class="v38-in" type="number" min="1" max="10" value="1" placeholder="Device limit"></div>
+    <div class="v38-row"><select id="v38Plan" class="v38-in" onchange="v38PlanChanged()"><option value="1m">1 Month</option><option value="3m">3 Months</option><option value="6m">6 Months</option><option value="1y" selected>1 Year</option><option value="lifetime">Lifetime</option><option value="custom">Custom Expiry</option></select><input id="v38Expiry" class="v38-in" type="date"></div>
+    <div class="v38-row"><input id="v38Amount" class="v38-in" type="number" min="0" step="1" placeholder="Sale amount ₹"><select id="v38Payment" class="v38-in"><option value="paid">Paid</option><option value="pending">Payment Pending</option><option value="partial">Partial</option></select></div>
+    <input id="v38Notes" class="v38-in" placeholder="Notes (optional)">
+    <button id="v38CreateBtn" class="v38-btn green" style="width:100%;margin-top:7px" onclick="v38CreateCustomer()">CREATE & SAVE CUSTOMER</button>
+    <div id="v38CreateMsg" class="v38-msg"></div>
+   </div>
+   <div class="v38-card"><h3>📊 Seller Dashboard</h3><div id="v38Stats" class="v38-stats"></div><div class="v38-meta" style="margin-top:9px">Customer passwords private PIN se encrypted form me cloud me save hote hain.</div></div>
+  </div>
+  <div class="v38-card"><h3>🏢 Sold Customers</h3><div class="v38-search"><input id="v38Search" class="v38-in" placeholder="Search ID, library, customer, phone" oninput="v38LoadCustomers()"><select id="v38Filter" class="v38-in" style="max-width:145px" onchange="v38LoadCustomers()"><option value="all">All</option><option value="active">Active</option><option value="expiring">Expiring</option><option value="expired">Expired</option><option value="lifetime">Lifetime</option><option value="pendingpay">Payment Due</option></select></div><div id="v38CustomerList"><div class="v38-empty">Loading...</div></div></div>
+ </div>
+</div>
+
+<script id="v38-private-js">
+(function(){
+'use strict';
+const OWNER_ID='TRIDEV246088816356', OWNER_EMAIL='owner@librarypro.app';
+const sellerMode=new URLSearchParams(location.search).get('seller')==='1';
+const enc=new TextEncoder(), dec=new TextDecoder();
+let vaultKey=null,vaultUnlocked=false,vaultSetup=false,vaultSalt='',vaultCache={};
+const $=id=>document.getElementById(id);
+const cleanId=v=>String(v||'').trim().toUpperCase().replace(/[^A-Z0-9_-]/g,'').slice(0,24);
+const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const raw=p=>window.HL36?.rawRef?window.HL36.rawRef(p):firebase.database().ref(p);
+const isOwner=()=>String(firebase.auth()?.currentUser?.email||'').toLowerCase()===OWNER_EMAIL;
+const b64=u=>btoa(String.fromCharCode(...u));
+const unb64=s=>Uint8Array.from(atob(String(s||'')),c=>c.charCodeAt(0));
+const money=n=>'₹'+Number(n||0).toLocaleString('en-IN');
+function dateFmt(ts){if(!ts)return 'Lifetime';try{return new Date(Number(ts)).toLocaleDateString('en-IN')}catch(e){return '-'}}
+function expired(l){return !!(l?.expiresAt&&Number(l.expiresAt)<Date.now())}
+function expiring(l){if(!l?.expiresAt||expired(l))return false;return Number(l.expiresAt)-Date.now()<=30*86400000}
+function emailFor(id){id=cleanId(id);return id===OWNER_ID?OWNER_EMAIL:'lp.'+id.toLowerCase().replace(/_/g,'-')+'@librarypro.app'}
+
+// Override login: requested personal ID maps to the protected owner Firebase account.
+window.v37Login=async function(){
+ const id=cleanId($('v37LicenseId')?.value),pass=String($('v37Password')?.value||''),btn=$('v37LoginBtn'),m=$('v36Msg');
+ const say=t=>{if(m){m.textContent=t||'';m.style.display=t?'block':'none'}};
+ if(id.length<3)return say('Valid User ID daliye.');if(pass.length<6)return say('Password minimum 6 characters.');
+ localStorage.setItem('lp_v37_last_id',id);
+ try{btn.disabled=true;btn.textContent='CHECKING...';say('');await firebase.auth().signInWithEmailAndPassword(emailFor(id),pass)}catch(e){const c=String(e.code||'');if(c.includes('invalid-credential')||c.includes('wrong-password')||c.includes('user-not-found'))say('User ID ya password galat hai.');else if(c.includes('operation-not-allowed'))say('Firebase me Email/Password sign-in enable kijiye.');else say('Login failed: '+(e.message||'Unknown error'))}finally{btn.disabled=false;btn.textContent='LOGIN'}
+};
+
+// Keep the main admin page clean; seller tools are never shown on normal URL.
+const hideLegacySeller=()=>{if($('v37SellerBtn'))$('v37SellerBtn').style.setProperty('display','none','important');if($('v37SellerPanel'))$('v37SellerPanel').style.setProperty('display','none','important')};
+new MutationObserver(hideLegacySeller).observe(document.documentElement,{subtree:true,attributes:true,attributeFilter:['style','class']});
+
+async function derive(pin,saltB64){
+ const mat=await crypto.subtle.importKey('raw',enc.encode(pin),'PBKDF2',false,['deriveBits']);
+ const bits=await crypto.subtle.deriveBits({name:'PBKDF2',salt:unb64(saltB64),iterations:120000,hash:'SHA-256'},mat,256);
+ const hash=new Uint8Array(await crypto.subtle.digest('SHA-256',bits));
+ const key=await crypto.subtle.importKey('raw',bits,{name:'AES-GCM'},false,['encrypt','decrypt']);
+ return {key,verifier:b64(hash)};
+}
+async function encryptObj(o){const iv=crypto.getRandomValues(new Uint8Array(12));const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},vaultKey,enc.encode(JSON.stringify(o))));return {iv:b64(iv),cipher:b64(ct),v:1}}
+async function decryptObj(r){if(!r?.iv||!r?.cipher)return {};try{const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:unb64(r.iv)},vaultKey,unb64(r.cipher));return JSON.parse(dec.decode(pt))||{}}catch(e){return {__locked:true}}}
+
+window.v38StartVault=async function(){
+ if(!sellerMode||!isOwner())return;hideLegacySeller();
+ const snap=await raw('platform/sellerVault/config').once('value'),cfg=snap.val();vaultSetup=!cfg;
+ $('v38VaultPin').value='';$('v38VaultPin2').value='';$('v38VaultPin2').style.display=vaultSetup?'block':'none';
+ $('v38VaultText').textContent=vaultSetup?'First time: apna alag private 6–12 digit PIN banaiye. Ye staff ke login password se alag rakhiye.':'Private PIN enter kijiye.';
+ $('v38VaultBtn').textContent=vaultSetup?'CREATE PRIVATE PIN':'UNLOCK';$('v38VaultMsg').textContent='';
+ $('v38VaultGate').classList.add('show');$('v38VaultGate').setAttribute('aria-hidden','false');setTimeout(()=>$('v38VaultPin')?.focus(),80)
+};
+window.v38VaultSubmit=async function(){
+ const p=$('v38VaultPin').value.trim(),p2=$('v38VaultPin2').value.trim(),m=$('v38VaultMsg'),btn=$('v38VaultBtn');
+ if(!/^\d{6,12}$/.test(p)){m.textContent='6–12 digit private PIN rakhiye.';return}if(vaultSetup&&p!==p2){m.textContent='Confirm PIN match nahi hua.';return}
+ try{btn.disabled=true;btn.textContent='PLEASE WAIT...';if(vaultSetup){const salt=crypto.getRandomValues(new Uint8Array(16));vaultSalt=b64(salt);const d=await derive(p,vaultSalt);vaultKey=d.key;await raw('platform/sellerVault/config').set({salt:vaultSalt,verifier:d.verifier,createdAt:Date.now()});vaultUnlocked=true}else{const c=(await raw('platform/sellerVault/config').once('value')).val()||{};vaultSalt=c.salt||'';const d=await derive(p,vaultSalt);if(d.verifier!==c.verifier)throw new Error('Private PIN galat hai.');vaultKey=d.key;vaultUnlocked=true} $('v38VaultGate').classList.remove('show');$('v38PrivateSellerPanel').classList.add('show');$('v38PrivateSellerPanel').setAttribute('aria-hidden','false');v38PlanChanged();await v38LoadCustomers()}catch(e){m.textContent='❌ '+(e.message||e)}finally{btn.disabled=false;btn.textContent=vaultSetup?'CREATE PRIVATE PIN':'UNLOCK'}
+};
+window.v38VaultClose=function(){$('v38VaultGate').classList.remove('show');history.replaceState(null,'',location.pathname)};
+window.v38LockVault=function(){vaultKey=null;vaultUnlocked=false;vaultCache={};$('v38PrivateSellerPanel').classList.remove('show');history.replaceState(null,'',location.pathname)};
+
+window.v38GenerateId=function(){const d=new Date(),ym=String(d.getFullYear()).slice(-2)+String(d.getMonth()+1).padStart(2,'0');$('v38NewId').value='LP'+ym+Math.floor(1000+Math.random()*9000)};
+window.v38GeneratePass=function(){const chars='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789@#';let p='';crypto.getRandomValues(new Uint8Array(12)).forEach(x=>p+=chars[x%chars.length]);$('v38NewPass').value=p};
+window.v38PlanChanged=function(){const plan=$('v38Plan')?.value,el=$('v38Expiry');if(!el)return;if(plan==='lifetime'){el.value='';el.disabled=true;return}el.disabled=false;if(plan==='custom')return;const d=new Date();const months={ '1m':1,'3m':3,'6m':6,'1y':12 }[plan]||12;d.setMonth(d.getMonth()+months);el.value=d.toISOString().slice(0,10)};
+function expiryMs(v){if(!v)return 0;return new Date(v+'T23:59:59').getTime()||0}
+async function savePrivate(uid,obj){const e=await encryptObj(obj);await raw('platform/sellerVault/records/'+uid).set({...e,updatedAt:Date.now()});vaultCache[uid]=obj}
+
+window.v38CreateCustomer=async function(){
+ if(!vaultUnlocked||!isOwner())return;const id=cleanId($('v38NewId').value),pass=String($('v38NewPass').value||''),buyerName=$('v38BuyerName').value.trim(),phone=$('v38BuyerPhone').value.trim(),libraryName=$('v38LibraryName').value.trim(),address=$('v38BuyerAddress').value.trim(),seats=Number($('v38Seats').value),deviceLimit=Number($('v38Devices').value),plan=$('v38Plan').value,expiresAt=plan==='lifetime'?0:expiryMs($('v38Expiry').value),saleAmount=Number($('v38Amount').value||0),paymentStatus=$('v38Payment').value,notes=$('v38Notes').value.trim(),m=$('v38CreateMsg'),btn=$('v38CreateBtn');
+ if(id===OWNER_ID||id.length<3)return m.textContent='Valid unique Library ID daliye.';if(pass.length<6)return m.textContent='Password minimum 6 characters.';if(!buyerName)return m.textContent='Customer name required.';if(!libraryName)return m.textContent='Library name required.';if(!Number.isFinite(seats)||seats<1||seats>2000)return m.textContent='Seats 1–2000.';if(!Number.isFinite(deviceLimit)||deviceLimit<1||deviceLimit>10)return m.textContent='Device limit 1–10.';if(plan!=='lifetime'&&!expiresAt)return m.textContent='Expiry date select kijiye.';
+ try{btn.disabled=true;btn.textContent='CREATING...';m.textContent='';const ex=await raw('platform/licenseIds/'+id).once('value');if(ex.exists())throw new Error('Library ID already exists.');const cfg=window.HARIOM_AUTH_CONFIG||{};const res=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key='+encodeURIComponent(cfg.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:emailFor(id),password:pass,returnSecureToken:true})});const data=await res.json();if(!res.ok)throw new Error(data?.error?.message||'Account creation failed');const uid=data.localId,now=Date.now(),lic={licenseId:id,libraryName,seatCount:seats,deviceLimit,expiresAt,status:'active',plan,createdAt:now,updatedAt:now};const up={};up['platform/licensesByUid/'+uid]=lic;up['platform/licenseIds/'+id]=uid;up['tenants/'+uid+'/meta/profile']={libraryName,seatCount:seats,createdAt:now,updatedAt:now};await raw('').update(up);await savePrivate(uid,{licenseId:id,password:pass,buyerName,phone,address,libraryName,seats,deviceLimit,plan,expiresAt,saleAmount,paymentStatus,notes,soldAt:now});m.innerHTML='✅ Saved • ID: <b>'+esc(id)+'</b> • Password private vault me encrypted save ho gaya.';['v38NewId','v38NewPass','v38BuyerName','v38BuyerPhone','v38LibraryName','v38BuyerAddress','v38Amount','v38Notes'].forEach(x=>{if($(x))$(x).value=''});$('v38Seats').value='105';$('v38Devices').value='1';$('v38Plan').value='1y';$('v38Payment').value='paid';v38PlanChanged();await v38LoadCustomers()}catch(e){m.textContent='❌ '+String(e.message||e).replace('EMAIL_EXISTS','This ID already has an account.')}finally{btn.disabled=false;btn.textContent='CREATE & SAVE CUSTOMER'}
+};
+
+async function loadPrivateRecords(){const ss=await raw('platform/sellerVault/records').once('value'),rs=ss.val()||{},out={};for(const [uid,r] of Object.entries(rs))out[uid]=await decryptObj(r);vaultCache=out;return out}
+window.v38LoadCustomers=async function(){
+ if(!vaultUnlocked)return;const list=$('v38CustomerList');list.innerHTML='<div class="v38-empty">Loading...</div>';
+ try{const [ls,ds,priv]=await Promise.all([raw('platform/licensesByUid').once('value'),raw('platform/devices').once('value'),loadPrivateRecords()]),licenses=ls.val()||{},devices=ds.val()||{},p=priv||{};let arr=Object.entries(licenses).map(([uid,l])=>({uid,...l,private:p[uid]||{}})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));const q=String($('v38Search').value||'').toLowerCase(),f=$('v38Filter').value;arr=arr.filter(x=>{const pv=x.private||{},hay=[x.licenseId,x.libraryName,pv.buyerName,pv.phone,pv.address].join(' ').toLowerCase();if(q&&!hay.includes(q))return false;if(f==='active'&&(x.status!=='active'||expired(x)))return false;if(f==='expiring'&&!expiring(x))return false;if(f==='expired'&&!expired(x))return false;if(f==='lifetime'&&Number(x.expiresAt||0)!==0)return false;if(f==='pendingpay'&&!['pending','partial'].includes(pv.paymentStatus))return false;return true});const all=Object.entries(licenses).map(([uid,l])=>({uid,...l,private:p[uid]||{}}));const active=all.filter(x=>x.status==='active'&&!expired(x)).length,expc=all.filter(expired).length,soon=all.filter(expiring).length,life=all.filter(x=>!Number(x.expiresAt||0)).length,pending=Object.values(devices).reduce((n,g)=>n+Object.values(g||{}).filter(d=>d?.status==='pending').length,0),sales=all.reduce((n,x)=>n+Number(x.private?.saleAmount||0),0);$('v38Stats').innerHTML='<div class="v38-stat"><b>'+all.length+'</b><span>TOTAL SOLD</span></div><div class="v38-stat"><b>'+active+'</b><span>ACTIVE</span></div><div class="v38-stat"><b>'+soon+'</b><span>EXPIRING 30D</span></div><div class="v38-stat"><b>'+expc+'</b><span>EXPIRED</span></div><div class="v38-stat"><b>'+life+'</b><span>LIFETIME</span></div><div class="v38-stat"><b>'+money(sales)+'</b><span>SALE VALUE</span></div><div class="v38-stat"><b>'+pending+'</b><span>DEVICE REQUESTS</span></div>';
+ if(!arr.length){list.innerHTML='<div class="v38-empty">No matching customers.</div>';return}list.innerHTML=arr.map(x=>{const pv=x.private||{},dev=devices[x.uid]||{},st=x.status!=='active'?'SUSPENDED':expired(x)?'EXPIRED':expiring(x)?'EXPIRING':'ACTIVE',cls=st==='ACTIVE'?'':st==='EXPIRING'?'warn':'off',pass=pv.password||'',passTxt=pass?'••••••••':'Not saved (legacy)',pay=(pv.paymentStatus||'-').toUpperCase(),devHtml=Object.entries(dev).map(([did,d])=>'<div class="v38-device"><div class="v38-meta"><b>'+esc(d.label||'Device')+'</b><br>'+esc(String(d.status||'pending').toUpperCase())+' • '+esc(did.slice(-10))+'</div><div class="v38-actions">'+(d.status!=='approved'?'<button class="v38-btn green sm" onclick="v38Device(\''+x.uid+'\',\''+did+'\',\'approved\')">APPROVE</button>':'')+'<button class="v38-btn red sm" onclick="v38RemoveDevice(\''+x.uid+'\',\''+did+'\')">REMOVE</button></div></div>').join('')||'<div class="v38-meta" style="margin-top:7px">No device request.</div>';return '<div class="v38-customer"><div class="v38-top"><div><div class="v38-title">'+esc(x.libraryName||'Library')+' • '+esc(x.licenseId||'')+'</div><div class="v38-meta">Customer: '+esc(pv.buyerName||'Not saved')+' • '+esc(pv.phone||'-')+'<br>Plan: '+esc(pv.plan||x.plan||'-')+' • Expiry: '+esc(dateFmt(x.expiresAt))+' • Seats: '+Number(x.seatCount||105)+' • Devices: '+Number(x.deviceLimit||1)+'<br>Sale: '+money(pv.saleAmount||0)+' • Payment: '+esc(pay)+(pv.address?'<br>Address: '+esc(pv.address):'')+(pv.notes?'<br>Note: '+esc(pv.notes):'')+'</div></div><span class="v38-badge '+cls+'">'+st+'</span></div><div class="v38-actions"><span class="v38-secret" id="v38pass_'+x.uid+'">'+esc(passTxt)+'</span>'+(pass?'<button class="v38-btn gray sm" onclick="v38ShowPass(\''+x.uid+'\')">SHOW</button><button class="v38-btn gray sm" onclick="v38CopyPass(\''+x.uid+'\')">COPY LOGIN</button>':'')+'</div><div class="v38-actions"><button class="v38-btn '+(x.status==='active'?'red':'green')+' sm" onclick="v38ToggleLicense(\''+x.uid+'\',\''+(x.status==='active'?'suspended':'active')+'\')">'+(x.status==='active'?'SUSPEND':'ACTIVATE')+'</button><button class="v38-btn sm" onclick="v38Renew(\''+x.uid+'\')">RENEW</button><button class="v38-btn amber sm" onclick="v38EditSale(\''+x.uid+'\')">SELLER DETAILS</button><button class="v38-btn gray sm" onclick="v38EditLibrary(\''+x.uid+'\')">LIBRARY SETTINGS</button></div>'+devHtml+'</div>'}).join('')
+ }catch(e){list.innerHTML='<div class="v38-empty">Load failed: '+esc(e.message||e)+'</div>'}
+};
+window.v38ShowPass=function(uid){const e=$('v38pass_'+uid),p=vaultCache[uid]?.password||'';if(!e||!p)return;e.textContent=e.textContent.includes('•')?p:'••••••••'};
+window.v38CopyPass=async function(uid){const p=vaultCache[uid]||{};if(!p.password)return;const t='Library ID: '+(p.licenseId||'')+'\nPassword: '+p.password;try{await navigator.clipboard.writeText(t);alert('Login ID + password copied.')}catch(e){prompt('Copy login:',t)}};
+window.v38ToggleLicense=async function(uid,status){await raw('platform/licensesByUid/'+uid).update({status,updatedAt:Date.now()});await v38LoadCustomers()};
+window.v38Renew=async function(uid){const s=(await raw('platform/licensesByUid/'+uid).once('value')).val()||{},cur=s.expiresAt?new Date(s.expiresAt).toISOString().slice(0,10):'';const v=prompt('New expiry YYYY-MM-DD. Blank = Lifetime',cur);if(v===null)return;const x=v?expiryMs(v):0;if(v&&!x)return alert('Invalid date');await raw('platform/licensesByUid/'+uid).update({expiresAt:x,status:'active',updatedAt:Date.now()});const pv=vaultCache[uid]||{};pv.expiresAt=x;pv.plan=v?'custom':'lifetime';await savePrivate(uid,pv);await v38LoadCustomers()};
+window.v38EditLibrary=async function(uid){const [l,p]=await Promise.all([raw('platform/licensesByUid/'+uid).once('value'),raw('tenants/'+uid+'/meta/profile').once('value')]),lic=l.val()||{},pr=p.val()||{};const name=prompt('Library name:',pr.libraryName||lic.libraryName||'');if(name===null)return;const sv=prompt('Total seats:',String(pr.seatCount||lic.seatCount||105));if(sv===null)return;const dv=prompt('Device limit:',String(lic.deviceLimit||1));if(dv===null)return;const seats=Number(sv),deviceLimit=Number(dv);if(!name.trim()||seats<1||seats>2000||deviceLimit<1||deviceLimit>10)return alert('Invalid values');await Promise.all([raw('platform/licensesByUid/'+uid).update({libraryName:name.trim(),seatCount:seats,deviceLimit,updatedAt:Date.now()}),raw('tenants/'+uid+'/meta/profile').update({libraryName:name.trim(),seatCount:seats,updatedAt:Date.now()})]);const pv=vaultCache[uid]||{};pv.libraryName=name.trim();pv.seats=seats;pv.deviceLimit=deviceLimit;await savePrivate(uid,pv);await v38LoadCustomers()};
+window.v38EditSale=async function(uid){const p={...(vaultCache[uid]||{})};p.buyerName=prompt('Customer name:',p.buyerName||'')??p.buyerName;p.phone=prompt('Mobile:',p.phone||'')??p.phone;p.address=prompt('Address:',p.address||'')??p.address;const a=prompt('Sale amount ₹:',String(p.saleAmount||0));if(a!==null&&!isNaN(Number(a)))p.saleAmount=Number(a);const pay=prompt('Payment: paid / pending / partial',p.paymentStatus||'paid');if(pay!==null&&['paid','pending','partial'].includes(pay.toLowerCase()))p.paymentStatus=pay.toLowerCase();p.notes=prompt('Notes:',p.notes||'')??p.notes;await savePrivate(uid,p);await v38LoadCustomers()};
+window.v38Device=async function(uid,did,status){await raw('platform/devices/'+uid+'/'+did).update({status,approvedAt:Date.now(),approvedBy:firebase.auth().currentUser.uid});await v38LoadCustomers()};
+window.v38RemoveDevice=async function(uid,did){if(!confirm('Remove this device?'))return;await raw('platform/devices/'+uid+'/'+did).remove();await v38LoadCustomers()};
+window.v38ExportSellerCSV=function(){if(!vaultUnlocked)return;const rows=[['Library ID','Password','Library','Customer','Phone','Address','Plan','Expiry','Sale Amount','Payment','Notes']];for(const [uid,p] of Object.entries(vaultCache)){rows.push([p.licenseId||'',p.password||'',p.libraryName||'',p.buyerName||'',p.phone||'',p.address||'',p.plan||'',p.expiresAt?dateFmt(p.expiresAt):'Lifetime',p.saleAmount||0,p.paymentStatus||'',p.notes||''])}const csv=rows.map(r=>r.map(x=>'"'+String(x??'').replace(/"/g,'""')+'"').join(',')).join('\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Library_Pro_Private_Seller_Backup_'+new Date().toISOString().slice(0,10)+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+
+// Owner account display uses the requested personal ID, but seller vault remains hidden on the normal app URL.
+const oldAcc=window.v36OpenAccount;window.v36OpenAccount=async function(){await oldAcc?.();const s=JSON.parse(localStorage.getItem('hl_v36_session')||'{}');if(s?.mode==='master'){if($('v36AccPhone'))$('v36AccPhone').textContent='ID: '+OWNER_ID;if($('v36AccDevices'))$('v36AccDevices').textContent='ADMIN'}};
+
+function maybeStart(user){hideLegacySeller();if(sellerMode&&String(user?.email||'').toLowerCase()===OWNER_EMAIL)setTimeout(()=>v38StartVault(),450)}
+function boot(){hideLegacySeller();try{firebase.auth().onAuthStateChanged(maybeStart)}catch(e){}if($('v37LicenseId')&&!$('v37LicenseId').value)$('v37LicenseId').value=''}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+</script>
+<!-- ===== END V38 ===== -->
 
 </body>
 </html>
