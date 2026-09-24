@@ -7128,7 +7128,19 @@ body.v36-locked> :not(#v36Gate):not(script):not(style){visibility:hidden!importa
 
 <div id="v38PrivateSellerPanel" aria-hidden="true">
  <div class="v38-seller">
-  <div class="v38-head"><div><h2>Private Seller Center</h2><p>Customer licenses • credentials • expiry • devices</p></div><div class="v38-actions" style="margin:0"><button class="v38-btn gray sm" onclick="v38ExportSellerCSV()">EXPORT</button><button class="v38-btn red sm" onclick="v38LockVault()">LOCK</button></div></div>
+  <div class="v38-head"><div><h2>Private Seller Center</h2><p>Customer licenses • credentials • expiry • devices</p></div><div class="v38-actions" style="margin:0"><button class="v38-btn gray sm" onclick="v38LoadCustomers()">REFRESH</button><button class="v38-btn gray sm" onclick="v38ExportSellerCSV()">EXPORT</button><button class="v38-btn red sm" onclick="v38LockVault()">LOCK</button></div></div>
+
+  <div id="v384ApprovalCard" class="v38-card" style="margin-bottom:12px;border:2px solid #f59e0b;background:#fffaf0">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+      <div>
+        <h3 style="margin:0">🔔 Device Approval Requests</h3>
+        <div class="v38-meta" style="margin-top:4px">Customer first login karega to request yahin turant dikhegi.</div>
+      </div>
+      <div id="v384PendingBadge" style="min-width:34px;height:34px;padding:0 10px;border-radius:999px;background:#ef4444;color:#fff;display:grid;place-items:center;font-weight:900">0</div>
+    </div>
+    <div id="v384PendingList" style="margin-top:10px"><div class="v38-empty">No pending device request.</div></div>
+  </div>
+
   <div class="v38-grid">
    <div class="v38-card">
     <h3>➕ New Customer / Sell App</h3>
@@ -7144,7 +7156,7 @@ body.v36-locked> :not(#v36Gate):not(script):not(style){visibility:hidden!importa
     <button id="v38CreateBtn" class="v38-btn green" style="width:100%;margin-top:7px" onclick="v38CreateCustomer()">CREATE & SAVE CUSTOMER</button>
     <div id="v38CreateMsg" class="v38-msg"></div>
    </div>
-   <div class="v38-card"><h3>📊 Seller Dashboard</h3><div id="v38Stats" class="v38-stats"></div><div class="v38-meta" style="margin-top:9px">Customer passwords private PIN se encrypted form me cloud me save hote hain.</div></div>
+   <div class="v38-card"><h3>📊 Seller Dashboard</h3><div id="v38Stats" class="v38-stats"></div><div class="v38-meta" style="margin-top:9px">Customer passwords private PIN se encrypted form me cloud me save hote hain.<br><b>Testing:</b> customer login same Chrome profile/tab me mat karein. Customer ko dusre phone ya Incognito me login karayein, kyunki Firebase ek browser profile me ek hi active account rakhta hai.</div></div>
   </div>
   <div class="v38-card"><h3>🏢 Sold Customers</h3><div class="v38-search"><input id="v38Search" class="v38-in" placeholder="Search ID, library, customer, phone" oninput="v38LoadCustomers()"><select id="v38Filter" class="v38-in" style="max-width:145px" onchange="v38LoadCustomers()"><option value="all">All</option><option value="active">Active</option><option value="grace">Grace Period</option><option value="expiring">Expiring</option><option value="expired">Expired</option><option value="lifetime">Lifetime</option><option value="pendingpay">Payment Due</option></select></div><div id="v38CustomerList"><div class="v38-empty">Loading...</div></div></div>
  </div>
@@ -7210,7 +7222,7 @@ window.v38StartVault=async function(){
 window.v38VaultSubmit=async function(){
  const p=$('v38VaultPin').value.trim(),p2=$('v38VaultPin2').value.trim(),m=$('v38VaultMsg'),btn=$('v38VaultBtn');
  if(!/^\d{6,12}$/.test(p)){m.textContent='6–12 digit private PIN rakhiye.';return}if(vaultSetup&&p!==p2){m.textContent='Confirm PIN match nahi hua.';return}
- try{btn.disabled=true;btn.textContent='PLEASE WAIT...';if(vaultSetup){const salt=crypto.getRandomValues(new Uint8Array(16));vaultSalt=b64(salt);const d=await derive(p,vaultSalt);vaultKey=d.key;await raw('platform/sellerVault/config').set({salt:vaultSalt,verifier:d.verifier,createdAt:Date.now()});vaultUnlocked=true}else{const c=(await raw('platform/sellerVault/config').once('value')).val()||{};vaultSalt=c.salt||'';const d=await derive(p,vaultSalt);if(d.verifier!==c.verifier)throw new Error('Private PIN galat hai.');vaultKey=d.key;vaultUnlocked=true} $('v38VaultGate').classList.remove('show');$('v38PrivateSellerPanel').classList.add('show');$('v38PrivateSellerPanel').setAttribute('aria-hidden','false');if($('v38SupportPhone')&&!$('v38SupportPhone').value)$('v38SupportPhone').value=localStorage.getItem('lp_v38_support_phone')||'';v38PlanChanged();await v38LoadCustomers()}catch(e){m.textContent='❌ '+(e.message||e)}finally{btn.disabled=false;btn.textContent=vaultSetup?'CREATE PRIVATE PIN':'UNLOCK'}
+ try{btn.disabled=true;btn.textContent='PLEASE WAIT...';if(vaultSetup){const salt=crypto.getRandomValues(new Uint8Array(16));vaultSalt=b64(salt);const d=await derive(p,vaultSalt);vaultKey=d.key;await raw('platform/sellerVault/config').set({salt:vaultSalt,verifier:d.verifier,createdAt:Date.now()});vaultUnlocked=true}else{const c=(await raw('platform/sellerVault/config').once('value')).val()||{};vaultSalt=c.salt||'';const d=await derive(p,vaultSalt);if(d.verifier!==c.verifier)throw new Error('Private PIN galat hai.');vaultKey=d.key;vaultUnlocked=true} $('v38VaultGate').classList.remove('show');$('v38PrivateSellerPanel').classList.add('show');$('v38PrivateSellerPanel').setAttribute('aria-hidden','false');if($('v38SupportPhone')&&!$('v38SupportPhone').value)$('v38SupportPhone').value=localStorage.getItem('lp_v38_support_phone')||'';v38PlanChanged();v384StartLive();await v38LoadCustomers()}catch(e){m.textContent='❌ '+(e.message||e)}finally{btn.disabled=false;btn.textContent=vaultSetup?'CREATE PRIVATE PIN':'UNLOCK'}
 };
 window.v38VaultClose=function(){$('v38VaultGate').classList.remove('show');history.replaceState(null,'',location.pathname)};
 window.v38LockVault=function(){vaultKey=null;vaultUnlocked=false;vaultCache={};$('v38PrivateSellerPanel').classList.remove('show');history.replaceState(null,'',location.pathname)};
@@ -7224,14 +7236,98 @@ async function savePrivate(uid,obj){const e=await encryptObj(obj);await raw('pla
 window.v38CreateCustomer=async function(){
  if(!vaultUnlocked||!isOwner())return;const id=cleanId($('v38NewId').value),pass=String($('v38NewPass').value||''),buyerName=$('v38BuyerName').value.trim(),phone=$('v38BuyerPhone').value.trim(),libraryName=$('v38LibraryName').value.trim(),address=$('v38BuyerAddress').value.trim(),seats=Number($('v38Seats').value),deviceLimit=Number($('v38Devices').value),supportPhone=$('v38SupportPhone').value.trim(),graceDays=Math.max(0,Math.min(7,Number($('v38GraceDays').value||2))),plan=$('v38Plan').value,expiresAt=plan==='lifetime'?0:expiryMs($('v38Expiry').value),saleAmount=Number($('v38Amount').value||0),paymentStatus=$('v38Payment').value,notes=$('v38Notes').value.trim(),m=$('v38CreateMsg'),btn=$('v38CreateBtn');
  if(id===OWNER_ID||id.length<3)return m.textContent='Valid unique Library ID daliye.';if(pass.length<6)return m.textContent='Password minimum 6 characters.';if(!buyerName)return m.textContent='Customer name required.';if(!libraryName)return m.textContent='Library name required.';if(!Number.isFinite(seats)||seats<1||seats>2000)return m.textContent='Seats 1–2000.';if(!Number.isFinite(deviceLimit)||deviceLimit<1||deviceLimit>10)return m.textContent='Device limit 1–10.';if(!Number.isFinite(graceDays)||graceDays<0||graceDays>7)return m.textContent='Grace days 0–7 rakhiye.';if(plan!=='lifetime'&&!expiresAt)return m.textContent='Expiry date select kijiye.';
- try{btn.disabled=true;btn.textContent='CREATING...';m.textContent='';const ex=await raw('platform/licenseIds/'+id).once('value');if(ex.exists())throw new Error('Library ID already exists.');const cfg=window.HARIOM_AUTH_CONFIG||{};const res=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key='+encodeURIComponent(cfg.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:emailFor(id),password:pass,returnSecureToken:true})});let data=await res.json();if(!res.ok&&data?.error?.message==='EMAIL_EXISTS'){const r2=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key='+encodeURIComponent(cfg.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:emailFor(id),password:pass,returnSecureToken:true})});const d2=await r2.json();if(!r2.ok)throw new Error('This Library ID already exists with a different password. New ID use kijiye ya Firebase Authentication me old orphan user delete kijiye.');data=d2}else if(!res.ok)throw new Error(data?.error?.message||'Account creation failed');const uid=data.localId,now=Date.now(),graceUntil=expiresAt?expiresAt+graceDays*V38_DAY:0,lic={licenseId:id,libraryName,seatCount:seats,deviceLimit,expiresAt,graceDays,graceUntil,supportPhone,status:'active',plan,createdAt:now,updatedAt:now};const up={};up['platform/licensesByUid/'+uid]=lic;up['platform/licenseIds/'+id]=uid;up['tenants/'+uid+'/meta/profile']={libraryName,seatCount:seats,createdAt:now,updatedAt:now};await firebase.database().ref().update(up);await savePrivate(uid,{licenseId:id,password:pass,buyerName,phone,address,libraryName,seats,deviceLimit,plan,expiresAt,graceDays,graceUntil,supportPhone,saleAmount,paymentStatus,notes,soldAt:now});localStorage.setItem('lp_v38_support_phone',supportPhone||'');m.innerHTML='✅ Saved • ID: <b>'+esc(id)+'</b> • Password private vault me encrypted save ho gaya.';['v38NewId','v38NewPass','v38BuyerName','v38BuyerPhone','v38LibraryName','v38BuyerAddress','v38Amount','v38Notes'].forEach(x=>{if($(x))$(x).value=''});$('v38Seats').value='105';$('v38Devices').value='1';$('v38GraceDays').value='2';$('v38Plan').value='1y';$('v38Payment').value='paid';v38PlanChanged();await v38LoadCustomers()}catch(e){m.textContent='❌ '+String(e.message||e).replace('EMAIL_EXISTS','This ID already has an account.')}finally{btn.disabled=false;btn.textContent='CREATE & SAVE CUSTOMER'}
+ try{btn.disabled=true;btn.textContent='CREATING...';m.textContent='';const ex=await raw('platform/licenseIds/'+id).once('value');if(ex.exists())throw new Error('Library ID already exists.');const cfg=window.HARIOM_AUTH_CONFIG||{};const res=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key='+encodeURIComponent(cfg.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:emailFor(id),password:pass,returnSecureToken:true})});let data=await res.json();if(!res.ok&&data?.error?.message==='EMAIL_EXISTS'){const r2=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key='+encodeURIComponent(cfg.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:emailFor(id),password:pass,returnSecureToken:true})});const d2=await r2.json();if(!r2.ok)throw new Error('This Library ID already exists with a different password. New ID use kijiye ya Firebase Authentication me old orphan user delete kijiye.');data=d2}else if(!res.ok)throw new Error(data?.error?.message||'Account creation failed');const uid=data.localId,now=Date.now(),graceUntil=expiresAt?expiresAt+graceDays*V38_DAY:0,lic={licenseId:id,libraryName,seatCount:seats,deviceLimit,expiresAt,graceDays,graceUntil,supportPhone,status:'active',plan,createdAt:now,updatedAt:now};const up={};up['platform/licensesByUid/'+uid]=lic;up['platform/licenseIds/'+id]=uid;up['tenants/'+uid+'/meta/profile']={libraryName,seatCount:seats,createdAt:now,updatedAt:now};await firebase.database().ref().update(up);await savePrivate(uid,{licenseId:id,password:pass,buyerName,phone,address,libraryName,seats,deviceLimit,plan,expiresAt,graceDays,graceUntil,supportPhone,saleAmount,paymentStatus,notes,soldAt:now});localStorage.setItem('lp_v38_support_phone',supportPhone||'');m.innerHTML='✅ CUSTOMER CREATED SUCCESSFULLY • ID: <b>'+esc(id)+'</b> • '+esc(libraryName)+' • Password vault me safe hai.';await v38LoadCustomers();alert('✅ CUSTOMER CREATED SUCCESSFULLY\n\nLibrary: '+libraryName+'\nLibrary ID: '+id+'\nPassword: '+pass+'\nSeats: '+seats+'\nDevice limit: '+deviceLimit+'\nExpiry: '+(expiresAt?dateFmt(expiresAt):'Lifetime')+'\n\nAb customer ko normal app link + ID + Password bhejiye. First login par Device Approval Request Seller Center ke TOP me dikhegi.');['v38NewId','v38NewPass','v38BuyerName','v38BuyerPhone','v38LibraryName','v38BuyerAddress','v38Amount','v38Notes'].forEach(x=>{if($(x))$(x).value=''});$('v38Seats').value='105';$('v38Devices').value='1';$('v38GraceDays').value='2';$('v38Plan').value='1y';$('v38Payment').value='paid';v38PlanChanged();setTimeout(()=>document.getElementById('v38CustomerList')?.scrollIntoView({behavior:'smooth',block:'start'}),150)}catch(e){m.textContent='❌ '+String(e.message||e).replace('EMAIL_EXISTS','This ID already has an account.')}finally{btn.disabled=false;btn.textContent='CREATE & SAVE CUSTOMER'}
 };
 
-async function loadPrivateRecords(){const ss=await raw('platform/sellerVault/records').once('value'),rs=ss.val()||{},out={};for(const [uid,r] of Object.entries(rs))out[uid]=await decryptObj(r);vaultCache=out;return out}
+async function loadPrivateRecords(){
+ const ss=await raw('platform/sellerVault/records').once('value'),rs=ss.val()||{},out={};
+ for(const [uid,r] of Object.entries(rs)){
+   try{out[uid]=await decryptObj(r)}
+   catch(e){console.error('Private record decrypt failed',uid,e);out[uid]={_decryptError:true}}
+ }
+ vaultCache=out;return out
+}
+
+function v384When(ts){try{return ts?new Date(Number(ts)).toLocaleString('en-IN'):'-'}catch(e){return '-'}}
+function v384RenderPending(devices,licenses,priv){
+ const box=$('v384PendingList'),badge=$('v384PendingBadge');if(!box||!badge)return;
+ const rows=[];
+ for(const [uid,grp] of Object.entries(devices||{})){
+   for(const [did,d] of Object.entries(grp||{})){
+     if((d?.status||'pending')!=='pending')continue;
+     const lic=licenses?.[uid]||{},pv=priv?.[uid]||{};
+     rows.push({uid,did,d,lic,pv});
+   }
+ }
+ rows.sort((a,b)=>Number(b.d?.requestedAt||0)-Number(a.d?.requestedAt||0));
+ badge.textContent=String(rows.length);
+ badge.style.background=rows.length?'#ef4444':'#16a34a';
+ if(!rows.length){box.innerHTML='<div class="v38-empty" style="padding:10px 0">✅ No pending device request.</div>';return}
+ box.innerHTML=rows.map(x=>'<div style="border:1px solid #fed7aa;background:#fff;border-radius:14px;padding:11px;margin-top:8px">'
+   +'<div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">'
+   +'<div><b style="font-size:12px">'+esc(x.lic.libraryName||'Library')+' • '+esc(x.lic.licenseId||'')+'</b>'
+   +'<div class="v38-meta" style="margin-top:4px">Customer: '+esc(x.pv.buyerName||'-')+' • '+esc(x.pv.phone||'-')
+   +'<br>Device: '+esc(x.d.label||'Device')+'<br>Requested: '+esc(v384When(x.d.requestedAt))+'</div></div>'
+   +'<span class="v38-badge warn">PENDING</span></div>'
+   +'<div class="v38-actions" style="margin-top:9px">'
+   +'<button class="v38-btn green sm" onclick="v384ApproveDevice(\''+x.uid+'\',\''+x.did+'\')">✅ APPROVE & OPEN</button>'
+   +'<button class="v38-btn red sm" onclick="v384RejectDevice(\''+x.uid+'\',\''+x.did+'\')">REJECT</button>'
+   +'</div></div>').join('');
+}
+window.v384ApproveDevice=async function(uid,did){
+ if(!isOwner())return alert('Owner login required.');
+ try{
+   await raw('platform/devices/'+uid+'/'+did).update({status:'approved',approvedAt:Date.now(),approvedBy:firebase.auth().currentUser.uid});
+   alert('✅ Device approved. Customer ka app ab automatically open/reload ho jayega.');
+   await v38LoadCustomers();
+ }catch(e){alert('Approval failed: '+(e.message||e))}
+};
+window.v384RejectDevice=async function(uid,did){
+ if(!isOwner())return alert('Owner login required.');
+ if(!confirm('Is device request ko reject karna hai?'))return;
+ try{
+   await raw('platform/devices/'+uid+'/'+did).update({status:'rejected',rejectedAt:Date.now(),approvedBy:firebase.auth().currentUser.uid});
+   await v38LoadCustomers();
+ }catch(e){alert('Reject failed: '+(e.message||e))}
+};
+window.v384ViewCustomer=function(uid){
+ const p=vaultCache[uid]||{};
+ raw('platform/licensesByUid/'+uid).once('value').then(s=>{
+   const l=s.val()||{};
+   const msg=[
+     'CUSTOMER DETAILS',
+     '',
+     'Library ID: '+(p.licenseId||l.licenseId||'-'),
+     'Password: '+(p.password||'[not saved / legacy]'),
+     'Customer: '+(p.buyerName||'-'),
+     'Mobile: '+(p.phone||'-'),
+     'Library: '+(p.libraryName||l.libraryName||'-'),
+     'Address: '+(p.address||'-'),
+     'Seats: '+(l.seatCount||p.seats||105),
+     'Device limit: '+(l.deviceLimit||p.deviceLimit||1),
+     'Plan: '+(p.plan||l.plan||'-'),
+     'Expiry: '+dateFmt(l.expiresAt),
+     'Grace till: '+(l.expiresAt?dateFmt(graceUntil(l)):'Lifetime'),
+     'Sale amount: '+money(p.saleAmount||0),
+     'Payment: '+String(p.paymentStatus||'-').toUpperCase(),
+     'Support: '+(l.supportPhone||p.supportPhone||'-'),
+     'Notes: '+(p.notes||'-')
+   ].join('\\n');
+   alert(msg);
+ }).catch(e=>alert('Details load failed: '+(e.message||e)));
+};
+
+let v384LiveStarted=false,v384LiveTimer=null;
+function v384StartLive(){
+ if(v384LiveStarted)return;v384LiveStarted=true;
+ const refresh=()=>{clearTimeout(v384LiveTimer);v384LiveTimer=setTimeout(()=>{if(vaultUnlocked)v38LoadCustomers()},350)};
+ try{raw('platform/devices').on('value',refresh);raw('platform/licensesByUid').on('value',refresh)}catch(e){console.error(e)}
+}
+
 window.v38LoadCustomers=async function(){
  if(!vaultUnlocked)return;const list=$('v38CustomerList');list.innerHTML='<div class="v38-empty">Loading...</div>';
- try{const [ls,ds,priv]=await Promise.all([raw('platform/licensesByUid').once('value'),raw('platform/devices').once('value'),loadPrivateRecords()]),licenses=ls.val()||{},devices=ds.val()||{},p=priv||{};let arr=Object.entries(licenses).map(([uid,l])=>({uid,...l,private:p[uid]||{}})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));const q=String($('v38Search').value||'').toLowerCase(),f=$('v38Filter').value;arr=arr.filter(x=>{const pv=x.private||{},hay=[x.licenseId,x.libraryName,pv.buyerName,pv.phone,pv.address].join(' ').toLowerCase();if(q&&!hay.includes(q))return false;if(f==='active'&&(x.status!=='active'||expired(x)||inGraceSeller(x)))return false;if(f==='grace'&&!inGraceSeller(x))return false;if(f==='expiring'&&!expiring(x))return false;if(f==='expired'&&!expired(x))return false;if(f==='lifetime'&&Number(x.expiresAt||0)!==0)return false;if(f==='pendingpay'&&!['pending','partial'].includes(pv.paymentStatus))return false;return true});const all=Object.entries(licenses).map(([uid,l])=>({uid,...l,private:p[uid]||{}}));const active=all.filter(x=>x.status==='active'&&!expired(x)&&!inGraceSeller(x)).length,grace=all.filter(inGraceSeller).length,expc=all.filter(expired).length,soon=all.filter(expiring).length,life=all.filter(x=>!Number(x.expiresAt||0)).length,pending=Object.values(devices).reduce((n,g)=>n+Object.values(g||{}).filter(d=>d?.status==='pending').length,0),sales=all.reduce((n,x)=>n+Number(x.private?.saleAmount||0),0);$('v38Stats').innerHTML='<div class="v38-stat"><b>'+all.length+'</b><span>TOTAL SOLD</span></div><div class="v38-stat"><b>'+active+'</b><span>ACTIVE</span></div><div class="v38-stat"><b>'+grace+'</b><span>GRACE</span></div><div class="v38-stat"><b>'+soon+'</b><span>EXPIRING 30D</span></div><div class="v38-stat"><b>'+expc+'</b><span>EXPIRED</span></div><div class="v38-stat"><b>'+life+'</b><span>LIFETIME</span></div><div class="v38-stat"><b>'+money(sales)+'</b><span>SALE VALUE</span></div><div class="v38-stat"><b>'+pending+'</b><span>DEVICE REQUESTS</span></div>';
- if(!arr.length){list.innerHTML='<div class="v38-empty">No matching customers.</div>';return}list.innerHTML=arr.map(x=>{const pv=x.private||{},dev=devices[x.uid]||{},st=x.status!=='active'?'SUSPENDED':expired(x)?'EXPIRED':inGraceSeller(x)?'GRACE':expiring(x)?'EXPIRING':'ACTIVE',cls=st==='ACTIVE'?'':(st==='EXPIRING'||st==='GRACE')?'warn':'off',pass=pv.password||'',passTxt=pass?'••••••••':'Not saved (legacy)',pay=(pv.paymentStatus||'-').toUpperCase(),devHtml=Object.entries(dev).map(([did,d])=>'<div class="v38-device"><div class="v38-meta"><b>'+esc(d.label||'Device')+'</b><br>'+esc(String(d.status||'pending').toUpperCase())+' • '+esc(did.slice(-10))+'</div><div class="v38-actions">'+(d.status!=='approved'?'<button class="v38-btn green sm" onclick="v38Device(\''+x.uid+'\',\''+did+'\',\'approved\')">APPROVE</button>':'')+'<button class="v38-btn red sm" onclick="v38RemoveDevice(\''+x.uid+'\',\''+did+'\')">REMOVE</button></div></div>').join('')||'<div class="v38-meta" style="margin-top:7px">No device request.</div>';return '<div class="v38-customer"><div class="v38-top"><div><div class="v38-title">'+esc(x.libraryName||'Library')+' • '+esc(x.licenseId||'')+'</div><div class="v38-meta">Customer: '+esc(pv.buyerName||'Not saved')+' • '+esc(pv.phone||'-')+'<br>Plan: '+esc(pv.plan||x.plan||'-')+' • Expiry: '+esc(dateFmt(x.expiresAt))+' • Grace till: '+esc(x.expiresAt?dateFmt(graceUntil(x)):'Lifetime')+' • Seats: '+Number(x.seatCount||105)+' • Devices: '+Number(x.deviceLimit||1)+'<br>Sold: '+esc(dateFmt(pv.soldAt||x.createdAt))+(x.supportPhone?(' • Renewal: '+esc(x.supportPhone)):'')+'<br>Sale: '+money(pv.saleAmount||0)+' • Payment: '+esc(pay)+(pv.address?'<br>Address: '+esc(pv.address):'')+(pv.notes?'<br>Note: '+esc(pv.notes):'')+'</div></div><span class="v38-badge '+cls+'">'+st+'</span></div><div class="v38-actions"><span class="v38-secret" id="v38pass_'+x.uid+'">'+esc(passTxt)+'</span>'+(pass?'<button class="v38-btn gray sm" onclick="v38ShowPass(\''+x.uid+'\')">SHOW</button><button class="v38-btn gray sm" onclick="v38CopyPass(\''+x.uid+'\')">COPY LOGIN</button>':'')+'</div><div class="v38-actions"><button class="v38-btn '+(x.status==='active'?'red':'green')+' sm" onclick="v38ToggleLicense(\''+x.uid+'\',\''+(x.status==='active'?'suspended':'active')+'\')">'+(x.status==='active'?'SUSPEND':'ACTIVATE')+'</button><button class="v38-btn sm" onclick="v38Renew(\''+x.uid+'\')">RENEW</button><button class="v38-btn amber sm" onclick="v38EditSale(\''+x.uid+'\')">SELLER DETAILS</button><button class="v38-btn gray sm" onclick="v38EditLibrary(\''+x.uid+'\')">LIBRARY SETTINGS</button></div>'+devHtml+'</div>'}).join('')
+ try{const [ls,ds,priv]=await Promise.all([raw('platform/licensesByUid').once('value'),raw('platform/devices').once('value'),loadPrivateRecords()]),licenses=ls.val()||{},devices=ds.val()||{},p=priv||{};v384RenderPending(devices,licenses,p);let arr=Object.entries(licenses).map(([uid,l])=>({uid,...l,private:p[uid]||{}})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));const q=String($('v38Search').value||'').toLowerCase(),f=$('v38Filter').value;arr=arr.filter(x=>{const pv=x.private||{},hay=[x.licenseId,x.libraryName,pv.buyerName,pv.phone,pv.address].join(' ').toLowerCase();if(q&&!hay.includes(q))return false;if(f==='active'&&(x.status!=='active'||expired(x)||inGraceSeller(x)))return false;if(f==='grace'&&!inGraceSeller(x))return false;if(f==='expiring'&&!expiring(x))return false;if(f==='expired'&&!expired(x))return false;if(f==='lifetime'&&Number(x.expiresAt||0)!==0)return false;if(f==='pendingpay'&&!['pending','partial'].includes(pv.paymentStatus))return false;return true});const all=Object.entries(licenses).map(([uid,l])=>({uid,...l,private:p[uid]||{}}));const active=all.filter(x=>x.status==='active'&&!expired(x)&&!inGraceSeller(x)).length,grace=all.filter(inGraceSeller).length,expc=all.filter(expired).length,soon=all.filter(expiring).length,life=all.filter(x=>!Number(x.expiresAt||0)).length,pending=Object.values(devices).reduce((n,g)=>n+Object.values(g||{}).filter(d=>d?.status==='pending').length,0),sales=all.reduce((n,x)=>n+Number(x.private?.saleAmount||0),0);$('v38Stats').innerHTML='<div class="v38-stat"><b>'+all.length+'</b><span>TOTAL SOLD</span></div><div class="v38-stat"><b>'+active+'</b><span>ACTIVE</span></div><div class="v38-stat"><b>'+grace+'</b><span>GRACE</span></div><div class="v38-stat"><b>'+soon+'</b><span>EXPIRING 30D</span></div><div class="v38-stat"><b>'+expc+'</b><span>EXPIRED</span></div><div class="v38-stat"><b>'+life+'</b><span>LIFETIME</span></div><div class="v38-stat"><b>'+money(sales)+'</b><span>SALE VALUE</span></div><div class="v38-stat"><b>'+pending+'</b><span>DEVICE REQUESTS</span></div>';
+ if(!arr.length){list.innerHTML='<div class="v38-empty">No matching customers.</div>';return}list.innerHTML=arr.map(x=>{const pv=x.private||{},dev=devices[x.uid]||{},st=x.status!=='active'?'SUSPENDED':expired(x)?'EXPIRED':inGraceSeller(x)?'GRACE':expiring(x)?'EXPIRING':'ACTIVE',cls=st==='ACTIVE'?'':(st==='EXPIRING'||st==='GRACE')?'warn':'off',pass=pv.password||'',passTxt=pass?'••••••••':'Not saved (legacy)',pay=(pv.paymentStatus||'-').toUpperCase(),devHtml=Object.entries(dev).map(([did,d])=>'<div class="v38-device"><div class="v38-meta"><b>'+esc(d.label||'Device')+'</b><br>'+esc(String(d.status||'pending').toUpperCase())+' • '+esc(did.slice(-10))+'</div><div class="v38-actions">'+(d.status!=='approved'?'<button class="v38-btn green sm" onclick="v38Device(\''+x.uid+'\',\''+did+'\',\'approved\')">APPROVE</button>':'')+'<button class="v38-btn red sm" onclick="v38RemoveDevice(\''+x.uid+'\',\''+did+'\')">REMOVE</button></div></div>').join('')||'<div class="v38-meta" style="margin-top:7px">No device request.</div>';return '<div class="v38-customer"><div class="v38-top"><div><div class="v38-title">'+esc(x.libraryName||'Library')+' • '+esc(x.licenseId||'')+'</div><div class="v38-meta">Customer: '+esc(pv.buyerName||'Not saved')+' • '+esc(pv.phone||'-')+'<br>Plan: '+esc(pv.plan||x.plan||'-')+' • Expiry: '+esc(dateFmt(x.expiresAt))+' • Grace till: '+esc(x.expiresAt?dateFmt(graceUntil(x)):'Lifetime')+' • Seats: '+Number(x.seatCount||105)+' • Devices: '+Number(x.deviceLimit||1)+'<br>Sold: '+esc(dateFmt(pv.soldAt||x.createdAt))+(x.supportPhone?(' • Renewal: '+esc(x.supportPhone)):'')+'<br>Sale: '+money(pv.saleAmount||0)+' • Payment: '+esc(pay)+(pv.address?'<br>Address: '+esc(pv.address):'')+(pv.notes?'<br>Note: '+esc(pv.notes):'')+'</div></div><span class="v38-badge '+cls+'">'+st+'</span></div><div class="v38-actions"><span class="v38-secret" id="v38pass_'+x.uid+'">'+esc(passTxt)+'</span>'+(pass?'<button class="v38-btn gray sm" onclick="v38ShowPass(\''+x.uid+'\')">SHOW</button><button class="v38-btn gray sm" onclick="v38CopyPass(\''+x.uid+'\')">COPY LOGIN</button>':'')+'</div><div class="v38-actions"><button class="v38-btn green sm" onclick="v384ViewCustomer(\''+x.uid+'\')">👁 FULL DETAILS</button><button class="v38-btn '+(x.status==='active'?'red':'green')+' sm" onclick="v38ToggleLicense(\''+x.uid+'\',\''+(x.status==='active'?'suspended':'active')+'\')">'+(x.status==='active'?'SUSPEND':'ACTIVATE')+'</button><button class="v38-btn sm" onclick="v38Renew(\''+x.uid+'\')">RENEW</button><button class="v38-btn amber sm" onclick="v38EditSale(\''+x.uid+'\')">SELLER DETAILS</button><button class="v38-btn gray sm" onclick="v38EditLibrary(\''+x.uid+'\')">LIBRARY SETTINGS</button></div>'+devHtml+'</div>'}).join('')
  }catch(e){list.innerHTML='<div class="v38-empty">Load failed: '+esc(e.message||e)+'</div>'}
 };
 window.v38ShowPass=function(uid){const e=$('v38pass_'+uid),p=vaultCache[uid]?.password||'';if(!e||!p)return;e.textContent=e.textContent.includes('•')?p:'••••••••'};
@@ -7240,7 +7336,13 @@ window.v38ToggleLicense=async function(uid,status){await raw('platform/licensesB
 window.v38Renew=async function(uid){const s=(await raw('platform/licensesByUid/'+uid).once('value')).val()||{},cur=s.expiresAt?new Date(s.expiresAt).toISOString().slice(0,10):'';const v=prompt('New expiry YYYY-MM-DD. Blank = Lifetime',cur);if(v===null)return;const x=v?expiryMs(v):0;if(v&&!x)return alert('Invalid date');const oldLic=(await raw('platform/licensesByUid/'+uid).once('value')).val()||{},gd=Math.max(0,Math.min(7,Number(oldLic.graceDays??2))),gu=x?x+gd*V38_DAY:0;await raw('platform/licensesByUid/'+uid).update({expiresAt:x,graceDays:gd,graceUntil:gu,status:'active',updatedAt:Date.now()});const pv=vaultCache[uid]||{};pv.expiresAt=x;pv.graceDays=gd;pv.graceUntil=gu;pv.plan=v?'custom':'lifetime';await savePrivate(uid,pv);await v38LoadCustomers()};
 window.v38EditLibrary=async function(uid){const [l,p]=await Promise.all([raw('platform/licensesByUid/'+uid).once('value'),raw('tenants/'+uid+'/meta/profile').once('value')]),lic=l.val()||{},pr=p.val()||{};const name=prompt('Library name:',pr.libraryName||lic.libraryName||'');if(name===null)return;const sv=prompt('Total seats:',String(pr.seatCount||lic.seatCount||105));if(sv===null)return;const dv=prompt('Device limit:',String(lic.deviceLimit||1));if(dv===null)return;const gv=prompt('Grace days after expiry (0-7):',String(lic.graceDays??2));if(gv===null)return;const sp=prompt('Renewal / support mobile:',String(lic.supportPhone||''));if(sp===null)return;const seats=Number(sv),deviceLimit=Number(dv),graceDays=Math.max(0,Math.min(7,Number(gv)));if(!name.trim()||seats<1||seats>2000||deviceLimit<1||deviceLimit>10||!Number.isFinite(graceDays))return alert('Invalid values');const graceUntil=lic.expiresAt?Number(lic.expiresAt)+graceDays*V38_DAY:0;await Promise.all([raw('platform/licensesByUid/'+uid).update({libraryName:name.trim(),seatCount:seats,deviceLimit,graceDays,graceUntil,supportPhone:String(sp||'').trim(),updatedAt:Date.now()}),raw('tenants/'+uid+'/meta/profile').update({libraryName:name.trim(),seatCount:seats,updatedAt:Date.now()})]);const pv=vaultCache[uid]||{};pv.libraryName=name.trim();pv.seats=seats;pv.deviceLimit=deviceLimit;pv.graceDays=graceDays;pv.graceUntil=graceUntil;pv.supportPhone=String(sp||'').trim();await savePrivate(uid,pv);await v38LoadCustomers()};
 window.v38EditSale=async function(uid){const p={...(vaultCache[uid]||{})};p.buyerName=prompt('Customer name:',p.buyerName||'')??p.buyerName;p.phone=prompt('Mobile:',p.phone||'')??p.phone;p.address=prompt('Address:',p.address||'')??p.address;const a=prompt('Sale amount ₹:',String(p.saleAmount||0));if(a!==null&&!isNaN(Number(a)))p.saleAmount=Number(a);const pay=prompt('Payment: paid / pending / partial',p.paymentStatus||'paid');if(pay!==null&&['paid','pending','partial'].includes(pay.toLowerCase()))p.paymentStatus=pay.toLowerCase();p.notes=prompt('Notes:',p.notes||'')??p.notes;await savePrivate(uid,p);await v38LoadCustomers()};
-window.v38Device=async function(uid,did,status){await raw('platform/devices/'+uid+'/'+did).update({status,approvedAt:Date.now(),approvedBy:firebase.auth().currentUser.uid});await v38LoadCustomers()};
+window.v38Device=async function(uid,did,status){
+ try{
+  await raw('platform/devices/'+uid+'/'+did).update({status,approvedAt:Date.now(),approvedBy:firebase.auth().currentUser.uid});
+  if(status==='approved')alert('✅ Device approved successfully.');
+  await v38LoadCustomers()
+ }catch(e){alert('Device update failed: '+(e.message||e))}
+};
 window.v38RemoveDevice=async function(uid,did){if(!confirm('Remove this device?'))return;await raw('platform/devices/'+uid+'/'+did).remove();await v38LoadCustomers()};
 window.v38ExportSellerCSV=function(){if(!vaultUnlocked)return;const rows=[['Library ID','Password','Library','Customer','Phone','Address','Plan','Expiry','Sale Amount','Payment','Notes']];for(const [uid,p] of Object.entries(vaultCache)){rows.push([p.licenseId||'',p.password||'',p.libraryName||'',p.buyerName||'',p.phone||'',p.address||'',p.plan||'',p.expiresAt?dateFmt(p.expiresAt):'Lifetime',p.saleAmount||0,p.paymentStatus||'',p.notes||''])}const csv=rows.map(r=>r.map(x=>'"'+String(x??'').replace(/"/g,'""')+'"').join(',')).join('\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Library_Pro_Private_Seller_Backup_'+new Date().toISOString().slice(0,10)+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
 
@@ -7252,7 +7354,7 @@ function boot(){hideLegacySeller();try{firebase.auth().onAuthStateChanged(maybeS
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
 </script>
-<!-- ===== V38.2 SELLER + GRACE + EXPIRY LOCK AUDITED ===== -->
+<!-- ===== V38.4 SELLER DETAILS + LIVE APPROVAL FIXED ===== -->
 <!-- ===== END V38 ===== -->
 
 </body>
