@@ -1437,6 +1437,36 @@ try{
 .ultimate-fab,.nx-fab,.super-fab,.ai14-fab,.v15-fab{display:none!important}
 </style>
 
+
+<style id="lp46-style">
+#lp43TopHelp{display:none!important}
+#lp46HeaderActions{display:flex;align-items:center;gap:8px}
+.lp46-head-icon{position:relative;width:43px;height:43px;border:1px solid rgba(255,255,255,.20);border-radius:13px;background:rgba(255,255,255,.12);color:#fff;display:grid;place-items:center;font-size:20px;cursor:pointer}
+.lp46-head-icon:active{transform:scale(.96)}
+.lp46-notify-count{position:absolute;right:-4px;top:-5px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#ef4444;color:#fff;border:2px solid #14346f;display:grid;place-items:center;font-size:10px;font-weight:950}
+.lp46-notify-count.zero{display:none}
+body.v361-tenant #v36AccountBtn{display:none!important}
+
+.v38-vault-card{position:relative!important;padding-top:48px!important}
+#v38VaultText,#lp42RecoverBtn{display:none!important}
+.v38-vault-card button[onclick="v38VaultClose()"]{display:none!important}
+#lp46VaultClose{position:absolute;right:13px;top:13px;width:34px;height:34px;border:0;border-radius:10px;background:#eef2f7;color:#0f172a;font-size:21px;font-weight:900;display:grid;place-items:center}
+
+#lp42SecurityCard{display:none!important}
+.lp46-owner-id{font-size:8px;opacity:.78;margin-top:3px;letter-spacing:.2px}
+.lp46-seller-tools{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.lp46-seller-tools button{white-space:nowrap}
+
+#lp42TrashCard{display:none!important}
+#lp42TrashCard.lp46-trash-open{display:block!important;position:fixed;inset:0;z-index:130500;background:rgba(2,6,23,.78);padding:18px;overflow:auto;border:0!important;border-radius:0!important;margin:0!important}
+#lp42TrashCard.lp46-trash-open>div:first-child,#lp42TrashCard.lp46-trash-open>#lp42TrashList{max-width:720px;margin-left:auto;margin-right:auto;background:#fff}
+#lp42TrashCard.lp46-trash-open>div:first-child{margin-top:40px;padding:13px 14px;border-radius:18px 18px 0 0}
+#lp42TrashCard.lp46-trash-open>#lp42TrashList{padding:10px 14px 18px;border-radius:0 0 18px 18px}
+.lp46-trash-close{float:right;border:0;border-radius:9px;width:33px;height:33px;background:#e2e8f0;color:#111827;font-size:18px}
+.lp46-trash-btn{position:relative}
+.lp46-trash-badge{position:absolute;right:-5px;top:-6px;min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:#ef4444;color:#fff;display:grid;place-items:center;font-size:8px;font-weight:950}
+</style>
+
 </head>
 
 <body>
@@ -1461,13 +1491,7 @@ try{
 
 </div>
 
-<div class="header-actions">
-
-<button class="icon-btn" onclick="toggleTheme()">🌙</button>
-
-<button class="icon-btn" onclick="logoutAdmin()">🔐</button>
-
-</div>
+<div class="header-actions" id="lp46HeaderActions"></div>
 
 </div>
 
@@ -1843,7 +1867,7 @@ class="app-section">
 class="btn"
 onclick="toggleTheme()">
 
-Toggle Dark / Light Mode
+Change Theme
 
 </button>
 
@@ -1870,7 +1894,7 @@ Not Verified
 class="btn btn-danger"
 onclick="logoutAdmin()">
 
-Logout Admin
+Logout
 
 </button>
 
@@ -3473,7 +3497,7 @@ function v21ClearOneShift(shift){
   if(!confirm("Clear "+label+" fields from this form? Database will change only after Save.")) return;
   ["name_","phone_","fees_","due_","date_","paydate_"].forEach(function(prefix){
     const el=document.getElementById(prefix+shift);
-    if(el) el.value=(prefix==="fees_"||prefix==="due_")?0:"";
+    if(el) el.value=prefix==="fees_"?0:"";
   });
   if(shift==="all") toggleIndividualShifts();
   v21MarkSeatDirty();
@@ -4544,7 +4568,7 @@ window.addEventListener('load',function(){
    <div class="v15-card"><h3>Student Directory</h3><div id="v15ProfileList" class="v15-list"><div class="v15-muted">Loading...</div></div></div>
   </div>
   <div class="v15-pane" id="v15-finance">
-   <div class="v15-card"><h3>💳 Payment / Fee Receipt</h3><div class="v15-grid"><input id="v15PayStudent" class="v15-in" placeholder="Student ID / phone"><input id="v15PayAmount" class="v15-in" type="number" placeholder="Amount ₹"><input id="v15PayDue" class="v15-in" type="number" placeholder="Remaining due ₹"><select id="v15PayMode" class="v15-in"><option>Cash</option><option>UPI</option><option>PhonePe</option><option>Google Pay</option><option>Paytm</option><option>Bank Transfer</option><option>Card</option></select><input id="v15PayTxn" class="v15-in full" placeholder="Transaction ID / note"></div><button class="v15-btn green" onclick="v15SavePayment()">Save & Generate Receipt</button></div>
+   <div class="v15-card"><h3>💳 Payment / Fee Receipt</h3><div class="v15-grid"><input id="v15PayStudent" class="v15-in" placeholder="Student ID / phone"><input id="v15PayAmount" class="v15-in" type="number" placeholder="Amount ₹"><input id="v15PayDue" class="v15-in" type="number" placeholder="Remaining due ₹ — manual"><select id="v15PayMode" class="v15-in"><option>Cash</option><option>UPI</option><option>PhonePe</option><option>Google Pay</option><option>Paytm</option><option>Bank Transfer</option><option>Card</option></select><input id="v15PayTxn" class="v15-in full" placeholder="Transaction ID / note"></div><button class="v15-btn green" onclick="v15SavePayment()">Save & Generate Receipt</button></div>
    <div class="v15-card"><h3>Recent Payments</h3><div id="v15PaymentList" class="v15-list"></div></div>
   </div>
   <div class="v15-pane" id="v15-attendance">
@@ -6332,8 +6356,7 @@ body.dark .v30-tool-icon{filter:saturate(.9) brightness(.9)}
       if(typeof showToast==="function")showToast("📷 Choose a student photo for the ID card");
       return v30ChoosePhoto(r.uid,"id")
     }
-
-    const br=window.LP41_BRANDING||{};
+    const br=window.LP41_BRANDING||{},pf=findProfile(r)||{};
     const lib=String(br.libraryName||window.HL36?.libraryName||"Library Pro").trim()||"Library Pro";
     const address=String(br.address||"").trim(),libPhone=phone(br.phone||"");
     const email=String(br.email||"").trim(),signName=String(br.signature||"Authorized Signature").trim();
@@ -6341,169 +6364,139 @@ body.dark .v30-tool-icon{filter:saturate(.9) brightness(.9)}
     const prefix=(lib.split(/\s+/).map(x=>x[0]||"").join("").slice(0,4)||"LIB").toUpperCase();
     const memberId=(prefix+"-"+hash(libId+"|"+identity(r)).toUpperCase().slice(0,8));
     const seatType=r.type==="fixed"?"Seat "+r.seat:(r.type==="profile"?(r.seat?"Seat "+r.seat:"Digital Admission"):"Unreserved");
-    const valid=String(r.renewal||"Not set"),issue=today();
-    const c=document.createElement("canvas");c.width=1012;c.height=638;const x=c.getContext("2d");
+    const valid=String(r.renewal||"Not set"),father=String(pf.father||pf.fatherName||pf.guardian||"").trim(),dob=String(pf.dob||pf.birthDate||"").trim();
+    const c=document.createElement("canvas");c.width=700;c.height=1100;const x=c.getContext("2d");
     const [im,logo]=await Promise.all([loadImage(pic),loadImage(br.logo||"")]);
 
-    // Standard PVC-card ratio, high-resolution front design.
     x.fillStyle="#ffffff";x.fillRect(0,0,c.width,c.height);
-    x.fillStyle="#0b1736";x.fillRect(0,0,c.width,150);
-    x.fillStyle="#1d4ed8";x.fillRect(0,144,c.width,8);
-    x.fillStyle="#f8fafc";x.fillRect(0,152,c.width,486);
+    x.fillStyle="#0b1736";x.fillRect(0,0,700,175);
+    x.fillStyle="#2563eb";x.fillRect(0,168,700,9);
+    x.fillStyle="#eff6ff";x.beginPath();x.arc(350,395,235,0,Math.PI*2);x.fill();
+    x.fillStyle="#dbeafe";x.beginPath();x.arc(350,395,206,0,Math.PI*2);x.fill();
 
-    // Logo
-    x.fillStyle="#ffffff";rounded(x,38,28,88,88,20);x.fill();
+    x.fillStyle="#fff";rounded(x,35,32,92,92,20);x.fill();
     if(logo){
-      x.save();rounded(x,44,34,76,76,16);x.clip();
+      x.save();rounded(x,43,40,76,76,15);x.clip();
       const ls=Math.min(76/logo.width,76/logo.height),lw=logo.width*ls,lh=logo.height*ls;
-      x.drawImage(logo,44+(76-lw)/2,34+(76-lh)/2,lw,lh);x.restore()
+      x.drawImage(logo,43+(76-lw)/2,40+(76-lh)/2,lw,lh);x.restore()
     }else{
-      x.fillStyle="#0b1736";x.font="900 27px Arial";x.textAlign="center";x.fillText(prefix.slice(0,3),82,80);x.textAlign="left"
+      x.fillStyle="#0b1736";x.font="900 28px Arial";x.textAlign="center";x.fillText(prefix.slice(0,3),81,87);x.textAlign="left"
     }
 
-    let lfs=39;while(lfs>23){x.font=`900 ${lfs}px Arial`;if(x.measureText(lib).width<=710)break;lfs-=2}
-    x.fillStyle="#ffffff";x.font=`900 ${lfs}px Arial`;x.fillText(lib,148,66);
-    x.fillStyle="#bfdbfe";x.font="800 18px Arial";x.fillText("STUDENT IDENTITY CARD",150,103);
-    x.font="600 13px Arial";x.fillText([address,libPhone?("Ph: "+libPhone):"",email].filter(Boolean).join("  •  ").slice(0,100),150,128);
+    let lfs=34;while(lfs>22){x.font=`900 ${lfs}px Arial`;if(x.measureText(lib).width<=505)break;lfs-=2}
+    x.fillStyle="#fff";x.font=`900 ${lfs}px Arial`;x.fillText(lib,150,70);
+    x.fillStyle="#bfdbfe";x.font="800 16px Arial";x.fillText("STUDENT IDENTITY CARD",150,103);
+    x.font="600 12px Arial";x.fillText([libPhone?("Ph: "+libPhone):"",email].filter(Boolean).join("  •  ").slice(0,68),150,130);
 
-    // Photo panel
-    x.fillStyle="#ffffff";rounded(x,38,188,270,330,22);x.fill();
-    x.strokeStyle="#cbd5e1";x.lineWidth=2;rounded(x,38,188,270,330,22);x.stroke();
-    x.save();rounded(x,55,205,236,252,15);x.clip();
     if(im){
-      const sc=Math.max(236/im.width,252/im.height),w=im.width*sc,h=im.height*sc;
-      x.drawImage(im,55+(236-w)/2,205+(252-h)/2,w,h)
-    }else{x.fillStyle="#e2e8f0";x.fillRect(55,205,236,252)}
-    x.restore();
+      x.save();x.beginPath();x.arc(350,395,175,0,Math.PI*2);x.clip();
+      x.fillStyle="#f8fafc";x.fillRect(175,220,350,350);
+      x.filter="brightness(1.07) contrast(1.08) saturate(1.04)";
+      const sc=Math.max(350/im.width,350/im.height),w=im.width*sc,h=im.height*sc;
+      x.drawImage(im,175+(350-w)/2,220+(350-h)/2,w,h);x.filter="none";x.restore()
+    }
+    x.strokeStyle="#fff";x.lineWidth=12;x.beginPath();x.arc(350,395,181,0,Math.PI*2);x.stroke();
+    x.strokeStyle="#2563eb";x.lineWidth=4;x.beginPath();x.arc(350,395,190,0,Math.PI*2);x.stroke();
 
-    // Member ID beneath photo
-    x.fillStyle="#0f172a";x.font="900 24px Arial";x.textAlign="center";x.fillText(memberId,173,490);
-    x.fillStyle="#64748b";x.font="800 12px Arial";x.fillText("MEMBER ID",173,513);x.textAlign="left";
+    const nm=String(r.name||"Student");let nfs=38;
+    while(nfs>25){x.font=`900 ${nfs}px Arial`;if(x.measureText(nm).width<=600)break;nfs-=2}
+    x.fillStyle="#0f172a";x.font=`900 ${nfs}px Arial`;x.textAlign="center";x.fillText(nm,350,625);
+    x.fillStyle="#1d4ed8";x.font="900 18px Arial";x.fillText(memberId,350,657);x.textAlign="left";
 
-    // Student name
-    const nm=String(r.name||"Student");
-    let nfs=43;while(nfs>27){x.font=`900 ${nfs}px Arial`;if(x.measureText(nm).width<=620)break;nfs-=2}
-    x.fillStyle="#0f172a";x.font=`900 ${nfs}px Arial`;x.fillText(nm,350,218);
-
-    const fields=[
-      ["MOBILE",phone(r.phone)||"Not added"],
-      ["SEAT / TYPE",seatType],
-      ["SHIFT",r.shiftLabel||"-"],
-      ["VALID UNTIL",valid]
-    ];
-    let yy=263;
-    fields.forEach(([k,v])=>{
-      x.fillStyle="#64748b";x.font="800 13px Arial";x.fillText(k,352,yy);
-      x.fillStyle="#111827";x.font="800 22px Arial";x.fillText(String(v).slice(0,42),352,yy+28);
-      x.strokeStyle="#e2e8f0";x.lineWidth=1;x.beginPath();x.moveTo(352,yy+44);x.lineTo(960,yy+44);x.stroke();
-      yy+=68
+    const rows=[["SEAT / TYPE",seatType],["SHIFT",r.shiftLabel||"-"],["MOBILE",phone(r.phone)||"Not added"],["VALID UNTIL",valid]];
+    if(father)rows.push(["FATHER / GUARDIAN",father]);
+    if(dob)rows.push(["DATE OF BIRTH",dob]);
+    let y=700;
+    rows.slice(0,6).forEach(([k,v])=>{
+      x.fillStyle="#64748b";x.font="800 11px Arial";x.fillText(k,55,y);
+      x.fillStyle="#111827";x.font="800 18px Arial";x.textAlign="right";x.fillText(String(v).slice(0,38),645,y);x.textAlign="left";
+      x.strokeStyle="#e2e8f0";x.beginPath();x.moveTo(55,y+16);x.lineTo(645,y+16);x.stroke();y+=48
     });
 
-    // Footer
-    x.fillStyle="#ffffff";x.fillRect(0,548,c.width,90);
-    x.strokeStyle="#dbe2ea";x.beginPath();x.moveTo(0,548);x.lineTo(c.width,548);x.stroke();
-    x.fillStyle="#64748b";x.font="700 12px Arial";x.fillText("Issued: "+issue+(owner?"  •  "+owner:""),38,578);
-    x.fillText("This card is non-transferable and valid only for the registered member.",38,601);
-    x.fillStyle="#0f172a";x.font="800 13px Arial";x.textAlign="right";x.fillText(signName||"Authorized Signature",962,579);
-    x.strokeStyle="#0f172a";x.beginPath();x.moveTo(790,601);x.lineTo(962,601);x.stroke();x.textAlign="left";
+    x.fillStyle="#0b1736";x.fillRect(0,995,700,105);
+    x.fillStyle="#dbeafe";x.font="600 11px Arial";x.fillText((address||"Registered member only").slice(0,92),35,1025);
+    x.fillText((owner?"Managed by: "+owner:"")+(libPhone?"   •   "+libPhone:""),35,1050);
+    x.fillStyle="#fff";x.font="800 12px Arial";x.textAlign="right";x.fillText(signName||"Authorized Signature",665,1070);
+    x.strokeStyle="#fff";x.beginPath();x.moveTo(510,1083);x.lineTo(665,1083);x.stroke();x.textAlign="left";
 
     downloadCanvas(c,`${safeName(lib)}_ID_${safeName(r.name)}_${memberId}.png`)
   }
   async function makeSlip(r){
-    const br=window.LP41_BRANDING||{};
+    const br=window.LP41_BRANDING||{},pf=findProfile(r)||{};
     const lib=String(br.libraryName||window.HL36?.libraryName||"Library Pro").trim()||"Library Pro";
     const address=String(br.address||"").trim(),libPhone=phone(br.phone||"");
     const email=String(br.email||"").trim(),upi=String(br.upi||"").trim();
+    const signName=String(br.signature||"Authorized Signature").trim(),owner=String(br.owner||"").trim();
     const footer=String(br.footer||"Please keep this slip for membership and payment reference.").trim();
-    const signName=String(br.signature||"Authorized Signature").trim(),libId=String(window.HL36?.libraryId||"library");
-    const receiptNo="MS-"+new Date().getFullYear()+"-"+hash(libId+"|"+identity(r)+"|"+Date.now()).toUpperCase().slice(0,8);
-    const c=document.createElement("canvas");c.width=900;c.height=1280;const x=c.getContext("2d");
-    const [im,logo]=await Promise.all([loadImage(photoFor(r)),loadImage(br.logo||"")]);
+    const libId=String(window.HL36?.libraryId||"library");
+    const receiptNo="LP-"+new Date().getFullYear()+"-"+hash(libId+"|"+identity(r)+"|"+Date.now()).toUpperCase().slice(0,7);
     const fee=Number(r.fee||0),paid=Number(r.paid||0),due=Number(r.due||0);
-    const status=due>0?"PAYMENT DUE":"PAID / CLEAR";
-    const seatType=r.type==="fixed"?"Reserved • Seat "+r.seat:(r.type==="profile"?(r.seat?"Digital Admission • Seat "+r.seat:"Digital Admission"):"Unreserved / Flexible");
+    const seatType=r.type==="fixed"?"Seat #"+r.seat:(r.type==="profile"?(r.seat?"Seat #"+r.seat:"Digital Admission"):"Unreserved");
+    const father=String(pf.father||pf.fatherName||pf.guardian||"").trim();
+    const c=document.createElement("canvas");c.width=1000;c.height=1250;const x=c.getContext("2d"),logo=await loadImage(br.logo||"");
 
-    x.fillStyle="#ffffff";x.fillRect(0,0,900,1280);
-    x.strokeStyle="#0f172a";x.lineWidth=3;rounded(x,24,24,852,1232,18);x.stroke();
+    x.fillStyle="#fff8c9";x.fillRect(0,0,1000,1250);
+    x.strokeStyle="#263238";x.lineWidth=4;x.setLineDash([10,8]);x.strokeRect(10,10,980,1230);x.setLineDash([]);
 
-    // Letterhead
-    x.fillStyle="#0b1736";rounded(x,25,25,850,190,17);x.fill();
     if(logo){
-      x.fillStyle="#fff";rounded(x,55,52,105,105,18);x.fill();
-      x.save();rounded(x,63,60,89,89,13);x.clip();
-      const ls=Math.min(89/logo.width,89/logo.height),lw=logo.width*ls,lh=logo.height*ls;
-      x.drawImage(logo,63+(89-lw)/2,60+(89-lh)/2,lw,lh);x.restore()
-    }
-    const left=logo?185:55;
-    let fs=39;while(fs>24){x.font=`900 ${fs}px Arial`;if(x.measureText(lib).width<=650)break;fs-=2}
-    x.fillStyle="#fff";x.font=`900 ${fs}px Arial`;x.fillText(lib,left,78);
-    x.fillStyle="#bfdbfe";x.font="700 15px Arial";
-    x.fillText([address,libPhone?("Ph: "+libPhone):"",email].filter(Boolean).join("  •  ").slice(0,100),left,109);
-    x.fillStyle="#fff";x.font="900 22px Arial";x.fillText("MEMBERSHIP / PAYMENT SLIP",left,151);
-    x.font="600 14px Arial";x.fillText("Slip No: "+receiptNo+"   •   Date: "+today(),left,180);
-
-    // Student identity
-    x.fillStyle="#f8fafc";rounded(x,55,245,790,245,18);x.fill();
-    x.strokeStyle="#e2e8f0";x.lineWidth=1.5;rounded(x,55,245,790,245,18);x.stroke();
-
-    if(im){
-      x.save();rounded(x,650,268,155,180,14);x.clip();
-      const sc=Math.max(155/im.width,180/im.height),w=im.width*sc,h=im.height*sc;
-      x.drawImage(im,650+(155-w)/2,268+(180-h)/2,w,h);x.restore()
-    }else{
-      x.fillStyle="#e2e8f0";rounded(x,650,268,155,180,14);x.fill();
-      x.fillStyle="#64748b";x.font="700 16px Arial";x.textAlign="center";x.fillText("PHOTO",727,360);x.textAlign="left"
+      x.fillStyle="#fff";rounded(x,62,50,92,92,14);x.fill();
+      x.save();rounded(x,68,56,80,80,11);x.clip();
+      const sc=Math.min(80/logo.width,80/logo.height),w=logo.width*sc,h=logo.height*sc;
+      x.drawImage(logo,68+(80-w)/2,56+(80-h)/2,w,h);x.restore()
     }
 
-    x.fillStyle="#0f172a";x.font="900 35px Arial";x.fillText(String(r.name||"Student").slice(0,30),80,300);
-    x.fillStyle="#475569";x.font="700 18px Arial";
-    x.fillText("Mobile: "+(phone(r.phone)||"Not added"),80,342);
-    x.fillText("Membership: "+seatType,80,378);
-    x.fillText("Shift: "+(r.shiftLabel||"-"),80,414);
-    x.fillText("Renewal / Valid Until: "+(r.renewal||"Not set"),80,450);
+    x.fillStyle="#111827";x.textAlign="center";
+    let fs=48;while(fs>28){x.font=`900 ${fs}px Arial`;if(x.measureText(lib).width<=760)break;fs-=2}
+    x.fillText(lib,500,88);
+    x.font="700 17px Arial";x.fillText([address,libPhone?("Mob: "+libPhone):"",email].filter(Boolean).join("  •  ").slice(0,110),500,122);
+    x.strokeStyle="#111827";x.lineWidth=3;x.beginPath();x.moveTo(50,154);x.lineTo(950,154);x.stroke();
 
-    // Amount boxes
-    const boxes=[
-      ["PLAN / TOTAL",fee],
-      ["PAID",paid],
-      ["DUE",due]
+    x.textAlign="left";x.font="800 18px 'Courier New'";x.fillText("No. "+receiptNo,50,198);
+    x.textAlign="right";x.fillText("Date: "+today(),950,198);x.textAlign="left";
+
+    x.font="900 21px 'Courier New'";x.fillText("Name:",50,248);
+    x.font="500 21px 'Courier New'";x.fillText(String(r.name||"Student"),150,248);
+    x.setLineDash([2,3]);x.beginPath();x.moveTo(145,258);x.lineTo(950,258);x.stroke();x.setLineDash([]);
+
+    x.font="900 19px 'Courier New'";x.fillText("Seat / Type:",50,306);
+    x.font="500 19px 'Courier New'";x.fillText(seatType,210,306);
+    x.font="900 19px 'Courier New'";x.fillText("Shift:",565,306);
+    x.font="500 19px 'Courier New'";x.fillText(String(r.shiftLabel||"-"),650,306);
+
+    const tx=50,ty=355,tw=900,rowH=70;
+    x.strokeStyle="#111827";x.lineWidth=2;x.strokeRect(tx,ty,tw,rowH*6);
+    x.beginPath();x.moveTo(140,ty);x.lineTo(140,ty+rowH*6);x.moveTo(720,ty);x.lineTo(720,ty+rowH*6);x.stroke();
+    for(let i=1;i<6;i++){x.beginPath();x.moveTo(tx,ty+i*rowH);x.lineTo(tx+tw,ty+i*rowH);x.stroke()}
+    x.font="900 18px 'Courier New'";x.fillText("S.N.",70,ty+44);x.fillText("Particular",160,ty+44);x.fillText("Amount / Detail",740,ty+44);
+
+    const trows=[
+      ["1.","Monthly / Plan Fee","₹"+fee.toLocaleString("en-IN")],
+      ["2.","Amount Paid","₹"+paid.toLocaleString("en-IN")],
+      ["3.","Payment Date",r.paidDate||"Not set"],
+      ["4.","Next Payment / Renewal",r.renewal||"Not set"],
+      ["5.","Dues","₹"+due.toLocaleString("en-IN")]
     ];
-    boxes.forEach(([k,v],i)=>{
-      const bx=55+i*265,warning=i===2&&due>0;
-      x.fillStyle=warning?"#fff7ed":"#f8fafc";rounded(x,bx,535,235,108,15);x.fill();
-      x.strokeStyle=warning?"#fb923c":"#dbe2ea";x.lineWidth=1.5;rounded(x,bx,535,235,108,15);x.stroke();
-      x.fillStyle="#64748b";x.font="800 14px Arial";x.fillText(k,bx+18,571);
-      x.fillStyle=warning?"#c2410c":"#0f172a";x.font="900 31px Arial";x.fillText("₹"+Number(v||0).toLocaleString("en-IN"),bx+18,615)
+    trows.forEach((a,i)=>{
+      const yy=ty+rowH*(i+1)+43;
+      x.fillStyle=i===4&&due>0?"#dc2626":"#111827";
+      x.font="500 18px 'Courier New'";x.fillText(a[0],70,yy);x.fillText(a[1],160,yy);
+      x.font=i===4?"900 20px 'Courier New'":"600 18px 'Courier New'";x.fillText(a[2],740,yy)
     });
 
-    // Payment status + details
-    x.fillStyle=due>0?"#fff7ed":"#ecfdf5";rounded(x,55,680,790,75,14);x.fill();
-    x.fillStyle=due>0?"#c2410c":"#047857";x.font="900 20px Arial";x.fillText("STATUS: "+status,78,724);
+    x.fillStyle="#111827";x.font="600 17px 'Courier New'";
+    let yy=835;x.fillText("Student Mobile: "+(phone(r.phone)||"Not added"),50,yy);yy+=36;
+    if(father){x.fillText("Father / Guardian: "+father.slice(0,52),50,yy);yy+=36}
+    if(upi){x.fillText("Library UPI: "+upi.slice(0,52),50,yy);yy+=36}
+    x.fillText("Reference: "+receiptNo,50,yy);
 
-    const rows=[
-      ["Payment Date",r.paidDate||"Not set"],
-      ["Renewal / Month End",r.renewal||"Not set"],
-      ["Reference",receiptNo],
-      ["UPI / Payment ID",upi||"Not configured"]
-    ];
-    let y=790;
-    rows.forEach(([k,v])=>{
-      x.fillStyle="#64748b";x.font="800 14px Arial";x.fillText(k.toUpperCase(),72,y);
-      x.fillStyle="#0f172a";x.font="800 19px Arial";x.textAlign="right";x.fillText(String(v).slice(0,48),825,y);x.textAlign="left";
-      x.strokeStyle="#e2e8f0";x.beginPath();x.moveTo(55,y+24);x.lineTo(845,y+24);x.stroke();
-      y+=68
-    });
+    x.textAlign="right";x.font="900 25px 'Courier New'";x.fillText("Total Paid: ₹"+paid.toLocaleString("en-IN"),940,990);x.textAlign="left";
+    x.font="600 18px 'Courier New'";x.fillText("Student Sign",70,1115);
+    x.textAlign="right";x.fillText(signName||"Authorized Signature",930,1115);x.textAlign="left";
+    x.strokeStyle="#111827";x.beginPath();x.moveTo(70,1132);x.lineTo(260,1132);x.moveTo(735,1132);x.lineTo(930,1132);x.stroke();
+    if(owner){x.font="600 14px Arial";x.textAlign="right";x.fillText(owner,930,1155);x.textAlign="left"}
+    x.fillStyle="#475569";x.font="600 13px Arial";x.fillText(footer.slice(0,125),50,1200);
 
-    // Footer / signatures
-    x.fillStyle="#f8fafc";rounded(x,55,1085,790,78,13);x.fill();
-    x.fillStyle="#475569";x.font="600 13px Arial";x.fillText(footer.slice(0,104),75,1116);
-    x.fillText("Computer-generated slip. Verify any discrepancy with the library administration.",75,1143);
-
-    x.fillStyle="#0f172a";x.font="800 14px Arial";
-    x.fillText("Student Signature",75,1205);x.fillText(signName||"Authorized Signature",620,1205);
-    x.strokeStyle="#0f172a";x.beginPath();x.moveTo(75,1230);x.lineTo(265,1230);x.moveTo(620,1230);x.lineTo(825,1230);x.stroke();
-
-    downloadCanvas(c,`${safeName(lib)}_Membership_Slip_${safeName(r.name)}_${receiptNo}.png`)
+    downloadCanvas(c,`${safeName(lib)}_Slip_${safeName(r.name)}_${receiptNo}.png`)
   }
   window.v30DownloadId=function(uid){const r=rowsById[uid];if(r)makeId(r)};
   window.v30DownloadSlip=function(uid){const r=rowsById[uid];if(r)makeSlip(r)};
@@ -6752,8 +6745,8 @@ window.v31SaveAttendance=function(){const k=$('v31PickStudent').value,s=getStude
 window.v31ShowQrToken=function(){const k=$('v31PickStudent')?.value;if(!k)return toast('Select student');navigator.clipboard?.writeText('HL31-'+k);alert('QR / Entry Token:\nHL31-'+k+'\n\nToken copied. You can encode this value in any QR printer/app.')}
 window.v31ScanQR=async function(){if(!('BarcodeDetector'in window))return alert('QR camera scanning is not supported in this browser. Use the manual token.');try{const det=new BarcodeDetector({formats:['qr_code']});const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});const v=document.createElement('video');v.srcObject=stream;v.playsInline=true;await v.play();setSheet('📷 QR Scanner',`<div class="v31-warning">Camera is open. Place the QR code in front of the camera.</div><div id="v31QrMount" style="margin-top:8px"></div>`);$('v31QrMount').appendChild(v);v.style.width='100%';v.style.borderRadius='16px';const timer=setInterval(async()=>{try{const codes=await det.detect(v);if(codes.length){clearInterval(timer);stream.getTracks().forEach(t=>t.stop());const raw=codes[0].rawValue||'';if(raw.startsWith('HL31-')){const k=raw.slice(5);state.activeStudent=getStudent(k);v31SheetClose();attendanceModule(k);toast('QR student found')}else toast('Unknown QR token')}}catch(e){}},500);setTimeout(()=>{clearInterval(timer);stream.getTracks().forEach(t=>t.stop())},30000)}catch(e){alert('The camera scanner could not start: '+e.message)}}
 
-function paymentModule(k=''){setSheet('₹ Payment & Receipt',`<div class="v31-card">${pickStudent(k)}<div class="v31-grid" style="margin-top:8px"><input id="v31PayAmount" type="number" class="v31-in" placeholder="Amount ₹"><select id="v31PayMode" class="v31-select"><option>Cash</option><option>UPI</option><option>PhonePe</option><option>Google Pay</option><option>Paytm</option><option>Bank Transfer</option><option>Card</option></select><input id="v31PayDue" type="number" class="v31-in" placeholder="Remaining due (optional)"><input id="v31PayTxn" class="v31-in" placeholder="Txn ID / note"></div><button class="v31-btn green" style="width:100%;margin-top:8px" onclick="v31SavePayment()">SAVE PAYMENT + RECEIPT</button></div>`)}
-window.v31SavePayment=async function(){const k=$('v31PickStudent').value,s=getStudent(k),amount=Number($('v31PayAmount').value||0);if(!s||amount<=0)return toast('Student and valid amount required');const mode=$('v31PayMode').value,txn=$('v31PayTxn').value.trim(),dueVal=$('v31PayDue').value,remaining=dueVal===''?Math.max(0,Number(s.due||0)-amount):Math.max(0,Number(dueVal));const rec={studentKey:k,student:s.name,phone:digits(s.phone),amount,mode,txn,due:remaining,kind:'Payment',date:isoDate(),time:Date.now(),receiptNo:'HLR-'+Date.now().toString().slice(-9)};const ref=await saveObj('ledger',rec);await applyMoneyToStudent(s,amount,remaining);audit('Payment',rec.receiptNo+' '+money(amount),s.name);toast('Payment saved');makeReceipt({...rec,key:ref.key});paymentModule(k)}
+function paymentModule(k=''){setSheet('₹ Payment & Receipt',`<div class="v31-card">${pickStudent(k)}<div class="v31-grid" style="margin-top:8px"><input id="v31PayAmount" type="number" class="v31-in" placeholder="Amount ₹"><select id="v31PayMode" class="v31-select"><option>Cash</option><option>UPI</option><option>PhonePe</option><option>Google Pay</option><option>Paytm</option><option>Bank Transfer</option><option>Card</option></select><input id="v31PayDue" type="number" class="v31-in" placeholder="Remaining due — enter manually"><input id="v31PayTxn" class="v31-in" placeholder="Txn ID / note"></div><button class="v31-btn green" style="width:100%;margin-top:8px" onclick="v31SavePayment()">SAVE PAYMENT + RECEIPT</button></div>`)}
+window.v31SavePayment=async function(){const k=$('v31PickStudent').value,s=getStudent(k),amount=Number($('v31PayAmount').value||0);if(!s||amount<=0)return toast('Student and valid amount required');const mode=$('v31PayMode').value,txn=$('v31PayTxn').value.trim(),dueVal=$('v31PayDue').value,remaining=dueVal===''?Number(s.due||0):Math.max(0,Number(dueVal));const rec={studentKey:k,student:s.name,phone:digits(s.phone),amount,mode,txn,due:remaining,kind:'Payment',date:isoDate(),time:Date.now(),receiptNo:'HLR-'+Date.now().toString().slice(-9)};const ref=await saveObj('ledger',rec);await applyMoneyToStudent(s,amount,remaining);audit('Payment',rec.receiptNo+' '+money(amount),s.name);toast('Payment saved');makeReceipt({...rec,key:ref.key});paymentModule(k)}
 async function applyMoneyToStudent(s,amount,due){if(s.type==='flex'&&s.key){const old=state.flex[s.key]||{};return database.ref(FLEX+'/'+s.key).update({paid:Number(old.paid||0)+amount,due,updatedAt:Date.now()})}const ups={};(s.sourceRefs||[]).forEach(r=>{ups[`library_v3/seats/${r.seat}/fees_${r.shift}`]=Number((globalLibraryData[r.seat]||{})['fees_'+r.shift]||0)+amount;ups[`library_v3/seats/${r.seat}/due_${r.shift}`]=due});return database.ref().update(ups)}
 function makeReceipt(r){
  const br=window.LP41_BRANDING||{},lib=String(br.libraryName||window.HL36?.libraryName||'Library Pro'),addr=String(br.address||''),phone=String(br.phone||''),sign=String(br.signature||'Authorized Signature');
@@ -8086,7 +8079,7 @@ function boot(){hideLegacySeller();try{firebase.auth().onAuthStateChanged(maybeS
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
 </script>
-<!-- ===== V45 PRODUCTION FINAL ===== -->
+<!-- ===== V46 CLEAN OWNER UI + REAL DOCUMENTS ===== -->
 <!-- ===== END V39 ===== -->
 
 <!-- ===== V40 COMPACT RENEWAL CENTER + OWNER-ONLY WHATSAPP ===== -->
@@ -9335,6 +9328,88 @@ setInterval(async()=>{
 })();
 </script>
 <!-- ===== END V45 DYNAMIC GATE BRANDING ===== -->
+
+
+<!-- ===== LIBRARY PRO V46 CLEAN OWNER UI ===== -->
+<script id="lp46-ui-js">
+(function(){
+'use strict';
+const OWNER_EMAIL='owner@librarypro.app',OWNER_ID='TRIDEV246088816356';
+const $=id=>document.getElementById(id);
+function owner(){return window.HL36?.mode==='master'&&String(firebase.auth()?.currentUser?.email||'').toLowerCase()===OWNER_EMAIL}
+
+function buildHeader(){
+ const box=$('lp46HeaderActions');if(!box)return;
+ const own=owner();
+ box.innerHTML=`<button class="lp46-head-icon" title="${own?'Customer Problems':'Help & Support'}" aria-label="${own?'Customer Problems':'Help & Support'}" onclick="lp43OpenHelp()">🎧</button>`+
+ (own?`<button class="lp46-head-icon" title="Customer problem notifications" aria-label="Customer problem notifications" onclick="lp43OpenHelp()">🔔<span id="lp46BellCount" class="lp46-notify-count zero">0</span></button>`:'');
+ syncBell()
+}
+function syncBell(){
+ const b=$('lp46BellCount');if(!b)return;
+ const n=parseInt(String($('lp43HelpCount')?.textContent||'0'),10)||0;
+ b.textContent=n;b.classList.toggle('zero',n<=0)
+}
+function cleanVault(){
+ const card=$('v38VaultGate')?.querySelector('.v38-vault-card');if(!card)return;
+ if(!$('lp46VaultClose')){
+   const x=document.createElement('button');x.id='lp46VaultClose';x.type='button';x.innerHTML='×';x.title='Close';x.onclick=()=>window.v38VaultClose?.();card.appendChild(x)
+ }
+ if($('v38VaultText'))$('v38VaultText').style.display='none';
+ if($('lp42RecoverBtn'))$('lp42RecoverBtn').style.display='none'
+}
+function prepareTrash(){
+ const card=$('lp42TrashCard');if(!card)return;
+ const top=card.firstElementChild;
+ if(top&&!top.querySelector('.lp46-trash-close')){
+   top.querySelectorAll('.v38-meta').forEach(x=>x.remove());
+   const c=document.createElement('button');c.className='lp46-trash-close';c.innerHTML='×';c.onclick=()=>lp46CloseTrash();top.prepend(c)
+ }
+ const main=$('lp42TrashBadge'),small=$('lp46TrashTopBadge');
+ if(small)small.textContent=String(main?.textContent||'0')
+}
+window.lp46OpenTrash=function(){
+ if(!owner())return;
+ window.lp42RenderTrash?.();
+ const c=$('lp42TrashCard');if(c)c.classList.add('lp46-trash-open');
+ setTimeout(prepareTrash,120)
+};
+window.lp46CloseTrash=function(){$('lp42TrashCard')?.classList.remove('lp46-trash-open')};
+
+function compactSeller(){
+ if(!owner())return;
+ const panel=$('v38PrivateSellerPanel'),head=panel?.querySelector('.v38-head');if(!head)return;
+ const left=head.firstElementChild,acts=head.querySelector('.v38-actions');
+ if(left&&!left.querySelector('.lp46-owner-id')){
+   const p=document.createElement('div');p.className='lp46-owner-id';p.textContent='Owner ID: '+OWNER_ID;left.appendChild(p)
+ }
+ if(acts&&!acts.classList.contains('lp46-ready')){
+   acts.classList.add('lp46-ready','lp46-seller-tools');
+   const bio=document.createElement('button');bio.className='v38-btn gray sm';bio.textContent='FINGERPRINT';bio.onclick=()=>window.lp42EnableBiometric?.();
+   const pass=document.createElement('button');pass.className='v38-btn gray sm';pass.textContent='CHANGE PASSWORD';pass.onclick=()=>window.v37ChangePassword?.();
+   const trash=document.createElement('button');trash.className='v38-btn gray sm lp46-trash-btn';trash.innerHTML='🗑<span id="lp46TrashTopBadge" class="lp46-trash-badge">0</span>';trash.title='Customer Recycle Bin';trash.onclick=()=>lp46OpenTrash();
+   const lock=acts.querySelector('button[onclick="v38LockVault()"]');
+   acts.insertBefore(bio,lock);acts.insertBefore(pass,lock);acts.insertBefore(trash,lock)
+ }
+ if($('lp42SecurityCard'))$('lp42SecurityCard').style.display='none';
+ prepareTrash()
+}
+function ownerFloating(){
+ const b=$('v36AccountBtn');if(!b)return;
+ if(owner()){b.style.removeProperty('display');b.title='Private Seller Center'}
+ else b.style.setProperty('display','none','important')
+}
+function dueHints(){
+ ['all','m','n','an','e','night'].forEach(k=>{const d=$('due_'+k);if(d){d.placeholder='Enter due manually';d.autocomplete='off'}});
+ const u=$('ur23DueInput')||$('ur23Due');if(u){u.placeholder='Enter due manually';u.autocomplete='off'}
+}
+function init(){buildHeader();cleanVault();compactSeller();ownerFloating();dueHints()}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+window.addEventListener('load',()=>setTimeout(init,350));
+setInterval(()=>{buildHeader();cleanVault();compactSeller();ownerFloating();dueHints();syncBell();prepareTrash()},1800);
+})();
+</script>
+<!-- ===== END V46 ===== -->
 
 </body>
 </html>
