@@ -7742,36 +7742,79 @@ window.v38Device=async function(uid,did,status){
 window.v38RemoveDevice=async function(uid,did){if(!confirm('Remove this device?'))return;await raw('platform/devices/'+uid+'/'+did).remove();await v38LoadCustomers()};
 window.v39DeleteCustomer=async function(uid){
  if(!vaultUnlocked||!isOwner())return alert('Seller owner login required.');
- const pv=vaultCache[uid]||{};
- const licSnap=await raw('platform/licensesByUid/'+uid).once('value'),lic=licSnap.val()||{};
- const id=String(pv.licenseId||lic.licenseId||'').trim();
- const lib=String(pv.libraryName||lic.libraryName||'Customer');
- if(!id)return alert('Customer ID not found.');
- const typed=prompt('DELETE CUSTOMER confirm karne ke liye exact Library ID type karein:\\n\\n'+id);
- if(typed===null)return;
- if(String(typed).trim().toUpperCase()!==id.toUpperCase())return alert('ID match nahi hua. Delete cancel.');
- if(!confirm('FINAL CONFIRM\\n\\n'+lib+' • '+id+'\\n\\nIs customer ka license, devices aur tenant data app se remove hoga. Pehle automatic JSON backup download hoga.'))return;
  try{
-   const [tenantSnap,devSnap]=await Promise.all([
-     raw('tenants/'+uid).once('value'),
-     raw('platform/devices/'+uid).once('value')
+   const pv=vaultCache[uid]||{};
+   const [licSnap,tenantSnap,devSnap]=await Promise.all([
+     raw('platform/licensesByUid/'+uid).once('value'),
+     raw('tenants/'+uid).once('value').catch(()=>({val:()=>({})})),
+     raw('platform/devices/'+uid).once('value').catch(()=>({val:()=>({})}))
    ]);
-   const backup={deletedAt:new Date().toISOString(),uid,license:lic,privateRecord:pv,tenant:tenantSnap.val()||{},devices:devSnap.val()||{}};
+   const lic=licSnap.val()||{};
+   const id=String(pv.licenseId||lic.licenseId||'').trim();
+   const lib=String(pv.libraryName||lic.libraryName||'Customer');
+   if(!id)return alert('Customer ID not found.');
+
+   if(!confirm('DELETE CUSTOMER?\\n\\n'+lib+' • '+id+'\\n\\nIs test/customer account ko Seller Center se remove karna hai?'))return;
+
+   const tenant=tenantSnap.val()||{},devices=devSnap.val()||{};
+
+   // Safe local backup first. Download block ho to bhi delete continue hoga.
    try{
+     const backup={
+       deletedAt:new Date().toISOString(),
+       uid,
+       license:lic,
+       privateRecord:pv,
+       tenant,
+       devices
+     };
      const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
-     const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Deleted_Customer_Backup_'+id+'_'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1200)
-   }catch(e){}
-   const up={};
-   up['platform/licensesByUid/'+uid]=null;
-   up['platform/licenseIds/'+id]=null;
-   up['platform/devices/'+uid]=null;
-   up['platform/sellerVault/records/'+uid]=null;
-   up['tenants/'+uid]=null;
-   await firebase.database().ref().update(up);
+     const a=document.createElement('a');
+     a.href=URL.createObjectURL(blob);
+     a.download='Deleted_Customer_Backup_'+id+'_'+new Date().toISOString().slice(0,10)+'.json';
+     document.body.appendChild(a);a.click();a.remove();
+     setTimeout(()=>URL.revokeObjectURL(a.href),1200);
+   }catch(e){console.warn('Backup download skipped',e)}
+
+   // IMPORTANT: Firebase rules allow device writes at each device child,
+   // not deleting the whole /devices/<uid> parent in one root update.
+   // So device records are removed one-by-one first.
+   const deviceIds=Object.keys(devices||{});
+   for(const did of deviceIds){
+     try{await raw('platform/devices/'+uid+'/'+did).remove()}
+     catch(e){console.warn('Device delete failed',did,e)}
+   }
+
+   // Remove the actual customer records one path at a time so one restricted
+   // parent path cannot make the entire multi-location delete fail.
+   const steps=[
+     ['license',()=>raw('platform/licensesByUid/'+uid).remove()],
+     ['license id',()=>raw('platform/licenseIds/'+id).remove()],
+     ['tenant data',()=>raw('tenants/'+uid).remove()],
+     ['seller vault',()=>raw('platform/sellerVault/records/'+uid).remove()]
+   ];
+
+   const failed=[];
+   for(const [label,fn] of steps){
+     try{await fn()}
+     catch(e){failed.push(label+': '+(e?.message||e))}
+   }
+
+   // If vault delete succeeded, remove it locally immediately.
    delete vaultCache[uid];
-   alert('✅ Customer removed from Library Pro.\\n\\nOld Firebase Auth identity orphan ho sakti hai, lekin license delete hone ke baad app access nahi milega.');
+
+   if(failed.length){
+     await v38LoadCustomers().catch(()=>{});
+     alert('⚠️ Customer partially removed.\\n\\n'+failed.join('\\n')+'\\n\\nScreenshot bhejiye.');
+     return;
+   }
+
+   alert('✅ CUSTOMER DELETED SUCCESSFULLY\\n\\n'+lib+' • '+id+'\\n\\nSeller Center se license, device requests aur library tenant data remove ho gaya. Purana Firebase Auth login record reh sakta hai, lekin license ke bina app access nahi milega.');
    await v38LoadCustomers();
- }catch(e){alert('Delete failed: '+(e.message||e))}
+ }catch(e){
+   console.error(e);
+   alert('Delete failed: '+(e?.message||e));
+ }
 };
 window.v38ExportSellerCSV=function(){if(!vaultUnlocked)return;const rows=[['Library ID','Password','Library','Customer','Phone','Address','Plan','Expiry','Sale Amount','Payment','Notes']];for(const [uid,p] of Object.entries(vaultCache)){rows.push([p.licenseId||'',p.password||'',p.libraryName||'',p.buyerName||'',p.phone||'',p.address||'',p.plan||'',p.expiresAt?dateFmt(p.expiresAt):'Lifetime',p.saleAmount||0,p.paymentStatus||'',p.notes||''])}const csv=rows.map(r=>r.map(x=>'"'+String(x??'').replace(/"/g,'""')+'"').join(',')).join('\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Library_Pro_Private_Seller_Backup_'+new Date().toISOString().slice(0,10)+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
 
@@ -7783,7 +7826,7 @@ function boot(){hideLegacySeller();try{firebase.auth().onAuthStateChanged(maybeS
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
 </script>
-<!-- ===== V39 DYNAMIC SEATS + OPTIONAL UNRESERVED + CUSTOMER DELETE ===== -->
+<!-- ===== V39.1 CUSTOMER DELETE RULES FIX ===== -->
 <!-- ===== END V39 ===== -->
 
 </body>
