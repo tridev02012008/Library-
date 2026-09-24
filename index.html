@@ -5184,7 +5184,7 @@ body.dark #ur23List .ur23-student.v24-expired{background:linear-gradient(135deg,
         <div class="v25-result"><b id="v25Failed">0</b><span>FAILED</span></div>
         <div class="v25-result"><b id="v25TotalResult">0</b><span>TOTAL</span></div>
       </div>
-      <div id="v25BackendWarning" class="v25-warning">⚠️ Direct WhatsApp sender connect nahi hua. V26 Firebase Function ko ek baar deploy karke WhatsApp Cloud API token, Phone Number ID aur Sender Key set karna zaroori hai. Uske baad yahi button sabhi students ko direct message bhejega.</div>
+      <div id="v25BackendWarning" class="v25-warning">⚠️ Direct WhatsApp sender connect nahi hua. Cloudflare Worker, WhatsApp token, Phone Number ID aur Sender Key check kijiye.</div>
     </div>
 
     <div class="v25-card">
@@ -5199,7 +5199,7 @@ body.dark #ur23List .ur23-student.v24-expired{background:linear-gradient(135deg,
   const $=id=>document.getElementById(id);
   let seats={},flex={},profiles={},currentRef=null,currentTimer=null;
   const shifts=["all","m","n","an","e","night"];
-  const DIRECT_ENDPOINT="https://us-central1-hariom-library-3c480.cloudfunctions.net/sendNoticeNow";
+  const DIRECT_ENDPOINT="https://library-pro-whatsapp.tridevkumar9815.workers.dev/";
 
   function toast(m){if(typeof showToast==="function")showToast(m);else alert(m)}
   function phone10(p){let d=String(p||"").replace(/\D/g,"");if(d.length===12&&d.startsWith("91"))d=d.slice(2);if(d.length>10)d=d.slice(-10);return /^\d{10}$/.test(d)?d:""}
@@ -5268,7 +5268,7 @@ body.dark #ur23List .ur23-student.v24-expired{background:linear-gradient(135deg,
 
   function getSenderKey(){
     let key="";try{key=localStorage.getItem("hariom_v26_sender_key")||""}catch(e){}
-    if(!key){key=prompt("One-time WhatsApp Sender Key daliye (jo Firebase secret NOTICE_ADMIN_KEY me set ki gayi hai):","")||"";key=key.trim();if(key){try{localStorage.setItem("hariom_v26_sender_key",key)}catch(e){}}}
+    if(!key){key=prompt("One-time WhatsApp Sender Key daliye (jo Cloudflare SENDER_KEY me set ki gayi hai):","")||"";key=key.trim();if(key){try{localStorage.setItem("hariom_v26_sender_key",key)}catch(e){}}}
     return key;
   }
   window.v26ResetSenderKey=function(){try{localStorage.removeItem("hariom_v26_sender_key")}catch(e){}toast("Sender key cleared")};
@@ -5283,17 +5283,23 @@ body.dark #ur23List .ur23-student.v24-expired{background:linear-gradient(135deg,
     const total=testPhone?1:c.rows.length;
     const requestId=database.ref("library_v3/whatsappBroadcastHistory").push().key;
     const histRef=database.ref("library_v3/whatsappBroadcastHistory/"+requestId);
+    const createdAt=Date.now();
+    await histRef.set({status:"sending",message:msg,totalExpected:total,total,createdAt,sentCount:0,failedCount:0,libraryName:String(window.HL36?.libraryName||"Library Pro")}).catch(()=>{});
     monitorHistory(histRef);setUi("connecting",0,0,total,"Connecting direct WhatsApp sender…");
     const w=$("v25BackendWarning");if(w)w.classList.remove("show");
     try{
-      const r=await fetch(DIRECT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json","x-notice-key":key},body:JSON.stringify({message:msg,audience:testPhone?"test":"all_current_students",testPhone:testPhone||"",requestId,totalExpected:total,recipients:testPhone?[{phone:testPhone,name:"Test"}]:c.rows.map(x=>({phone:x.phone,name:x.name,sources:x.sources})),source:"Hariom Library V32 Front Notice Box"})});
+      const r=await fetch(DIRECT_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json","x-notice-key":key},body:JSON.stringify({message:msg,audience:testPhone?"test":"all_current_students",testPhone:testPhone||"",requestId,totalExpected:total,libraryId:String(window.HL36?.libraryId||""),libraryName:String(window.HL36?.libraryName||"Library Pro"),recipients:testPhone?[{phone:testPhone,name:"Test"}]:c.rows.map(x=>({phone:x.phone,name:x.name,sources:x.sources})),source:String(window.HL36?.libraryName||"Library Pro")+" Direct Notice"})});
       let data={};try{data=await r.json()}catch(e){}
       if(r.status===401||r.status===403){try{localStorage.removeItem("hariom_v26_sender_key")}catch(e){}throw new Error("Sender Key galat hai. Dobara send karke sahi key daliye.")}
       if(!r.ok||!data.ok)throw new Error(data.error||("Backend HTTP "+r.status));
-      toast(data.failed?`⚠️ ${data.sent} sent, ${data.failed} failed`:`✅ Direct WhatsApp sent to ${data.sent} student(s)`);
+      const sent=Number(data.sent||0),failed=Number(data.failed||0),status=failed?(sent?"partial":"failed"):"sent";
+      await histRef.update({status,sentCount:sent,failedCount:failed,total:Number(data.total||total),completedAt:Date.now(),worker:"cloudflare"}).catch(()=>{});
+      setUi(status,sent,failed,Number(data.total||total));
+      toast(failed?`⚠️ ${sent} sent, ${failed} failed`:`✅ Direct WhatsApp sent to ${sent} student(s)`);
     }catch(e){
-      console.error(e);setUi("failed",0,0,total,"❌ Direct sender connect/send failed");
-      const warn=$("v25BackendWarning");if(warn){warn.classList.add("show");warn.textContent="⚠️ "+(e.message||e)+" V26 backend deploy/setup check kijiye."}
+      console.error(e);await histRef.update({status:"failed",failedCount:total,error:String(e.message||e),completedAt:Date.now(),worker:"cloudflare"}).catch(()=>{});
+      setUi("failed",0,total,total,"❌ Direct sender connect/send failed");
+      const warn=$("v25BackendWarning");if(warn){warn.classList.add("show");warn.textContent="⚠️ "+(e.message||e)+" Cloudflare/WhatsApp setup check kijiye."}
       toast("Direct WhatsApp error: "+(e.message||e));
     }
   }
