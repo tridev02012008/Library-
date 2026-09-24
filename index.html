@@ -4719,19 +4719,19 @@ body{background:radial-gradient(circle at 15% 0%,rgba(109,93,252,.22),transparen
  window.v19Download=downloadElement;
  const oldCard=window.v15Card;
  window.v15Card=function(k){
-   const p=(window.v15ProfilesCache||{})[k]; if(!p)return;
+   const p=(window.v15ProfilesCache||{})[k]; if(!p)return; const lib=v15Safe(String(window.HL36?.libraryName||'Library Pro'));
    const photo=p.photo?`<img src="${p.photo}" style="width:100%;height:100%;object-fit:cover">`:'<div style="font-size:42px">👤</div>';
-   const html=`<div id="v15CardPrint" style="max-width:380px;margin:auto;background:#fff;color:#111;border-radius:20px;overflow:hidden;border:2px solid #6d5dfc;font-family:Arial"><div style="padding:16px;text-align:center;color:#fff;background:linear-gradient(135deg,#4338ca,#7c3aed,#0891b2)"><b style="font-size:20px">HARIOM LIBRARY</b><div style="font-size:10px">PREMIUM STUDENT IDENTITY CARD</div></div><div style="padding:15px;display:flex;gap:13px"><div style="width:92px;height:108px;border-radius:13px;overflow:hidden;background:#eef2ff;display:grid;place-items:center">${photo}</div><div style="font-size:11px;line-height:1.7;flex:1"><b style="font-size:17px">${v15Safe(p.name)}</b><br><b>ID:</b> ${v15Safe(p.studentId)}<br><b>Seat:</b> ${v15Safe(p.seat||'-')} &nbsp; <b>Shift:</b> ${v15Safe(p.shift||'-')}<br><b>Phone:</b> ${v15Safe(p.phone)}<br><b>Joining:</b> ${v15Safe(p.joining||'-')}<br><b>Expiry:</b> ${v15Safe(p.expiry||'-')}</div></div><div style="padding:10px 15px;border-top:1px dashed #aaa;font-size:9px;display:flex;justify-content:space-between"><span>Emergency: ${v15Safe(p.emergency||'-')}</span><span>Authorized Sign ______</span></div></div><div class="v19-actions v15-no-print"><button class="v19-btn green" onclick="v19Download('v15CardPrint','${safeFile(p.studentId)}-ID-Card','png')">⬇ Photo ID Download</button><button class="v19-btn blue" onclick="v19Download('v15CardPrint','${safeFile(p.studentId)}-ID-Card','pdf')">📄 PDF Download</button><button class="v19-btn" onclick="v15Print('v15CardPrint')">🖨 Print</button><button class="v19-btn green" onclick="v15Share('${k}')">💬 WhatsApp</button></div>`;
+   const html=`<div id="v15CardPrint" style="max-width:380px;margin:auto;background:#fff;color:#111;border-radius:20px;overflow:hidden;border:2px solid #6d5dfc;font-family:Arial"><div style="padding:16px;text-align:center;color:#fff;background:linear-gradient(135deg,#4338ca,#7c3aed,#0891b2)"><b style="font-size:20px">${lib}</b><div style="font-size:10px">STUDENT IDENTITY CARD</div></div><div style="padding:15px;display:flex;gap:13px"><div style="width:92px;height:108px;border-radius:13px;overflow:hidden;background:#eef2ff;display:grid;place-items:center">${photo}</div><div style="font-size:11px;line-height:1.7;flex:1"><b style="font-size:17px">${v15Safe(p.name)}</b><br><b>ID:</b> ${v15Safe(p.studentId)}<br><b>Seat:</b> ${v15Safe(p.seat||'-')} &nbsp; <b>Shift:</b> ${v15Safe(p.shift||'-')}<br><b>Phone:</b> ${v15Safe(p.phone)}<br><b>Joining:</b> ${v15Safe(p.joining||'-')}<br><b>Expiry:</b> ${v15Safe(p.expiry||'-')}</div></div><div style="padding:10px 15px;border-top:1px dashed #aaa;font-size:9px;display:flex;justify-content:space-between"><span>Emergency: ${v15Safe(p.emergency||'-')}</span><span>Authorized Sign ______</span></div></div><div class="v19-actions v15-no-print"><button class="v19-btn green" onclick="v19Download('v15CardPrint','${safeFile(p.studentId)}-ID-Card','png')">⬇ Photo ID Download</button><button class="v19-btn blue" onclick="v19Download('v15CardPrint','${safeFile(p.studentId)}-ID-Card','pdf')">📄 PDF Download</button><button class="v19-btn" onclick="v15Print('v15CardPrint')">🖨 Print</button><button class="v19-btn green" onclick="v15Share('${k}')">💬 WhatsApp</button></div>`;
    v15Modal('Premium Photo ID Card',html); if(window.v15db) v15db.ref('library_v3/v15/cardHistory').push({studentId:p.studentId,profileKey:k,action:'Generated V19',time:Date.now()});
  };
  window.v15AdmissionSlip=function(k){
-   const p=(window.v15ProfilesCache||{})[k];if(!p)return;const rid='ADM-'+new Date().getFullYear()+'-'+String(Date.now()).slice(-6);
+   const p=(window.v15ProfilesCache||{})[k];if(!p)return;const lib=v15Safe(String(window.HL36?.libraryName||'Library Pro'));const rid='ADM-'+new Date().getFullYear()+'-'+String(Date.now()).slice(-6);
    const photo=p.photo?`<img src="${p.photo}" style="width:76px;height:90px;object-fit:cover;border-radius:9px">`:'👤';
-   const h=`<div id="v15SlipPrint" style="padding:22px;background:#fff;color:#111;border:2px solid #4338ca;font-family:Arial"><div style="text-align:center"><h2 style="margin:0">Hariom Library</h2><b>Admission / Membership Slip</b></div><hr><div style="display:flex;gap:15px;align-items:flex-start"><div>${photo}</div><div style="line-height:1.75;font-size:12px"><b>Admission No:</b> ${rid}<br><b>Student:</b> ${v15Safe(p.name)} (${v15Safe(p.studentId)})<br><b>Phone:</b> ${v15Safe(p.phone)}<br><b>Seat / Shift:</b> ${v15Safe(p.seat||'-')} / ${v15Safe(p.shift||'-')}<br><b>Joining / Expiry:</b> ${v15Safe(p.joining||'-')} / ${v15Safe(p.expiry||'-')}<br><b>Plan / Fee:</b> ${v15Safe(p.plan||'-')} / ₹${Number(p.fee||0)}</div></div><hr><div style="display:flex;justify-content:space-between;margin-top:35px;font-size:11px"><span>Student Sign __________</span><span>Authorized Sign __________</span></div></div><div class="v19-actions"><button class="v19-btn green" onclick="v19Download('v15SlipPrint','${safeFile(p.studentId)}-Admission-Slip','pdf')">⬇ Download Slip PDF</button><button class="v19-btn blue" onclick="v19Download('v15SlipPrint','${safeFile(p.studentId)}-Admission-Slip','png')">🖼 Download Image</button><button class="v19-btn" onclick="v15Print('v15SlipPrint')">🖨 Print</button><button class="v19-btn green" onclick="v15Share('${k}')">💬 WhatsApp</button></div>`;v15Modal('Admission / Membership Slip',h);
+   const h=`<div id="v15SlipPrint" style="padding:22px;background:#fff;color:#111;border:2px solid #4338ca;font-family:Arial"><div style="text-align:center"><h2 style="margin:0">${lib}</h2><b>Admission / Membership Slip</b></div><hr><div style="display:flex;gap:15px;align-items:flex-start"><div>${photo}</div><div style="line-height:1.75;font-size:12px"><b>Admission No:</b> ${rid}<br><b>Student:</b> ${v15Safe(p.name)} (${v15Safe(p.studentId)})<br><b>Phone:</b> ${v15Safe(p.phone)}<br><b>Seat / Shift:</b> ${v15Safe(p.seat||'-')} / ${v15Safe(p.shift||'-')}<br><b>Joining / Expiry:</b> ${v15Safe(p.joining||'-')} / ${v15Safe(p.expiry||'-')}<br><b>Plan / Fee:</b> ${v15Safe(p.plan||'-')} / ₹${Number(p.fee||0)}</div></div><hr><div style="display:flex;justify-content:space-between;margin-top:35px;font-size:11px"><span>Student Sign __________</span><span>Authorized Sign __________</span></div></div><div class="v19-actions"><button class="v19-btn green" onclick="v19Download('v15SlipPrint','${safeFile(p.studentId)}-Admission-Slip','pdf')">⬇ Download Slip PDF</button><button class="v19-btn blue" onclick="v19Download('v15SlipPrint','${safeFile(p.studentId)}-Admission-Slip','png')">🖼 Download Image</button><button class="v19-btn" onclick="v15Print('v15SlipPrint')">🖨 Print</button><button class="v19-btn green" onclick="v15Share('${k}')">💬 WhatsApp</button></div>`;v15Modal('Admission / Membership Slip',h);
  };
  const oldReceipt=window.v15Receipt;
  window.v15Receipt=function(r){
-   const html=`<div id="v15ReceiptPrint" style="padding:22px;background:#fff;color:#111;border:2px solid #10b981;font-family:Arial"><h2 style="margin:0">Hariom Library</h2><b>Fee Receipt: ${v15Safe(r.receiptNo)}</b><hr><p><b>Student:</b> ${v15Safe(r.student)}</p><p><b>Paid:</b> ₹${r.amount}</p><p><b>Remaining Due:</b> ₹${r.due}</p><p><b>Mode:</b> ${v15Safe(r.mode)} ${v15Safe(r.txn||'')}</p><p>${new Date(r.time).toLocaleString()}</p><br>Authorized Signature __________</div><div class="v19-actions"><button class="v19-btn green" onclick="v19Download('v15ReceiptPrint','${safeFile(r.receiptNo)}','pdf')">⬇ Receipt PDF</button><button class="v19-btn blue" onclick="v19Download('v15ReceiptPrint','${safeFile(r.receiptNo)}','png')">🖼 Receipt Image</button><button class="v19-btn" onclick="v15Print('v15ReceiptPrint')">🖨 Print</button></div>`;v15Modal('Fee Receipt',html);
+   const lib=v15Safe(String(window.HL36?.libraryName||'Library Pro'));const html=`<div id="v15ReceiptPrint" style="padding:22px;background:#fff;color:#111;border:2px solid #10b981;font-family:Arial"><h2 style="margin:0">${lib}</h2><b>Fee Receipt: ${v15Safe(r.receiptNo)}</b><hr><p><b>Student:</b> ${v15Safe(r.student)}</p><p><b>Paid:</b> ₹${r.amount}</p><p><b>Remaining Due:</b> ₹${r.due}</p><p><b>Mode:</b> ${v15Safe(r.mode)} ${v15Safe(r.txn||'')}</p><p>${new Date(r.time).toLocaleString()}</p><br>Authorized Signature __________</div><div class="v19-actions"><button class="v19-btn green" onclick="v19Download('v15ReceiptPrint','${safeFile(r.receiptNo)}','pdf')">⬇ Receipt PDF</button><button class="v19-btn blue" onclick="v19Download('v15ReceiptPrint','${safeFile(r.receiptNo)}','png')">🖼 Receipt Image</button><button class="v19-btn" onclick="v15Print('v15ReceiptPrint')">🖨 Print</button></div>`;v15Modal('Fee Receipt',html);
  };
  window.v15Ask=function(){
    const box=document.getElementById('v15AIQuery'),out=document.getElementById('v15AIAnswer');if(!box||!out)return;const q=box.value.toLowerCase().trim();
@@ -6253,32 +6253,180 @@ body.dark .v30-tool-icon{filter:saturate(.9) brightness(.9)}
   function fitText(ctx,text,maxWidth,start){let size=start;while(size>22){ctx.font=`900 ${size}px Arial`;if(ctx.measureText(text).width<=maxWidth)break;size-=2}return size}
   function loadImage(src){return new Promise(res=>{if(!src)return res(null);const im=new Image();im.onload=()=>res(im);im.onerror=()=>res(null);im.src=src})}
   async function makeId(r){
-    let pic=photoFor(r);if(!pic){if(typeof showToast==="function")showToast("📷 ID card ke liye student photo choose karein");return v30ChoosePhoto(r.uid,"id")}
-    const c=document.createElement("canvas");c.width=800;c.height=1200;const x=c.getContext("2d");
-    x.fillStyle="#f8fafc";x.fillRect(0,0,c.width,c.height);x.fillStyle="#0f172a";x.fillRect(0,0,800,250);x.fillStyle="#2563eb";x.fillRect(0,235,800,15);
-    x.fillStyle="#fff";x.font="900 42px Arial";x.fillText("HARIOM LIBRARY",54,86);x.font="500 22px Arial";x.fillStyle="#cbd5e1";x.fillText("SMART STUDENT ID CARD",55,128);
-    x.fillStyle="#22c55e";rounded(x,55,160,230,54,27);x.fill();x.fillStyle="#fff";x.font="900 19px Arial";x.fillText("ACTIVE MEMBER",88,195);
-    const im=await loadImage(pic);x.save();rounded(x,250,282,300,330,30);x.clip();if(im){const scale=Math.max(300/im.width,330/im.height),w=im.width*scale,h=im.height*scale;x.drawImage(im,250+(300-w)/2,282+(330-h)/2,w,h)}else{x.fillStyle="#dbeafe";x.fillRect(250,282,300,330)}x.restore();x.strokeStyle="#cbd5e1";x.lineWidth=5;rounded(x,250,282,300,330,30);x.stroke();
-    const name=String(r.name||"Student");const fs=fitText(x,name,690,52);x.font=`900 ${fs}px Arial`;x.fillStyle="#0f172a";x.textAlign="center";x.fillText(name,400,690);x.textAlign="left";
-    const sid="HL-"+hash(identity(r)).toUpperCase().slice(0,8);x.font="700 24px Arial";x.fillStyle="#64748b";x.textAlign="center";x.fillText("Student ID: "+sid,400,738);x.textAlign="left";
-    const fields=[["MOBILE",phone(r.phone)||"Not added"],["SEAT / TYPE",r.type==="fixed"?"Seat "+r.seat:(r.type==="profile"?(r.seat?"Digital • Seat "+r.seat:"Digital Admission"):"Unreserved")],["SHIFT",r.shiftLabel||"-"],["VALID / RENEWAL",r.renewal||"Not set"]];
-    let y=790;fields.forEach(([k,v])=>{x.fillStyle="#64748b";x.font="800 18px Arial";x.fillText(k,75,y);x.fillStyle="#0f172a";x.font="800 27px Arial";x.fillText(String(v),75,y+35);x.strokeStyle="#e2e8f0";x.lineWidth=2;x.beginPath();x.moveTo(75,y+57);x.lineTo(725,y+57);x.stroke();y+=92});
-    x.fillStyle="#0f172a";x.fillRect(0,1110,800,90);x.fillStyle="#fff";x.font="700 18px Arial";x.textAlign="center";x.fillText("Hariom Library • Smart Management System",400,1148);x.font="500 15px Arial";x.fillStyle="#cbd5e1";x.fillText("This card is generated from the live library record",400,1178);x.textAlign="left";
-    downloadCanvas(c,`Hariom_ID_${safeName(r.name)}.png`)
+    let pic=photoFor(r);
+    if(!pic){
+      if(typeof showToast==="function")showToast("📷 ID card ke liye student photo choose karein");
+      return v30ChoosePhoto(r.uid,"id")
+    }
+
+    const lib=String(window.HL36?.libraryName||"Library Pro").trim()||"Library Pro";
+    const libId=String(window.HL36?.libraryId||"library");
+    const prefix=(lib.split(/\s+/).map(x=>x[0]||"").join("").slice(0,4)||"LIB").toUpperCase();
+    const sid=(prefix+"-"+hash(libId+"|"+identity(r)).toUpperCase().slice(0,8));
+    const valid=String(r.renewal||"Not set");
+    const seatType=r.type==="fixed"?"Seat "+r.seat:(r.type==="profile"?(r.seat?"Seat "+r.seat:"Digital Admission"):"Unreserved");
+    const c=document.createElement("canvas");c.width=1010;c.height=638;const x=c.getContext("2d");
+
+    // PVC-card style background
+    x.fillStyle="#ffffff";x.fillRect(0,0,c.width,c.height);
+    x.fillStyle="#0b1f44";x.fillRect(0,0,1010,138);
+    x.fillStyle="#2563eb";x.fillRect(0,128,1010,10);
+    x.fillStyle="#eff6ff";x.fillRect(0,138,1010,500);
+
+    // Library monogram
+    x.fillStyle="#ffffff";rounded(x,42,28,78,78,20);x.fill();
+    x.fillStyle="#0b1f44";x.font="900 30px Arial";x.textAlign="center";
+    x.fillText(prefix.slice(0,3),81,78);x.textAlign="left";
+
+    // Dynamic library title
+    let libSize=40;
+    while(libSize>24){x.font=`900 ${libSize}px Arial`;if(x.measureText(lib).width<=690)break;libSize-=2}
+    x.fillStyle="#ffffff";x.font=`900 ${libSize}px Arial`;x.fillText(lib,145,64);
+    x.fillStyle="#bfdbfe";x.font="700 19px Arial";x.fillText("STUDENT IDENTITY CARD",146,98);
+
+    // Status
+    x.fillStyle="#16a34a";rounded(x,805,37,155,50,25);x.fill();
+    x.fillStyle="#ffffff";x.font="900 18px Arial";x.textAlign="center";x.fillText("ACTIVE",882,69);x.textAlign="left";
+
+    // Photo
+    const im=await loadImage(pic);
+    x.fillStyle="#ffffff";rounded(x,45,178,265,322,24);x.fill();
+    x.save();rounded(x,58,191,239,270,18);x.clip();
+    if(im){
+      const sc=Math.max(239/im.width,270/im.height),w=im.width*sc,h=im.height*sc;
+      x.drawImage(im,58+(239-w)/2,191+(270-h)/2,w,h)
+    }else{
+      x.fillStyle="#dbeafe";x.fillRect(58,191,239,270)
+    }
+    x.restore();
+    x.strokeStyle="#cbd5e1";x.lineWidth=3;rounded(x,58,191,239,270,18);x.stroke();
+
+    x.fillStyle="#0f172a";x.font="900 25px Arial";x.textAlign="center";
+    x.fillText(sid,177,490);
+    x.fillStyle="#64748b";x.font="700 14px Arial";x.fillText("MEMBER ID",177,515);x.textAlign="left";
+
+    // Student details
+    const name=String(r.name||"Student");
+    let fs=46;while(fs>28){x.font=`900 ${fs}px Arial`;if(x.measureText(name).width<=610)break;fs-=2}
+    x.fillStyle="#0f172a";x.font=`900 ${fs}px Arial`;x.fillText(name,350,220);
+
+    const details=[
+      ["MOBILE",phone(r.phone)||"Not added"],
+      ["SEAT / TYPE",seatType],
+      ["SHIFT",r.shiftLabel||"-"],
+      ["VALID / RENEWAL",valid]
+    ];
+    let y=273;
+    details.forEach(([k,v])=>{
+      x.fillStyle="#64748b";x.font="800 15px Arial";x.fillText(k,352,y);
+      x.fillStyle="#0f172a";x.font="800 24px Arial";x.fillText(String(v),352,y+29);
+      x.strokeStyle="#dbe2ea";x.lineWidth=1.5;x.beginPath();x.moveTo(352,y+47);x.lineTo(950,y+47);x.stroke();
+      y+=72;
+    });
+
+    // Footer / signature
+    x.fillStyle="#ffffff";x.fillRect(0,548,1010,90);
+    x.strokeStyle="#dbe2ea";x.beginPath();x.moveTo(0,548);x.lineTo(1010,548);x.stroke();
+    x.fillStyle="#475569";x.font="700 14px Arial";x.fillText("This card is valid only for the registered member.",45,579);
+    x.fillStyle="#0f172a";x.font="800 15px Arial";x.textAlign="right";x.fillText("Authorized Signature",955,579);
+    x.strokeStyle="#0f172a";x.lineWidth=1;x.beginPath();x.moveTo(790,600);x.lineTo(955,600);x.stroke();x.textAlign="left";
+
+    downloadCanvas(c,`${safeName(lib)}_ID_${safeName(r.name)}.png`)
   }
   async function makeSlip(r){
-    const c=document.createElement("canvas");c.width=900;c.height=1200;const x=c.getContext("2d"),pic=photoFor(r),im=await loadImage(pic);
-    x.fillStyle="#ffffff";x.fillRect(0,0,900,1200);x.fillStyle="#1d4ed8";x.fillRect(0,0,900,180);x.fillStyle="#fff";x.font="900 44px Arial";x.fillText("HARIOM LIBRARY",55,78);x.font="700 24px Arial";x.fillText("ADMISSION / MEMBERSHIP SLIP",56,126);x.font="500 17px Arial";x.fillStyle="#dbeafe";x.fillText("Generated: "+today(),57,157);
-    if(im){x.save();rounded(x,650,205,180,210,22);x.clip();const s=Math.max(180/im.width,210/im.height),w=im.width*s,h=im.height*s;x.drawImage(im,650+(180-w)/2,205+(210-h)/2,w,h);x.restore()}else{x.fillStyle="#dbeafe";rounded(x,650,205,180,210,22);x.fill();x.fillStyle="#1d4ed8";x.font="900 76px Arial";x.textAlign="center";x.fillText(initial(r.name),740,335);x.textAlign="left"}
-    x.fillStyle="#0f172a";x.font="900 42px Arial";x.fillText(String(r.name||"Student"),55,255);x.fillStyle="#64748b";x.font="700 23px Arial";x.fillText(place(r),55,300);x.fillText("Mobile: "+(phone(r.phone)||"Not added"),55,338);
-    const due=Number(r.due||0),data=[["Plan / Monthly Fee","₹"+Number(r.fee||0).toLocaleString("en-IN")],["Paid","₹"+Number(r.paid||0).toLocaleString("en-IN")],["Due","₹"+due.toLocaleString("en-IN")],["Renewal / Month End",r.renewal||"Not set"],["Payment Date",r.paidDate||"Not set"],["Membership Type",r.type==="fixed"?"Reserved Seat":(r.type==="profile"?"Digital Admission":"Unreserved / Flexible")]];
-    let y=470;data.forEach(([k,v],i)=>{x.fillStyle=i%2?"#f8fafc":"#f1f5f9";rounded(x,55,y,790,92,16);x.fill();x.fillStyle="#64748b";x.font="800 18px Arial";x.fillText(k,78,y+34);x.fillStyle="#0f172a";x.font="900 27px Arial";x.fillText(String(v),78,y+69);y+=104});
-    x.fillStyle="#dcfce7";rounded(x,55,1100,790,58,18);x.fill();x.fillStyle="#166534";x.font="800 18px Arial";x.textAlign="center";x.fillText("Thank you for choosing Hariom Library",450,1137);x.textAlign="left";
-    downloadCanvas(c,`Hariom_Slip_${safeName(r.name)}.png`)
+    const lib=String(window.HL36?.libraryName||"Library Pro").trim()||"Library Pro";
+    const libId=String(window.HL36?.libraryId||"library");
+    const receiptNo="SL-"+new Date().getFullYear()+"-"+hash(libId+"|"+identity(r)+"|"+Date.now()).toUpperCase().slice(0,8);
+    const c=document.createElement("canvas");c.width=900;c.height=1280;const x=c.getContext("2d"),pic=photoFor(r),im=await loadImage(pic);
+
+    x.fillStyle="#ffffff";x.fillRect(0,0,900,1280);
+    x.strokeStyle="#0f172a";x.lineWidth=3;rounded(x,24,24,852,1232,20);x.stroke();
+
+    // Header
+    x.fillStyle="#0b1f44";rounded(x,25,25,850,180,18);x.fill();
+    let libSize=42;while(libSize>25){x.font=`900 ${libSize}px Arial`;if(x.measureText(lib).width<=720)break;libSize-=2}
+    x.fillStyle="#ffffff";x.font=`900 ${libSize}px Arial`;x.fillText(lib,55,82);
+    x.fillStyle="#bfdbfe";x.font="800 21px Arial";x.fillText("ADMISSION / MEMBERSHIP SLIP",56,124);
+    x.font="600 15px Arial";x.fillText("Receipt No: "+receiptNo+"   •   Date: "+today(),56,158);
+
+    // Photo
+    if(im){
+      x.save();rounded(x,650,225,175,205,18);x.clip();
+      const sc=Math.max(175/im.width,205/im.height),w=im.width*sc,h=im.height*sc;
+      x.drawImage(im,650+(175-w)/2,225+(205-h)/2,w,h);x.restore();
+      x.strokeStyle="#cbd5e1";x.lineWidth=2;rounded(x,650,225,175,205,18);x.stroke()
+    }
+
+    x.fillStyle="#0f172a";x.font="900 38px Arial";x.fillText(String(r.name||"Student"),55,265);
+    x.fillStyle="#64748b";x.font="700 20px Arial";
+    x.fillText("Mobile: "+(phone(r.phone)||"Not added"),55,307);
+    x.fillText("Seat / Type: "+(r.type==="fixed"?"Seat "+r.seat:(r.type==="profile"?(r.seat?"Seat "+r.seat:"Digital Admission"):"Unreserved")),55,343);
+    x.fillText("Shift: "+(r.shiftLabel||"-"),55,379);
+    x.fillText("Renewal: "+(r.renewal||"Not set"),55,415);
+
+    // Payment summary
+    const fee=Number(r.fee||0),paid=Number(r.paid||0),due=Number(r.due||0);
+    const boxes=[
+      ["PLAN FEE","₹"+fee.toLocaleString("en-IN")],
+      ["PAID","₹"+paid.toLocaleString("en-IN")],
+      ["DUE","₹"+due.toLocaleString("en-IN")]
+    ];
+    boxes.forEach(([k,v],i)=>{
+      const bx=55+i*265;
+      x.fillStyle=i===2&&due>0?"#fff7ed":"#f8fafc";rounded(x,bx,475,235,100,16);x.fill();
+      x.strokeStyle=i===2&&due>0?"#fdba74":"#dbe2ea";x.lineWidth=2;rounded(x,bx,475,235,100,16);x.stroke();
+      x.fillStyle="#64748b";x.font="800 15px Arial";x.fillText(k,bx+18,507);
+      x.fillStyle=i===2&&due>0?"#c2410c":"#0f172a";x.font="900 30px Arial";x.fillText(v,bx+18,548);
+    });
+
+    // Detail table
+    const membership=r.type==="fixed"?"Reserved Seat":(r.type==="profile"?"Digital Admission":"Unreserved / Flexible");
+    const data=[
+      ["Membership Type",membership],
+      ["Payment Date",r.paidDate||"Not set"],
+      ["Renewal / Month End",r.renewal||"Not set"],
+      ["Generated By",lib],
+      ["Reference",receiptNo]
+    ];
+    let y=625;
+    data.forEach(([k,v])=>{
+      x.fillStyle="#f8fafc";rounded(x,55,y,790,78,12);x.fill();
+      x.fillStyle="#64748b";x.font="800 16px Arial";x.fillText(k,76,y+30);
+      x.fillStyle="#0f172a";x.font="800 22px Arial";x.textAlign="right";x.fillText(String(v),820,y+49);x.textAlign="left";
+      y+=88;
+    });
+
+    // Terms + signatures
+    x.fillStyle="#f1f5f9";rounded(x,55,1080,790,72,14);x.fill();
+    x.fillStyle="#475569";x.font="600 14px Arial";
+    x.fillText("Please keep this slip for membership/payment reference.",76,1111);
+    x.fillText("Computer-generated slip • Verify details with library administration.",76,1135);
+
+    x.fillStyle="#0f172a";x.font="800 15px Arial";
+    x.fillText("Student Signature",75,1200);x.fillText("Authorized Signature",625,1200);
+    x.strokeStyle="#0f172a";x.beginPath();x.moveTo(75,1225);x.lineTo(260,1225);x.moveTo(625,1225);x.lineTo(820,1225);x.stroke();
+
+    downloadCanvas(c,`${safeName(lib)}_Slip_${safeName(r.name)}.png`)
   }
   window.v30DownloadId=function(uid){const r=rowsById[uid];if(r)makeId(r)};
   window.v30DownloadSlip=function(uid){const r=rowsById[uid];if(r)makeSlip(r)};
-  window.v30Welcome=function(uid){const r=rowsById[uid];if(!r)return;const p=phone(r.phone);if(!p)return alert("Student mobile number nahi hai");const msg=`Namaste ${r.name} 👋\n\nHariom Library me aapka swagat hai.\n📚 Membership: ${r.type==="fixed"?"Seat "+r.seat:(r.type==="profile"?"Digital Admission":"Unreserved")}\n🕒 Shift: ${r.shiftLabel||"-"}\n📅 Renewal: ${r.renewal||"Not set"}\n💰 Fee: ₹${Number(r.fee||0)}${Number(r.due||0)>0?`\n⚠️ Due: ₹${Number(r.due||0)}`:""}\n\nThank you 🙏\nHariom Library`;window.open("https://wa.me/91"+p+"?text="+encodeURIComponent(msg),"_blank")};
+  window.v30Welcome=function(uid){
+    const r=rowsById[uid];if(!r)return;
+    const p=phone(r.phone);if(!p)return alert("Student mobile number nahi hai");
+    const lib=String(window.HL36?.libraryName||"Library Pro");
+    const msg=`Namaste ${r.name} 👋
+
+${lib} me aapka swagat hai.
+📚 Membership: ${r.type==="fixed"?"Seat "+r.seat:(r.type==="profile"?"Digital Admission":"Unreserved")}
+🕒 Shift: ${r.shiftLabel||"-"}
+📅 Renewal: ${r.renewal||"Not set"}
+💰 Fee: ₹${Number(r.fee||0)}${Number(r.due||0)>0?`
+⚠️ Due: ₹${Number(r.due||0)}`:""}
+
+Thank you 🙏
+${lib}`;
+    window.open("https://wa.me/91"+p+"?text="+encodeURIComponent(msg),"_blank")
+  };
   function init(){
     const inp=$("v30PhotoInput");if(inp&&!inp.dataset.bound){inp.dataset.bound="1";inp.addEventListener("change",photoPicked)}
     bindSearch();render();setTimeout(()=>{bindSearch();render()},500);
@@ -7826,8 +7974,161 @@ function boot(){hideLegacySeller();try{firebase.auth().onAuthStateChanged(maybeS
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
 </script>
-<!-- ===== V39.2 CLEAN UI ===== -->
+<!-- ===== V40 COMPACT RENEWAL CENTER + DYNAMIC ID/SLIP ===== -->
 <!-- ===== END V39 ===== -->
 
+<!-- ===== V40 COMPACT RENEWAL CENTER + OWNER-ONLY WHATSAPP ===== -->
+<style id="v40-compact-center-style">
+#v24MasterEntry,#v32NoticeCard,.v24-contacts{display:none!important}
+body.v361-tenant #v25NoticePanel{display:none!important}
+.v40c-card{margin:10px 0 14px;padding:12px;border:1px solid rgba(37,99,235,.16);border-radius:19px;background:var(--card);box-shadow:0 10px 25px rgba(15,23,42,.07)}
+.v40c-top{display:flex;align-items:center;gap:9px}.v40c-ico{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;font-size:19px}
+.v40c-top h3{font-size:13px;margin:0}.v40c-top p{font-size:7.8px;color:var(--muted);margin:2px 0 0}
+.v40c-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:9px}.v40c-kpi{padding:8px 4px;border:1px solid var(--border);border-radius:11px;background:var(--bg);text-align:center}.v40c-kpi b{display:block;font-size:13px}.v40c-kpi span{font-size:6px;font-weight:900;color:var(--muted)}
+.v40c-actions{display:grid;grid-template-columns:1fr;gap:6px;margin-top:8px}.v40c-actions.owner{grid-template-columns:1fr 1fr}.v40c-btn{border:0;border-radius:11px;padding:10px 7px;background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;font-size:8px;font-weight:950}.v40c-btn.wa{background:linear-gradient(135deg,#128c4b,#25d366)}
+#v40cModal{display:none;position:fixed;inset:0;z-index:9700;background:rgba(2,6,23,.67);backdrop-filter:blur(5px);padding:11px}#v40cModal.show{display:flex;align-items:center;justify-content:center}
+.v40c-sheet{width:min(720px,100%);max-height:92vh;overflow:auto;background:var(--card);color:var(--text);border-radius:22px;padding:13px;box-shadow:0 24px 70px rgba(0,0,0,.28)}
+.v40c-head{display:flex;align-items:center;justify-content:space-between;gap:8px;position:sticky;top:-13px;background:var(--card);padding:11px 0 9px;z-index:2}.v40c-head h3{margin:0;font-size:15px}.v40c-close{width:38px;height:38px;border:0;border-radius:11px;background:var(--bg);color:var(--text);font-size:20px}
+.v40c-toolbar{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:9px}.v40c-toolbar button{border:0;border-radius:10px;padding:9px;background:#0f172a;color:#fff;font-size:7.5px;font-weight:900}
+.v40c-filters{display:flex;gap:5px;overflow:auto;margin-bottom:9px}.v40c-filter{white-space:nowrap;border:1px solid var(--border);border-radius:999px;padding:7px 9px;background:var(--card);color:var(--text);font-size:7px;font-weight:900}.v40c-filter.on{background:#2563eb;color:#fff;border-color:#2563eb}
+.v40c-list{display:grid;gap:7px}.v40c-row{border:1px solid var(--border);border-radius:14px;padding:10px;background:var(--card)}.v40c-rowtop{display:flex;justify-content:space-between;gap:7px}.v40c-row b{font-size:10.5px}.v40c-meta{font-size:7.5px;color:var(--muted);line-height:1.55;margin-top:3px}.v40c-badge{padding:4px 7px;border-radius:999px;font-size:6.5px;font-weight:900;background:#eff6ff;color:#1d4ed8}.v40c-badge.red{background:#fee2e2;color:#b91c1c}.v40c-badge.amber{background:#fef3c7;color:#92400e}
+.v40c-rowact{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}.v40c-mini{border:1px solid var(--border);border-radius:8px;padding:6px 8px;background:var(--bg);color:var(--text);font-size:7px;font-weight:900}.v40c-empty{text-align:center;padding:25px 8px;color:var(--muted);font-size:9px}
+</style>
+
+<div id="v40cModal" aria-hidden="true">
+  <div class="v40c-sheet">
+    <div class="v40c-head"><h3>📅 Renewal & Due Center</h3><button class="v40c-close" onclick="v40cClose()">×</button></div>
+    <div class="v40c-toolbar"><button onclick="v40cCopyList()">📋 COPY ACTION LIST</button><button onclick="v40cCopyChannel()">📢 COPY CHANNEL NOTICE</button></div>
+    <div id="v40cFilters" class="v40c-filters"></div>
+    <div id="v40cList" class="v40c-list"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+ const $=id=>document.getElementById(id),SH=['all','m','n','an','e','night'];
+ let seats={},flex={},profiles={},rows=[],flt='all';
+
+ function ph(v){return String(v||'').replace(/\D/g,'').slice(-10)}
+ function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+ function money(v){return '₹'+Math.max(0,Number(v)||0).toLocaleString('en-IN')}
+ function dval(v){
+   v=String(v||'').trim();if(!v)return 0;
+   let m=v.match(/^(\d{4})-(\d{2})-(\d{2})$/);if(m)return new Date(+m[1],+m[2]-1,+m[3],23,59,59).getTime();
+   m=v.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);if(m)return new Date(+m[3],+m[2]-1,+m[1],23,59,59).getTime();
+   const t=Date.parse(v);return Number.isFinite(t)?t:0
+ }
+ function state(v){
+   const t=dval(v);if(!t)return 'normal';
+   const n=new Date();n.setHours(0,0,0,0);const days=Math.ceil((t-n.getTime())/86400000);
+   if(days<0)return 'expired';if(days<=7)return 'soon';return 'normal'
+ }
+ function build(){
+   const fixed=new Map(),all=new Map();
+   const addFixed=(r)=>{
+     const key=(ph(r.phone)?ph(r.phone)+'|':'')+String(r.name||'').trim().toLowerCase()+'|'+r.seat;
+     if(!fixed.has(key))fixed.set(key,{...r});
+     else{
+       const x=fixed.get(key);x.fee+=Number(r.fee||0);x.paid+=Number(r.paid||0);x.due+=Number(r.due||0);
+       if(!x.renewal||(r.renewal&&dval(r.renewal)<dval(x.renewal)))x.renewal=r.renewal;
+       if(r.shift&&!String(x.shift||'').includes(r.shift))x.shift=(x.shift?x.shift+' • ':'')+r.shift
+     }
+   };
+   Object.keys(seats||{}).forEach(seat=>{
+     const d=seats[seat]||{};
+     SH.forEach(sh=>{
+       const name=String(d['name_'+sh]||'').trim();if(!name)return;
+       const paid=Number(d['fees_'+sh]||0),due=Number(d['due_'+sh]||0);
+       addFixed({name,phone:d['phone_'+sh]||'',seat,shift:sh,fee:paid+due,paid,due,renewal:d['date_'+sh]||'',source:'Seat '+seat})
+     })
+   });
+   const merge=(r)=>{
+     if(!String(r.name||'').trim())return;
+     const key=(ph(r.phone)?ph(r.phone)+'|':'')+String(r.name||'').trim().toLowerCase();
+     if(!all.has(key))all.set(key,{...r});
+     else{
+       const x=all.get(key);x.fee=Math.max(Number(x.fee||0),Number(r.fee||0));x.paid=Math.max(Number(x.paid||0),Number(r.paid||0));x.due=Math.max(Number(x.due||0),Number(r.due||0));
+       if(!x.renewal||(r.renewal&&dval(r.renewal)<dval(x.renewal)))x.renewal=r.renewal;
+       if(!x.phone&&r.phone)x.phone=r.phone;
+       if(r.source&&!String(x.source||'').includes(r.source))x.source=(x.source?x.source+' • ':'')+r.source
+     }
+   };
+   fixed.forEach(merge);
+   Object.values(flex||{}).forEach(d=>{if(!d||d.status==='Left / Archived')return;merge({name:d.name,phone:d.phone,fee:Number(d.fee||0),paid:Number(d.paid||0),due:Number(d.due||0),renewal:d.renewal||'',source:'Unreserved'})});
+   Object.values(profiles||{}).forEach(d=>{if(!d)return;const st=String(d.status||'Active').toLowerCase();if(['inactive','blocked','archived','left / archived'].includes(st))return;merge({name:d.name,phone:d.whatsapp||d.phone,fee:Number(d.fee||0),paid:Number(d.paid||0),due:Number(d.due||0),renewal:d.expiry||d.renewal||'',source:d.seat?'Seat '+d.seat:'Admission'})});
+   rows=[...all.values()].map(x=>({...x,state:state(x.renewal)})).sort((a,b)=>{
+     const ra=a.state==='expired'?0:a.due>0?1:a.state==='soon'?2:3,rb=b.state==='expired'?0:b.due>0?1:b.state==='soon'?2:3;
+     return ra-rb||dval(a.renewal)-dval(b.renewal)
+   });
+   paintCard();if($('v40cModal')?.classList.contains('show'))paintList()
+ }
+ function sets(){return {due:rows.filter(x=>x.due>0),soon:rows.filter(x=>x.state==='soon'),expired:rows.filter(x=>x.state==='expired')}}
+ function mount(){
+   const home=$('homeSection');if(!home||$('v40cCard'))return;
+   const owner=window.HL36?.mode==='master',card=document.createElement('div');card.id='v40cCard';card.className='v40c-card';
+   card.innerHTML=`<div class="v40c-top"><div class="v40c-ico">📅</div><div><h3>Renewal & Due Center</h3><p>Due, expiring and expired students</p></div></div>
+   <div class="v40c-kpis"><div class="v40c-kpi"><b id="v40cDue">₹0</b><span>TOTAL DUE</span></div><div class="v40c-kpi"><b id="v40cSoon">0</b><span>RENEW SOON</span></div><div class="v40c-kpi"><b id="v40cExpired">0</b><span>EXPIRED</span></div></div>
+   <div class="v40c-actions ${owner?'owner':''}"><button class="v40c-btn" onclick="v40cOpen()">OPEN ACTION LIST</button>${owner?'<button class="v40c-btn wa" onclick="v40cWhatsApp()">WHATSAPP NOTICE</button>':''}</div>`;
+   const old=$('v32NoticeCard');if(old)old.insertAdjacentElement('afterend',card);else{const launch=$('v31Launch');if(launch)launch.after(card);else home.prepend(card)}
+   paintCard()
+ }
+ function paintCard(){
+   const c=sets(),due=c.due.reduce((n,x)=>n+Number(x.due||0),0);
+   if($('v40cDue'))$('v40cDue').textContent=money(due);
+   if($('v40cSoon'))$('v40cSoon').textContent=c.soon.length;
+   if($('v40cExpired'))$('v40cExpired').textContent=c.expired.length
+ }
+ function selected(){
+   if(flt==='due')return rows.filter(x=>x.due>0);
+   if(flt==='soon')return rows.filter(x=>x.state==='soon');
+   if(flt==='expired')return rows.filter(x=>x.state==='expired');
+   return rows.filter(x=>x.due>0||x.state==='soon'||x.state==='expired')
+ }
+ function paintFilters(){
+   const c=sets(),a=[['all','Action List'],['due','Due '+c.due.length],['soon','Renew Soon '+c.soon.length],['expired','Expired '+c.expired.length]];
+   $('v40cFilters').innerHTML=a.map(x=>`<button class="v40c-filter ${flt===x[0]?'on':''}" onclick="v40cFilter('${x[0]}')">${x[1]}</button>`).join('')
+ }
+ function msg(x){
+   const lib=String(window.HL36?.libraryName||'Library');
+   if(x.due>0)return `${lib}: Namaste ${x.name}, aapka ${money(x.due)} fee due hai. Kripya payment/renewal complete kar dein. Renewal: ${x.renewal||'not set'}.`;
+   if(x.state==='expired')return `${lib}: Namaste ${x.name}, aapki library membership expire ho gayi hai. Kripya renewal ke liye library admin se sampark karein.`;
+   return `${lib}: Namaste ${x.name}, aapki membership renewal date ${x.renewal||'jaldi'} hai. Kripya samay par renew kar dein.`
+ }
+ function paintList(){
+   paintFilters();const a=selected(),box=$('v40cList');if(!box)return;
+   if(!a.length){box.innerHTML='<div class="v40c-empty">✅ No pending renewal / due action.</div>';return}
+   box.innerHTML=a.map((x,i)=>{
+     const tag=x.state==='expired'?'<span class="v40c-badge red">EXPIRED</span>':x.due>0?'<span class="v40c-badge amber">DUE '+money(x.due)+'</span>':'<span class="v40c-badge amber">RENEW SOON</span>';
+     const p=ph(x.phone);
+     return `<div class="v40c-row"><div class="v40c-rowtop"><div><b>${esc(x.name)}</b><div class="v40c-meta">${esc(x.source||'Student')} • Renewal: ${esc(x.renewal||'Not set')}<br>${p?'📱 '+esc(p):'Mobile missing'}</div></div>${tag}</div>
+     <div class="v40c-rowact"><button class="v40c-mini" onclick="v40cCopy(${i})">📋 COPY REMINDER</button>${p?`<button class="v40c-mini" onclick="v40cWA(${i})">💬 WHATSAPP</button><button class="v40c-mini" onclick="location.href='tel:${p}'">📞 CALL</button>`:''}</div></div>`
+   }).join('');
+   window.__v40cShown=a
+ }
+ window.v40cOpen=function(){const m=$('v40cModal');m.classList.add('show');m.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';paintList()};
+ window.v40cClose=function(){const m=$('v40cModal');m.classList.remove('show');m.setAttribute('aria-hidden','true');document.body.style.overflow=''};
+ window.v40cFilter=function(x){flt=x;paintList()};
+ window.v40cCopy=async function(i){const x=(window.__v40cShown||[])[i];if(!x)return;const t=msg(x);try{await navigator.clipboard.writeText(t);alert('✅ Reminder copied.')}catch(e){prompt('Copy reminder:',t)}};
+ window.v40cWA=function(i){const x=(window.__v40cShown||[])[i],p=x&&ph(x.phone);if(!p)return;window.open('https://wa.me/91'+p+'?text='+encodeURIComponent(msg(x)),'_blank')};
+ window.v40cCopyList=async function(){const a=selected(),t=(a.length?a.map((x,i)=>`${i+1}. ${x.name} • ${x.due>0?'Due '+money(x.due):x.state==='expired'?'Expired':'Renew '+(x.renewal||'soon')}`).join('\n'):'No pending action');try{await navigator.clipboard.writeText(t);alert('✅ Action list copied.')}catch(e){prompt('Copy list:',t)}};
+ window.v40cCopyChannel=async function(){const lib=String(window.HL36?.libraryName||'Library'),c=sets(),due=c.due.reduce((n,x)=>n+Number(x.due||0),0),t=`📢 ${lib} Update\n\nRenewal soon: ${c.soon.length}\nExpired memberships: ${c.expired.length}\nTotal pending due: ${money(due)}\n\nStudents apna renewal/payment status library admin se confirm kar sakte hain.`;try{await navigator.clipboard.writeText(t);alert('✅ Channel notice copied.')}catch(e){prompt('Copy channel notice:',t)}};
+ window.v40cWhatsApp=function(){
+   if(window.HL36?.mode!=='master')return;
+   if(typeof window.v25OpenNotice==='function')window.v25OpenNotice()
+ };
+
+ function init(){
+   mount();
+   if(typeof database==='undefined')return;
+   database.ref('library_v3/seats').on('value',s=>{seats=s.val()||{};build()});
+   database.ref('library_v3/unreservedStudentsV23').on('value',s=>{flex=s.val()||{};build()});
+   database.ref('library_v3/v15/profiles').on('value',s=>{profiles=s.val()||{};build()});
+   build()
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+ window.addEventListener('load',()=>setTimeout(init,250));
+})();
+</script>
+<!-- ===== END V40 ===== -->
 </body>
 </html>
