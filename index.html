@@ -1431,6 +1431,12 @@ try{
 }catch(e){}
 </script>
 
+
+<style id="lp45-production-cleanup">
+#nativeToolDock,
+.ultimate-fab,.nx-fab,.super-fab,.ai14-fab,.v15-fab{display:none!important}
+</style>
+
 </head>
 
 <body>
@@ -1443,11 +1449,11 @@ try{
 
 <div class="logo-area">
 
-<div class="logo"><img src="icons/icon-192.png" alt="Hariom Library"></div>
+<div class="logo"><img src="icons/icon-192.png" alt="Library Pro"></div>
 
 <div>
 
-<h2>Hariom Library</h2>
+<h2>Library Pro</h2>
 
 
 
@@ -1503,7 +1509,7 @@ Login
 <div class="welcome">
 
 <h2 id="welcomeText">
-Welcome to Hariom Library 👋
+Welcome 👋
 </h2>
 
 <p id="todayDate"></p>
@@ -2466,7 +2472,7 @@ const database = firebase.database();
   const mode=gateMode?(libraryId==='hariom_master'?'master':'tenant'):(s.mode||'locked');
   window.HL36={
     sessionKey:SESSION_KEY, gateMode, libraryId:libraryId||'__locked__', mode,
-    libraryName:String(s.libraryName||'Hariom Library'),
+    libraryName:String(s.libraryName||(libraryId==='hariom_master'?'Hariom Library':'Library Pro')),
     seatCount:Math.max(1,Math.min(2000,Number(s.seatCount||105)||105)),
     unreservedEnabled: mode==='master' ? true : !!s.unreservedEnabled,
     unreservedStart: mode==='master' ? 64 : Math.max(0,Number(s.unreservedStart||0)||0),
@@ -3310,7 +3316,7 @@ if(container.innerHTML===""){
 container.innerHTML=
 
 `<div class="loader">
-No active students found.
+No active students registered.
 </div>`;
 
 }
@@ -4389,7 +4395,7 @@ function nxStats(){let expired=0,soon=0,dueStudents=0,due=0,bookings=0,occupied=
 function nxRenderCommand(){let s=nxStats(),open=Object.values(nxTickets).filter(x=>x.status!=='closed').length,leads=Object.keys(nxLeads).length,risk=s.expired+s.soon+s.dueStudents;let health=Math.max(0,100-Math.min(45,s.expired*4)-Math.min(20,s.soon*2)-Math.min(20,s.dueStudents)-Math.min(15,open*2));let set=(id,v)=>{let e=document.getElementById(id);if(e)e.innerText=v};set('nxHealth',health);set('nxRisk',risk);set('nxTickets',open);set('nxLeads',leads);let a=[];a.push(`📊 ${s.occupied}/${TOTAL_SEATS} seats currently used; ${s.vacant} seats have no booking.`);if(s.expired)a.push(`🔴 ${s.expired} expired renewal(s) need priority follow-up.`);if(s.soon)a.push(`🟡 ${s.soon} renewal(s) are due within 3 days.`);if(s.due)a.push(`💰 ₹${s.due.toLocaleString('en-IN')} pending across ${s.dueStudents} booking(s).`);if(open)a.push(`🎫 ${open} maintenance/complaint ticket(s) remain open.`);if(!s.expired&&!s.soon&&!s.due&&!open)a.push('🟢 No urgent operational risk detected from current records.');let b=document.getElementById('nxBrief');if(b)b.innerHTML=a.map(x=>`<div class="nx-insight">${x}</div>`).join('')}
 function nxFindSeats(){let sh=document.getElementById('nxShift').value,out=[];for(let i=1;i<=TOTAL_SEATS;i++){let d=globalLibraryData[i]||{};let free=sh==='all'?!['all','m','n','an','e'].some(x=>d['name_'+x]):!d.name_all&&!d['name_'+sh];if(free)out.push(i)}let box=document.getElementById('nxSeatSuggest');box.innerHTML=out.slice(0,32).map(i=>`<button onclick="nxClose();showSection('seats');openSeatModal(${i})">Seat ${i}</button>`).join('')||'<div class="nx-muted">No compatible vacant seat found.</div>'}
 function nxRenewalRows(){let rows=[];Object.entries(globalLibraryData).forEach(([seat,d])=>['all','m','n','an','e','night'].forEach(sh=>{if(d['name_'+sh]){let status=getDateStatus(d['date_'+sh]),due=Number(d['due_'+sh])||0;if(status==='expired'||status==='alert'||due)rows.push({seat,sh,name:d['name_'+sh],phone:d['phone_'+sh]||'',date:d['date_'+sh]||'',status,due})}}));return rows.sort((a,b)=>(a.status==='expired'?-2:a.status==='alert'?-1:0)-(b.status==='expired'?-2:b.status==='alert'?-1:0)||b.due-a.due)}
-function nxRenderRenewals(){let box=document.getElementById('nxRenewals');if(!box)return;let rows=nxRenewalRows();box.innerHTML=rows.length?rows.map(x=>`<div><b>Seat ${x.seat} • ${escapeHtml(x.name)}</b> <span class="nx-chip">${x.status}</span>${x.due?`<span class="nx-chip">Due ₹${x.due}</span>`:''}<br><span class="nx-muted">${escapeHtml(x.phone)} • Renewal ${escapeHtml(x.date||'not set')}</span> ${x.phone?`<button class="nx-btn green" style="padding:6px 8px" onclick="nxWhatsApp('${x.phone}','${encodeURIComponent('Namaste '+x.name+', Hariom Library se reminder: aapki renewal/payment details pending hain. Kripya library se contact karein.')}')">WhatsApp</button>`:''}</div>`).join(''):'<div class="nx-muted">No renewal risk found.</div>'}
+function nxRenderRenewals(){let box=document.getElementById('nxRenewals');if(!box)return;let rows=nxRenewalRows();box.innerHTML=rows.length?rows.map(x=>`<div><b>Seat ${x.seat} • ${escapeHtml(x.name)}</b> <span class="nx-chip">${x.status}</span>${x.due?`<span class="nx-chip">Due ₹${x.due}</span>`:''}<br><span class="nx-muted">${escapeHtml(x.phone)} • Renewal ${escapeHtml(x.date||'not set')}</span> ${x.phone?`<button class="nx-btn green" style="padding:6px 8px" onclick="nxWhatsApp('${x.phone}','${encodeURIComponent('Hello '+x.name+', '+String(window.HL36?.libraryName||'Library')+' reminder: your renewal/payment details are pending. Please contact the library administrator.')}')">WhatsApp</button>`:''}</div>`).join(''):'<div class="nx-muted">No renewal risk found.</div>'}
 function nxWhatsApp(p,m){p=String(p).replace(/\D/g,'');if(p.length===10)p='91'+p;window.open('https://wa.me/'+p+'?text='+m,'_blank')}
 function nxAddLead(){if(!uAdmin())return;let name=nxLeadName.value.trim(),phone=nxLeadPhone.value.trim(),shift=nxLeadShift.value,note=nxLeadNote.value.trim();if(!name||!phone){showToast('Name and phone required');return}database.ref(NXBASE+'/leads').push().set({name,phone,shift,note,status:'new',createdAt:new Date().toISOString()}).then(()=>{nxLeadName.value='';nxLeadPhone.value='';nxLeadNote.value='';showToast('Lead saved')})}
 function nxLeadStatus(k,status){if(!uAdmin())return;database.ref(NXBASE+'/leads/'+k+'/status').set(status)}
@@ -4592,10 +4598,10 @@ function v15RenderProfiles(){let q=(document.getElementById('v15GlobalSearch')?.
 function v15Search(){v15RenderProfiles()}
 function v15Card(k){let p=v15ProfilesCache[k];if(!p)return;let qr='▦',html=`<div id="v15CardPrint" style="max-width:360px;margin:auto;border:2px solid #4f46e5;border-radius:18px;overflow:hidden;background:white;color:#111"><div style="background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;padding:14px;text-align:center"><b>HARIOM LIBRARY</b><div style="font-size:9px">PREMIUM STUDENT ID CARD</div></div><div style="padding:14px;display:flex;gap:12px"><div style="width:82px;height:96px;border-radius:10px;background:#eee;display:grid;place-items:center;overflow:hidden">${p.photo?`<img src="${v15Safe(p.photo)}" style="width:100%;height:100%;object-fit:cover">`:'👨‍🎓'}</div><div style="font-size:10px;line-height:1.7;flex:1"><b style="font-size:15px">${v15Safe(p.name)}</b><br>ID: ${v15Safe(p.studentId)}<br>Seat: ${v15Safe(p.seat||'-')} • ${v15Safe(p.shift||'-')}<br>Phone: ${v15Safe(p.phone)}<br>Join: ${v15Safe(p.joining||'-')}<br>Expiry: ${v15Safe(p.expiry||'-')}</div><div style="font-size:42px">${qr}</div></div><div style="padding:8px 14px;border-top:1px dashed #aaa;font-size:9px;display:flex;justify-content:space-between"><span>Emergency: ${v15Safe(p.emergency||'-')}</span><span>Authorized Sign ______</span></div></div><div class="v15-actions v15-no-print" style="margin-top:12px"><button class="v15-btn" onclick="v15Print('v15CardPrint')">Print / Save PDF</button><button class="v15-btn green" onclick="v15Share('${k}')">WhatsApp Share</button></div>`;v15Modal('Premium Photo ID Card',html);v15db.ref(V15+'/cardHistory').push({studentId:p.studentId,profileKey:k,action:'Generated',time:Date.now()})}
 function v15Print(id){document.getElementById('v15PrintArea').innerHTML=document.getElementById(id).outerHTML;window.print();setTimeout(()=>document.getElementById('v15PrintArea').innerHTML='',500)}
-function v15Share(k){let p=v15ProfilesCache[k],txt=`Hariom Library ID%0AStudent: ${encodeURIComponent(p.name)}%0AID: ${encodeURIComponent(p.studentId)}%0ASeat: ${encodeURIComponent(p.seat||'-')}%0AShift: ${encodeURIComponent(p.shift||'-')}%0AExpiry: ${encodeURIComponent(p.expiry||'-')}`;window.open('https://wa.me/'+(p.whatsapp||p.phone).replace(/\D/g,'')+'?text='+txt,'_blank')}
-function v15AdmissionSlip(k){let p=v15ProfilesCache[k];let rid='ADM-'+new Date().getFullYear()+'-'+String(Date.now()).slice(-6);let h=`<div id="v15SlipPrint" style="padding:20px;background:white;color:#111;border:1px solid #bbb"><h2 style="text-align:center">Hariom Library</h2><h4 style="text-align:center">Admission / Membership Slip</h4><hr><p><b>Admission:</b> ${rid}</p><p><b>Student:</b> ${v15Safe(p.name)} (${v15Safe(p.studentId)})</p><p><b>Phone:</b> ${v15Safe(p.phone)}</p><p><b>Seat / Shift:</b> ${v15Safe(p.seat||'-')} / ${v15Safe(p.shift||'-')}</p><p><b>Joining / Expiry:</b> ${v15Safe(p.joining||'-')} / ${v15Safe(p.expiry||'-')}</p><p><b>Plan / Fee:</b> ${v15Safe(p.plan||'-')} / ₹${Number(p.fee||0)}</p><br><p>Student Sign __________ &nbsp;&nbsp; Authorized Sign __________</p></div><button class="v15-btn" onclick="v15Print('v15SlipPrint')">Print / Save PDF</button>`;v15Modal('Admission Slip',h)}
+function v15Share(k){let p=v15ProfilesCache[k],txt=`${encodeURIComponent(String(window.HL36?.libraryName||'Library'))} ID%0AStudent: ${encodeURIComponent(p.name)}%0AID: ${encodeURIComponent(p.studentId)}%0ASeat: ${encodeURIComponent(p.seat||'-')}%0AShift: ${encodeURIComponent(p.shift||'-')}%0AExpiry: ${encodeURIComponent(p.expiry||'-')}`;window.open('https://wa.me/'+(p.whatsapp||p.phone).replace(/\D/g,'')+'?text='+txt,'_blank')}
+function v15AdmissionSlip(k){let p=v15ProfilesCache[k];let rid='ADM-'+new Date().getFullYear()+'-'+String(Date.now()).slice(-6);let h=`<div id="v15SlipPrint" style="padding:20px;background:white;color:#111;border:1px solid #bbb"><h2 style="text-align:center">${v15Safe(String(window.HL36?.libraryName||"Library"))}</h2><h4 style="text-align:center">Admission / Membership Slip</h4><hr><p><b>Admission:</b> ${rid}</p><p><b>Student:</b> ${v15Safe(p.name)} (${v15Safe(p.studentId)})</p><p><b>Phone:</b> ${v15Safe(p.phone)}</p><p><b>Seat / Shift:</b> ${v15Safe(p.seat||'-')} / ${v15Safe(p.shift||'-')}</p><p><b>Joining / Expiry:</b> ${v15Safe(p.joining||'-')} / ${v15Safe(p.expiry||'-')}</p><p><b>Plan expires in / Fee:</b> ${v15Safe(p.plan||'-')} / ₹${Number(p.fee||0)}</p><br><p>Student Sign __________ &nbsp;&nbsp; Authorized Sign __________</p></div><button class="v15-btn" onclick="v15Print('v15SlipPrint')">Print / Save PDF</button>`;v15Modal('Admission Slip',h)}
 function v15SavePayment(){let sid=document.getElementById('v15PayStudent').value.trim(),amount=Number(document.getElementById('v15PayAmount').value||0);if(!sid||!amount)return alert('Student and amount required');let rec={receiptNo:'HAR-R-'+new Date().toISOString().slice(0,10).replace(/-/g,'')+'-'+String(Date.now()).slice(-5),student:sid,amount,due:Number(document.getElementById('v15PayDue').value||0),mode:document.getElementById('v15PayMode').value,txn:document.getElementById('v15PayTxn').value.trim(),time:Date.now(),date:new Date().toISOString().slice(0,10)};v15db.ref(V15+'/payments').push(rec).then(()=>v15Receipt(rec))}
-function v15Receipt(r){v15Modal('Fee Receipt',`<div id="v15ReceiptPrint" style="padding:20px;background:#fff;color:#111;border:1px solid #bbb"><h2>Hariom Library</h2><b>Fee Receipt: ${v15Safe(r.receiptNo)}</b><hr><p>Student: ${v15Safe(r.student)}</p><p>Paid: <b>₹${r.amount}</b></p><p>Remaining Due: ₹${r.due}</p><p>Mode: ${v15Safe(r.mode)} ${v15Safe(r.txn||'')}</p><p>${new Date(r.time).toLocaleString()}</p><br>Authorized Signature __________</div><button class="v15-btn" onclick="v15Print('v15ReceiptPrint')">Print / Save PDF</button>`)}
+function v15Receipt(r){v15Modal('Fee Receipt',`<div id="v15ReceiptPrint" style="padding:20px;background:#fff;color:#111;border:1px solid #bbb"><h2>${v15Safe(String(window.HL36?.libraryName||"Library"))}</h2><b>Fee Receipt: ${v15Safe(r.receiptNo)}</b><hr><p>Student: ${v15Safe(r.student)}</p><p>Paid: <b>₹${r.amount}</b></p><p>Remaining Due: ₹${r.due}</p><p>Mode: ${v15Safe(r.mode)} ${v15Safe(r.txn||'')}</p><p>${new Date(r.time).toLocaleString()}</p><br>Authorized Signature __________</div><button class="v15-btn" onclick="v15Print('v15ReceiptPrint')">Print / Save PDF</button>`)}
 function v15RenderPayments(){let a=Object.values(v15PaymentsCache).sort((a,b)=>b.time-a.time).slice(0,20);document.getElementById('v15PaymentList').innerHTML=a.map(r=>`<div class="v15-item"><div><b>₹${r.amount} • ${v15Safe(r.student)}</b><div class="v15-muted">${v15Safe(r.receiptNo)} • ${v15Safe(r.mode)}</div></div><span class="v15-badge">Due ₹${r.due||0}</span></div>`).join('')||'<div class="v15-muted">No V15 payments yet.</div>'}
 function v15SaveAttendance(){let s=document.getElementById('v15AttStudent').value.trim();if(!s)return alert('Student ID / phone required');v15db.ref(V15+'/attendance').push({student:s,type:document.getElementById('v15AttType').value,note:document.getElementById('v15AttNote').value.trim(),date:new Date().toISOString().slice(0,10),time:Date.now()})}
 function v15RenderAttendance(){let a=Object.values(v15AttendanceCache).sort((a,b)=>b.time-a.time).slice(0,25);document.getElementById('v15AttendanceList').innerHTML=a.map(r=>`<div class="v15-item"><div><b>${v15Safe(r.student)}</b><div class="v15-muted">${new Date(r.time).toLocaleTimeString()} • ${v15Safe(r.note||'')}</div></div><span class="v15-badge">${v15Safe(r.type)}</span></div>`).join('')||'<div class="v15-muted">No attendance yet.</div>'}
@@ -4728,7 +4734,7 @@ body{background:radial-gradient(circle at 15% 0%,rgba(109,93,252,.22),transparen
      if(!window.html2canvas) throw new Error('Download engine is not available');
      const canvas=await html2canvas(el,{scale:2,useCORS:true,backgroundColor:'#ffffff'});
      if(kind==='png'){
-       const a=document.createElement('a');a.download=safeFile(name)+'.png';a.href=canvas.toDataURL('image/png',1);a.click();return;
+       const a=document.createElement('a');a.download=safeFile(name)+'.png';a.href=canvas.toDataURL('image/png',1);document.body.appendChild(a);a.click();a.remove();return;
      }
      if(!window.jspdf?.jsPDF) throw new Error('PDF engine is not available');
      const {jsPDF}=window.jspdf; const pdf=new jsPDF({orientation:canvas.width>canvas.height?'landscape':'portrait',unit:'px',format:[canvas.width,canvas.height]});
@@ -4746,7 +4752,7 @@ body{background:radial-gradient(circle at 15% 0%,rgba(109,93,252,.22),transparen
  window.v15AdmissionSlip=function(k){
    const p=(window.v15ProfilesCache||{})[k];if(!p)return;const lib=v15Safe(String(window.HL36?.libraryName||'Library Pro'));const rid='ADM-'+new Date().getFullYear()+'-'+String(Date.now()).slice(-6);
    const photo=p.photo?`<img src="${p.photo}" style="width:76px;height:90px;object-fit:cover;border-radius:9px">`:'👤';
-   const h=`<div id="v15SlipPrint" style="padding:22px;background:#fff;color:#111;border:2px solid #4338ca;font-family:Arial"><div style="text-align:center"><h2 style="margin:0">${lib}</h2><b>Admission / Membership Slip</b></div><hr><div style="display:flex;gap:15px;align-items:flex-start"><div>${photo}</div><div style="line-height:1.75;font-size:12px"><b>Admission No:</b> ${rid}<br><b>Student:</b> ${v15Safe(p.name)} (${v15Safe(p.studentId)})<br><b>Phone:</b> ${v15Safe(p.phone)}<br><b>Seat / Shift:</b> ${v15Safe(p.seat||'-')} / ${v15Safe(p.shift||'-')}<br><b>Joining / Expiry:</b> ${v15Safe(p.joining||'-')} / ${v15Safe(p.expiry||'-')}<br><b>Plan / Fee:</b> ${v15Safe(p.plan||'-')} / ₹${Number(p.fee||0)}</div></div><hr><div style="display:flex;justify-content:space-between;margin-top:35px;font-size:11px"><span>Student Sign __________</span><span>Authorized Sign __________</span></div></div><div class="v19-actions"><button class="v19-btn green" onclick="v19Download('v15SlipPrint','${safeFile(p.studentId)}-Admission-Slip','pdf')">⬇ Download Slip PDF</button><button class="v19-btn blue" onclick="v19Download('v15SlipPrint','${safeFile(p.studentId)}-Admission-Slip','png')">🖼 Download Image</button><button class="v19-btn" onclick="v15Print('v15SlipPrint')">🖨 Print</button><button class="v19-btn green" onclick="v15Share('${k}')">💬 WhatsApp</button></div>`;v15Modal('Admission / Membership Slip',h);
+   const h=`<div id="v15SlipPrint" style="padding:22px;background:#fff;color:#111;border:2px solid #4338ca;font-family:Arial"><div style="text-align:center"><h2 style="margin:0">${lib}</h2><b>Admission / Membership Slip</b></div><hr><div style="display:flex;gap:15px;align-items:flex-start"><div>${photo}</div><div style="line-height:1.75;font-size:12px"><b>Admission No:</b> ${rid}<br><b>Student:</b> ${v15Safe(p.name)} (${v15Safe(p.studentId)})<br><b>Phone:</b> ${v15Safe(p.phone)}<br><b>Seat / Shift:</b> ${v15Safe(p.seat||'-')} / ${v15Safe(p.shift||'-')}<br><b>Joining / Expiry:</b> ${v15Safe(p.joining||'-')} / ${v15Safe(p.expiry||'-')}<br><b>Plan expires in / Fee:</b> ${v15Safe(p.plan||'-')} / ₹${Number(p.fee||0)}</div></div><hr><div style="display:flex;justify-content:space-between;margin-top:35px;font-size:11px"><span>Student Sign __________</span><span>Authorized Sign __________</span></div></div><div class="v19-actions"><button class="v19-btn green" onclick="v19Download('v15SlipPrint','${safeFile(p.studentId)}-Admission-Slip','pdf')">⬇ Download Slip PDF</button><button class="v19-btn blue" onclick="v19Download('v15SlipPrint','${safeFile(p.studentId)}-Admission-Slip','png')">🖼 Download Image</button><button class="v19-btn" onclick="v15Print('v15SlipPrint')">🖨 Print</button><button class="v19-btn green" onclick="v15Share('${k}')">💬 WhatsApp</button></div>`;v15Modal('Admission / Membership Slip',h);
  };
  const oldReceipt=window.v15Receipt;
  window.v15Receipt=function(r){
@@ -4781,7 +4787,7 @@ body{background:radial-gradient(circle at 15% 0%,rgba(109,93,252,.22),transparen
 (function(){
 const F=[
 ['👤','Student Digital Profile','Student'],['🪪','Premium Photo ID Card','Student'],['📄','Admission Slip','Student'],['🧾','Fee Receipt System','Finance'],['🗂️','Document Center','Student'],['✍️','Digital Admission Form','Student'],['💺','Seat Management Pro','Seats'],['🕒','Shift Management','Seats'],['🎫','Membership Plans','Finance'],['🔄','One-Tap Renewal','Finance'],['💸','Due Management','Finance'],['📲','QR Attendance','Attendance'],['📈','Attendance Analytics','Attendance'],['🔐','Smart Entry','Security'],['⏳','Waiting List','Seats'],['🌐','Online Booking Request','Seats'],['🔁','Seat Change Request','Seats'],['⏸️','Leave / Freeze Membership','Student'],['🔑','Locker Management','Operations'],['💳','Payment Management','Finance'],['📒','Student Ledger','Finance'],['🧮','Expense Management','Finance'],['💹','Profit Dashboard','Finance'],['🏢','Multi-Library Control','Admin'],['👥','Staff Management','Admin'],['🧾','Audit Log','Security'],['♻️','Deleted Records Recovery','Security'],['💾','Backup System','Admin'],['📡','Offline Mode','System'],['🔎','Advanced Student Search','Student'],['🎚️','Smart Filters','System'],['⚡','Bulk Actions','System'],['💬','WhatsApp Center','Communication'],['📝','Message Templates','Communication'],['🔔','Notification Center','Communication'],['📅','Calendar View','System'],['🎂','Birthday Center','Student'],['🤝','Referral System','Growth'],['🏷️','Discount System','Finance'],['⚠️','Penalty System','Finance'],['🛡️','Security Deposit','Finance'],['✒️','Digital Signature','Student'],['✅','Verification QR','Security'],['▥','Barcode Support','Security'],['📷','Camera Tools','System'],['🧬','Duplicate Detection','AI'],['✨','Smart Auto-Fill','AI'],['#️⃣','ID Number Generator','System'],['🧾','Receipt Number Generator','System'],['🎨','Custom Branding','System'],['🌙','Dark / Light Mode','System'],['📱','Mobile App Experience','System'],['⬇️','PWA Install','System'],['🔒','PIN / Biometric Lock','Security'],['📟','Session Management','Security'],['🛂','Admin Approval Workflow','Admin'],['📊','Smart Dashboard Cards','Analytics'],['⚡','Live Activity Feed','Analytics'],['📉','Business Charts','Analytics'],['🔥','Occupancy Heatmap','Analytics'],['🔮','Predictive Occupancy','AI'],['🧠','AI Natural Search','AI'],['📑','AI Report Summary','AI'],['🧹','AI Data Cleanup','AI'],['📨','AI Reminder Suggestions','AI'],['📚','Study Dashboard','Student'],['🙋','Student Self-Service Portal','Student'],['🔗','Student QR Portal','Student'],['🎧','Complaint Helpdesk','Operations'],['🛠️','Maintenance System','Operations'],['🧰','Asset Management','Operations'],['📹','CCTV Log','Security'],['⚡','Electricity Tracking','Operations'],['📦','Inventory','Operations'],['🚶','Visitor Management','Operations'],['🧪','Trial Student','Growth'],['🎟️','Day Pass','Growth'],['👋','Guest Pass','Growth'],['🏖️','Holiday Management','Operations'],['🚨','Emergency Mode','Security'],['📜','Rules & Terms','Admin'],['📣','Announcements','Communication'],['📃','Notice PDF','Communication'],['🏅','Certificate Generator','Student'],['✅','No-Dues Certificate','Student'],['🚪','Student Exit Process','Student'],['⭐','Feedback System','Growth'],['💡','Suggestion Box','Growth'],['🔍','Lost & Found','Operations'],['🆘','Emergency Contact Card','Student'],['🖨️','Print Center','System'],['📚','PDF Center','System'],['📊','Excel Center','System'],['🧪','Custom Report Builder','Analytics'],['🌙','Daily Closing Report','Finance'],['💵','Cash Drawer','Finance'],['🔗','Payment Reconciliation','Finance'],['↩️','Refund System','Finance'],['🔀','Transfer Student','Admin'],['🕓','Complete Student Timeline','Student'],
-['🎯','Exam Target Tracker','Student'],['⏱️','Pomodoro Study Timer','Student'],['🔥','Study Streaks','Student'],['🏆','Student Leaderboard','Student'],['⏳','Exam Countdown','Student'],['📌','Personal Study Goals','Student'],['🗓️','Study Planner','Student'],['📖','Daily Study Log','Student'],['💯','Mock Test Tracker','Student'],['🧠','Revision Reminder','AI'],['📍','Seat Zone Manager','Seats'],['🪑','Seat Maintenance Log','Seats'],['🔃','Auto Seat Release','Seats'],['📆','Future Seat Booking','Seats'],['❤️','Preferred Seat','Seats'],['👥','Double Shift Conflict Guard','Seats'],['🕵️','Suspicious Payment Alert','AI'],['📉','Revenue Anomaly Alert','AI'],['📈','Collection Forecast','AI'],['🧾','Due Aging Buckets','AI'],['🩺','Profile Health Score','AI'],['🔍','Missing Data Scanner','AI'],['🧹','Duplicate Receipt Scanner','AI'],['📲','Reminder Queue','AI'],['🌡️','Occupancy Pressure Score','AI'],['🧭','Manager Daily Briefing','AI'],['🧰','Quick Command Palette','System'],['⭐','Favorite Modules','System'],['🗃️','Saved Report Presets','Analytics'],['📤','One-Tap CSV Export','System'],['🧷','Restore Point Notes','Admin'],['🗄️','Branch Archive','Admin'],['📌','Pinned Students','Student'],['📞','Call Follow-up Queue','Communication'],['📥','Enquiry CRM','Growth'],['🎯','Lead Conversion Tracker','Growth'],['🏷️','Campaign Source Tracking','Growth'],['🪙','Coupon Manager','Growth'],['👨‍👩‍👧','Sibling Linking','Student'],['🧑‍🏫','Coaching/College Directory','Student'],['🗺️','Area-wise Student Report','Analytics'],['📅','Joining Cohort Report','Analytics'],['🧮','Fee Plan Simulator','Finance'],['🧾','Payment Promise Tracker','Finance'],['🔔','Expiry Escalation','Communication'],['📵','Do-Not-Message Flag','Communication'],['🛡️','Sensitive Action Guard','Security'],['🔢','Failed Login Counter','Security'],['🧿','Device Trust List','Security'],['🧯','Emergency Backup Export','Security'],['📶','Sync Health Monitor','System'],['🧩','Data Conflict Center','System'],['🗜️','Photo Compression','System'],['🖼️','Document Preview','System'],['📎','Attachment Manager','System'],['🔖','Student Tags','Student'],['🗒️','Private Admin Notes','Admin'],['📌','Follow-up Reminders','Communication'],['🏁','Exit Feedback Analytics','Analytics'],['🧹','Inactive Student Cleanup','AI'],['📊','Shift Popularity Ranking','Analytics'],['🪑','Seat Popularity Ranking','Analytics'],['🕐','Busiest Hour Insight','Analytics'],['📆','Renewal Calendar','Finance'],['💰','Cash vs UPI Split','Finance'],['🧾','Expense Receipt Vault','Finance'],['🔧','Vendor Directory','Operations'],['🛎️','Service Due Alerts','Operations'],['📦','Low Stock Alerts','Operations'],['🔑','Lost Key Register','Operations'],['🪪','Lost Card Register','Student'],['🔁','Card Reissue History','Student'],['🖨️','A4 Multi-ID Printing','Student'],['💳','Wallet-size ID Layout','Student'],['↔️','Landscape ID Layout','Student'],['↕️','Portrait ID Layout','Student'],['📲','Share ID on WhatsApp','Communication'],['📲','Share Receipt on WhatsApp','Communication'],['📲','Share Slip on WhatsApp','Communication'],['🔐','QR Genuine Check','Security'],['📊','Owner Morning Snapshot','AI'],['🌙','Owner Night Summary','AI'],['⚠️','Risk & Exception Center','AI'],['🧠','Ask Library AI','AI']
+['🎯','Exam Target Tracker','Student'],['⏱️','Pomodoro Study Timer','Student'],['🔥','Study Streaks','Student'],['🏆','Student Leaderboard','Student'],['⏳','Exam Countdown','Student'],['📌','Personal Study Goals','Student'],['🗓️','Study Planner','Student'],['📖','Daily Study Log','Student'],['💯','Mock Test Tracker','Student'],['🧠','Revision Reminder','AI'],['📍','Seat Zone Manager','Seats'],['🪑','Seat Maintenance Log','Seats'],['🔃','Auto Seat Release','Seats'],['📆','Future Seat Booking','Seats'],['❤️','Preferred Seat','Seats'],['👥','Double Shift Conflict Guard','Seats'],['🕵️','Suspicious Payment Alert','AI'],['📉','Revenue Anomaly Alert','AI'],['📈','Collection Forecast','AI'],['🧾','Due Aging Buckets','AI'],['🩺','Profile Health Score','AI'],['🔍','Missing Data Scanner','AI'],['🧹','Duplicate Receipt Scanner','AI'],['📲','Reminder Queue','AI'],['🌡️','Occupancy Pressure Score','AI'],['🧭','Manager Daily Briefing','AI'],['🧰','Quick Command Palette','System'],['⭐','Favorite Modules','System'],['🗃️','Saved Report Presets','Analytics'],['📤','One-Tap CSV Export','System'],['🧷','Restore Point Notes','Admin'],['🗄️','Branch Archive','Admin'],['📌','Pinned Students','Student'],['📞','Call Follow-up Queue','Communication'],['📥','Enquiry CRM','Growth'],['🎯','Lead Conversion Tracker','Growth'],['🏷️','Campaign Source Tracking','Growth'],['🪙','Coupon Manager','Growth'],['👨‍👩‍👧','Sibling Linking','Student'],['🧑‍🏫','Coaching/College Directory','Student'],['🗺️','Area-wise Student Report','Analytics'],['📅','Joining Cohort Report','Analytics'],['🧮','Fee Plan expires in Simulator','Finance'],['🧾','Payment Promise Tracker','Finance'],['🔔','Expiry Escalation','Communication'],['📵','Do-Not-Message Flag','Communication'],['🛡️','Sensitive Action Guard','Security'],['🔢','Failed Login Counter','Security'],['🧿','Device Trust List','Security'],['🧯','Emergency Backup Export','Security'],['📶','Sync Health Monitor','System'],['🧩','Data Conflict Center','System'],['🗜️','Photo Compression','System'],['🖼️','Document Preview','System'],['📎','Attachment Manager','System'],['🔖','Student Tags','Student'],['🗒️','Private Admin Notes','Admin'],['📌','Follow-up Reminders','Communication'],['🏁','Exit Feedback Analytics','Analytics'],['🧹','Inactive Student Cleanup','AI'],['📊','Shift Popularity Ranking','Analytics'],['🪑','Seat Popularity Ranking','Analytics'],['🕐','Busiest Hour Insight','Analytics'],['📆','Renewal Calendar','Finance'],['💰','Cash vs UPI Split','Finance'],['🧾','Expense Receipt Vault','Finance'],['🔧','Vendor Directory','Operations'],['🛎️','Service Due Alerts','Operations'],['📦','Low Stock Alerts','Operations'],['🔑','Lost Key Register','Operations'],['🪪','Lost Card Register','Student'],['🔁','Card Reissue History','Student'],['🖨️','A4 Multi-ID Printing','Student'],['💳','Wallet-size ID Layout','Student'],['↔️','Landscape ID Layout','Student'],['↕️','Portrait ID Layout','Student'],['📲','Share ID on WhatsApp','Communication'],['📲','Share Receipt on WhatsApp','Communication'],['📲','Share Slip on WhatsApp','Communication'],['🔐','QR Genuine Check','Security'],['📊','Owner Morning Snapshot','AI'],['🌙','Owner Night Summary','AI'],['⚠️','Risk & Exception Center','AI'],['🧠','Ask Library AI','AI']
 ];
 let cat='All';
 function safe(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
@@ -4950,7 +4956,7 @@ document.addEventListener('DOMContentLoaded',mount);window.addEventListener('loa
   };
   window.ur23MarkToday=function(key){if(!adminOK())return;const ref=database.ref(URATT+"/"+key+"/"+todayKey());ref.set(!presentToday(key)).then(()=>toast(presentToday(key)?"Attendance updated":"Attendance updated"))};
   window.ur23RenewQuick=function(key){if(!adminOK())return;const d=ur23Data[key]||{},fee=Number(d.fee)||0;const amount=prompt("Paid amount ₹",String(fee));if(amount===null)return;const renewal=prompt("New renewal date (YYYY-MM-DD)",d.renewal||todayKey());if(renewal===null)return;const paid=Math.max(0,Number(amount)||0);database.ref(URBASE+"/"+key).update({paid,fee,due:Math.max(0,fee-paid),paymentDate:todayKey(),renewal,status:"Active",updatedAt:Date.now()}).then(()=>toast("✅ Payment / renewal updated"))};
-  window.ur23WhatsApp=function(key){const d=ur23Data[key]||{},p=String(d.phone||"").replace(/\D/g,"");if(!p)return toast("Phone number missing");const msg=`${String(window.HL36?.libraryName||"Hariom Library")}: Namaste ${d.name||"Student"}, aapka renewal/payment status check kar lijiye. Renewal: ${d.renewal||"not set"}, Due: ₹${Number(d.due||0)}.`;window.open("https://wa.me/91"+p+"?text="+encodeURIComponent(msg),"_blank")};
+  window.ur23WhatsApp=function(key){const d=ur23Data[key]||{},p=String(d.phone||"").replace(/\D/g,"");if(!p)return toast("Phone number missing");const msg=`${String(window.HL36?.libraryName||"Hariom Library")}: Hello ${d.name||"Student"}, please check your renewal/payment status. Renewal: ${d.renewal||"not set"}, Due: ₹${Number(d.due||0)}.`;window.open("https://wa.me/91"+p+"?text="+encodeURIComponent(msg),"_blank")};
   window.ur23SetFilter=function(type,btn){ur23Filter=type;document.querySelectorAll("#ur23Filters button").forEach(x=>x.classList.remove("on"));if(btn)btn.classList.add("on");ur23Render()};
   window.ur23Render=function(){
     const q=($("ur23Search")?.value||"").toLowerCase().trim(),today=todayKey();let arr=Object.entries(ur23Data).map(([key,d])=>({key,...d}));
@@ -5076,7 +5082,7 @@ body.dark #ur23List .ur23-student.v24-expired{background:linear-gradient(135deg,
         </select>
         <input id="v24ContactSearch" class="v24-in" placeholder="Search name / mobile / seat..." oninput="v24RenderContacts()">
       </div>
-      <textarea id="v24Notice" class="v24-text" placeholder="Type notice for students...">Hariom Library Notice: Please read this message carefully for library timing, payment/renewal, and important updates. Contact the administrator for more information.</textarea>
+      <textarea id="v24Notice" class="v24-text" placeholder="Type notice for students...">Library Notice: Please read this message carefully for library timing, payment/renewal, and important updates. Contact the administrator for more information.</textarea>
       <div class="v24-action-grid">
         <button class="v24-btn wa" type="button" onclick="v24ShareNotice()">📢 WhatsApp Share</button>
         <button class="v24-btn" type="button" onclick="v24CopyNumbers()">📋 Copy Numbers</button>
@@ -5147,13 +5153,13 @@ body.dark #ur23List .ur23-student.v24-expired{background:linear-gradient(135deg,
   };
   window.v24OpenContacts=function(){const p=$("v24ContactPanel");if(!p)return;p.classList.add("show");p.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";v24RenderContacts();setTimeout(()=>p.scrollTo(0,0),0)};
   window.v24CloseContacts=function(){const p=$("v24ContactPanel");if(!p)return;p.classList.remove("show");p.setAttribute("aria-hidden","true");document.body.style.overflow=""};
-  window.v24OneWhatsApp=function(phone,nameEncoded){const msg=$("v24Notice")?.value||"Hariom Library Notice";window.open("https://wa.me/91"+phone+"?text="+encodeURIComponent(msg),"_blank")};
+  window.v24OneWhatsApp=function(phone,nameEncoded){const msg=$("v24Notice")?.value||"Library Notice";window.open("https://wa.me/91"+phone+"?text="+encodeURIComponent(msg),"_blank")};
   window.v24ShareNotice=function(){const msg=$("v24Notice")?.value.trim();if(!msg)return toast("Notice message Update");try{localStorage.setItem("hariom_v24_notice",msg)}catch(e){}window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank")};
   window.v24CopyNumbers=async function(){const nums=filteredContacts().map(x=>x.phone).filter(Boolean);if(!nums.length)return toast("No valid mobile numbers in this filter");const text=nums.map(x=>"+91"+x).join("\n");try{await navigator.clipboard.writeText(text);toast("✅ "+nums.length+" numbers copied")}catch(e){prompt("Copy all numbers",text)}};
   window.v24DownloadVCF=function(){const rows=filteredContacts().filter(x=>x.phone);if(!rows.length)return toast("No valid contacts to save");const safeV=s=>String(s||"").replace(/\\/g,"\\\\").replace(/\n/g,"\\n").replace(/,/g,"\\,").replace(/;/g,"\\;");const vcf=rows.map((c,i)=>`BEGIN:VCARD\nVERSION:3.0\nFN:${safeV("Hariom - "+c.name)}\nTEL;TYPE=CELL:+91${c.phone}\nNOTE:${safeV(c.sources.join(" | ")+" | "+statusLabel(c.status))}\nEND:VCARD`).join("\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([vcf],{type:"text/vcard;charset=utf-8"}));a.download="Hariom-Library-Student-Contacts-"+localToday()+".vcf";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast("✅ "+rows.length+" contacts file ready")};
   window.v24StartOrNextQueue=function(){
     if(v24QueueIndex<0||v24QueueIndex>=v24Queue.length-1){v24Queue=filteredContacts().filter(x=>x.phone);v24QueueIndex=-1;if(!v24Queue.length)return toast("No WhatsApp-ready students in this filter")}
-    v24QueueIndex++;const c=v24Queue[v24QueueIndex],msg=$("v24Notice")?.value.trim()||"Hariom Library Notice";window.open("https://wa.me/91"+c.phone+"?text="+encodeURIComponent(msg),"_blank");const b=$("v24QueueBtn");if(b)b.textContent=v24QueueIndex>=v24Queue.length-1?"✅ Queue Finished":`📲 Send Next ${v24QueueIndex+2}/${v24Queue.length}`;
+    v24QueueIndex++;const c=v24Queue[v24QueueIndex],msg=$("v24Notice")?.value.trim()||"Library Notice";window.open("https://wa.me/91"+c.phone+"?text="+encodeURIComponent(msg),"_blank");const b=$("v24QueueBtn");if(b)b.textContent=v24QueueIndex>=v24Queue.length-1?"✅ Queue Finished":`📲 Send Next ${v24QueueIndex+2}/${v24Queue.length}`;
   };
   function decorateUrCards(){
     const cards=document.querySelectorAll("#ur23List .ur23-student");cards.forEach(card=>{card.classList.remove("v24-active","v24-soon","v24-due","v24-expired","v24-archived");const txt=card.textContent||"";let s="active",label="🟢 MONTH ACTIVE / OK";if(txt.includes("MONTH EXPIRED")){s="expired";label="🔴 MONTH EXPIRED — PAYMENT / RENEWAL CHECK"}else if(txt.includes("DUE ₹")&&!txt.includes("DUE ₹0")){s="due";label="🟠 PAYMENT DUE — FOLLOW UP"}else if(txt.includes("RENEW SOON")){s="soon";label="🟡 RENEW SOON"}if(card.classList.contains("archived")||txt.includes("Left / Archived")){s="archived";label="⚪ ARCHIVED / LEFT"}card.classList.add("v24-"+s);let line=card.querySelector(".v24-statusline");if(!line){line=document.createElement("div");line.className="v24-statusline";card.insertBefore(line,card.firstChild)}line.className="v24-statusline "+s;line.innerHTML=`<span>${label}</span><span>Tap actions below</span>`});
@@ -5286,7 +5292,7 @@ body.dark #ur23List .ur23-student.v24-expired{background:linear-gradient(135deg,
   }
   window.v25OpenNotice=function(){const p=$("v25NoticePanel");if(!p)return;p.classList.add("show");p.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";renderCounts();setTimeout(()=>p.scrollTo(0,0),0)};
   window.v25CloseNotice=function(){const p=$("v25NoticePanel");if(!p)return;p.classList.remove("show");p.setAttribute("aria-hidden","true");document.body.style.overflow=""};
-  window.v25Template=function(type){const t=$("v25NoticeText");if(!t)return;const x={general:"Library Notice: Please read this update carefully. Contact the library administrator for more information.",payment:"Hariom Library Payment Reminder: Jinka monthly fee / renewal pending hai, kripya samay par payment complete karein. Payment ho chuka ho to is notice ko ignore karein.",timing:"Hariom Library Timing Notice: Kripya library ke updated timing aur apne shift schedule ka palan karein. Kisi change ke liye admin se sampark karein.",holiday:"Hariom Library Holiday Notice: Library schedule me temporary change/holiday rahega. Kripya notice ke anusaar apni study planning karein.",urgent:"Hariom Library Urgent Notice: Sabhi students kripya is zaroori suchna par turant dhyan dein aur zarurat hone par admin se sampark karein."};t.value=x[type]||x.general;t.dispatchEvent(new Event("input"))};
+  window.v25Template=function(type){const t=$("v25NoticeText");if(!t)return;const x={general:"Library Notice: Please read this update carefully. Contact the library administrator for more information.",payment:"Library Payment Reminder: Please complete any pending monthly fee or renewal payment on time. Ignore this notice if payment is already complete.",timing:"Library Timing Notice: Please follow the updated library timing and your assigned shift schedule. Contact the administrator for any change.",holiday:"Library Holiday Notice: The library schedule may change temporarily or the library may remain closed. Please plan your study time according to the notice.",urgent:"Library Urgent Notice: Please read this important update immediately and contact the administrator if needed."};t.value=x[type]||x.general;t.dispatchEvent(new Event("input"))};
 
   function setUi(status,sent=0,failed=0,total=0,title=""){
     const done=sent+failed,pct=total?Math.min(100,Math.round(done*100/total)):0;
@@ -5696,7 +5702,7 @@ body.seat-modal-open #nativeToolDock{display:none!important}
   function renderStudentsNative(){
     const box=$("studentsList"); if(!box)return;
     const rows=visibleRows();
-    box.innerHTML=rows.length?rows.map(studentCard).join(""):`<div class="native-empty">No matching students found.</div>`;
+    box.innerHTML=rows.length?rows.map(studentCard).join(""):`<div class="native-empty">No matching students registered.</div>`;
     const count=$("nativeStudentCount");if(count)count.textContent=rows.length+" students";
   }
   window.updateStudents=renderStudentsNative;
@@ -5704,7 +5710,7 @@ body.seat-modal-open #nativeToolDock{display:none!important}
   window.nativeOpenFixed=function(seat){if(typeof showSection==="function")showSection("seats");setTimeout(()=>{if(typeof openSeatModal==="function")openSeatModal(seat)},80)};
   window.nativeOpenFlex=function(key){if(typeof ur23Open==="function")ur23Open();setTimeout(()=>{if(typeof ur23Edit==="function")ur23Edit(key)},120)};
   window.nativeCall=function(phone){phone=cleanPhone(phone);if(!phone)return;if(location.protocol!=="file:")location.href="tel:"+phone;else alert("Call: "+phone)};
-  window.nativeWA=function(phone){phone=cleanPhone(phone);if(!phone)return;const msg=`Hariom Library: Namaste, aapke library account/renewal ke sambandh me message hai.`;window.open("https://wa.me/91"+phone+"?text="+encodeURIComponent(msg),"_blank")};
+  window.nativeWA=function(phone){phone=cleanPhone(phone);if(!phone)return;const msg=`${String(window.HL36?.libraryName||'Library')}: Hello, this is a message regarding your library account or renewal.`;window.open("https://wa.me/91"+phone+"?text="+encodeURIComponent(msg),"_blank")};
   window.nativeSetStudentFilter=function(type,btn){nativeStudentFilter=type;document.querySelectorAll(".native-student-filter").forEach(x=>x.classList.remove("on"));if(btn)btn.classList.add("on");renderStudentsNative()};
 
   function mountStudentTools(){
@@ -6169,7 +6175,7 @@ body.dark .v30-tool-icon{filter:saturate(.9) brightness(.9)}
   const FLEX="library_v3/unreservedStudentsV23";
   const MEDIA="library_v3/studentMediaV30";
   const PROFILES="library_v3/v15/profiles";
-  const SHIFTS={all:"Full Day",m:"Morning",n:"Noon",an:"Afternoon",e:"Evening",night:"Night"};
+  const SHIFTS={all:window.LP41_SHIFT_LABELS?.all||"All Shift",m:window.LP41_SHIFT_LABELS?.m||"Morning",n:window.LP41_SHIFT_LABELS?.n||"Noon",an:window.LP41_SHIFT_LABELS?.an||"Afternoon",e:window.LP41_SHIFT_LABELS?.e||"Evening",night:window.LP41_SHIFT_LABELS?.night||"Night"};
   let flex={},media={},profiles={},q="",filter="all",rowsById={},photoPending=null;
   const $=id=>document.getElementById(id);
   const esc=v=>String(v??"").replace(/[&<>\"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
@@ -6268,7 +6274,7 @@ body.dark .v30-tool-icon{filter:saturate(.9) brightness(.9)}
   function render(){
     const box=$("studentsList");if(!box)return;
     const all=uniqueRows(),rows=visibleRows();rowsById={};all.forEach(r=>rowsById[r.uid]=r);
-    box.innerHTML=rows.length?rows.map(card).join(""):'<div class="native-empty">No matching students found.</div>';
+    box.innerHTML=rows.length?rows.map(card).join(""):'<div class="native-empty">No matching students registered.</div>';
     const c=$("nativeStudentCount");if(c)c.textContent=rows.length+" students";
     const tools=$("nativeStudentTools");if(tools&&!$("v30UniqueNote")){const n=document.createElement("div");n.id="v30UniqueNote";n.className="v30-unique-note";n.innerHTML="✅ <b>Unique student view:</b> old seat 64–85 records that were auto-imported into Unreserved Register are shown only once.";tools.appendChild(n)}
   }
@@ -6283,11 +6289,41 @@ body.dark .v30-tool-icon{filter:saturate(.9) brightness(.9)}
   window.v30ChoosePhoto=function(uid,after){const r=rowsById[uid];if(!r)return;photoPending={uid,after:after||""};const inp=$("v30PhotoInput");inp.value="";inp.click()};
   async function photoPicked(e){
     const file=e.target.files&&e.target.files[0],pending=photoPending;photoPending=null;if(!file||!pending)return;const r=rowsById[pending.uid];if(!r)return;
-    try{const data=await compress(file);await database.ref(MEDIA+"/"+r.mediaKey).update({photo:data,name:r.name,phone:phone(r.phone),updatedAt:Date.now()});if(typeof showToast==="function")showToast("✅ Student photo saved");if(pending.after==="id")setTimeout(()=>makeId(r),80);if(pending.after==="slip")setTimeout(()=>makeSlip(r),80)}catch(err){alert("Photo could not be saved: "+(err.message||err))}
+    try{
+      const data=await compress(file);
+      const rec={photo:data,name:r.name,phone:phone(r.phone),updatedAt:Date.now()};
+      media[r.mediaKey]={...(media[r.mediaKey]||{}),...rec};
+      await database.ref(MEDIA+"/"+r.mediaKey).update(rec);
+      if(typeof showToast==="function")showToast("✅ Student photo saved");
+      render();
+      if(pending.after==="id")setTimeout(()=>makeId(r),40);
+      if(pending.after==="slip")setTimeout(()=>makeSlip(r),40)
+    }catch(err){alert("Photo could not be saved: "+(err.message||err))}
   }
   function safeName(s){return String(s||"student").replace(/[^a-z0-9_-]+/gi,"_").replace(/^_+|_+$/g,"").slice(0,45)||"student"}
-  function downloadCanvas(c,name){c.toBlob(blob=>{if(!blob)return;const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500)},"image/png")}
-  function rounded(ctx,x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.closePath()}
+  function downloadCanvas(c,name){
+    try{
+      const data=c.toDataURL("image/png",1);
+      const a=document.createElement("a");
+      a.href=data;a.download=name;a.rel="noopener";
+      document.body.appendChild(a);a.click();a.remove();
+      if(typeof showToast==="function")showToast("✅ Download started");
+      return true
+    }catch(e){
+      c.toBlob(blob=>{
+        if(!blob)return alert("Download could not be created.");
+        const url=URL.createObjectURL(blob),a=document.createElement("a");
+        a.href=url;a.download=name;a.rel="noopener";document.body.appendChild(a);a.click();a.remove();
+        setTimeout(()=>URL.revokeObjectURL(url),4000)
+      },"image/png");
+      return true
+    }
+  }
+  function rounded(ctx,x,y,w,h,r){
+    r=Math.max(0,Math.min(r,Math.min(w,h)/2));ctx.beginPath();
+    if(typeof ctx.roundRect==="function"){ctx.roundRect(x,y,w,h,r);ctx.closePath();return}
+    ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()
+  }
   function fitText(ctx,text,maxWidth,start){let size=start;while(size>22){ctx.font=`900 ${size}px Arial`;if(ctx.measureText(text).width<=maxWidth)break;size-=2}return size}
   function loadImage(src){return new Promise(res=>{if(!src)return res(null);const im=new Image();im.onload=()=>res(im);im.onerror=()=>res(null);im.src=src})}
   async function makeId(r){
@@ -6297,154 +6333,177 @@ body.dark .v30-tool-icon{filter:saturate(.9) brightness(.9)}
       return v30ChoosePhoto(r.uid,"id")
     }
 
-    const br=window.LP41_BRANDING||{};const lib=String(br.libraryName||window.HL36?.libraryName||"Library Pro").trim()||"Library Pro";const libAddress=String(br.address||"");const libPhone=String(br.phone||"");const signName=String(br.signature||"Authorized Signature");
-    const libId=String(window.HL36?.libraryId||"library");
+    const br=window.LP41_BRANDING||{};
+    const lib=String(br.libraryName||window.HL36?.libraryName||"Library Pro").trim()||"Library Pro";
+    const address=String(br.address||"").trim(),libPhone=phone(br.phone||"");
+    const email=String(br.email||"").trim(),signName=String(br.signature||"Authorized Signature").trim();
+    const owner=String(br.owner||"").trim(),libId=String(window.HL36?.libraryId||"library");
     const prefix=(lib.split(/\s+/).map(x=>x[0]||"").join("").slice(0,4)||"LIB").toUpperCase();
-    const sid=(prefix+"-"+hash(libId+"|"+identity(r)).toUpperCase().slice(0,8));
-    const valid=String(r.renewal||"Not set");
+    const memberId=(prefix+"-"+hash(libId+"|"+identity(r)).toUpperCase().slice(0,8));
     const seatType=r.type==="fixed"?"Seat "+r.seat:(r.type==="profile"?(r.seat?"Seat "+r.seat:"Digital Admission"):"Unreserved");
-    const c=document.createElement("canvas");c.width=1010;c.height=638;const x=c.getContext("2d");
+    const valid=String(r.renewal||"Not set"),issue=today();
+    const c=document.createElement("canvas");c.width=1012;c.height=638;const x=c.getContext("2d");
+    const [im,logo]=await Promise.all([loadImage(pic),loadImage(br.logo||"")]);
 
-    // PVC-card style background
+    // Standard PVC-card ratio, high-resolution front design.
     x.fillStyle="#ffffff";x.fillRect(0,0,c.width,c.height);
-    x.fillStyle="#0b1f44";x.fillRect(0,0,1010,138);
-    x.fillStyle="#2563eb";x.fillRect(0,128,1010,10);
-    x.fillStyle="#eff6ff";x.fillRect(0,138,1010,500);
+    x.fillStyle="#0b1736";x.fillRect(0,0,c.width,150);
+    x.fillStyle="#1d4ed8";x.fillRect(0,144,c.width,8);
+    x.fillStyle="#f8fafc";x.fillRect(0,152,c.width,486);
 
-    // Library monogram
-    x.fillStyle="#ffffff";rounded(x,42,28,78,78,20);x.fill();
-    if(logo){x.save();rounded(x,47,33,68,68,16);x.clip();const ls=Math.min(68/logo.width,68/logo.height),lw=logo.width*ls,lh=logo.height*ls;x.drawImage(logo,47+(68-lw)/2,33+(68-lh)/2,lw,lh);x.restore()}
-    else{x.fillStyle="#0b1f44";x.font="900 30px Arial";x.textAlign="center";x.fillText(prefix.slice(0,3),81,78);x.textAlign="left"}
-
-    // Dynamic library title
-    let libSize=40;
-    while(libSize>24){x.font=`900 ${libSize}px Arial`;if(x.measureText(lib).width<=690)break;libSize-=2}
-    x.fillStyle="#ffffff";x.font=`900 ${libSize}px Arial`;x.fillText(lib,145,64);
-    x.fillStyle="#bfdbfe";x.font="700 19px Arial";x.fillText("STUDENT IDENTITY CARD",146,98);
-
-    // Status
-    x.fillStyle="#16a34a";rounded(x,805,37,155,50,25);x.fill();
-    x.fillStyle="#ffffff";x.font="900 18px Arial";x.textAlign="center";x.fillText("ACTIVE",882,69);x.textAlign="left";
-
-    // Photo
-    const im=await loadImage(pic),logo=await loadImage(br.logo||"");
-    x.fillStyle="#ffffff";rounded(x,45,178,265,322,24);x.fill();
-    x.save();rounded(x,58,191,239,270,18);x.clip();
-    if(im){
-      const sc=Math.max(239/im.width,270/im.height),w=im.width*sc,h=im.height*sc;
-      x.drawImage(im,58+(239-w)/2,191+(270-h)/2,w,h)
+    // Logo
+    x.fillStyle="#ffffff";rounded(x,38,28,88,88,20);x.fill();
+    if(logo){
+      x.save();rounded(x,44,34,76,76,16);x.clip();
+      const ls=Math.min(76/logo.width,76/logo.height),lw=logo.width*ls,lh=logo.height*ls;
+      x.drawImage(logo,44+(76-lw)/2,34+(76-lh)/2,lw,lh);x.restore()
     }else{
-      x.fillStyle="#dbeafe";x.fillRect(58,191,239,270)
+      x.fillStyle="#0b1736";x.font="900 27px Arial";x.textAlign="center";x.fillText(prefix.slice(0,3),82,80);x.textAlign="left"
     }
+
+    let lfs=39;while(lfs>23){x.font=`900 ${lfs}px Arial`;if(x.measureText(lib).width<=710)break;lfs-=2}
+    x.fillStyle="#ffffff";x.font=`900 ${lfs}px Arial`;x.fillText(lib,148,66);
+    x.fillStyle="#bfdbfe";x.font="800 18px Arial";x.fillText("STUDENT IDENTITY CARD",150,103);
+    x.font="600 13px Arial";x.fillText([address,libPhone?("Ph: "+libPhone):"",email].filter(Boolean).join("  •  ").slice(0,100),150,128);
+
+    // Photo panel
+    x.fillStyle="#ffffff";rounded(x,38,188,270,330,22);x.fill();
+    x.strokeStyle="#cbd5e1";x.lineWidth=2;rounded(x,38,188,270,330,22);x.stroke();
+    x.save();rounded(x,55,205,236,252,15);x.clip();
+    if(im){
+      const sc=Math.max(236/im.width,252/im.height),w=im.width*sc,h=im.height*sc;
+      x.drawImage(im,55+(236-w)/2,205+(252-h)/2,w,h)
+    }else{x.fillStyle="#e2e8f0";x.fillRect(55,205,236,252)}
     x.restore();
-    x.strokeStyle="#cbd5e1";x.lineWidth=3;rounded(x,58,191,239,270,18);x.stroke();
 
-    x.fillStyle="#0f172a";x.font="900 25px Arial";x.textAlign="center";
-    x.fillText(sid,177,490);
-    x.fillStyle="#64748b";x.font="700 14px Arial";x.fillText("MEMBER ID",177,515);x.textAlign="left";
+    // Member ID beneath photo
+    x.fillStyle="#0f172a";x.font="900 24px Arial";x.textAlign="center";x.fillText(memberId,173,490);
+    x.fillStyle="#64748b";x.font="800 12px Arial";x.fillText("MEMBER ID",173,513);x.textAlign="left";
 
-    // Student details
-    const name=String(r.name||"Student");
-    let fs=46;while(fs>28){x.font=`900 ${fs}px Arial`;if(x.measureText(name).width<=610)break;fs-=2}
-    x.fillStyle="#0f172a";x.font=`900 ${fs}px Arial`;x.fillText(name,350,220);
+    // Student name
+    const nm=String(r.name||"Student");
+    let nfs=43;while(nfs>27){x.font=`900 ${nfs}px Arial`;if(x.measureText(nm).width<=620)break;nfs-=2}
+    x.fillStyle="#0f172a";x.font=`900 ${nfs}px Arial`;x.fillText(nm,350,218);
 
-    const details=[
+    const fields=[
       ["MOBILE",phone(r.phone)||"Not added"],
       ["SEAT / TYPE",seatType],
       ["SHIFT",r.shiftLabel||"-"],
-      ["VALID / RENEWAL",valid]
+      ["VALID UNTIL",valid]
     ];
-    let y=273;
-    details.forEach(([k,v])=>{
-      x.fillStyle="#64748b";x.font="800 15px Arial";x.fillText(k,352,y);
-      x.fillStyle="#0f172a";x.font="800 24px Arial";x.fillText(String(v),352,y+29);
-      x.strokeStyle="#dbe2ea";x.lineWidth=1.5;x.beginPath();x.moveTo(352,y+47);x.lineTo(950,y+47);x.stroke();
-      y+=72;
+    let yy=263;
+    fields.forEach(([k,v])=>{
+      x.fillStyle="#64748b";x.font="800 13px Arial";x.fillText(k,352,yy);
+      x.fillStyle="#111827";x.font="800 22px Arial";x.fillText(String(v).slice(0,42),352,yy+28);
+      x.strokeStyle="#e2e8f0";x.lineWidth=1;x.beginPath();x.moveTo(352,yy+44);x.lineTo(960,yy+44);x.stroke();
+      yy+=68
     });
 
-    // Footer / signature
-    x.fillStyle="#ffffff";x.fillRect(0,548,1010,90);
-    x.strokeStyle="#dbe2ea";x.beginPath();x.moveTo(0,548);x.lineTo(1010,548);x.stroke();
-    x.fillStyle="#475569";x.font="700 13px Arial";x.fillText((libAddress||"Registered member only")+(libPhone?" • "+libPhone:""),45,579);
-    x.fillStyle="#0f172a";x.font="800 15px Arial";x.textAlign="right";x.fillText(signName||"Authorized Signature",955,579);
-    x.strokeStyle="#0f172a";x.lineWidth=1;x.beginPath();x.moveTo(790,600);x.lineTo(955,600);x.stroke();x.textAlign="left";
+    // Footer
+    x.fillStyle="#ffffff";x.fillRect(0,548,c.width,90);
+    x.strokeStyle="#dbe2ea";x.beginPath();x.moveTo(0,548);x.lineTo(c.width,548);x.stroke();
+    x.fillStyle="#64748b";x.font="700 12px Arial";x.fillText("Issued: "+issue+(owner?"  •  "+owner:""),38,578);
+    x.fillText("This card is non-transferable and valid only for the registered member.",38,601);
+    x.fillStyle="#0f172a";x.font="800 13px Arial";x.textAlign="right";x.fillText(signName||"Authorized Signature",962,579);
+    x.strokeStyle="#0f172a";x.beginPath();x.moveTo(790,601);x.lineTo(962,601);x.stroke();x.textAlign="left";
 
-    downloadCanvas(c,`${safeName(lib)}_ID_${safeName(r.name)}.png`)
+    downloadCanvas(c,`${safeName(lib)}_ID_${safeName(r.name)}_${memberId}.png`)
   }
   async function makeSlip(r){
-    const br=window.LP41_BRANDING||{};const lib=String(br.libraryName||window.HL36?.libraryName||"Library Pro").trim()||"Library Pro";const libAddress=String(br.address||"");const libPhone=String(br.phone||"");const signName=String(br.signature||"Authorized Signature");
-    const libId=String(window.HL36?.libraryId||"library");
-    const receiptNo="SL-"+new Date().getFullYear()+"-"+hash(libId+"|"+identity(r)+"|"+Date.now()).toUpperCase().slice(0,8);
-    const c=document.createElement("canvas");c.width=900;c.height=1280;const x=c.getContext("2d"),pic=photoFor(r),im=await loadImage(pic);
+    const br=window.LP41_BRANDING||{};
+    const lib=String(br.libraryName||window.HL36?.libraryName||"Library Pro").trim()||"Library Pro";
+    const address=String(br.address||"").trim(),libPhone=phone(br.phone||"");
+    const email=String(br.email||"").trim(),upi=String(br.upi||"").trim();
+    const footer=String(br.footer||"Please keep this slip for membership and payment reference.").trim();
+    const signName=String(br.signature||"Authorized Signature").trim(),libId=String(window.HL36?.libraryId||"library");
+    const receiptNo="MS-"+new Date().getFullYear()+"-"+hash(libId+"|"+identity(r)+"|"+Date.now()).toUpperCase().slice(0,8);
+    const c=document.createElement("canvas");c.width=900;c.height=1280;const x=c.getContext("2d");
+    const [im,logo]=await Promise.all([loadImage(photoFor(r)),loadImage(br.logo||"")]);
+    const fee=Number(r.fee||0),paid=Number(r.paid||0),due=Number(r.due||0);
+    const status=due>0?"PAYMENT DUE":"PAID / CLEAR";
+    const seatType=r.type==="fixed"?"Reserved • Seat "+r.seat:(r.type==="profile"?(r.seat?"Digital Admission • Seat "+r.seat:"Digital Admission"):"Unreserved / Flexible");
 
     x.fillStyle="#ffffff";x.fillRect(0,0,900,1280);
-    x.strokeStyle="#0f172a";x.lineWidth=3;rounded(x,24,24,852,1232,20);x.stroke();
+    x.strokeStyle="#0f172a";x.lineWidth=3;rounded(x,24,24,852,1232,18);x.stroke();
 
-    // Header
-    x.fillStyle="#0b1f44";rounded(x,25,25,850,180,18);x.fill();
-    let libSize=42;while(libSize>25){x.font=`900 ${libSize}px Arial`;if(x.measureText(lib).width<=720)break;libSize-=2}
-    x.fillStyle="#ffffff";x.font=`900 ${libSize}px Arial`;x.fillText(lib,55,82);
-    x.fillStyle="#bfdbfe";x.font="800 21px Arial";x.fillText("ADMISSION / MEMBERSHIP SLIP",56,124);
-    x.font="600 15px Arial";x.fillText("Receipt No: "+receiptNo+"   •   Date: "+today(),56,158);if(libAddress||libPhone){x.fillStyle="#475569";x.font="600 14px Arial";x.fillText((libAddress||"")+(libPhone?(libAddress?" • ":"")+libPhone:""),55,448)}
+    // Letterhead
+    x.fillStyle="#0b1736";rounded(x,25,25,850,190,17);x.fill();
+    if(logo){
+      x.fillStyle="#fff";rounded(x,55,52,105,105,18);x.fill();
+      x.save();rounded(x,63,60,89,89,13);x.clip();
+      const ls=Math.min(89/logo.width,89/logo.height),lw=logo.width*ls,lh=logo.height*ls;
+      x.drawImage(logo,63+(89-lw)/2,60+(89-lh)/2,lw,lh);x.restore()
+    }
+    const left=logo?185:55;
+    let fs=39;while(fs>24){x.font=`900 ${fs}px Arial`;if(x.measureText(lib).width<=650)break;fs-=2}
+    x.fillStyle="#fff";x.font=`900 ${fs}px Arial`;x.fillText(lib,left,78);
+    x.fillStyle="#bfdbfe";x.font="700 15px Arial";
+    x.fillText([address,libPhone?("Ph: "+libPhone):"",email].filter(Boolean).join("  •  ").slice(0,100),left,109);
+    x.fillStyle="#fff";x.font="900 22px Arial";x.fillText("MEMBERSHIP / PAYMENT SLIP",left,151);
+    x.font="600 14px Arial";x.fillText("Slip No: "+receiptNo+"   •   Date: "+today(),left,180);
 
-    // Photo
+    // Student identity
+    x.fillStyle="#f8fafc";rounded(x,55,245,790,245,18);x.fill();
+    x.strokeStyle="#e2e8f0";x.lineWidth=1.5;rounded(x,55,245,790,245,18);x.stroke();
+
     if(im){
-      x.save();rounded(x,650,225,175,205,18);x.clip();
-      const sc=Math.max(175/im.width,205/im.height),w=im.width*sc,h=im.height*sc;
-      x.drawImage(im,650+(175-w)/2,225+(205-h)/2,w,h);x.restore();
-      x.strokeStyle="#cbd5e1";x.lineWidth=2;rounded(x,650,225,175,205,18);x.stroke()
+      x.save();rounded(x,650,268,155,180,14);x.clip();
+      const sc=Math.max(155/im.width,180/im.height),w=im.width*sc,h=im.height*sc;
+      x.drawImage(im,650+(155-w)/2,268+(180-h)/2,w,h);x.restore()
+    }else{
+      x.fillStyle="#e2e8f0";rounded(x,650,268,155,180,14);x.fill();
+      x.fillStyle="#64748b";x.font="700 16px Arial";x.textAlign="center";x.fillText("PHOTO",727,360);x.textAlign="left"
     }
 
-    x.fillStyle="#0f172a";x.font="900 38px Arial";x.fillText(String(r.name||"Student"),55,265);
-    x.fillStyle="#64748b";x.font="700 20px Arial";
-    x.fillText("Mobile: "+(phone(r.phone)||"Not added"),55,307);
-    x.fillText("Seat / Type: "+(r.type==="fixed"?"Seat "+r.seat:(r.type==="profile"?(r.seat?"Seat "+r.seat:"Digital Admission"):"Unreserved")),55,343);
-    x.fillText("Shift: "+(r.shiftLabel||"-"),55,379);
-    x.fillText("Renewal: "+(r.renewal||"Not set"),55,415);
+    x.fillStyle="#0f172a";x.font="900 35px Arial";x.fillText(String(r.name||"Student").slice(0,30),80,300);
+    x.fillStyle="#475569";x.font="700 18px Arial";
+    x.fillText("Mobile: "+(phone(r.phone)||"Not added"),80,342);
+    x.fillText("Membership: "+seatType,80,378);
+    x.fillText("Shift: "+(r.shiftLabel||"-"),80,414);
+    x.fillText("Renewal / Valid Until: "+(r.renewal||"Not set"),80,450);
 
-    // Payment summary
-    const fee=Number(r.fee||0),paid=Number(r.paid||0),due=Number(r.due||0);
+    // Amount boxes
     const boxes=[
-      ["PLAN FEE","₹"+fee.toLocaleString("en-IN")],
-      ["PAID","₹"+paid.toLocaleString("en-IN")],
-      ["DUE","₹"+due.toLocaleString("en-IN")]
+      ["PLAN / TOTAL",fee],
+      ["PAID",paid],
+      ["DUE",due]
     ];
     boxes.forEach(([k,v],i)=>{
-      const bx=55+i*265;
-      x.fillStyle=i===2&&due>0?"#fff7ed":"#f8fafc";rounded(x,bx,475,235,100,16);x.fill();
-      x.strokeStyle=i===2&&due>0?"#fdba74":"#dbe2ea";x.lineWidth=2;rounded(x,bx,475,235,100,16);x.stroke();
-      x.fillStyle="#64748b";x.font="800 15px Arial";x.fillText(k,bx+18,507);
-      x.fillStyle=i===2&&due>0?"#c2410c":"#0f172a";x.font="900 30px Arial";x.fillText(v,bx+18,548);
+      const bx=55+i*265,warning=i===2&&due>0;
+      x.fillStyle=warning?"#fff7ed":"#f8fafc";rounded(x,bx,535,235,108,15);x.fill();
+      x.strokeStyle=warning?"#fb923c":"#dbe2ea";x.lineWidth=1.5;rounded(x,bx,535,235,108,15);x.stroke();
+      x.fillStyle="#64748b";x.font="800 14px Arial";x.fillText(k,bx+18,571);
+      x.fillStyle=warning?"#c2410c":"#0f172a";x.font="900 31px Arial";x.fillText("₹"+Number(v||0).toLocaleString("en-IN"),bx+18,615)
     });
 
-    // Detail table
-    const membership=r.type==="fixed"?"Reserved Seat":(r.type==="profile"?"Digital Admission":"Unreserved / Flexible");
-    const data=[
-      ["Membership Type",membership],
+    // Payment status + details
+    x.fillStyle=due>0?"#fff7ed":"#ecfdf5";rounded(x,55,680,790,75,14);x.fill();
+    x.fillStyle=due>0?"#c2410c":"#047857";x.font="900 20px Arial";x.fillText("STATUS: "+status,78,724);
+
+    const rows=[
       ["Payment Date",r.paidDate||"Not set"],
       ["Renewal / Month End",r.renewal||"Not set"],
-      ["Generated By",lib],
-      ["Reference",receiptNo]
+      ["Reference",receiptNo],
+      ["UPI / Payment ID",upi||"Not configured"]
     ];
-    let y=625;
-    data.forEach(([k,v])=>{
-      x.fillStyle="#f8fafc";rounded(x,55,y,790,78,12);x.fill();
-      x.fillStyle="#64748b";x.font="800 16px Arial";x.fillText(k,76,y+30);
-      x.fillStyle="#0f172a";x.font="800 22px Arial";x.textAlign="right";x.fillText(String(v),820,y+49);x.textAlign="left";
-      y+=88;
+    let y=790;
+    rows.forEach(([k,v])=>{
+      x.fillStyle="#64748b";x.font="800 14px Arial";x.fillText(k.toUpperCase(),72,y);
+      x.fillStyle="#0f172a";x.font="800 19px Arial";x.textAlign="right";x.fillText(String(v).slice(0,48),825,y);x.textAlign="left";
+      x.strokeStyle="#e2e8f0";x.beginPath();x.moveTo(55,y+24);x.lineTo(845,y+24);x.stroke();
+      y+=68
     });
 
-    // Terms + signatures
-    x.fillStyle="#f1f5f9";rounded(x,55,1080,790,72,14);x.fill();
-    x.fillStyle="#475569";x.font="600 14px Arial";
-    x.fillText("Please keep this slip for membership/payment reference.",76,1111);
-    x.fillText("Computer-generated slip • Verify details with library administration.",76,1135);
+    // Footer / signatures
+    x.fillStyle="#f8fafc";rounded(x,55,1085,790,78,13);x.fill();
+    x.fillStyle="#475569";x.font="600 13px Arial";x.fillText(footer.slice(0,104),75,1116);
+    x.fillText("Computer-generated slip. Verify any discrepancy with the library administration.",75,1143);
 
-    x.fillStyle="#0f172a";x.font="800 15px Arial";
-    x.fillText("Student Signature",75,1200);x.fillText(signName||"Authorized Signature",625,1200);
-    x.strokeStyle="#0f172a";x.beginPath();x.moveTo(75,1225);x.lineTo(260,1225);x.moveTo(625,1225);x.lineTo(820,1225);x.stroke();
+    x.fillStyle="#0f172a";x.font="800 14px Arial";
+    x.fillText("Student Signature",75,1205);x.fillText(signName||"Authorized Signature",620,1205);
+    x.strokeStyle="#0f172a";x.beginPath();x.moveTo(75,1230);x.lineTo(265,1230);x.moveTo(620,1230);x.lineTo(825,1230);x.stroke();
 
-    downloadCanvas(c,`${safeName(lib)}_Slip_${safeName(r.name)}.png`)
+    downloadCanvas(c,`${safeName(lib)}_Membership_Slip_${safeName(r.name)}_${receiptNo}.png`)
   }
   window.v30DownloadId=function(uid){const r=rowsById[uid];if(r)makeId(r)};
   window.v30DownloadSlip=function(uid){const r=rowsById[uid];if(r)makeSlip(r)};
@@ -6452,9 +6511,9 @@ body.dark .v30-tool-icon{filter:saturate(.9) brightness(.9)}
     const r=rowsById[uid];if(!r)return;
     const p=phone(r.phone);if(!p)return alert("Student mobile number is missing");
     const lib=String(window.HL36?.libraryName||"Library Pro");
-    const msg=`Namaste ${r.name} 👋
+    const msg=`Hello ${r.name} 👋
 
-${lib} me aapka swagat hai.
+${lib} — welcome to the library.
 📚 Membership: ${r.type==="fixed"?"Seat "+r.seat:(r.type==="profile"?"Digital Admission":"Unreserved")}
 🕒 Shift: ${r.shiftLabel||"-"}
 📅 Renewal: ${r.renewal||"Not set"}
@@ -6525,7 +6584,7 @@ body.dark{background:linear-gradient(180deg,#050914,#08111f 42%,#07101c 100%) fi
 @media(max-width:370px){.v31-body{padding-left:8px;padding-right:8px}.v31-launch-grid{grid-template-columns:repeat(2,1fr)}.v31-grid{grid-template-columns:1fr}.v31-grid .v31-full{grid-column:auto}.v31-module-grid{grid-template-columns:1fr 1fr}.v31-bottom{left:4px;right:4px}.v31-nav i{font-size:17px}.v31-nav{font-size:6.5px}}
 </style>
 
-<div class="v31-lock" id="v31Lock"><div class="v31-lock-card"><div class="v31-lock-logo">📚</div><h2>Hariom Library</h2><p></p><input id="v31PinInput" type="password" inputmode="numeric" maxlength="6" placeholder="••••"><button onclick="v31Unlock()">UNLOCK APP</button><div id="v31PinMsg" style="font-size:8px;color:#fecaca;margin-top:8px"></div></div></div>
+<div class="v31-lock" id="v31Lock"><div class="v31-lock-card"><div class="v31-lock-logo">📚</div><h2>Library Pro</h2><p></p><input id="v31PinInput" type="password" inputmode="numeric" maxlength="6" placeholder="••••"><button onclick="v31Unlock()">UNLOCK APP</button><div id="v31PinMsg" style="font-size:8px;color:#fecaca;margin-top:8px"></div></div></div>
 <div id="v31Toast"></div>
 <div id="v31Panel">
   <div class="v31-appbar"><button class="v31-icon-btn" onclick="v31Close()">‹</button><div class="v31-appbar-title"><b>Library Pro</b><span id="v31TopSub"></span></div><button class="v31-icon-btn" onclick="v31OpenModule('command')">⌘</button><button class="v31-icon-btn" onclick="toggleTheme();v31SyncTheme()">◐</button></div>
@@ -6552,7 +6611,7 @@ body.dark{background:linear-gradient(180deg,#050914,#08111f 42%,#07101c 100%) fi
 'use strict';
 const BASE='library_v3/v31', FLEX='library_v3/unreservedStudentsV23', MEDIA='library_v3/studentMediaV30', PROFILES='library_v3/v15/profiles';
 const SH={all:window.LP41_SHIFT_LABELS?.all||'Full Day',m:window.LP41_SHIFT_LABELS?.m||'Morning',n:window.LP41_SHIFT_LABELS?.n||'Noon',an:window.LP41_SHIFT_LABELS?.an||'Afternoon',e:window.LP41_SHIFT_LABELS?.e||'Evening',night:window.LP41_SHIFT_LABELS?.night||'Night'};
-const state={flex:{},media:{},profiles:{},v31:{},students:[],branch:localStorage.getItem('v31_branch')||'Hariom Library',activeStudent:null,installPrompt:null};
+const state={flex:{},media:{},profiles:{},v31:{},students:[],branch:localStorage.getItem('v31_branch')||String(window.HL36?.libraryName||'Library'),activeStudent:null,installPrompt:null};
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const digits=v=>String(v||'').replace(/\D/g,'').slice(-10), norm=v=>String(v||'').trim().toLowerCase().replace(/\s+/g,' ');
 function hash(s){let h=2166136261;for(let i=0;i<String(s).length;i++){h^=String(s).charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(36)}
@@ -6691,7 +6750,7 @@ function pickStudent(selected=''){return `<select id="v31PickStudent" class="v31
 function attendanceModule(k=''){setSheet('📲 Attendance',`<div class="v31-card"><h3>Mark Attendance</h3>${pickStudent(k)}<div class="v31-grid" style="margin-top:8px"><select id="v31AttType" class="v31-select"><option>Check-in</option><option>Check-out</option></select><input id="v31AttNote" class="v31-in" placeholder="Note (optional)"></div><button class="v31-btn" style="width:100%;margin-top:8px" onclick="v31SaveAttendance()">MARK ATTENDANCE</button><div class="v31-sub" style="margin-top:8px">QR token format: HL31-&lt;student key&gt;. Camera QR scan works on supported browsers through BarcodeDetector.</div><div class="v31-actions" style="margin-top:8px"><button class="v31-btn ghost" onclick="v31ShowQrToken()">▦ Show Student QR Token</button><button class="v31-btn ghost" onclick="v31ScanQR()">📷 Scan QR</button></div></div><div class="v31-card"><h3>Today's Activity</h3><div class="v31-list">${todaysAttendance().sort((a,b)=>b.time-a.time).map(x=>`<div class="v31-item"><b>${esc(x.student)}</b> • ${esc(x.type)}<br><small>${tsText(x.time)} ${x.note?'• '+esc(x.note):''}</small></div>`).join('')||'<div class="v31-empty">No attendance yet today.</div>'}</div></div>`)}
 window.v31SaveAttendance=function(){const k=$('v31PickStudent').value,s=getStudent(k);if(!s)return toast('Select student');const type=$('v31AttType').value,note=$('v31AttNote').value.trim();saveObj('attendance',{studentKey:k,student:s.name,phone:digits(s.phone),type,note,date:isoDate(),time:Date.now()}).then(()=>{audit('Attendance',type,s.name);toast('Attendance saved');attendanceModule(k)})}
 window.v31ShowQrToken=function(){const k=$('v31PickStudent')?.value;if(!k)return toast('Select student');navigator.clipboard?.writeText('HL31-'+k);alert('QR / Entry Token:\nHL31-'+k+'\n\nToken copied. You can encode this value in any QR printer/app.')}
-window.v31ScanQR=async function(){if(!('BarcodeDetector'in window))return alert('QR camera scanning is not supported in this browser. Use the manual token.');try{const det=new BarcodeDetector({formats:['qr_code']});const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});const v=document.createElement('video');v.srcObject=stream;v.playsInline=true;await v.play();setSheet('📷 QR Scanner',`<div class="v31-warning">Camera open hai. QR ko camera ke samne rakhein.</div><div id="v31QrMount" style="margin-top:8px"></div>`);$('v31QrMount').appendChild(v);v.style.width='100%';v.style.borderRadius='16px';const timer=setInterval(async()=>{try{const codes=await det.detect(v);if(codes.length){clearInterval(timer);stream.getTracks().forEach(t=>t.stop());const raw=codes[0].rawValue||'';if(raw.startsWith('HL31-')){const k=raw.slice(5);state.activeStudent=getStudent(k);v31SheetClose();attendanceModule(k);toast('QR student found')}else toast('Unknown QR token')}}catch(e){}},500);setTimeout(()=>{clearInterval(timer);stream.getTracks().forEach(t=>t.stop())},30000)}catch(e){alert('Camera scanner start nahi hua: '+e.message)}}
+window.v31ScanQR=async function(){if(!('BarcodeDetector'in window))return alert('QR camera scanning is not supported in this browser. Use the manual token.');try{const det=new BarcodeDetector({formats:['qr_code']});const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});const v=document.createElement('video');v.srcObject=stream;v.playsInline=true;await v.play();setSheet('📷 QR Scanner',`<div class="v31-warning">Camera is open. Place the QR code in front of the camera.</div><div id="v31QrMount" style="margin-top:8px"></div>`);$('v31QrMount').appendChild(v);v.style.width='100%';v.style.borderRadius='16px';const timer=setInterval(async()=>{try{const codes=await det.detect(v);if(codes.length){clearInterval(timer);stream.getTracks().forEach(t=>t.stop());const raw=codes[0].rawValue||'';if(raw.startsWith('HL31-')){const k=raw.slice(5);state.activeStudent=getStudent(k);v31SheetClose();attendanceModule(k);toast('QR student found')}else toast('Unknown QR token')}}catch(e){}},500);setTimeout(()=>{clearInterval(timer);stream.getTracks().forEach(t=>t.stop())},30000)}catch(e){alert('The camera scanner could not start: '+e.message)}}
 
 function paymentModule(k=''){setSheet('₹ Payment & Receipt',`<div class="v31-card">${pickStudent(k)}<div class="v31-grid" style="margin-top:8px"><input id="v31PayAmount" type="number" class="v31-in" placeholder="Amount ₹"><select id="v31PayMode" class="v31-select"><option>Cash</option><option>UPI</option><option>PhonePe</option><option>Google Pay</option><option>Paytm</option><option>Bank Transfer</option><option>Card</option></select><input id="v31PayDue" type="number" class="v31-in" placeholder="Remaining due (optional)"><input id="v31PayTxn" class="v31-in" placeholder="Txn ID / note"></div><button class="v31-btn green" style="width:100%;margin-top:8px" onclick="v31SavePayment()">SAVE PAYMENT + RECEIPT</button></div>`)}
 window.v31SavePayment=async function(){const k=$('v31PickStudent').value,s=getStudent(k),amount=Number($('v31PayAmount').value||0);if(!s||amount<=0)return toast('Student and valid amount required');const mode=$('v31PayMode').value,txn=$('v31PayTxn').value.trim(),dueVal=$('v31PayDue').value,remaining=dueVal===''?Math.max(0,Number(s.due||0)-amount):Math.max(0,Number(dueVal));const rec={studentKey:k,student:s.name,phone:digits(s.phone),amount,mode,txn,due:remaining,kind:'Payment',date:isoDate(),time:Date.now(),receiptNo:'HLR-'+Date.now().toString().slice(-9)};const ref=await saveObj('ledger',rec);await applyMoneyToStudent(s,amount,remaining);audit('Payment',rec.receiptNo+' '+money(amount),s.name);toast('Payment saved');makeReceipt({...rec,key:ref.key});paymentModule(k)}
@@ -6708,7 +6767,10 @@ function makeReceipt(r){
  x.fillStyle='#f1f5f9';x.fillRect(55,1015,790,82);x.fillStyle='#475569';x.textAlign='left';x.font='700 14px Arial';x.fillText('Computer-generated receipt',75,1048);x.textAlign='right';x.fillStyle='#0f172a';x.fillText(sign,825,1048);x.beginPath();x.moveTo(650,1072);x.lineTo(825,1072);x.stroke();x.textAlign='left';
  downloadCanvas31(c,safeFile(lib)+'_Receipt_'+safeFile(r.student)+'_'+r.receiptNo+'.png')
 }
-function downloadCanvas31(c,name){c.toBlob(b=>{if(!b)return;const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500)},'image/png')}
+function downloadCanvas31(c,name){
+ try{const a=document.createElement('a');a.href=c.toDataURL('image/png',1);a.download=name;a.rel='noopener';document.body.appendChild(a);a.click();a.remove();toast('Receipt download started')}
+ catch(e){c.toBlob(b=>{if(!b)return toast('Receipt download failed');const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)},'image/png')}
+}
 function safeFile(s){return String(s||'file').replace(/[^a-z0-9_-]+/gi,'_').slice(0,45)}
 
 function renewalModule(k=''){setSheet('🔄 Membership Renewal',`<div class="v31-card">${pickStudent(k)}<div class="v31-grid" style="margin-top:8px"><select id="v31RenewMonths" class="v31-select"><option value="1">1 Month</option><option value="2">2 Months</option><option value="3">3 Months</option><option value="6">6 Months</option><option value="12">12 Months</option></select><input id="v31RenewDate" type="date" class="v31-in" value="${isoDate()}"></div><button class="v31-btn amber" style="width:100%;margin-top:8px" onclick="v31SaveRenewal()">APPLY RENEWAL</button><div class="v31-warning" style="margin-top:8px">Renewal directly updates the selected student's current live renewal date. </div></div>`)}
@@ -6718,7 +6780,7 @@ function expenseModule(){setSheet('🧮 Expense',`<div class="v31-grid"><input i
 window.v31SaveExpense=function(){const title=$('v31ExpTitle').value.trim(),amount=Number($('v31ExpAmount').value||0);if(!title||amount<=0)return toast('Title and amount required');saveObj('expenses',{title,amount,category:$('v31ExpCat').value,date:$('v31ExpDate').value||isoDate(),note:$('v31ExpNote').value.trim()}).then(()=>{audit('Expense',title+' '+money(amount));toast('Expense saved');v31SheetClose()})}
 
 function noticeModule(){setSheet('📣 Notice & WhatsApp Center',`<div class="v31-card"><div class="v31-grid"><select id="v31Audience" class="v31-select"><option value="all">All Students</option><option value="active">Active Students</option><option value="due">Due Students</option><option value="expired">Expired Students</option><option value="soon">Renew Soon</option><option value="fixed">Fixed Seat</option><option value="flex">Unreserved</option></select><select id="v31Template" class="v31-select" onchange="v31ApplyTemplate()"><option value="">Custom Message</option><option value="renew">Renewal Reminder</option><option value="due">Fee Due Reminder</option><option value="holiday">Holiday Notice</option><option value="welcome">Welcome Message</option></select></div><textarea id="v31NoticeText" class="v31-text" style="margin-top:8px" placeholder="Type notice..."></textarea><div class="v31-actions" style="margin-top:8px"><button class="v31-btn" onclick="v31SaveNotice()">💾 Save Notice</button><button class="v31-btn green" onclick="v31NoticeRecipients()">💬 Recipient List</button><button class="v31-btn ghost" onclick="v31CopyNotice()">📋 Copy Message</button></div><div class="v31-warning" style="margin-top:8px">Direct automatic bulk WhatsApp sending needs WhatsApp Business API approval. This web app prepares the audience, message and numbers safely; it does not bypass WhatsApp limits.</div></div><div class="v31-card"><h3>Saved Templates / Notices</h3><div class="v31-list">${Object.entries(state.v31.notices||{}).filter(([,x])=>x&&branchRecord(x)).sort((a,b)=>b[1].time-a[1].time).slice(0,10).map(([k,x])=>`<div class="v31-item"><b>${esc(x.audience)} • ${esc(x.text).slice(0,80)}</b><br><small>${tsText(x.time)}</small></div>`).join('')||'<div class="v31-empty">No notice saved yet.</div>'}</div></div>`)}
-window.v31ApplyTemplate=function(){const t=$('v31Template').value,m={renew:'Hello {name}, your library membership is due for renewal on {renewal}. Please renew it on time.',due:'Hello {name}, your pending library fee is ₹{due}. Please complete the payment. Thank you.',holiday:'Important Notice: Hariom Library [DATE] ko [REASON] ke karan band / special timing par rahegi.',welcome:'Hello {name} 👋 Welcome to the library. Seat/Type: {seat}. Shift: {shift}. Renewal: {renewal}.'};$('v31NoticeText').value=m[t]||''}
+window.v31ApplyTemplate=function(){const t=$('v31Template').value,m={renew:'Hello {name}, your library membership is due for renewal on {renewal}. Please renew it on time.',due:'Hello {name}, your pending library fee is ₹{due}. Please complete the payment. Thank you.',holiday:'Important Notice: [DATE] — [REASON]. The library may remain closed or follow special timings.',welcome:'Hello {name} 👋 Welcome to the library. Seat/Type: {seat}. Shift: {shift}. Renewal: {renewal}.'};$('v31NoticeText').value=m[t]||''}
 function audienceRows(){const a=$('v31Audience')?.value||'all';return state.students.filter(s=>a==='all'||(a==='active'&&s.state!=='expired'&&!s.due)||(a==='due'&&s.due>0)||(a==='expired'&&s.state==='expired')||(a==='soon'&&s.state==='soon')||(a==='fixed'&&s.type==='fixed')||(a==='flex'&&s.type==='flex'))}
 window.v31SaveNotice=function(){const text=$('v31NoticeText').value.trim();if(!text)return toast('Write notice');saveObj('notices',{audience:$('v31Audience').value,text,time:Date.now()}).then(()=>{audit('Notice saved',$('v31Audience').value);toast('Notice saved')})}
 window.v31CopyNotice=function(){const text=$('v31NoticeText').value.trim();if(!text)return toast('Write notice');navigator.clipboard?.writeText(text);toast('Message copied')}
@@ -6750,11 +6812,11 @@ window.v31Install=async function(){if(state.installPrompt){state.installPrompt.p
 function branchModule(){setSheet('🏢 Multi Library',`<div class="v31-card"><h3>Library Account</h3><p class="v31-sub"></p><button class="v31-btn" style="width:100%;margin-top:8px" onclick="v31SheetClose();v36AccountSwitch()">SWITCH / CREATE LIBRARY</button><button class="v31-btn ghost" style="width:100%;margin-top:8px" onclick="v31SheetClose();v36OpenAccount()">ACCOUNT & DEVICE SETTINGS</button></div>`)}
 window.v31SaveBranch=function(){state.branch=$('v31BranchSel').value;localStorage.setItem('v31_branch',state.branch);$('v31TopSub').textContent=state.branch+' • Realtime • Final';toast('Branch switched');v31SheetClose();renderAll()}
 function birthdayModule(){const now=new Date(),rows=state.students.map(s=>({s,dob:s.extra?.dob||s.profile?.dob||''})).filter(x=>x.dob).map(x=>({...x,d:new Date(x.dob+'T00:00:00')})).filter(x=>x.d.getMonth()===now.getMonth()).sort((a,b)=>a.d.getDate()-b.d.getDate());setSheet('🎂 Birthday Center',`<div class="v31-list">${rows.map(x=>`<div class="v31-item"><div class="v31-item-top"><div><b>${esc(x.s.name)}</b><br><small>${String(x.d.getDate()).padStart(2,'0')} ${x.d.toLocaleString('en-IN',{month:'short'})}</small></div><button class="v31-btn green" onclick="v31BirthdayWA('${x.s.studentKey}')">Greet</button></div></div>`).join('')||'<div class="v31-empty">No DOB-based birthdays found this month. Add DOB in Student 360.</div>'}</div>`)}
-window.v31BirthdayWA=function(k){const s=getStudent(k),p=digits(s?.phone);if(!p)return toast('Mobile missing');window.open('https://wa.me/91'+p+'?text='+encodeURIComponent(`Happy Birthday ${s.name} 🎉\nHariom Library ki taraf se aapko bahut bahut shubhkamnayein! 📚✨`),'_blank')}
+window.v31BirthdayWA=function(k){const s=getStudent(k),p=digits(s?.phone);if(!p)return toast('Mobile missing');window.open('https://wa.me/91'+p+'?text='+encodeURIComponent(`Happy Birthday ${s.name} 🎉\n${String(window.HL36?.libraryName||'Library')} wishes you a wonderful birthday! 📚✨`),'_blank')}
 
 function certificateModule(){setSheet('🏅 Certificates',`<div class="v31-card">${pickStudent()}<div class="v31-grid" style="margin-top:8px"><button class="v31-btn" onclick="v31CertPicked('membership')">Membership Certificate</button><button class="v31-btn green" onclick="v31CertPicked('nodue')">No-Dues Certificate</button></div></div>`)}
 window.v31CertPicked=function(t){const k=$('v31PickStudent').value;if(!k)return toast('Select student');v31Certificate(k,t)}
-window.v31Certificate=function(k,type){const s=getStudent(k);if(!s)return;if(type==='nodue'&&Number(s.due)>0)return alert('No-Dues certificate cannot be generated because current due is '+money(s.due));const c=document.createElement('canvas');c.width=1400;c.height=1000;const x=c.getContext('2d');x.fillStyle='#f8fafc';x.fillRect(0,0,1400,1000);x.strokeStyle='#155eef';x.lineWidth=14;x.strokeRect(28,28,1344,944);x.strokeStyle='#93c5fd';x.lineWidth=3;x.strokeRect(52,52,1296,896);x.fillStyle='#0b1220';x.textAlign='center';x.font='900 56px Georgia';x.fillText(String(window.HL36?.libraryName||'Hariom Library').toUpperCase(),700,150);x.fillStyle='#155eef';x.font='900 36px Arial';x.fillText(type==='nodue'?'NO-DUES CERTIFICATE':'MEMBERSHIP CERTIFICATE',700,220);x.fillStyle='#475569';x.font='500 26px Arial';x.fillText('This is to certify that',700,315);x.fillStyle='#0f172a';x.font='900 54px Georgia';x.fillText(String(s.name),700,400);x.fillStyle='#475569';x.font='500 26px Arial';x.fillText(type==='nodue'?'has no pending library fee in the current live record.':'is recorded as a member of '+String(window.HL36?.libraryName||'Hariom Library')+'.',700,475);x.font='700 24px Arial';x.fillText((s.type==='fixed'?'Seat '+s.seat:'Unreserved')+' • '+(s.shiftLabel||'-')+' • Renewal: '+(s.renewal||'-'),700,545);x.fillStyle='#64748b';x.font='500 20px Arial';x.fillText('Generated on '+isoDate()+' • Verification ID '+studentKey(s).toUpperCase(),700,800);x.textAlign='left';x.fillStyle='#0f172a';x.font='700 19px Arial';x.fillText('Authorized Signature',1030,880);downloadCanvas31(c,(type==='nodue'?'No_Dues_':'Membership_')+safeFile(s.name)+'.png');saveObj('certificates',{studentKey:k,student:s.name,type,date:isoDate(),time:Date.now()});audit('Certificate',type,s.name)}
+window.v31Certificate=function(k,type){const s=getStudent(k);if(!s)return;if(type==='nodue'&&Number(s.due)>0)return alert('No-Dues certificate cannot be generated because current due is '+money(s.due));const c=document.createElement('canvas');c.width=1400;c.height=1000;const x=c.getContext('2d');x.fillStyle='#f8fafc';x.fillRect(0,0,1400,1000);x.strokeStyle='#155eef';x.lineWidth=14;x.strokeRect(28,28,1344,944);x.strokeStyle='#93c5fd';x.lineWidth=3;x.strokeRect(52,52,1296,896);x.fillStyle='#0b1220';x.textAlign='center';x.font='900 56px Georgia';x.fillText(String(window.HL36?.libraryName||'Library').toUpperCase(),700,150);x.fillStyle='#155eef';x.font='900 36px Arial';x.fillText(type==='nodue'?'NO-DUES CERTIFICATE':'MEMBERSHIP CERTIFICATE',700,220);x.fillStyle='#475569';x.font='500 26px Arial';x.fillText('This is to certify that',700,315);x.fillStyle='#0f172a';x.font='900 54px Georgia';x.fillText(String(s.name),700,400);x.fillStyle='#475569';x.font='500 26px Arial';x.fillText(type==='nodue'?'has no pending library fee in the current live record.':'is recorded as a member of '+String(window.HL36?.libraryName||'Library')+'.',700,475);x.font='700 24px Arial';x.fillText((s.type==='fixed'?'Seat '+s.seat:'Unreserved')+' • '+(s.shiftLabel||'-')+' • Renewal: '+(s.renewal||'-'),700,545);x.fillStyle='#64748b';x.font='500 20px Arial';x.fillText('Generated on '+isoDate()+' • Verification ID '+studentKey(s).toUpperCase(),700,800);x.textAlign='left';x.fillStyle='#0f172a';x.font='700 19px Arial';x.fillText('Authorized Signature',1030,880);downloadCanvas31(c,(type==='nodue'?'No_Dues_':'Membership_')+safeFile(s.name)+'.png');saveObj('certificates',{studentKey:k,student:s.name,type,date:isoDate(),time:Date.now()});audit('Certificate',type,s.name)}
 
 function calendarModule(){const rows=state.students.filter(s=>s.renewal).sort((a,b)=>String(a.renewal).localeCompare(String(b.renewal))).slice(0,100);setSheet('📅 Renewal Calendar',`<div class="v31-list">${rows.map(s=>`<div class="v31-item"><div class="v31-item-top"><div><b>${esc(s.name)}</b><br><small>${esc(s.type==='fixed'?'Seat '+s.seat:'Unreserved')} • ${esc(s.shiftLabel)}</small></div><span class="v31-badge ${s.state==='expired'?'red':s.state==='soon'?'amber':'green'}">${esc(s.renewal)}</span></div></div>`).join('')||'<div class="v31-empty">No renewal dates.</div>'}</div>`)}
 function smartModule(){setSheet('🧠 Smart Local Search',`<div class="v31-card"><input id="v31SmartQ" class="v31-in" placeholder="Example: due students / expired / noon / seat 12 / phone 7488"><button class="v31-btn" style="width:100%;margin-top:8px" onclick="v31SmartRun()">SEARCH LIVE DATA</button></div><div id="v31SmartResult"></div>`)}
@@ -6774,7 +6836,7 @@ const genericCfg={
  inventory:['📦 Inventory','inventory',['Item name','Quantity','Low-stock level / note'],['In Stock','Low','Out']],
  lostfound:['🔍 Lost & Found','lostfound',['Item','Found / owner info','Claim details'],['Found','Claimed','Returned']],
  visitors:['🚶 Visitor Management','visitors',['Visitor name','Mobile','Purpose'],['Inside','Exited']],
- daypass:['🎟 Trial / Day Pass','daypass',['Student / Guest','Mobile','Plan / duration'],['Active','Converted','Expired']],
+ daypass:['🎟 Trial / Day Pass','daypass',['Student / Guest','Mobile','Plan expires in / duration'],['Active','Converted','Expired']],
  holidays:['🏖 Holiday / Special Timing','holidays',['Title','Date / timing','Notice'],['Upcoming','Completed']],
  cctv:['📹 CCTV Log','cctv',['Camera / Location','Issue','Action taken'],['Working','Fault','Service']],
  electricity:['⚡ Electricity Tracker','electricity',['Bill month','Units / amount','Note'],['Pending','Paid']],
@@ -6853,7 +6915,7 @@ body.dark .v32-compose{background:#0f172a;color:#f8fafc;box-shadow:inset 0 0 0 1
  const launch=$('v31Launch'); if(launch) launch.after(box); else {const w=home.querySelector('.welcome');w?.after(box)};
  const t=$('v32NoticeText');t?.addEventListener('input',()=>{chars();const old=$('v25NoticeText');if(old)old.value=t.value;try{localStorage.setItem('hariom_v25_notice',t.value)}catch(e){}});try{const saved=localStorage.getItem('hariom_v25_notice');if(saved)t.value=saved}catch(e){}chars();update();
  }
- window.v32Template=function(type){const N=String(window.HL36?.libraryName||'Hariom Library'),m={general:N+' Notice: Sabhi students kripya is suchna ko dhyan se padhein. Adhik jankari ke liye library admin se sampark karein.',payment:N+' Payment Reminder: Jinka monthly fee / renewal pending hai, kripya payment complete karein. Payment ho chuka ho to is notice ko ignore karein.',timing:N+' Timing Notice: Library timing / shift me update hai. Kripya naye timing ko follow karein aur zarurat par admin se sampark karein.',holiday:N+' Holiday Notice: Library schedule me temporary holiday / timing change rahega. Kripya notice ke anusaar planning karein.',urgent:N+' Urgent Notice: Sabhi students kripya is zaroori suchna par turant dhyan dein aur zarurat hone par admin se sampark karein.'},t=$('v32NoticeText');if(!t)return;t.value=m[type]||m.general;t.dispatchEvent(new Event('input'))}
+ window.v32Template=function(type){const N=String(window.HL36?.libraryName||'Library'),m={general:N+' Notice: Please read this update carefully. Contact the library administrator for more information.',payment:N+' Payment Reminder: Jinka monthly fee / renewal pending hai, kripya payment complete karein. Payment ho chuka ho to is notice ko ignore karein.',timing:N+' Timing Notice: Library timing / shift me update hai. Kripya naye timing ko follow karein aur zarurat par admin se sampark karein.',holiday:N+' Holiday Notice: Library schedule me temporary holiday / timing change rahega. Kripya notice ke anusaar planning karein.',urgent:N+' Urgent Notice: Please read this important update immediately and contact the administrator if needed.'},t=$('v32NoticeText');if(!t)return;t.value=m[type]||m.general;t.dispatchEvent(new Event('input'))}
  window.v32SendFrontNotice=function(){const t=$('v32NoticeText'),old=$('v25NoticeText');if(!t||!t.value.trim())return typeof showToast==='function'?showToast('Enter a notice message'):alert('Enter a notice message');if(!$('v32Consent')?.checked)return typeof showToast==='function'?showToast('Select the permission confirmation checkbox'):alert('Select the permission confirmation checkbox');if(old){old.value=t.value;old.dispatchEvent(new Event('input'))}const c=$('v25Confirm');if(c)c.checked=true;const st=$('v32Status');if(st){st.className='v32-status';st.querySelector('span').textContent='Connecting direct sender…'};if(typeof window.v25SendAllNotice==='function')window.v25SendAllNotice();else if(typeof showToast==='function')showToast('Direct sender module load nahi hua')}
  function init(){mount();update();if(typeof database!=='undefined'){database.ref('library_v3/seats').on('value',s=>{seats=s.val()||{};update()});database.ref('library_v3/unreservedStudentsV23').on('value',s=>{flex=s.val()||{};update()});database.ref('library_v3/v15/profiles').on('value',s=>{profiles=s.val()||{};update()});database.ref('library_v3/whatsappBroadcastHistory').limitToLast(1).on('value',s=>{const vals=s.val()||{},d=Object.values(vals).sort((a,b)=>Number(b.createdAt||0)-Number(a.createdAt||0))[0],st=$('v32Status');if(!st||!d)return;const state=String(d.status||'').toLowerCase();st.className='v32-status '+(['sent','partial'].includes(state)?'ready':state==='failed'?'error':'');st.querySelector('span').textContent=state==='sent'?`Last: ${Number(d.sentCount||0)} sent`:state==='partial'?`Last: ${Number(d.sentCount||0)} sent • ${Number(d.failedCount||0)} failed`:state==='failed'?'Last send failed • check setup':'Sending notice…'})}}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();window.addEventListener('load',()=>setTimeout(init,250));
@@ -6890,12 +6952,12 @@ body.v34-gate-only .v33-student-card{max-width:430px;margin:auto}
 .v34-auto-note{margin-top:10px;text-align:center;font-size:8px;color:#64748b;line-height:1.45}
 </style>
 <div id="v33Modal" class="v33-modal" aria-hidden="true"><div class="v33-dialog"><div class="v33-dialog-head"><b id="v33ModalTitle">Smart Gate Attendance</b><button class="v33-close" onclick="v33CloseModal()">×</button></div><div id="v33ModalBody" class="v33-dialog-body"></div></div></div>
-<div id="v33GateStudent" aria-hidden="true"><div class="v33-student-wrap"><div class="v33-student-brand"><div class="v33-student-logo">📚</div><div><h2>Hariom Library</h2><p>SMART GATE ATTENDANCE</p></div></div><div class="v33-student-card"><div class="v33-student-hero"><div class="big">📍</div><h1>Gate Check-in</h1><p>Registered mobile number verify karke attendance mark karein.</p></div><div id="v33GateForm"><input id="v33GatePhone" class="v33-phone" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit registered mobile number"><button class="v33-check-btn" onclick="v33GateCheckIn()">✅ VERIFY & MARK PRESENT</button></div><div id="v33GateState" class="v33-student-state"><p>Only registered student mobile numbers are accepted.</p></div><button class="v33-change" onclick="v33ForgetGateStudent()">Use another student number</button></div></div></div>
+<div id="v33GateStudent" aria-hidden="true"><div class="v33-student-wrap"><div class="v33-student-brand"><div class="v33-student-logo">📚</div><div><h2>Library Pro</h2><p>SMART GATE ATTENDANCE</p></div></div><div class="v33-student-card"><div class="v33-student-hero"><div class="big">📍</div><h1>Gate Check-in</h1><p>Verify the registered mobile number to mark attendance.</p></div><div id="v33GateForm"><input id="v33GatePhone" class="v33-phone" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit registered mobile number"><button class="v33-check-btn" onclick="v33GateCheckIn()">✅ VERIFY & MARK PRESENT</button></div><div id="v33GateState" class="v33-student-state"><p>Only registered student mobile numbers are accepted.</p></div><button class="v33-change" onclick="v33ForgetGateStudent()">Use another student number</button></div></div></div>
 <script id="v33-gate-script">
 (function(){
   const BASE='library_v3/gateAttendanceV33';
   const SHIFTS=['all','m','n','an','e','night'];
-  const SHIFT_LABEL={all:'All Shift',m:'Morning',n:'Noon',an:'Afternoon',e:'Evening',night:'Night'};
+  const SHIFT_LABEL={all:window.LP41_SHIFT_LABELS?.all||'All Shift',m:window.LP41_SHIFT_LABELS?.m||'Morning',n:window.LP41_SHIFT_LABELS?.n||'Noon',an:window.LP41_SHIFT_LABELS?.an||'Afternoon',e:window.LP41_SHIFT_LABELS?.e||'Evening',night:window.LP41_SHIFT_LABELS?.night||'Night'};
   const $=id=>document.getElementById(id);
   let seats={},flex={},profiles={},todayData={},yearRows=[],yearSelected=new Date().getFullYear(),initialToday=true,lastAlertTs=0;
   function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
@@ -6933,26 +6995,26 @@ body.v34-gate-only .v33-student-card{max-width:430px;margin:auto}
   }
   function openModal(title,html){$('v33ModalTitle').textContent=title;$('v33ModalBody').innerHTML=html;$('v33Modal').classList.add('show');$('v33Modal').setAttribute('aria-hidden','false');document.body.style.overflow='hidden'}
   window.v33CloseModal=function(){$('v33Modal').classList.remove('show');$('v33Modal').setAttribute('aria-hidden','true');document.body.style.overflow=''};
-  function loadQrLib(cb){if(typeof QRCode!=='undefined')return cb();const old=document.querySelector('script[data-v33-qrlib]');if(old){old.addEventListener('load',cb,{once:true});return}const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';s.dataset.v33Qrlib='1';s.onload=cb;s.onerror=()=>toast('QR library load nahi hua. Gate link copy karke QR generator use karein.');document.head.appendChild(s)}
-  window.v33ShowGateQR=function(){if(!adminOK())return;const url=gateUrl();openModal('▦ Gate Attendance QR','<div class="v33-panel"><h3>Print and place this QR at the library entrance.</h3><p class="v33-muted">Student apne phone se QR scan karega. First time registered mobile number verify karega; uske baad isi phone se next scans par attendance turant mark ho jayegi.</p><div id="v33QrBox" class="v33-qr-wrap"></div><input id="v33GateLink" class="v33-link" readonly value="'+esc(url)+'"><div class="v33-grid2" style="margin-top:8px"><button class="v33-action ghost" onclick="v33CopyGateLink()">🔗 COPY LINK</button><button class="v33-action" onclick="v33PrintGateQR()">🖨 PRINT QR</button></div></div><div class="v33-panel"><h3>Data safety</h3><p class="v33-muted">Unknown mobile numbers reject honge. Ek student ka same-day record overwrite/delete nahi hota; first scan time safe rehta hai aur later scans count + last scan time update karte hain. Har scan ka separate event log bhi permanent save hota hai.</p></div>');loadQrLib(()=>{const b=$('v33QrBox');if(!b)return;b.innerHTML='';new QRCode(b,{text:url,width:230,height:230,colorDark:'#0f172a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H})})};
+  function loadQrLib(cb){if(typeof QRCode!=='undefined')return cb();const old=document.querySelector('script[data-v33-qrlib]');if(old){old.addEventListener('load',cb,{once:true});return}const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';s.dataset.v33Qrlib='1';s.onload=cb;s.onerror=()=>toast('The QR library could not load. Copy the gate link and use a QR generator.');document.head.appendChild(s)}
+  window.v33ShowGateQR=function(){if(!adminOK())return;const url=gateUrl();openModal('▦ Gate Attendance QR','<div class="v33-panel"><h3>Print and place this QR at the library entrance.</h3><p class="v33-muted">Students scan this QR with their phone. On the first scan, they verify the registered mobile number. Future scans on the same phone can mark attendance immediately.</p><div id="v33QrBox" class="v33-qr-wrap"></div><input id="v33GateLink" class="v33-link" readonly value="'+esc(url)+'"><div class="v33-grid2" style="margin-top:8px"><button class="v33-action ghost" onclick="v33CopyGateLink()">🔗 COPY LINK</button><button class="v33-action" onclick="v33PrintGateQR()">🖨 PRINT QR</button></div></div><div class="v33-panel"><h3>Data safety</h3><p class="v33-muted">Unknown mobile numbers are rejected. The first scan time is preserved for the day; later scans only update scan count and last-seen time. Each scan is also recorded in the event log.</p></div>');loadQrLib(()=>{const b=$('v33QrBox');if(!b)return;b.innerHTML='';new QRCode(b,{text:url,width:230,height:230,colorDark:'#0f172a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.H})})};
   window.v33CopyGateLink=async function(){const url=gateUrl();try{await navigator.clipboard.writeText(url);toast('Gate link copied')}catch(e){prompt('Copy gate link:',url)}};
-  window.v33PrintGateQR=function(){const box=$('v33QrBox');if(!box)return;const c=box.querySelector('canvas'),im=box.querySelector('img'),src=c?c.toDataURL('image/png'):(im?im.src:'');if(!src)return toast('QR abhi load ho raha hai');const w=window.open('','_blank','width=520,height=700');if(!w)return toast('Popup blocked');w.document.write('<!doctype html><html><head><title>'+esc(window.HL36?.libraryName||'Library')+' Gate QR</title><style>body{font-family:Arial;text-align:center;padding:35px}img{width:320px;height:320px}.box{border:3px solid #111;border-radius:24px;padding:25px}h1{margin:0 0 8px}p{font-size:14px}b{font-size:20px}</style></head><body><div class="box"><h1>'+esc(window.HL36?.libraryName||'Hariom Library')+'</h1><b>SMART GATE ATTENDANCE</b><p>Gate par enter karne se pahle QR scan karein</p><img src="'+src+'"><p>Scan → Verify → Present</p></div><script>onload=()=>{setTimeout(()=>print(),250)}<\/script></body></html>');w.document.close()};
-  window.v33OpenToday=function(){if(!adminOK())return;const vals=Object.values(todayData||{}).filter(Boolean).sort((a,b)=>Number(b.firstSeenAt||0)-Number(a.firstSeenAt||0));openModal('✅ Today Attendance','<div class="v33-panel"><h3>'+vals.length+' students present today</h3><p class="v33-muted">First scan time permanent attendance time hai. Repeat scan sirf scan count / last seen update karta hai.</p></div><div class="v33-log">'+(vals.map(x=>'<div class="v33-log-row"><div><b>'+esc(x.name||'Student')+'</b><br><small>'+esc(x.source||'')+(x.seat?' • '+esc(String(x.seat)):'')+' • '+esc(shiftText(x.shift))+'<br>'+esc(x.phone||'')+'</small></div><div class="v33-days">'+esc(formatTime(x.firstSeenAt))+'<br><small>'+Number(x.scans||1)+' scan</small></div></div>').join('')||'<div class="v33-muted">No attendance yet today.</div>')+'</div>')};
+  window.v33PrintGateQR=function(){const box=$('v33QrBox');if(!box)return;const c=box.querySelector('canvas'),im=box.querySelector('img'),src=c?c.toDataURL('image/png'):(im?im.src:'');if(!src)return toast('The QR code is still loading');const w=window.open('','_blank','width=520,height=700');if(!w)return toast('Popup blocked');w.document.write('<!doctype html><html><head><title>'+esc(window.HL36?.libraryName||'Library')+' Gate QR</title><style>body{font-family:Arial;text-align:center;padding:35px}img{width:320px;height:320px}.box{border:3px solid #111;border-radius:24px;padding:25px}h1{margin:0 0 8px}p{font-size:14px}b{font-size:20px}</style></head><body><div class="box"><h1>'+esc(window.HL36?.libraryName||'Library')+'</h1><b>SMART GATE ATTENDANCE</b><p>Scan the QR before entering the library</p><img src="'+src+'"><p>Scan → Verify → Present</p></div><script>onload=()=>{setTimeout(()=>print(),250)}<\/script></body></html>');w.document.close()};
+  window.v33OpenToday=function(){if(!adminOK())return;const vals=Object.values(todayData||{}).filter(Boolean).sort((a,b)=>Number(b.firstSeenAt||0)-Number(a.firstSeenAt||0));openModal('✅ Today Attendance','<div class="v33-panel"><h3>'+vals.length+' students present today</h3><p class="v33-muted">The first scan is the attendance time. Repeat scans only update scan count and last-seen time.</p></div><div class="v33-log">'+(vals.map(x=>'<div class="v33-log-row"><div><b>'+esc(x.name||'Student')+'</b><br><small>'+esc(x.source||'')+(x.seat?' • '+esc(String(x.seat)):'')+' • '+esc(shiftText(x.shift))+'<br>'+esc(x.phone||'')+'</small></div><div class="v33-days">'+esc(formatTime(x.firstSeenAt))+'<br><small>'+Number(x.scans||1)+' scan</small></div></div>').join('')||'<div class="v33-muted">No attendance yet today.</div>')+'</div>')};
   function flattenYear(y,node){const out=[];Object.entries(node||{}).forEach(([m,days])=>Object.entries(days||{}).forEach(([d,students])=>Object.values(students||{}).forEach(x=>{if(x)out.push({...x,date:x.date||y+'-'+m+'-'+d})})));return out.sort((a,b)=>String(b.date).localeCompare(String(a.date))||Number(b.firstSeenAt||0)-Number(a.firstSeenAt||0))}
   function yearSummary(rows){const map=new Map();rows.forEach(x=>{const k=String(x.studentKey||'')||((phone10(x.phone)||'no-phone')+'|'+nameNorm(x.name));if(!k)return;const a=map.get(k)||{phone:x.phone||'',name:x.name||'Student',seat:x.seat||'',shift:x.shift||'',source:x.source||'',dates:new Set(),first:'',last:''};a.dates.add(x.date);if(!a.first||x.date<a.first)a.first=x.date;if(!a.last||x.date>a.last)a.last=x.date;map.set(k,a)});return [...map.values()].sort((a,b)=>b.dates.size-a.dates.size||a.name.localeCompare(b.name))}
   function renderYearbook(){const q=($('v33YearSearch')?.value||'').toLowerCase().trim(),rows=yearRows.filter(x=>!q||[x.name,x.phone,x.seat,shiftText(x.shift),x.source,x.date].join(' ').toLowerCase().includes(q)),sum=yearSummary(rows);$('v33YearDays').textContent=new Set(rows.map(x=>x.date)).size;$('v33YearStudents').textContent=sum.length;$('v33YearRecords').textContent=rows.length;const s=$('v33YearSummary');if(s)s.innerHTML=sum.slice(0,200).map(x=>'<div class="v33-summary-row"><div><b>'+esc(x.name)+'</b><br><small>'+esc(x.phone||'')+(x.seat?' • '+esc(String(x.seat)):'')+' • '+esc(x.source||'')+'<br>'+esc(x.first)+' → '+esc(x.last)+'</small></div><div class="v33-days">'+x.dates.size+' days</div></div>').join('')||'<div class="v33-muted">No matching records.</div>';const l=$('v33YearLog');if(l)l.innerHTML=rows.slice(0,1200).map(x=>'<div class="v33-log-row"><div><b>✅ '+esc(x.name||'Student')+'</b><br><small>'+esc(x.date)+' • '+esc(x.phone||'')+(x.seat?' • '+esc(String(x.seat)):'')+' • '+esc(shiftText(x.shift))+'</small></div><div class="v33-days">'+esc(formatTime(x.firstSeenAt))+'</div></div>').join('')||'<div class="v33-muted">No attendance records in this year.</div>'}
   window.v33LoadYear=function(y){yearSelected=Number(y)||new Date().getFullYear();const body=$('v33YearSummary');if(body)body.innerHTML='<div class="v33-muted">Loading year history…</div>';database.ref(BASE+'/years/'+yearSelected).once('value').then(s=>{yearRows=flattenYear(String(yearSelected),s.val()||{});renderYearbook()}).catch(e=>toast('Year history load error: '+e.message))};
-  window.v33OpenYearbook=function(){if(!adminOK())return;const cy=Number(nowPath().year),opts=Array.from({length:6},(_,i)=>cy-i).map(y=>'<option value="'+y+'" '+(y===cy?'selected':'')+'>'+y+'</option>').join('');openModal('📅 Attendance Yearbook','<div class="v33-year-toolbar"><select id="v33YearSelect" class="v33-select" onchange="v33LoadYear(this.value)">'+opts+'</select><input id="v33YearSearch" class="v33-input" placeholder="Search student, mobile, seat, date…" oninput="v33YearFilter()"></div><div class="v33-year-kpis"><div class="v33-year-kpi"><b id="v33YearStudents">0</b><span>STUDENTS</span></div><div class="v33-year-kpi"><b id="v33YearDays">0</b><span>OPEN DAYS</span></div><div class="v33-year-kpi"><b id="v33YearRecords">0</b><span>PRESENT RECORDS</span></div></div><div class="v33-grid2" style="margin-bottom:10px"><button class="v33-action green" onclick="v33ExportYearCSV()">⬇ EXPORT YEAR CSV</button><button class="v33-action ghost" onclick="v33ShowGateQR()">▦ GATE QR</button></div><div class="v33-panel"><h3>Student yearly summary</h3><div id="v33YearSummary" class="v33-summary"><div class="v33-muted">Loading…</div></div></div><div class="v33-panel"><h3>Full daily attendance log</h3><p class="v33-muted" style="margin-bottom:7px">Record delete button intentionally nahi diya gaya hai.</p><div id="v33YearLog" class="v33-log"></div></div>');v33LoadYear(cy)};
+  window.v33OpenYearbook=function(){if(!adminOK())return;const cy=Number(nowPath().year),opts=Array.from({length:6},(_,i)=>cy-i).map(y=>'<option value="'+y+'" '+(y===cy?'selected':'')+'>'+y+'</option>').join('');openModal('📅 Attendance Yearbook','<div class="v33-year-toolbar"><select id="v33YearSelect" class="v33-select" onchange="v33LoadYear(this.value)">'+opts+'</select><input id="v33YearSearch" class="v33-input" placeholder="Search student, mobile, seat, date…" oninput="v33YearFilter()"></div><div class="v33-year-kpis"><div class="v33-year-kpi"><b id="v33YearStudents">0</b><span>STUDENTS</span></div><div class="v33-year-kpi"><b id="v33YearDays">0</b><span>OPEN DAYS</span></div><div class="v33-year-kpi"><b id="v33YearRecords">0</b><span>PRESENT RECORDS</span></div></div><div class="v33-grid2" style="margin-bottom:10px"><button class="v33-action green" onclick="v33ExportYearCSV()">⬇ EXPORT YEAR CSV</button><button class="v33-action ghost" onclick="v33ShowGateQR()">▦ GATE QR</button></div><div class="v33-panel"><h3>Student yearly summary</h3><div id="v33YearSummary" class="v33-summary"><div class="v33-muted">Loading…</div></div></div><div class="v33-panel"><h3>Full daily attendance log</h3><p class="v33-muted" style="margin-bottom:7px">Attendance records are read-only from this screen.</p><div id="v33YearLog" class="v33-log"></div></div>');v33LoadYear(cy)};
   window.v33YearFilter=function(){renderYearbook()};
-  window.v33ExportYearCSV=function(){if(!yearRows.length)return toast('No attendance records were found for this year.');const cols=['date','name','phone','seat','shift','source','firstSeenAt','lastSeenAt','scans'],csv=[cols.join(','),...yearRows.map(x=>cols.map(c=>'"'+String(c==='shift'?shiftText(x[c]):c.endsWith('At')&&x[c]?new Date(Number(x[c])).toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}):(x[c]??'')).replace(/"/g,'""')+'"').join(','))].join('\n'),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='Hariom_Gate_Attendance_'+yearSelected+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
+  window.v33ExportYearCSV=function(){if(!yearRows.length)return toast('No attendance records were found for this year.');const cols=['date','name','phone','seat','shift','source','firstSeenAt','lastSeenAt','scans'],csv=[cols.join(','),...yearRows.map(x=>cols.map(c=>'"'+String(c==='shift'?shiftText(x[c]):c.endsWith('At')&&x[c]?new Date(Number(x[c])).toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}):(x[c]??'')).replace(/"/g,'""')+'"').join(','))].join('\n'),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=String(window.HL36?.libraryName||'Library').replace(/[^a-z0-9]+/gi,'_')+'_Gate_Attendance_'+yearSelected+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
   async function savePresent(s){const n=nowPath(),phone=phone10(s.phone),legacy=todayData&&todayData[phone],useLegacy=legacy&&nameNorm(legacy.name)===nameNorm(s.name),key=useLegacy?phone:String(s.studentKey||('gate_'+keyHash(phone+'|'+nameNorm(s.name)))),ref=database.ref(BASE+'/years/'+n.year+'/'+n.month+'/'+n.day+'/'+key),ts=Date.now();let first=false;await ref.transaction(cur=>{if(cur){return {...cur,lastSeenAt:ts,scans:Number(cur.scans||1)+1,studentKey:s.studentKey||cur.studentKey||key}}first=true;return {name:s.name,phone,seat:s.seat||'',shift:s.shift||'',source:s.source||'',studentKey:s.studentKey||key,studentId:s.studentId||'',date:n.date,year:n.year,month:n.month,day:n.day,present:true,firstSeenAt:ts,lastSeenAt:ts,scans:1,createdAt:ts}});await database.ref(BASE+'/events/'+n.year+'/'+n.month).push().set({name:s.name,phone,seat:s.seat||'',shift:s.shift||'',source:s.source||'',studentKey:s.studentKey||key,date:n.date,time:ts,type:first?'PRESENT':'RESCAN'});return first}
   let pendingGateCandidates=[];
   function candidateButtons(list){return '<div style="margin-top:12px;display:grid;gap:8px">'+list.map(s=>'<button class="v33-check-btn" style="background:#fff;color:#0f172a;border:1px solid #cbd5e1" onclick="v33ChooseGateStudent(\''+esc(s.studentKey)+'\')">👤 '+esc(s.name)+(s.seat?' • '+esc(String(s.seat)):'')+' • '+esc(s.source||'Student')+'</button>').join('')+'</div>'}
-  async function markResolvedStudent(s,auto){const state=$('v33GateState'),form=$('v33GateForm'),change=document.querySelector('.v33-change');state.className='v33-student-state';state.innerHTML='<p>⏳ '+esc(s.name)+' ka attendance save ho raha hai…</p>';try{const first=await savePresent(s);rememberGateStudent(s);$('v33GatePhone').value=phone10(s.phone);if(form)form.style.display='none';if(change)change.style.display='none';state.className='v33-student-state v33-success';state.innerHTML='<h3>✅ PRESENT</h3><b>'+esc(s.name)+'</b><p>'+esc(s.source||'Student')+(s.seat?' • '+esc(String(s.seat)):'')+' • '+esc(shiftText(s.shift))+'<br>'+esc(nowPath().date)+' • '+esc(nowPath().time)+(first?'':'<br>Already present today • scan time updated')+'</p><div class="v34-auto-note">This student is remembered on this phone. Future gate QR scans can mark attendance automatically.</div>';try{navigator.vibrate&&navigator.vibrate([90,40,90])}catch(e){}if(auto)toast('✅ '+s.name+' Present')}catch(e){state.className='v33-student-state';state.innerHTML='<p><b>Attendance save failed.</b><br>'+esc(e.message||e)+'</p>'}}
-  async function gateCheck(phone,auto,preferredKey){phone=phone10(phone);const state=$('v33GateState');if(!phone){state.className='v33-student-state';state.innerHTML='<p>Enter a valid 10-digit registered mobile number.</p>';return}const candidates=resolveCandidates(phone);if(!candidates.length){state.className='v33-student-state';state.innerHTML='<p><b>Student not found.</b><br>This number was not found in the Reserved, Unreserved, or Digital Admission list. Ask the administrator to verify the mobile number.</p>';return}let s=preferredKey?candidates.find(x=>x.studentKey===preferredKey):null;if(!s&&candidates.length===1)s=candidates[0];if(!s){pendingGateCandidates=candidates;state.className='v33-student-state';state.innerHTML='<p><b>Is mobile number par '+candidates.length+' students found.</b><br>Select your name once. This phone will remember the selection.</p>'+candidateButtons(candidates);return}pendingGateCandidates=[];await markResolvedStudent(s,auto)}
+  async function markResolvedStudent(s,auto){const state=$('v33GateState'),form=$('v33GateForm'),change=document.querySelector('.v33-change');state.className='v33-student-state';state.innerHTML='<p>⏳ '+esc(s.name)+' attendance is being saved…</p>';try{const first=await savePresent(s);rememberGateStudent(s);$('v33GatePhone').value=phone10(s.phone);if(form)form.style.display='none';if(change)change.style.display='none';state.className='v33-student-state v33-success';state.innerHTML='<h3>✅ PRESENT</h3><b>'+esc(s.name)+'</b><p>'+esc(s.source||'Student')+(s.seat?' • '+esc(String(s.seat)):'')+' • '+esc(shiftText(s.shift))+'<br>'+esc(nowPath().date)+' • '+esc(nowPath().time)+(first?'':'<br>Already present today • scan time updated')+'</p><div class="v34-auto-note">This student is remembered on this phone. Future gate QR scans can mark attendance automatically.</div>';try{navigator.vibrate&&navigator.vibrate([90,40,90])}catch(e){}if(auto)toast('✅ '+s.name+' Present')}catch(e){state.className='v33-student-state';state.innerHTML='<p><b>Attendance save failed.</b><br>'+esc(e.message||e)+'</p>'}}
+  async function gateCheck(phone,auto,preferredKey){phone=phone10(phone);const state=$('v33GateState');if(!phone){state.className='v33-student-state';state.innerHTML='<p>Enter a valid 10-digit registered mobile number.</p>';return}const candidates=resolveCandidates(phone);if(!candidates.length){state.className='v33-student-state';state.innerHTML='<p><b>Student not found.</b><br>This number was not found in the Reserved, Unreserved, or Digital Admission list. Ask the administrator to verify the mobile number.</p>';return}let s=preferredKey?candidates.find(x=>x.studentKey===preferredKey):null;if(!s&&candidates.length===1)s=candidates[0];if(!s){pendingGateCandidates=candidates;state.className='v33-student-state';state.innerHTML='<p><b>This mobile number has '+candidates.length+' students registered.</b><br>Select your name once. This phone will remember the selection.</p>'+candidateButtons(candidates);return}pendingGateCandidates=[];await markResolvedStudent(s,auto)}
   window.v33ChooseGateStudent=function(key){const s=pendingGateCandidates.find(x=>x.studentKey===key);if(s)markResolvedStudent(s,false)};
   window.v33GateCheckIn=function(){gateCheck($('v33GatePhone').value,false,'')};
-  window.v33ForgetGateStudent=function(){forgetRememberedGatePhone();pendingGateCandidates=[];const form=$('v33GateForm'),change=document.querySelector('.v33-change');if(form)form.style.display='block';if(change)change.style.display='none';$('v33GatePhone').value='';$('v33GateState').className='v33-student-state';$('v33GateState').innerHTML='<p>Registered mobile number enter karke is phone ko attendance ke liye register karein.</p>';$('v33GatePhone').focus()};
+  window.v33ForgetGateStudent=function(){forgetRememberedGatePhone();pendingGateCandidates=[];const form=$('v33GateForm'),change=document.querySelector('.v33-change');if(form)form.style.display='block';if(change)change.style.display='none';$('v33GatePhone').value='';$('v33GateState').className='v33-student-state';$('v33GateState').innerHTML='<p>Enter the registered mobile number to register this phone for attendance.</p>';$('v33GatePhone').focus()};
   async function openGateMode(){document.body.classList.add('v34-gate-only');const overlay=$('v33GateStudent');overlay.style.display='block';overlay.setAttribute('aria-hidden','false');document.body.style.overflow='auto';const form=$('v33GateForm'),change=document.querySelector('.v33-change');if(change)change.style.display='none';try{const vals=await Promise.all([database.ref('library_v3/seats').once('value'),database.ref('library_v3/unreservedStudentsV23').once('value'),database.ref('library_v3/v15/profiles').once('value')]);seats=vals[0].val()||{};flex=vals[1].val()||{};profiles=vals[2].val()||{};const saved=rememberedGatePhone(),savedKey=rememberedGateKey();if(saved&&savedKey&&resolveStudent(saved,savedKey)){if(form)form.style.display='none';$('v33GatePhone').value=saved;await gateCheck(saved,true,savedKey)}else{if(saved&&!savedKey&&resolveCandidates(saved).length===1){if(form)form.style.display='none';$('v33GatePhone').value=saved;await gateCheck(saved,true,'')}else{if(form)form.style.display='block';$('v33GateState').innerHTML='<p>Enter your registered mobile number. If several students share a family number, choose your name once. Future scans can mark PRESENT automatically.</p>';$('v33GatePhone').focus()}}}catch(e){$('v33GateState').innerHTML='<p>Firebase is not connected. Check the internet connection and scan the QR again.</p>'}}
   function init(){mountFront();if(typeof database==='undefined')return;database.ref('library_v3/seats').on('value',s=>{seats=s.val()||{};renderFront()});database.ref('library_v3/unreservedStudentsV23').on('value',s=>{flex=s.val()||{};renderFront()});database.ref('library_v3/v15/profiles').on('value',s=>{profiles=s.val()||{};renderFront()});database.ref(currentTodayPath()).on('value',s=>{todayData=s.val()||{};renderFront()});const q=new URLSearchParams(location.search);if(q.get('gate')==='present')setTimeout(openGateMode,80)}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();window.addEventListener('load',()=>setTimeout(()=>{mountFront();renderFront()},250));
@@ -6966,7 +7028,7 @@ body.v34-gate-only .v33-student-card{max-width:430px;margin:auto}
 #v34AuthGate{display:none!important;position:fixed;inset:0;z-index:20000;background:linear-gradient(155deg,#061225,#0b2b5d 60%,#155eef);padding:18px;color:#fff;overflow:auto}
 #v34AuthGate.show{display:grid;place-items:center}.v34-auth-card{width:min(430px,100%);background:#fff;color:#0f172a;border-radius:28px;padding:22px;box-shadow:0 28px 80px rgba(0,0,0,.35)}.v34-auth-logo{width:58px;height:58px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(135deg,#155eef,#38bdf8);color:#fff;font-size:26px;margin-bottom:14px}.v34-auth-card h2{font-size:21px}.v34-auth-card p{font-size:10px;color:#64748b;line-height:1.5;margin:6px 0 15px}.v34-auth-in{width:100%;border:1.5px solid #cbd5e1;border-radius:15px;padding:14px;font-size:15px;outline:0;margin-bottom:9px}.v34-auth-in:focus{border-color:#155eef;box-shadow:0 0 0 4px #155eef18}.v34-auth-btn{width:100%;border:0;border-radius:15px;padding:14px;background:#155eef;color:#fff;font-weight:950;font-size:11px}.v34-auth-btn.green{background:#16a34a}.v34-auth-msg{margin-top:10px;padding:10px 12px;border-radius:13px;background:#f1f5f9;color:#475569;font-size:9px;line-height:1.45}.v34-auth-step{display:none}.v34-auth-step.on{display:block}
 </style>
-<div id="v34AuthGate" aria-hidden="true"><div class="v34-auth-card"><div class="v34-auth-logo">🔐</div><h2>Hariom Library Secure Login</h2><p></p><div id="v34AuthPhoneStep" class="v34-auth-step on"><input id="v34AuthPhone" class="v34-auth-in" type="tel" inputmode="numeric" maxlength="10" placeholder="Approved 10-digit mobile number"><div id="v34Recaptcha"></div><button class="v34-auth-btn" onclick="v34SendOtp()">SEND OTP</button></div><div id="v34AuthOtpStep" class="v34-auth-step"><input id="v34AuthOtp" class="v34-auth-in" type="tel" inputmode="numeric" maxlength="6" placeholder="6-digit OTP"><button class="v34-auth-btn green" onclick="v34VerifyOtp()">VERIFY & OPEN APP</button></div><div id="v34AuthMsg" class="v34-auth-msg"></div></div></div>
+<div id="v34AuthGate" aria-hidden="true"><div class="v34-auth-card"><div class="v34-auth-logo">🔐</div><h2>Library Pro Secure Login</h2><p></p><div id="v34AuthPhoneStep" class="v34-auth-step on"><input id="v34AuthPhone" class="v34-auth-in" type="tel" inputmode="numeric" maxlength="10" placeholder="Approved 10-digit mobile number"><div id="v34Recaptcha"></div><button class="v34-auth-btn" onclick="v34SendOtp()">SEND OTP</button></div><div id="v34AuthOtpStep" class="v34-auth-step"><input id="v34AuthOtp" class="v34-auth-in" type="tel" inputmode="numeric" maxlength="6" placeholder="6-digit OTP"><button class="v34-auth-btn green" onclick="v34VerifyOtp()">VERIFY & OPEN APP</button></div><div id="v34AuthMsg" class="v34-auth-msg"></div></div></div>
 <script id="v34-master-security-js">
 (function(){
   'use strict';
@@ -7257,7 +7319,7 @@ body.v36-locked> :not(#v36Gate):not(script):not(style){visibility:hidden!importa
  function supportPhoneDigits(v){return String(v||'').replace(/\D/g,'').slice(-10)}
  function supportActions(phone){const d=supportPhoneDigits(phone);if(!d)return '';const wa=(d.length===10?'91'+d:d);return '<div class="v382-license-actions"><a href="tel:'+d+'">CALL SELLER</a><a href="https://wa.me/'+wa+'" target="_blank" rel="noopener">WHATSAPP</a></div>'}
  let v382LicenseTimer=null;
- function updateLicenseBanner(lic){const e=licenseBannerEl(),exp=Number(lic?.expiresAt||0);if(!exp){e.className='v382-license-banner';e.innerHTML='';return}const now=Date.now(),gu=graceUntilTs(lic),phone=lic?.supportPhone||'';if(now>gu){e.className='v382-license-banner';e.innerHTML='';lockReason('<b>License expired</b><br>Grace period bhi khatam ho gaya hai.<br>Complete payment and ask the seller to reactivate the app.'+(phone?'<br><b>Contact: '+esc(phone)+'</b>':'')+supportActions(phone));return}if(now>exp){const left=Math.max(0,Math.ceil((gu-now)/LICENSE_DAY));e.className='v382-license-banner show danger';e.innerHTML='<b>⚠️ Aapka plan expire ho gaya hai.</b><br>Grace period me app '+left+' din aur chalega. Payment karke renewal karwaiye.'+(phone?' • Contact: '+esc(phone):'')+supportActions(phone);return}const days=Math.ceil((exp-now)/LICENSE_DAY);if(days<=7){e.className='v382-license-banner show warn';e.innerHTML='<b>⏳ Plan '+days+' din me expire hoga.</b> Renewal ke liye seller se contact kare.'+(phone?' • '+esc(phone):'')+supportActions(phone)}else{e.className='v382-license-banner';e.innerHTML=''}}
+ function updateLicenseBanner(lic){const e=licenseBannerEl(),exp=Number(lic?.expiresAt||0);if(!exp){e.className='v382-license-banner';e.innerHTML='';return}const now=Date.now(),gu=graceUntilTs(lic),phone=lic?.supportPhone||'';if(now>gu){e.className='v382-license-banner';e.innerHTML='';lockReason('<b>License expired</b><br>The grace period has ended.<br>Complete payment and ask the seller to reactivate the app.'+(phone?'<br><b>Contact: '+esc(phone)+'</b>':'')+supportActions(phone));return}if(now>exp){const left=Math.max(0,Math.ceil((gu-now)/LICENSE_DAY));e.className='v382-license-banner show danger';e.innerHTML='<b>⚠️ Your plan has expired.</b><br>Grace period me app '+left+' more day(s). Complete payment to renew the plan.'+(phone?' • Contact: '+esc(phone):'')+supportActions(phone);return}const days=Math.ceil((exp-now)/LICENSE_DAY);if(days<=7){e.className='v382-license-banner show warn';e.innerHTML='<b>⏳ Plan expires in '+days+' day(s).</b> Contact the seller for renewal.'+(phone?' • '+esc(phone):'')+supportActions(phone)}else{e.className='v382-license-banner';e.innerHTML=''}}
  function startLicenseMonitor(lic){clearInterval(v382LicenseTimer);updateLicenseBanner(lic);v382LicenseTimer=setInterval(()=>updateLicenseBanner(lic),30000)}
  async function fingerprint(){const s=[navigator.userAgent,navigator.platform||'',screen.width+'x'+screen.height,navigator.language||''].join('|');try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('').slice(0,24)}catch(e){return btoa(unescape(encodeURIComponent(s))).slice(0,24)}}
  function syncSeatUi(seat){seat=Math.max(1,Math.min(2000,Number(seat||105)||105));try{TOTAL_SEATS=seat}catch(e){}document.querySelectorAll('input[type=number][max="105"]').forEach(x=>{x.max=String(seat)});const stat=document.querySelector('#homeSection .stats-grid .stat-card:first-child .stat-value');if(stat)stat.textContent=String(seat);document.querySelectorAll('[data-v361-total-seats]').forEach(x=>x.textContent=String(seat))}
@@ -8024,7 +8086,7 @@ function boot(){hideLegacySeller();try{firebase.auth().onAuthStateChanged(maybeS
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
 </script>
-<!-- ===== V44 CUSTOMER PROBLEM CHAT + CUSTOM ALL SHIFT ===== -->
+<!-- ===== V45 PRODUCTION FINAL ===== -->
 <!-- ===== END V39 ===== -->
 
 <!-- ===== V40 COMPACT RENEWAL CENTER + OWNER-ONLY WHATSAPP ===== -->
@@ -8315,7 +8377,7 @@ body.v361-tenant #v25NoticePanel{display:none!important}
 <script id="lp41-js">
 (function(){
 'use strict';
-const VER='41.0',BASE='library_v3/v41',DAY=86400000;
+const VER='45.0',BASE='library_v3/v41',DAY=86400000;
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const digits=v=>String(v||'').replace(/\D/g,'').slice(-10);
@@ -8689,8 +8751,8 @@ window.v41SetCustomerPlan=async function(uid){
  try{
   const ss=await window.HL36.rawRef('platform/licensesByUid/'+uid).once('value'),l=ss.val()||{},cur=String(l.featurePlan||'premium').toLowerCase();
   const v=prompt('Software plan: BASIC / PRO / PREMIUM',cur.toUpperCase());if(v===null)return;const p=String(v).trim().toLowerCase();if(!['basic','pro','premium'].includes(p))return alert('Use BASIC, PRO or PREMIUM.');
-  await window.HL36.rawRef('platform/licensesByUid/'+uid).update({featurePlan:p,updatedAt:Date.now()});alert('✅ Software plan changed to '+p.toUpperCase()+'. Customer next login/reload par new access dekhega.');if(typeof v38LoadCustomers==='function')v38LoadCustomers()
- }catch(e){alert('Plan update failed: '+e.message)}
+  await window.HL36.rawRef('platform/licensesByUid/'+uid).update({featurePlan:p,updatedAt:Date.now()});alert('✅ Software plan changed to '+p.toUpperCase()+'. The customer will see the updated access after the next login or reload.');if(typeof v38LoadCustomers==='function')v38LoadCustomers()
+ }catch(e){alert('Plan expires in update failed: '+e.message)}
 };
 
 function applyVersionMeta(){
@@ -9240,6 +9302,39 @@ setInterval(async()=>{
 })();
 </script>
 <!-- ===== END V43 ===== -->
+
+
+<!-- ===== V45 DYNAMIC GATE BRANDING ===== -->
+<script id="lp45-gate-branding">
+(function(){
+ const q=new URLSearchParams(location.search),gate=q.get('gate')==='present';
+ function applyGateBrand(b={}){
+   const name=String(b.libraryName||window.HL36?.libraryName||(window.HL36?.libraryId==='hariom_master'?'Hariom Library':'Library Pro'));
+   if(window.HL36)window.HL36.libraryName=name;
+   const h=document.querySelector('.v33-student-brand h2');if(h)h.textContent=name;
+   const auth=document.querySelector('#v34AuthGate h2');if(auth)auth.textContent=name+' Secure Login';
+   const main=document.querySelector('.logo-area h2');if(main)main.textContent=name;
+   const welcome=document.querySelector('.welcome h2');if(welcome)welcome.textContent='Welcome to '+name+' 👋';
+   const logo=String(b.logo||'');
+   const gateLogo=document.querySelector('.v33-student-logo');
+   if(gateLogo&&logo)gateLogo.innerHTML='<img src="'+logo+'" alt="" style="width:100%;height:100%;object-fit:contain;border-radius:12px;background:#fff;padding:3px">';
+   const headerLogo=document.querySelector('.logo img');if(headerLogo&&logo)headerLogo.src=logo;
+   document.title=name+' • Library Pro'
+ }
+ async function load(){
+   if(!window.HL36||typeof database==='undefined'){applyGateBrand();return}
+   try{
+     const snap=await database.ref('library_v3/v41/settings/branding').once('value'),b=snap.val()||{};
+     if(!b.libraryName)b.libraryName=window.HL36.libraryName;
+     window.LP41_BRANDING={...(window.LP41_BRANDING||{}),...b};
+     applyGateBrand(b)
+   }catch(e){applyGateBrand()}
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load);else load();
+ window.addEventListener('load',()=>setTimeout(load,350))
+})();
+</script>
+<!-- ===== END V45 DYNAMIC GATE BRANDING ===== -->
 
 </body>
 </html>
