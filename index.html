@@ -6919,7 +6919,7 @@ body.v36-locked> :not(#v36Gate):not(script):not(style){visibility:hidden!importa
    <input id="v361LibraryName" class="v36-in" maxlength="60" placeholder="Library name">
    <div class="v361-seat-pick"><span>Total Seats</span><input id="v361LoginSeats" class="v36-in" type="number" min="1" max="2000" value="105" inputmode="numeric"></div>
    <input id="v36Phone" class="v36-in" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
-   <div id="v36Recaptcha" style="display:none"></div>
+   <div id="v36Recaptcha" aria-hidden="true"></div>
    <button id="v36SendOtpBtn" class="v36-btn" onclick="v36SendOtp()">GET OTP</button>
   </div>
   <div id="v36OtpStep" class="v36-step">
@@ -7154,8 +7154,17 @@ body.v36-locked> :not(#v36Gate):not(script):not(style){visibility:hidden!importa
    try{
      if(btn){btn.disabled=true;btn.textContent='SENDING OTP...'}
      msg('');
+     // Always use a fresh DOM host. Reusing the same element can trigger
+     // "reCAPTCHA has already been rendered in this element" on mobile/PWA.
      if(recaptcha){try{recaptcha.clear()}catch(e){} recaptcha=null}
-     recaptcha=new firebase.auth.RecaptchaVerifier('v36SendOtpBtn',{
+     const oldRecaptchaHost=$('v36Recaptcha');
+     if(oldRecaptchaHost&&oldRecaptchaHost.parentNode){
+       const freshHost=document.createElement('div');
+       freshHost.id='v36Recaptcha';
+       freshHost.setAttribute('aria-hidden','true');
+       oldRecaptchaHost.parentNode.replaceChild(freshHost,oldRecaptchaHost);
+     }
+     recaptcha=new firebase.auth.RecaptchaVerifier('v36Recaptcha',{
        size:'invisible',
        callback:function(){},
        'expired-callback':function(){msg('Verification expired. GET OTP dubara dabaiye.')}
