@@ -24,6 +24,18 @@ content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="./firebase-auth-config.js"></script>
+<script>
+// V36.3 fallback: keep OTP working even if an older/blank firebase-auth-config.js is cached.
+window.HARIOM_AUTH_CONFIG = {
+  apiKey: "AIzaSyCl7Ciyi_iRkrjl9rhsPAx7VyDLkV82-F0",
+  authDomain: "hariom-library-3c480.firebaseapp.com",
+  databaseURL: "https://hariom-library-3c480-default-rtdb.firebaseio.com/",
+  projectId: "hariom-library-3c480",
+  storageBucket: "hariom-library-3c480.firebasestorage.app",
+  messagingSenderId: "610512909941",
+  appId: "1:610512909941:web:f3ecf29854f4147ea5ea3c"
+};
+</script>
 
 <!-- Excel -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
