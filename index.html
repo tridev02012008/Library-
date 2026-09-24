@@ -7155,6 +7155,15 @@ body.v36-locked> :not(#v36Gate):not(script):not(style){visibility:hidden!importa
     <input id="v38Notes" class="v38-in" placeholder="Notes (optional)">
     <button id="v38CreateBtn" class="v38-btn green" style="width:100%;margin-top:7px" onclick="v38CreateCustomer()">CREATE & SAVE CUSTOMER</button>
     <div id="v38CreateMsg" class="v38-msg"></div>
+
+    <div id="v385LastLoginBox" style="display:none;margin-top:10px;border:2px solid #22c55e;background:#f0fdf4;border-radius:15px;padding:12px">
+      <div style="font-size:12px;font-weight:900;color:#166534">✅ SAVED CUSTOMER LOGIN</div>
+      <div id="v385LastLoginInfo" style="font-size:11px;line-height:1.7;color:#14532d;margin-top:6px"></div>
+      <div class="v38-actions" style="margin-top:8px">
+        <button class="v38-btn green sm" onclick="v385CopyLastLogin()">COPY ID + PASSWORD</button>
+        <button class="v38-btn gray sm" onclick="v385ClearLastLogin()">HIDE</button>
+      </div>
+    </div>
    </div>
    <div class="v38-card"><h3>📊 Seller Dashboard</h3><div id="v38Stats" class="v38-stats"></div><div class="v38-meta" style="margin-top:9px">Customer passwords private PIN se encrypted form me cloud me save hote hain.<br><b>Testing:</b> customer login same Chrome profile/tab me mat karein. Customer ko dusre phone ya Incognito me login karayein, kyunki Firebase ek browser profile me ek hi active account rakhta hai.</div></div>
   </div>
@@ -7184,14 +7193,44 @@ function inGraceSeller(l){const exp=Number(l?.expiresAt||0);return !!(exp&&Date.
 function expired(l){const exp=Number(l?.expiresAt||0);return !!(exp&&Date.now()>graceUntil(l))}
 function expiring(l){if(!l?.expiresAt||expired(l)||inGraceSeller(l))return false;return Number(l.expiresAt)-Date.now()<=30*V38_DAY}
 function emailFor(id){id=cleanId(id);return id===OWNER_ID?OWNER_EMAIL:'lp.'+id.toLowerCase().replace(/_/g,'-')+'@librarypro.app'}
+function v385AuthEmails(id){
+ id=cleanId(id);
+ if(id===OWNER_ID)return [OWNER_EMAIL];
+ const slug=id.toLowerCase().replace(/_/g,'-');
+ return ['lp2.'+slug+'@librarypro.app','lp3.'+slug+'@librarypro.app','lp4.'+slug+'@librarypro.app','lp5.'+slug+'@librarypro.app','lp.'+slug+'@librarypro.app'];
+}
+function v385InvalidAuth(e){
+ const z=(String(e?.code||'')+' '+String(e?.message||'')).toUpperCase();
+ return z.includes('INVALID_LOGIN_CREDENTIALS')||z.includes('INVALID-CREDENTIAL')||z.includes('WRONG-PASSWORD')||z.includes('USER-NOT-FOUND')||z.includes('INVALID_PASSWORD');
+}
 
-// Override login: requested personal ID maps to the protected owner Firebase account.
+// Customer login now tries the current auth identity plus legacy identities.
+// This also hides raw Firebase/Google error JSON from the login page.
 window.v37Login=async function(){
  const id=cleanId($('v37LicenseId')?.value),pass=String($('v37Password')?.value||''),btn=$('v37LoginBtn'),m=$('v36Msg');
  const say=t=>{if(m){m.textContent=t||'';m.style.display=t?'block':'none'}};
- if(id.length<3)return say('Valid User ID daliye.');if(pass.length<6)return say('Password minimum 6 characters.');
+ if(id.length<3)return say('Valid User ID daliye.');
+ if(pass.length<6)return say('Password minimum 6 characters.');
  localStorage.setItem('lp_v37_last_id',id);
- try{btn.disabled=true;btn.textContent='CHECKING...';say('');await firebase.auth().signInWithEmailAndPassword(emailFor(id),pass)}catch(e){const c=String(e.code||'');if(c.includes('invalid-credential')||c.includes('wrong-password')||c.includes('user-not-found'))say('User ID ya password galat hai.');else if(c.includes('operation-not-allowed'))say('Firebase me Email/Password sign-in enable kijiye.');else say('Login failed: '+(e.message||'Unknown error'))}finally{btn.disabled=false;btn.textContent='LOGIN'}
+ try{
+   btn.disabled=true;btn.textContent='CHECKING...';say('');
+   let lastErr=null;
+   for(const email of v385AuthEmails(id)){
+     try{
+       await firebase.auth().signInWithEmailAndPassword(email,pass);
+       return;
+     }catch(e){
+       lastErr=e;
+       if(v385InvalidAuth(e))continue;
+       throw e;
+     }
+   }
+   throw lastErr||new Error('INVALID_LOGIN_CREDENTIALS');
+ }catch(e){
+   if(v385InvalidAuth(e))say('User ID ya password match nahi hua. Seller Center se COPY LOGIN use karke exact ID/password daliye.');
+   else if(String(e?.code||'').includes('operation-not-allowed'))say('Firebase me Email/Password sign-in enable kijiye.');
+   else say('Login temporarily failed. Internet check karke dobara try kijiye.');
+ }finally{btn.disabled=false;btn.textContent='LOGIN'}
 };
 
 // Keep seller-recorded customer password reliable: customers cannot change it themselves.
@@ -7222,7 +7261,7 @@ window.v38StartVault=async function(){
 window.v38VaultSubmit=async function(){
  const p=$('v38VaultPin').value.trim(),p2=$('v38VaultPin2').value.trim(),m=$('v38VaultMsg'),btn=$('v38VaultBtn');
  if(!/^\d{6,12}$/.test(p)){m.textContent='6–12 digit private PIN rakhiye.';return}if(vaultSetup&&p!==p2){m.textContent='Confirm PIN match nahi hua.';return}
- try{btn.disabled=true;btn.textContent='PLEASE WAIT...';if(vaultSetup){const salt=crypto.getRandomValues(new Uint8Array(16));vaultSalt=b64(salt);const d=await derive(p,vaultSalt);vaultKey=d.key;await raw('platform/sellerVault/config').set({salt:vaultSalt,verifier:d.verifier,createdAt:Date.now()});vaultUnlocked=true}else{const c=(await raw('platform/sellerVault/config').once('value')).val()||{};vaultSalt=c.salt||'';const d=await derive(p,vaultSalt);if(d.verifier!==c.verifier)throw new Error('Private PIN galat hai.');vaultKey=d.key;vaultUnlocked=true} $('v38VaultGate').classList.remove('show');$('v38PrivateSellerPanel').classList.add('show');$('v38PrivateSellerPanel').setAttribute('aria-hidden','false');if($('v38SupportPhone')&&!$('v38SupportPhone').value)$('v38SupportPhone').value=localStorage.getItem('lp_v38_support_phone')||'';v38PlanChanged();v384StartLive();await v38LoadCustomers()}catch(e){m.textContent='❌ '+(e.message||e)}finally{btn.disabled=false;btn.textContent=vaultSetup?'CREATE PRIVATE PIN':'UNLOCK'}
+ try{btn.disabled=true;btn.textContent='PLEASE WAIT...';if(vaultSetup){const salt=crypto.getRandomValues(new Uint8Array(16));vaultSalt=b64(salt);const d=await derive(p,vaultSalt);vaultKey=d.key;await raw('platform/sellerVault/config').set({salt:vaultSalt,verifier:d.verifier,createdAt:Date.now()});vaultUnlocked=true}else{const c=(await raw('platform/sellerVault/config').once('value')).val()||{};vaultSalt=c.salt||'';const d=await derive(p,vaultSalt);if(d.verifier!==c.verifier)throw new Error('Private PIN galat hai.');vaultKey=d.key;vaultUnlocked=true} $('v38VaultGate').classList.remove('show');$('v38PrivateSellerPanel').classList.add('show');$('v38PrivateSellerPanel').setAttribute('aria-hidden','false');if($('v38SupportPhone')&&!$('v38SupportPhone').value)$('v38SupportPhone').value=localStorage.getItem('lp_v38_support_phone')||'';v38PlanChanged();v385RestoreLastLogin();v384StartLive();await v38LoadCustomers()}catch(e){m.textContent='❌ '+(e.message||e)}finally{btn.disabled=false;btn.textContent=vaultSetup?'CREATE PRIVATE PIN':'UNLOCK'}
 };
 window.v38VaultClose=function(){$('v38VaultGate').classList.remove('show');history.replaceState(null,'',location.pathname)};
 window.v38LockVault=function(){vaultKey=null;vaultUnlocked=false;vaultCache={};$('v38PrivateSellerPanel').classList.remove('show');history.replaceState(null,'',location.pathname)};
@@ -7231,12 +7270,94 @@ window.v38GenerateId=function(){const d=new Date(),ym=String(d.getFullYear()).sl
 window.v38GeneratePass=function(){const chars='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789@#';let p='';crypto.getRandomValues(new Uint8Array(12)).forEach(x=>p+=chars[x%chars.length]);$('v38NewPass').value=p};
 window.v38PlanChanged=function(){const plan=$('v38Plan')?.value,el=$('v38Expiry');if(!el)return;if(plan==='lifetime'){el.value='';el.disabled=true;return}el.disabled=false;if(plan==='custom')return;const d=new Date();const months={ '1m':1,'3m':3,'6m':6,'1y':12 }[plan]||12;d.setMonth(d.getMonth()+months);el.value=d.toISOString().slice(0,10)};
 function expiryMs(v){if(!v)return 0;return new Date(v+'T23:59:59').getTime()||0}
+
+function v385FirebaseOptions(){
+ const c=window.HARIOM_AUTH_CONFIG||{};
+ const base=(typeof firebase!=='undefined'&&firebase.app)?(firebase.app().options||{}):{};
+ return {
+   apiKey:c.apiKey||base.apiKey,
+   authDomain:c.authDomain||base.authDomain,
+   databaseURL:c.databaseURL||base.databaseURL,
+   projectId:c.projectId||base.projectId,
+   storageBucket:c.storageBucket||base.storageBucket,
+   messagingSenderId:c.messagingSenderId||base.messagingSenderId,
+   appId:c.appId||base.appId
+ };
+}
+async function v385CreateSecondaryUser(id,pass){
+ const emails=v385AuthEmails(id).filter(x=>x!==OWNER_EMAIL);
+ let app=null,auth2=null;
+ try{
+   const opts=v385FirebaseOptions();
+   const name='lpSellerCreate_'+Date.now()+'_'+Math.random().toString(36).slice(2);
+   app=firebase.initializeApp(opts,name);
+   auth2=app.auth();
+   for(const email of emails){
+     try{
+       const cred=await auth2.createUserWithEmailAndPassword(email,pass);
+       const uid=cred.user.uid;
+       await auth2.signOut().catch(()=>{});
+       return {uid,email,created:true};
+     }catch(e){
+       const z=(String(e?.code||'')+' '+String(e?.message||'')).toUpperCase();
+       if(z.includes('EMAIL-ALREADY-IN-USE')||z.includes('EMAIL_EXISTS'))continue;
+       throw e;
+     }
+   }
+   throw new Error('Is Library ID ke login aliases already use ho rahe hain. CHECK/FIX LOGIN button use kijiye.');
+ }finally{
+   try{if(auth2?.currentUser)await auth2.signOut()}catch(e){}
+   try{if(app)await app.delete()}catch(e){}
+ }
+}
+async function v385RestVerify(id,pass){
+ const cfg=window.HARIOM_AUTH_CONFIG||{};
+ for(const email of v385AuthEmails(id)){
+   if(email===OWNER_EMAIL)continue;
+   try{
+     const r=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key='+encodeURIComponent(cfg.apiKey),{
+       method:'POST',headers:{'Content-Type':'application/json'},
+       body:JSON.stringify({email,password:pass,returnSecureToken:true})
+     });
+     const d=await r.json();
+     if(r.ok)return {ok:true,uid:d.localId,email};
+   }catch(e){}
+ }
+ return {ok:false};
+}
+
 async function savePrivate(uid,obj){const e=await encryptObj(obj);await raw('platform/sellerVault/records/'+uid).set({...e,updatedAt:Date.now()});vaultCache[uid]=obj}
+
+
+function v385ShowLastLogin(data){
+ try{localStorage.setItem('lp_v385_last_created',JSON.stringify(data||{}))}catch(e){}
+ const box=$('v385LastLoginBox'),info=$('v385LastLoginInfo');if(!box||!info)return;
+ if(!data?.licenseId){box.style.display='none';return}
+ info.innerHTML='<b>Library:</b> '+esc(data.libraryName||'-')+
+   '<br><b>ID:</b> <span style="font-size:13px">'+esc(data.licenseId)+'</span>'+
+   '<br><b>Password:</b> <span style="font-size:13px;font-weight:900">'+esc(data.password||'')+'</span>'+
+   '<br><b>Customer:</b> '+esc(data.buyerName||'-');
+ box.style.display='block';
+}
+window.v385CopyLastLogin=async function(){
+ let d={};try{d=JSON.parse(localStorage.getItem('lp_v385_last_created')||'{}')}catch(e){}
+ if(!d.licenseId)return;
+ const t='Library ID: '+d.licenseId+'\nPassword: '+(d.password||'');
+ try{await navigator.clipboard.writeText(t);alert('✅ ID + Password copied.')}catch(e){prompt('Copy login:',t)}
+};
+window.v385ClearLastLogin=function(){
+ try{localStorage.removeItem('lp_v385_last_created')}catch(e){}
+ const b=$('v385LastLoginBox');if(b)b.style.display='none';
+};
+function v385RestoreLastLogin(){
+ let d={};try{d=JSON.parse(localStorage.getItem('lp_v385_last_created')||'{}')}catch(e){}
+ if(d.licenseId)v385ShowLastLogin(d);
+}
 
 window.v38CreateCustomer=async function(){
  if(!vaultUnlocked||!isOwner())return;const id=cleanId($('v38NewId').value),pass=String($('v38NewPass').value||''),buyerName=$('v38BuyerName').value.trim(),phone=$('v38BuyerPhone').value.trim(),libraryName=$('v38LibraryName').value.trim(),address=$('v38BuyerAddress').value.trim(),seats=Number($('v38Seats').value),deviceLimit=Number($('v38Devices').value),supportPhone=$('v38SupportPhone').value.trim(),graceDays=Math.max(0,Math.min(7,Number($('v38GraceDays').value||2))),plan=$('v38Plan').value,expiresAt=plan==='lifetime'?0:expiryMs($('v38Expiry').value),saleAmount=Number($('v38Amount').value||0),paymentStatus=$('v38Payment').value,notes=$('v38Notes').value.trim(),m=$('v38CreateMsg'),btn=$('v38CreateBtn');
  if(id===OWNER_ID||id.length<3)return m.textContent='Valid unique Library ID daliye.';if(pass.length<6)return m.textContent='Password minimum 6 characters.';if(!buyerName)return m.textContent='Customer name required.';if(!libraryName)return m.textContent='Library name required.';if(!Number.isFinite(seats)||seats<1||seats>2000)return m.textContent='Seats 1–2000.';if(!Number.isFinite(deviceLimit)||deviceLimit<1||deviceLimit>10)return m.textContent='Device limit 1–10.';if(!Number.isFinite(graceDays)||graceDays<0||graceDays>7)return m.textContent='Grace days 0–7 rakhiye.';if(plan!=='lifetime'&&!expiresAt)return m.textContent='Expiry date select kijiye.';
- try{btn.disabled=true;btn.textContent='CREATING...';m.textContent='';const ex=await raw('platform/licenseIds/'+id).once('value');if(ex.exists())throw new Error('Library ID already exists.');const cfg=window.HARIOM_AUTH_CONFIG||{};const res=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key='+encodeURIComponent(cfg.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:emailFor(id),password:pass,returnSecureToken:true})});let data=await res.json();if(!res.ok&&data?.error?.message==='EMAIL_EXISTS'){const r2=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key='+encodeURIComponent(cfg.apiKey),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:emailFor(id),password:pass,returnSecureToken:true})});const d2=await r2.json();if(!r2.ok)throw new Error('This Library ID already exists with a different password. New ID use kijiye ya Firebase Authentication me old orphan user delete kijiye.');data=d2}else if(!res.ok)throw new Error(data?.error?.message||'Account creation failed');const uid=data.localId,now=Date.now(),graceUntil=expiresAt?expiresAt+graceDays*V38_DAY:0,lic={licenseId:id,libraryName,seatCount:seats,deviceLimit,expiresAt,graceDays,graceUntil,supportPhone,status:'active',plan,createdAt:now,updatedAt:now};const up={};up['platform/licensesByUid/'+uid]=lic;up['platform/licenseIds/'+id]=uid;up['tenants/'+uid+'/meta/profile']={libraryName,seatCount:seats,createdAt:now,updatedAt:now};await firebase.database().ref().update(up);await savePrivate(uid,{licenseId:id,password:pass,buyerName,phone,address,libraryName,seats,deviceLimit,plan,expiresAt,graceDays,graceUntil,supportPhone,saleAmount,paymentStatus,notes,soldAt:now});localStorage.setItem('lp_v38_support_phone',supportPhone||'');m.innerHTML='✅ CUSTOMER CREATED SUCCESSFULLY • ID: <b>'+esc(id)+'</b> • '+esc(libraryName)+' • Password vault me safe hai.';await v38LoadCustomers();alert('✅ CUSTOMER CREATED SUCCESSFULLY\n\nLibrary: '+libraryName+'\nLibrary ID: '+id+'\nPassword: '+pass+'\nSeats: '+seats+'\nDevice limit: '+deviceLimit+'\nExpiry: '+(expiresAt?dateFmt(expiresAt):'Lifetime')+'\n\nAb customer ko normal app link + ID + Password bhejiye. First login par Device Approval Request Seller Center ke TOP me dikhegi.');['v38NewId','v38NewPass','v38BuyerName','v38BuyerPhone','v38LibraryName','v38BuyerAddress','v38Amount','v38Notes'].forEach(x=>{if($(x))$(x).value=''});$('v38Seats').value='105';$('v38Devices').value='1';$('v38GraceDays').value='2';$('v38Plan').value='1y';$('v38Payment').value='paid';v38PlanChanged();setTimeout(()=>document.getElementById('v38CustomerList')?.scrollIntoView({behavior:'smooth',block:'start'}),150)}catch(e){m.textContent='❌ '+String(e.message||e).replace('EMAIL_EXISTS','This ID already has an account.')}finally{btn.disabled=false;btn.textContent='CREATE & SAVE CUSTOMER'}
+ try{btn.disabled=true;btn.textContent='CREATING...';m.textContent='';const ex=await raw('platform/licenseIds/'+id).once('value');if(ex.exists())throw new Error('Library ID already exists.');const authCreated=await v385CreateSecondaryUser(id,pass);const uid=authCreated.uid,now=Date.now(),graceUntil=expiresAt?expiresAt+graceDays*V38_DAY:0,lic={licenseId:id,libraryName,seatCount:seats,deviceLimit,expiresAt,graceDays,graceUntil,supportPhone,status:'active',plan,authEmail:authCreated.email,createdAt:now,updatedAt:now};const up={};up['platform/licensesByUid/'+uid]=lic;up['platform/licenseIds/'+id]=uid;up['tenants/'+uid+'/meta/profile']={libraryName,seatCount:seats,createdAt:now,updatedAt:now};await firebase.database().ref().update(up);await savePrivate(uid,{licenseId:id,password:pass,buyerName,phone,address,libraryName,seats,deviceLimit,plan,expiresAt,graceDays,graceUntil,supportPhone,saleAmount,paymentStatus,notes,authEmail:authCreated.email,soldAt:now});localStorage.setItem('lp_v38_support_phone',supportPhone||'');v385ShowLastLogin({licenseId:id,password:pass,libraryName,buyerName});m.innerHTML='✅ CUSTOMER CREATED SUCCESSFULLY • ID: <b>'+esc(id)+'</b> • '+esc(libraryName)+' • Login box me ID/password save dikh raha hai.';await v38LoadCustomers();alert('✅ CUSTOMER CREATED SUCCESSFULLY\n\nLibrary: '+libraryName+'\nLibrary ID: '+id+'\nPassword: '+pass+'\nSeats: '+seats+'\nDevice limit: '+deviceLimit+'\nExpiry: '+(expiresAt?dateFmt(expiresAt):'Lifetime')+'\n\nAb customer ko normal app link + ID + Password bhejiye. First login par Device Approval Request Seller Center ke TOP me dikhegi.');['v38NewId','v38NewPass','v38BuyerName','v38BuyerPhone','v38LibraryName','v38BuyerAddress','v38Amount','v38Notes'].forEach(x=>{if($(x))$(x).value=''});$('v38Seats').value='105';$('v38Devices').value='1';$('v38GraceDays').value='2';$('v38Plan').value='1y';$('v38Payment').value='paid';v38PlanChanged();setTimeout(()=>document.getElementById('v38CustomerList')?.scrollIntoView({behavior:'smooth',block:'start'}),150)}catch(e){m.textContent='❌ '+String(e.message||e).replace('EMAIL_EXISTS','This ID already has an account.')}finally{btn.disabled=false;btn.textContent='CREATE & SAVE CUSTOMER'}
 };
 
 async function loadPrivateRecords(){
@@ -7320,16 +7441,162 @@ window.v384ViewCustomer=function(uid){
 let v384LiveStarted=false,v384LiveTimer=null;
 function v384StartLive(){
  if(v384LiveStarted)return;v384LiveStarted=true;
- const refresh=()=>{clearTimeout(v384LiveTimer);v384LiveTimer=setTimeout(()=>{if(vaultUnlocked)v38LoadCustomers()},350)};
- try{raw('platform/devices').on('value',refresh);raw('platform/licensesByUid').on('value',refresh)}catch(e){console.error(e)}
+ const tick=async()=>{if(!vaultUnlocked)return;try{await v38LoadCustomers()}catch(e){console.error(e)}};
+ v384LiveTimer=setInterval(tick,4000);
 }
 
 window.v38LoadCustomers=async function(){
- if(!vaultUnlocked)return;const list=$('v38CustomerList');list.innerHTML='<div class="v38-empty">Loading...</div>';
- try{const [ls,ds,priv]=await Promise.all([raw('platform/licensesByUid').once('value'),raw('platform/devices').once('value'),loadPrivateRecords()]),licenses=ls.val()||{},devices=ds.val()||{},p=priv||{};v384RenderPending(devices,licenses,p);let arr=Object.entries(licenses).map(([uid,l])=>({uid,...l,private:p[uid]||{}})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));const q=String($('v38Search').value||'').toLowerCase(),f=$('v38Filter').value;arr=arr.filter(x=>{const pv=x.private||{},hay=[x.licenseId,x.libraryName,pv.buyerName,pv.phone,pv.address].join(' ').toLowerCase();if(q&&!hay.includes(q))return false;if(f==='active'&&(x.status!=='active'||expired(x)||inGraceSeller(x)))return false;if(f==='grace'&&!inGraceSeller(x))return false;if(f==='expiring'&&!expiring(x))return false;if(f==='expired'&&!expired(x))return false;if(f==='lifetime'&&Number(x.expiresAt||0)!==0)return false;if(f==='pendingpay'&&!['pending','partial'].includes(pv.paymentStatus))return false;return true});const all=Object.entries(licenses).map(([uid,l])=>({uid,...l,private:p[uid]||{}}));const active=all.filter(x=>x.status==='active'&&!expired(x)&&!inGraceSeller(x)).length,grace=all.filter(inGraceSeller).length,expc=all.filter(expired).length,soon=all.filter(expiring).length,life=all.filter(x=>!Number(x.expiresAt||0)).length,pending=Object.values(devices).reduce((n,g)=>n+Object.values(g||{}).filter(d=>d?.status==='pending').length,0),sales=all.reduce((n,x)=>n+Number(x.private?.saleAmount||0),0);$('v38Stats').innerHTML='<div class="v38-stat"><b>'+all.length+'</b><span>TOTAL SOLD</span></div><div class="v38-stat"><b>'+active+'</b><span>ACTIVE</span></div><div class="v38-stat"><b>'+grace+'</b><span>GRACE</span></div><div class="v38-stat"><b>'+soon+'</b><span>EXPIRING 30D</span></div><div class="v38-stat"><b>'+expc+'</b><span>EXPIRED</span></div><div class="v38-stat"><b>'+life+'</b><span>LIFETIME</span></div><div class="v38-stat"><b>'+money(sales)+'</b><span>SALE VALUE</span></div><div class="v38-stat"><b>'+pending+'</b><span>DEVICE REQUESTS</span></div>';
- if(!arr.length){list.innerHTML='<div class="v38-empty">No matching customers.</div>';return}list.innerHTML=arr.map(x=>{const pv=x.private||{},dev=devices[x.uid]||{},st=x.status!=='active'?'SUSPENDED':expired(x)?'EXPIRED':inGraceSeller(x)?'GRACE':expiring(x)?'EXPIRING':'ACTIVE',cls=st==='ACTIVE'?'':(st==='EXPIRING'||st==='GRACE')?'warn':'off',pass=pv.password||'',passTxt=pass?'••••••••':'Not saved (legacy)',pay=(pv.paymentStatus||'-').toUpperCase(),devHtml=Object.entries(dev).map(([did,d])=>'<div class="v38-device"><div class="v38-meta"><b>'+esc(d.label||'Device')+'</b><br>'+esc(String(d.status||'pending').toUpperCase())+' • '+esc(did.slice(-10))+'</div><div class="v38-actions">'+(d.status!=='approved'?'<button class="v38-btn green sm" onclick="v38Device(\''+x.uid+'\',\''+did+'\',\'approved\')">APPROVE</button>':'')+'<button class="v38-btn red sm" onclick="v38RemoveDevice(\''+x.uid+'\',\''+did+'\')">REMOVE</button></div></div>').join('')||'<div class="v38-meta" style="margin-top:7px">No device request.</div>';return '<div class="v38-customer"><div class="v38-top"><div><div class="v38-title">'+esc(x.libraryName||'Library')+' • '+esc(x.licenseId||'')+'</div><div class="v38-meta">Customer: '+esc(pv.buyerName||'Not saved')+' • '+esc(pv.phone||'-')+'<br>Plan: '+esc(pv.plan||x.plan||'-')+' • Expiry: '+esc(dateFmt(x.expiresAt))+' • Grace till: '+esc(x.expiresAt?dateFmt(graceUntil(x)):'Lifetime')+' • Seats: '+Number(x.seatCount||105)+' • Devices: '+Number(x.deviceLimit||1)+'<br>Sold: '+esc(dateFmt(pv.soldAt||x.createdAt))+(x.supportPhone?(' • Renewal: '+esc(x.supportPhone)):'')+'<br>Sale: '+money(pv.saleAmount||0)+' • Payment: '+esc(pay)+(pv.address?'<br>Address: '+esc(pv.address):'')+(pv.notes?'<br>Note: '+esc(pv.notes):'')+'</div></div><span class="v38-badge '+cls+'">'+st+'</span></div><div class="v38-actions"><span class="v38-secret" id="v38pass_'+x.uid+'">'+esc(passTxt)+'</span>'+(pass?'<button class="v38-btn gray sm" onclick="v38ShowPass(\''+x.uid+'\')">SHOW</button><button class="v38-btn gray sm" onclick="v38CopyPass(\''+x.uid+'\')">COPY LOGIN</button>':'')+'</div><div class="v38-actions"><button class="v38-btn green sm" onclick="v384ViewCustomer(\''+x.uid+'\')">👁 FULL DETAILS</button><button class="v38-btn '+(x.status==='active'?'red':'green')+' sm" onclick="v38ToggleLicense(\''+x.uid+'\',\''+(x.status==='active'?'suspended':'active')+'\')">'+(x.status==='active'?'SUSPEND':'ACTIVATE')+'</button><button class="v38-btn sm" onclick="v38Renew(\''+x.uid+'\')">RENEW</button><button class="v38-btn amber sm" onclick="v38EditSale(\''+x.uid+'\')">SELLER DETAILS</button><button class="v38-btn gray sm" onclick="v38EditLibrary(\''+x.uid+'\')">LIBRARY SETTINGS</button></div>'+devHtml+'</div>'}).join('')
- }catch(e){list.innerHTML='<div class="v38-empty">Load failed: '+esc(e.message||e)+'</div>'}
+ if(!vaultUnlocked)return;
+ const list=$('v38CustomerList');if(list)list.innerHTML='<div class="v38-empty">Loading saved customers...</div>';
+ try{
+   const p=await loadPrivateRecords();
+   const uids=Object.keys(p||{}).filter(uid=>uid&&!(p[uid]||{})._decryptError);
+   const licenses={},devices={};
+   await Promise.all(uids.map(async uid=>{
+     try{
+       const [ls,ds]=await Promise.all([
+         raw('platform/licensesByUid/'+uid).once('value'),
+         raw('platform/devices/'+uid).once('value')
+       ]);
+       if(ls.exists())licenses[uid]=ls.val()||{};
+       devices[uid]=ds.val()||{};
+     }catch(e){
+       console.error('Customer child load failed',uid,e);
+       devices[uid]={};
+     }
+   }));
+   v384RenderPending(devices,licenses,p);
+
+   let arr=uids.map(uid=>({uid,...(licenses[uid]||{}),private:p[uid]||{}}))
+     .filter(x=>x.licenseId||x.private?.licenseId)
+     .sort((a,b)=>Number(b.private?.soldAt||b.createdAt||0)-Number(a.private?.soldAt||a.createdAt||0));
+
+   const q=String($('v38Search')?.value||'').toLowerCase(),f=$('v38Filter')?.value||'all';
+   arr=arr.filter(x=>{
+     const pv=x.private||{},hay=[x.licenseId||pv.licenseId,x.libraryName||pv.libraryName,pv.buyerName,pv.phone,pv.address].join(' ').toLowerCase();
+     if(q&&!hay.includes(q))return false;
+     if(f==='active'&&(x.status!=='active'||expired(x)||inGraceSeller(x)))return false;
+     if(f==='grace'&&!inGraceSeller(x))return false;
+     if(f==='expiring'&&!expiring(x))return false;
+     if(f==='expired'&&!expired(x))return false;
+     if(f==='lifetime'&&Number(x.expiresAt||0)!==0)return false;
+     if(f==='pendingpay'&&!['pending','partial'].includes(pv.paymentStatus))return false;
+     return true;
+   });
+
+   const all=uids.map(uid=>({uid,...(licenses[uid]||{}),private:p[uid]||{}})).filter(x=>x.licenseId||x.private?.licenseId);
+   const active=all.filter(x=>x.status==='active'&&!expired(x)&&!inGraceSeller(x)).length;
+   const grace=all.filter(inGraceSeller).length,expc=all.filter(expired).length,soon=all.filter(expiring).length;
+   const life=all.filter(x=>!Number(x.expiresAt||0)).length;
+   const pending=Object.values(devices).reduce((n,g)=>n+Object.values(g||{}).filter(d=>d?.status==='pending').length,0);
+   const sales=all.reduce((n,x)=>n+Number(x.private?.saleAmount||0),0);
+   if($('v38Stats'))$('v38Stats').innerHTML=
+     '<div class="v38-stat"><b>'+all.length+'</b><span>TOTAL SOLD</span></div>'+
+     '<div class="v38-stat"><b>'+active+'</b><span>ACTIVE</span></div>'+
+     '<div class="v38-stat"><b>'+grace+'</b><span>GRACE</span></div>'+
+     '<div class="v38-stat"><b>'+soon+'</b><span>EXPIRING 30D</span></div>'+
+     '<div class="v38-stat"><b>'+expc+'</b><span>EXPIRED</span></div>'+
+     '<div class="v38-stat"><b>'+life+'</b><span>LIFETIME</span></div>'+
+     '<div class="v38-stat"><b>'+money(sales)+'</b><span>SALE VALUE</span></div>'+
+     '<div class="v38-stat"><b>'+pending+'</b><span>DEVICE REQUESTS</span></div>';
+
+   if(!list)return;
+   if(!arr.length){
+     list.innerHTML='<div class="v38-empty">No matching saved customers.</div>';
+     return;
+   }
+
+   list.innerHTML=arr.map(x=>{
+     const pv=x.private||{},dev=devices[x.uid]||{};
+     const id=x.licenseId||pv.licenseId||'';
+     const lib=x.libraryName||pv.libraryName||'Library';
+     const st=x.status!=='active'?'SUSPENDED':expired(x)?'EXPIRED':inGraceSeller(x)?'GRACE':expiring(x)?'EXPIRING':'ACTIVE';
+     const cls=st==='ACTIVE'?'':(st==='EXPIRING'||st==='GRACE')?'warn':'off';
+     const pass=pv.password||'',passTxt=pass?'••••••••':'Not saved (legacy)',pay=(pv.paymentStatus||'-').toUpperCase();
+     const devHtml=Object.entries(dev).map(([did,d])=>
+       '<div class="v38-device"><div class="v38-meta"><b>'+esc(d.label||'Device')+'</b><br>'+
+       esc(String(d.status||'pending').toUpperCase())+' • '+esc(did.slice(-10))+
+       '</div><div class="v38-actions">'+
+       (d.status!=='approved'?'<button class="v38-btn green sm" onclick="v38Device(\''+x.uid+'\',\''+did+'\',\'approved\')">APPROVE</button>':'')+
+       '<button class="v38-btn red sm" onclick="v38RemoveDevice(\''+x.uid+'\',\''+did+'\')">REMOVE</button></div></div>'
+     ).join('')||'<div class="v38-meta" style="margin-top:7px">No device request yet.</div>';
+
+     return '<div class="v38-customer">'+
+       '<div class="v38-top"><div><div class="v38-title">'+esc(lib)+' • '+esc(id)+'</div>'+
+       '<div class="v38-meta">Customer: '+esc(pv.buyerName||'Not saved')+' • '+esc(pv.phone||'-')+
+       '<br>Plan: '+esc(pv.plan||x.plan||'-')+' • Expiry: '+esc(dateFmt(x.expiresAt||pv.expiresAt))+
+       ' • Grace till: '+esc((x.expiresAt||pv.expiresAt)?dateFmt(graceUntil(x.expiresAt?x:{...x,expiresAt:pv.expiresAt,graceUntil:pv.graceUntil,graceDays:pv.graceDays})):'Lifetime')+
+       ' • Seats: '+Number(x.seatCount||pv.seats||105)+' • Devices: '+Number(x.deviceLimit||pv.deviceLimit||1)+
+       '<br>Sale: '+money(pv.saleAmount||0)+' • Payment: '+esc(pay)+
+       (pv.address?'<br>Address: '+esc(pv.address):'')+(pv.notes?'<br>Note: '+esc(pv.notes):'')+
+       '</div></div><span class="v38-badge '+cls+'">'+st+'</span></div>'+
+       '<div class="v38-actions"><span class="v38-secret" id="v38pass_'+x.uid+'">'+esc(passTxt)+'</span>'+
+       (pass?'<button class="v38-btn gray sm" onclick="v38ShowPass(\''+x.uid+'\')">SHOW</button>'+
+       '<button class="v38-btn gray sm" onclick="v38CopyPass(\''+x.uid+'\')">COPY LOGIN</button>'+
+       '<button class="v38-btn amber sm" onclick="v385CheckFixLogin(\''+x.uid+'\')">CHECK / FIX LOGIN</button>':'')+
+       '</div>'+
+       '<div class="v38-actions"><button class="v38-btn green sm" onclick="v384ViewCustomer(\''+x.uid+'\')">👁 FULL DETAILS</button>'+
+       '<button class="v38-btn '+(x.status==='active'?'red':'green')+' sm" onclick="v38ToggleLicense(\''+x.uid+'\',\''+(x.status==='active'?'suspended':'active')+'\')">'+(x.status==='active'?'SUSPEND':'ACTIVATE')+'</button>'+
+       '<button class="v38-btn sm" onclick="v38Renew(\''+x.uid+'\')">RENEW</button>'+
+       '<button class="v38-btn amber sm" onclick="v38EditSale(\''+x.uid+'\')">SELLER DETAILS</button>'+
+       '<button class="v38-btn gray sm" onclick="v38EditLibrary(\''+x.uid+'\')">LIBRARY SETTINGS</button></div>'+
+       devHtml+'</div>';
+   }).join('');
+ }catch(e){
+   console.error(e);
+   if(list)list.innerHTML='<div class="v38-empty">Saved customer list load failed: '+esc(e.message||e)+'</div>';
+ }
 };
+
+
+window.v385CheckFixLogin=async function(uid){
+ if(!vaultUnlocked||!isOwner())return alert('Seller owner login required.');
+ const p=vaultCache[uid]||{},id=cleanId(p.licenseId||''),pass=String(p.password||'');
+ if(!id||!pass)return alert('Saved ID/password nahi mila.');
+ try{
+   let vr=await v385RestVerify(id,pass);
+   if(vr.ok){
+     alert('✅ LOGIN VERIFIED\n\nID: '+id+'\nPassword sahi hai.\nCustomer ko COPY LOGIN se exact credentials bhejiye.');
+     return;
+   }
+   if(!confirm('Current login verify nahi hua. App automatically naya working login banakar customer data/link ko repair kare?'))return;
+
+   const oldLicSnap=await raw('platform/licensesByUid/'+uid).once('value');
+   const oldLic=oldLicSnap.val()||{};
+   let authCreated=await v385CreateSecondaryUser(id,pass);
+   const newUid=authCreated.uid;
+
+   let tenant={};
+   try{tenant=(await raw('tenants/'+uid).once('value')).val()||{}}catch(e){}
+
+   const now=Date.now();
+   const lic={...oldLic,licenseId:id,authEmail:authCreated.email,updatedAt:now};
+   const up={};
+   up['platform/licensesByUid/'+newUid]=lic;
+   up['platform/licenseIds/'+id]=newUid;
+   if(tenant&&Object.keys(tenant).length)up['tenants/'+newUid]=tenant;
+   else up['tenants/'+newUid+'/meta/profile']={libraryName:p.libraryName||oldLic.libraryName||'Library',seatCount:Number(p.seats||oldLic.seatCount||105),updatedAt:now};
+   await firebase.database().ref().update(up);
+
+   const newPrivate={...p,authEmail:authCreated.email,loginRepairedAt:now};
+   await savePrivate(newUid,newPrivate);
+
+   if(newUid!==uid){
+     try{await raw('platform/sellerVault/records/'+uid).remove()}catch(e){}
+     try{await raw('platform/licensesByUid/'+uid).remove()}catch(e){}
+     try{await raw('platform/devices/'+uid).remove()}catch(e){}
+     // Old tenant is removed only after successful copy.
+     try{if(tenant&&Object.keys(tenant).length)await raw('tenants/'+uid).remove()}catch(e){}
+     delete vaultCache[uid];
+   }
+
+   alert('✅ LOGIN REPAIRED SUCCESSFULLY\n\nID: '+id+'\nPassword: '+pass+'\n\nCustomer ab isi ID/password se login kare.');
+   await v38LoadCustomers();
+ }catch(e){
+   alert('Login repair failed: '+(e.message||e));
+ }
+};
+
 window.v38ShowPass=function(uid){const e=$('v38pass_'+uid),p=vaultCache[uid]?.password||'';if(!e||!p)return;e.textContent=e.textContent.includes('•')?p:'••••••••'};
 window.v38CopyPass=async function(uid){const p=vaultCache[uid]||{};if(!p.password)return;const t='Library ID: '+(p.licenseId||'')+'\nPassword: '+p.password;try{await navigator.clipboard.writeText(t);alert('Login ID + password copied.')}catch(e){prompt('Copy login:',t)}};
 window.v38ToggleLicense=async function(uid,status){await raw('platform/licensesByUid/'+uid).update({status,updatedAt:Date.now()});await v38LoadCustomers()};
@@ -7354,7 +7621,7 @@ function boot(){hideLegacySeller();try{firebase.auth().onAuthStateChanged(maybeS
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
 </script>
-<!-- ===== V38.4 SELLER DETAILS + LIVE APPROVAL FIXED ===== -->
+<!-- ===== V38.5 SELLER LOGIN + SAVED CREDENTIALS + APPROVAL FIXED ===== -->
 <!-- ===== END V38 ===== -->
 
 </body>
