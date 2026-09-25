@@ -1467,395 +1467,6 @@ body.v361-tenant #v36AccountBtn{display:none!important}
 .lp46-trash-badge{position:absolute;right:-5px;top:-6px;min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:#ef4444;color:#fff;display:grid;place-items:center;font-size:8px;font-weight:950}
 </style>
 
-
-<style id="lp47-selected-ui">
-:root{
-  --lp47-navy:#06162f;
-  --lp47-blue:#0b5cff;
-  --lp47-blue2:#1b79ff;
-  --lp47-soft:#eef5ff;
-  --lp47-line:#d9e5f7;
-  --lp47-green:#13a86b;
-  --lp47-red:#ef4444;
-  --lp47-gold:#f4b41a;
-}
-
-/* ---------- Shared shell (does not target seat cards/grid) ---------- */
-body{
-  background:
-    radial-gradient(circle at 12% 0%,rgba(37,99,235,.12),transparent 30%),
-    linear-gradient(180deg,#edf4ff 0%,#f8fbff 34%,#f2f6fc 100%) fixed!important;
-}
-body.dark{
-  background:
-    radial-gradient(circle at 12% 0%,rgba(37,99,235,.18),transparent 30%),
-    linear-gradient(180deg,#050d1b,#091526 48%,#07111f 100%) fixed!important;
-}
-
-.app-header{
-  position:sticky!important;
-  top:0!important;
-  min-height:122px!important;
-  padding:18px 18px 28px!important;
-  border-radius:0 0 42px 42px!important;
-  background:
-    radial-gradient(circle at 80% 28%,rgba(80,180,255,.48),transparent 22%),
-    linear-gradient(125deg,#06162f 0%,#0d3f8f 48%,#0b6dff 100%)!important;
-  box-shadow:0 18px 42px rgba(7,28,63,.28)!important;
-  overflow:hidden!important;
-}
-.app-header:before{
-  content:""!important;
-  position:absolute!important;
-  inset:auto -4% -12px 30%!important;
-  height:78px!important;
-  background:
-    linear-gradient(145deg,transparent 0 22%,rgba(210,235,255,.40) 23% 34%,transparent 35%),
-    linear-gradient(35deg,transparent 0 34%,rgba(175,218,255,.34) 35% 48%,transparent 49%),
-    linear-gradient(150deg,transparent 0 40%,rgba(255,255,255,.18) 41% 54%,transparent 55%)!important;
-  clip-path:polygon(0 100%,10% 64%,21% 79%,34% 36%,44% 72%,55% 48%,66% 83%,80% 42%,100% 72%,100% 100%)!important;
-  opacity:.95!important;
-  pointer-events:none!important;
-}
-.app-header:after{
-  content:""!important;
-  position:absolute!important;
-  width:210px!important;
-  height:210px!important;
-  right:-70px!important;
-  top:-105px!important;
-  border-radius:50%!important;
-  background:rgba(255,255,255,.10)!important;
-  opacity:1!important;
-}
-.header-row{position:relative!important;z-index:2!important}
-.logo{width:58px!important;height:58px!important;border-radius:18px!important;padding:5px!important;box-shadow:0 8px 24px rgba(0,0,0,.22)!important}
-.logo-area h2{font-size:22px!important;letter-spacing:-.45px!important}
-.logo-area p{display:block!important;font-size:11px!important;opacity:.80!important;margin-top:3px!important}
-.lp46-head-icon,.icon-btn{width:46px!important;height:46px!important;border-radius:15px!important;background:rgba(255,255,255,.12)!important;border:1px solid rgba(255,255,255,.19)!important;backdrop-filter:blur(12px)!important}
-
-.main{padding:16px 14px 115px!important;max-width:940px!important}
-.welcome{margin:3px 0 16px!important;padding:2px 4px!important}
-.welcome h2{font-size:24px!important;letter-spacing:-.6px!important;color:#0b1736!important}
-.welcome p{font-size:12px!important;color:#60708c!important}
-body.dark .welcome h2{color:#f8fafc!important}
-
-/* ---------- Bottom navigation ---------- */
-.bottom-nav{
-  left:12px!important;
-  right:12px!important;
-  bottom:8px!important;
-  width:auto!important;
-  transform:none!important;
-  height:78px!important;
-  border-radius:25px!important;
-  background:linear-gradient(180deg,#07172f,#061226)!important;
-  border:1px solid rgba(255,255,255,.10)!important;
-  box-shadow:0 18px 44px rgba(2,6,23,.34)!important;
-  padding:7px!important;
-}
-.bottom-nav .nav-item{
-  height:62px!important;
-  border-radius:17px!important;
-  color:#9fb1cc!important;
-  font-size:7.8px!important;
-  font-weight:900!important;
-  gap:4px!important;
-}
-.bottom-nav .nav-item.active{
-  background:linear-gradient(145deg,#0b5cff,#145ee8)!important;
-  color:#fff!important;
-  box-shadow:0 8px 22px rgba(11,92,255,.36)!important;
-}
-.bottom-nav .nav-icon{font-size:20px!important}
-
-/* ===========================================================
-   LOGIN — reference: premium dark blue phone login
-   =========================================================== */
-#v36Gate{
-  background:
-    radial-gradient(circle at 50% 16%,rgba(34,139,230,.30),transparent 24%),
-    linear-gradient(180deg,#061326 0%,#071d3d 50%,#052a63 100%)!important;
-  padding:20px 16px!important;
-  overflow:hidden!important;
-}
-#v36Gate:before{
-  content:""!important;
-  position:absolute!important;
-  left:-10%!important;right:-10%!important;bottom:-2%!important;height:34%!important;
-  background:
-    linear-gradient(155deg,transparent 0 20%,rgba(28,102,224,.78) 21% 38%,transparent 39%),
-    linear-gradient(25deg,transparent 0 30%,rgba(48,144,242,.72) 31% 50%,transparent 51%),
-    linear-gradient(150deg,transparent 0 42%,rgba(132,194,255,.55) 43% 60%,transparent 61%)!important;
-  clip-path:polygon(0 72%,12% 47%,25% 63%,39% 24%,52% 61%,64% 36%,75% 70%,88% 42%,100% 56%,100% 100%,0 100%)!important;
-  opacity:.95!important;
-  pointer-events:none!important;
-}
-#v36Gate:after{
-  content:""!important;
-  position:absolute!important;
-  inset:0!important;
-  background:linear-gradient(180deg,rgba(255,255,255,.03),transparent 36%,rgba(0,0,0,.10))!important;
-  pointer-events:none!important;
-}
-#v36Gate.show{display:grid!important;place-items:center!important}
-#v36Gate .v36-card{
-  position:relative!important;
-  z-index:2!important;
-  width:min(430px,100%)!important;
-  background:transparent!important;
-  box-shadow:none!important;
-  padding:16px 8px 78px!important;
-  color:#fff!important;
-}
-#v36Gate .v36-brand{
-  display:flex!important;
-  flex-direction:column!important;
-  align-items:center!important;
-  justify-content:center!important;
-  gap:10px!important;
-  margin:0 0 28px!important;
-  text-align:center!important;
-}
-#v36Gate .v36-logo{
-  width:96px!important;height:96px!important;border-radius:50%!important;
-  background:#fff!important;padding:7px!important;
-  box-shadow:0 10px 32px rgba(0,0,0,.30)!important;
-  overflow:hidden!important;
-}
-#v36Gate .v36-logo img{width:100%!important;height:100%!important;object-fit:cover!important;border-radius:50%!important}
-#v36Gate .v36-brand h2{font-size:27px!important;color:#fff!important;margin:0!important}
-#v36Gate .v36-brand p{font-size:11px!important;color:#c7dcff!important;margin-top:4px!important}
-#v36Gate #v37LoginStep{
-  background:#fff!important;
-  border-radius:20px!important;
-  padding:14px!important;
-  box-shadow:0 14px 40px rgba(0,0,0,.25)!important;
-}
-#v36Gate .v36-in{
-  height:54px!important;
-  border-radius:13px!important;
-  border:1px solid #cbd7e7!important;
-  background:#f9fbff!important;
-  color:#0f172a!important;
-  margin-bottom:9px!important;
-  font-size:14px!important;
-  padding:0 15px!important;
-}
-#v36Gate .v36-btn{
-  min-height:54px!important;
-  border-radius:14px!important;
-  margin-top:8px!important;
-  background:linear-gradient(135deg,#0b5cff,#1268ff)!important;
-  box-shadow:0 9px 22px rgba(11,92,255,.28)!important;
-  font-size:12px!important;
-}
-#v36Gate .v36-msg{background:rgba(255,255,255,.96)!important;color:#475569!important;border-radius:13px!important}
-#v36Gate .v37-status{background:#fff!important}
-#v36Gate .v36-step:not(#v37LoginStep).on{background:#fff!important;border-radius:18px!important;padding:14px!important;color:#0f172a!important}
-
-/* ===========================================================
-   HOME — only home cards, no seat selectors
-   =========================================================== */
-#homeSection .v31-launch{
-  border-radius:30px!important;
-  padding:20px!important;
-  margin:12px 0 18px!important;
-  background:
-    radial-gradient(circle at 90% 15%,rgba(54,143,255,.36),transparent 28%),
-    linear-gradient(130deg,#061a38 0%,#0a397a 52%,#0b5cff 100%)!important;
-  border:1px solid rgba(91,169,255,.48)!important;
-  box-shadow:0 18px 38px rgba(6,39,88,.24)!important;
-}
-#homeSection .v31-launch-top{gap:14px!important}
-#homeSection .v31-launch-icon{
-  width:64px!important;height:64px!important;border-radius:20px!important;
-  background:rgba(255,255,255,.10)!important;border:1px solid rgba(255,255,255,.16)!important;font-size:30px!important
-}
-#homeSection .v31-launch h2{font-size:23px!important;letter-spacing:-.45px!important}
-#homeSection .v31-launch p{font-size:10.5px!important;line-height:1.5!important;opacity:.80!important}
-#homeSection .v31-launch-grid{gap:10px!important;margin-top:17px!important}
-#homeSection .v31-launch-kpi{
-  min-height:88px!important;border-radius:18px!important;padding:13px 5px!important;
-  background:rgba(255,255,255,.10)!important;border:1px solid rgba(255,255,255,.14)!important
-}
-#homeSection .v31-launch-kpi b{font-size:23px!important}
-#homeSection .v31-launch-kpi span{font-size:7.5px!important}
-#homeSection .v31-launch-btn{
-  min-height:57px!important;border-radius:18px!important;margin-top:14px!important;
-  font-size:12px!important;letter-spacing:.2px!important;
-  box-shadow:0 8px 18px rgba(0,0,0,.12)!important
-}
-
-#homeSection .v40c-card,#homeSection .lp41-home{
-  border-radius:25px!important;
-  padding:16px!important;
-  margin:12px 0 16px!important;
-  background:rgba(255,255,255,.96)!important;
-  border:1px solid #d7e3f5!important;
-  box-shadow:0 12px 30px rgba(16,48,88,.08)!important;
-}
-body.dark #homeSection .v40c-card,body.dark #homeSection .lp41-home{
-  background:rgba(15,25,42,.97)!important;border-color:#263a58!important
-}
-#homeSection .v40c-top,#homeSection .lp41-home-top{align-items:center!important}
-#homeSection .v40c-ico,#homeSection .lp41-home-ico{
-  width:54px!important;height:54px!important;border-radius:17px!important;font-size:25px!important;
-  box-shadow:0 9px 20px rgba(37,99,235,.18)!important
-}
-#homeSection .v40c-top h3,#homeSection .lp41-home h3{font-size:17px!important;letter-spacing:-.25px!important}
-#homeSection .v40c-top p,#homeSection .lp41-sub{font-size:9.5px!important;margin-top:3px!important}
-#homeSection .v40c-kpis,#homeSection .lp41-home-grid{gap:10px!important;margin-top:14px!important}
-#homeSection .v40c-kpi,#homeSection .lp41-mini{
-  min-height:80px!important;border-radius:16px!important;padding:13px 6px!important;
-  background:#f6f9fe!important;border:1px solid #d8e4f4!important
-}
-body.dark #homeSection .v40c-kpi,body.dark #homeSection .lp41-mini{background:#101d30!important;border-color:#263a58!important}
-#homeSection .v40c-kpi b,#homeSection .lp41-mini b{font-size:18px!important}
-#homeSection .v40c-kpi span,#homeSection .lp41-mini span{font-size:7.5px!important}
-#homeSection .v40c-actions{gap:9px!important;margin-top:11px!important}
-#homeSection .v40c-btn,#homeSection .lp41-open{
-  min-height:48px!important;border-radius:14px!important;font-size:9.5px!important;
-  box-shadow:0 7px 17px rgba(37,99,235,.18)!important
-}
-#homeSection .lp41-open{background:linear-gradient(135deg,#0b2d66,#4438ca)!important}
-#homeSection .lp41-plan{font-size:7.5px!important;padding:6px 9px!important}
-
-/* ===========================================================
-   STUDENTS — reference selected; leaves Seats section untouched
-   =========================================================== */
-#studentsSection .section-title{
-  display:block!important;margin:8px 3px 13px!important
-}
-#studentsSection .section-title h3{font-size:23px!important;letter-spacing:-.55px!important}
-#studentsSection .lp47-section-sub{display:block;font-size:10.5px;color:#6a7b96;margin-top:4px}
-#nativeStudentTools{
-  background:rgba(255,255,255,.96)!important;
-  border:1px solid #d8e4f4!important;
-  border-radius:24px!important;
-  padding:14px!important;
-  box-shadow:0 11px 28px rgba(15,49,92,.08)!important;
-  margin-bottom:15px!important
-}
-body.dark #nativeStudentTools{background:#0f1b2c!important;border-color:#273b58!important}
-#nativeStudentSearch{
-  min-height:54px!important;border-radius:17px!important;border:1.5px solid #d3dfef!important;
-  background:#fbfdff!important;font-size:13px!important;padding:0 15px!important
-}
-body.dark #nativeStudentSearch{background:#0c1727!important;border-color:#29405e!important}
-.native-student-filters{gap:7px!important;margin-top:10px!important;padding-bottom:2px!important}
-.native-student-filter{
-  min-height:38px!important;border-radius:13px!important;padding:8px 13px!important;
-  font-size:8px!important;background:#fff!important;border:1px solid #d8e4f4!important;
-  color:#0f172a!important;box-shadow:none!important
-}
-body.dark .native-student-filter{background:#111d30!important;border-color:#2b405c!important;color:#e5eefb!important}
-.native-student-filter.on{background:#0b5cff!important;color:#fff!important;border-color:#0b5cff!important}
-.v30-unique-note{border-radius:15px!important;padding:10px 12px!important;background:#e9f8f2!important;border-color:#c5ecdc!important}
-body.dark .v30-unique-note{background:#0f2b24!important;border-color:#194638!important}
-
-#studentsList .native-student-card{
-  border-radius:27px!important;
-  padding:16px!important;
-  margin-bottom:16px!important;
-  border:1px solid #dce7f5!important;
-  background:rgba(255,255,255,.98)!important;
-  box-shadow:0 13px 30px rgba(17,50,90,.09)!important
-}
-body.dark #studentsList .native-student-card{background:#0f1b2c!important;border-color:#273b58!important}
-#studentsList .native-student-card:before{width:6px!important;border-radius:0 8px 8px 0!important}
-#studentsList .native-avatar{
-  width:84px!important;height:84px!important;min-width:84px!important;border-radius:20px!important;
-  background:#e7f0ff!important;font-size:33px!important
-}
-#studentsList .native-student-top{gap:14px!important;align-items:center!important}
-#studentsList .native-student-name{font-size:21px!important;letter-spacing:-.45px!important}
-#studentsList .native-student-sub{font-size:10.5px!important;line-height:1.6!important;color:#6b7c95!important}
-#studentsList .native-status{font-size:8px!important;padding:7px 10px!important}
-#studentsList .native-student-money{gap:10px!important;margin-top:14px!important}
-#studentsList .native-money{
-  min-height:74px!important;border-radius:17px!important;padding:12px 7px!important;
-  background:#f6faff!important;border:1px solid #d8e6f7!important
-}
-#studentsList .native-money:nth-child(2){background:#edfff6!important;border-color:#ccefe0!important}
-#studentsList .native-money:nth-child(3){background:#fff5f5!important;border-color:#ffd7d7!important}
-body.dark #studentsList .native-money{background:#101e31!important;border-color:#29405d!important}
-#studentsList .native-money b{font-size:18px!important}
-#studentsList .native-money span{font-size:7.5px!important}
-#studentsList .native-student-actions{gap:9px!important;margin-top:12px!important}
-#studentsList .native-student-actions button{
-  height:49px!important;border-radius:15px!important;font-size:9px!important
-}
-#studentsList .native-student-actions button.primary{
-  background:linear-gradient(135deg,#0b5cff,#155eef)!important;
-  box-shadow:0 8px 18px rgba(11,92,255,.24)!important
-}
-.v30-tools-label{font-size:8px!important;margin:13px 4px 8px!important}
-.v30-extra-actions{gap:9px!important}
-.v30-extra-actions button{
-  min-height:73px!important;border-radius:17px!important;background:#f8fbff!important;border-color:#dce7f5!important;
-  font-size:8px!important
-}
-body.dark .v30-extra-actions button{background:#101d30!important;border-color:#29405d!important}
-.v30-tool-icon{width:37px!important;height:37px!important;border-radius:12px!important;font-size:18px!important}
-
-/* ===========================================================
-   SETTINGS — selected premium cards
-   =========================================================== */
-#settingsSection .section-title{display:block!important;margin:8px 3px 14px!important}
-#settingsSection .section-title h3{font-size:26px!important;letter-spacing:-.7px!important}
-#settingsSection .lp47-section-sub{display:block;font-size:10.5px;color:#6a7b96;margin-top:4px}
-#settingsSection>.student-card{
-  border-radius:25px!important;
-  padding:18px!important;
-  margin-bottom:15px!important;
-  border:1px solid #d9e5f5!important;
-  background:rgba(255,255,255,.97)!important;
-  box-shadow:0 12px 30px rgba(16,49,89,.08)!important
-}
-body.dark #settingsSection>.student-card{background:#0f1b2c!important;border-color:#273b58!important}
-#settingsSection>.student-card .student-name-big{font-size:20px!important;letter-spacing:-.3px!important}
-#settingsSection>.student-card .student-info{font-size:11px!important;line-height:1.55!important}
-#settingsSection>.student-card .btn{
-  min-height:50px!important;border-radius:15px!important;padding:12px 18px!important;font-size:11px!important
-}
-#settingsSection>.student-card:nth-of-type(1) .btn{background:linear-gradient(135deg,#155eef,#0b5cff)!important}
-#settingsSection>.student-card:nth-of-type(2) .btn{background:linear-gradient(135deg,#ef4444,#dc2626)!important}
-#settingsSection #adminStatus.lp47-verified{
-  display:inline-flex!important;align-items:center!important;gap:7px!important;
-  background:#eafaf2!important;color:#087443!important;border:1px solid #c5ecd8!important;
-  border-radius:13px!important;padding:9px 11px!important;font-weight:900!important
-}
-.lp47-theme-choices{
-  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 4px
-}
-.lp47-theme-choice{
-  min-height:66px;border:1px solid #d8e4f4;border-radius:15px;background:#f8fbff;color:#233653;
-  font-size:9px;font-weight:900;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px
-}
-.lp47-theme-choice b{font-size:21px;line-height:1}
-.lp47-theme-choice.on{background:#edf5ff;border-color:#0b5cff;color:#0b5cff;box-shadow:inset 0 0 0 1px #0b5cff}
-body.dark .lp47-theme-choice{background:#101d30;border-color:#29405d;color:#cbdaf0}
-body.dark .lp47-theme-choice.on{background:#102d58;color:#8dbbff;border-color:#3b82f6}
-.lp47-settings-info{
-  margin-top:10px;padding:12px;border-radius:15px;background:#f7faff;border:1px solid #dce7f5;
-  font-size:9px;color:#60708a;line-height:1.5
-}
-body.dark .lp47-settings-info{background:#101d30;border-color:#29405d;color:#9fb1c9}
-
-/* Documents are generated as images; no visual CSS needed here. */
-
-@media(max-width:390px){
-  .app-header{min-height:112px!important;padding:15px 14px 25px!important;border-radius:0 0 34px 34px!important}
-  .logo{width:52px!important;height:52px!important}.logo-area h2{font-size:19px!important}
-  #studentsList .native-avatar{width:72px!important;height:72px!important;min-width:72px!important}
-  #studentsList .native-student-name{font-size:18px!important}
-  #homeSection .v31-launch-grid{gap:7px!important}
-  #homeSection .v31-launch-kpi{min-height:78px!important}
-  #homeSection .v31-launch-kpi b{font-size:20px!important}
-}
-</style>
-
 </head>
 
 <body>
@@ -6739,20 +6350,6 @@ body.dark .v30-tool-icon{filter:saturate(.9) brightness(.9)}
   }
   function fitText(ctx,text,maxWidth,start){let size=start;while(size>22){ctx.font=`900 ${size}px Arial`;if(ctx.measureText(text).width<=maxWidth)break;size-=2}return size}
   function loadImage(src){return new Promise(res=>{if(!src)return res(null);const im=new Image();im.onload=()=>res(im);im.onerror=()=>res(null);im.src=src})}
-  async function v47QrImage(text,size=150){
-    try{
-      if(typeof QRCode==="undefined"||!text)return null;
-      const host=document.createElement("div");
-      host.style.cssText="position:fixed;left:-9999px;top:-9999px;width:"+size+"px;height:"+size+"px;background:#fff";
-      document.body.appendChild(host);
-      new QRCode(host,{text:String(text),width:size,height:size,colorDark:"#0f172a",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.M});
-      await new Promise(r=>setTimeout(r,80));
-      const c=host.querySelector("canvas"),im=host.querySelector("img");
-      const src=c?c.toDataURL("image/png"):(im&&im.src)||"";
-      host.remove();
-      return src?await loadImage(src):null
-    }catch(e){return null}
-  }
   async function makeId(r){
     let pic=photoFor(r);
     if(!pic){
@@ -6762,75 +6359,65 @@ body.dark .v30-tool-icon{filter:saturate(.9) brightness(.9)}
     const br=window.LP41_BRANDING||{},pf=findProfile(r)||{};
     const lib=String(br.libraryName||window.HL36?.libraryName||"Library Pro").trim()||"Library Pro";
     const address=String(br.address||"").trim(),libPhone=phone(br.phone||"");
-    const signName=String(br.signature||"Authorized Signature").trim(),libId=String(window.HL36?.libraryId||"library");
+    const email=String(br.email||"").trim(),signName=String(br.signature||"Authorized Signature").trim();
+    const owner=String(br.owner||"").trim(),libId=String(window.HL36?.libraryId||"library");
     const prefix=(lib.split(/\s+/).map(x=>x[0]||"").join("").slice(0,4)||"LIB").toUpperCase();
-    const memberId=prefix+new Date().getFullYear()+hash(libId+"|"+identity(r)).toUpperCase().slice(0,5);
-    const seat=String(r.seat||pf.seat||"-"),shift=String(r.shiftLabel||"-"),valid=String(r.renewal||"Not set");
-    const father=String(pf.father||pf.fatherName||pf.guardian||"").trim(),dob=String(pf.dob||pf.birthDate||"").trim();
-    const studentAddress=String(pf.address||pf.studentAddress||"").trim();
-    const c=document.createElement("canvas");c.width=720;c.height=1180;const x=c.getContext("2d");
-    const [im,logo,qr]=await Promise.all([
-      loadImage(pic),loadImage(br.logo||""),
-      v47QrImage([lib,memberId,r.name,phone(r.phone),valid].join("|"),150)
-    ]);
+    const memberId=(prefix+"-"+hash(libId+"|"+identity(r)).toUpperCase().slice(0,8));
+    const seatType=r.type==="fixed"?"Seat "+r.seat:(r.type==="profile"?(r.seat?"Seat "+r.seat:"Digital Admission"):"Unreserved");
+    const valid=String(r.renewal||"Not set"),father=String(pf.father||pf.fatherName||pf.guardian||"").trim(),dob=String(pf.dob||pf.birthDate||"").trim();
+    const c=document.createElement("canvas");c.width=700;c.height=1100;const x=c.getContext("2d");
+    const [im,logo]=await Promise.all([loadImage(pic),loadImage(br.logo||"")]);
 
-    x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);
-    x.fillStyle="#061a4b";x.fillRect(0,0,720,178);
-    x.fillStyle="#0b5cff";x.fillRect(0,168,720,10);
+    x.fillStyle="#ffffff";x.fillRect(0,0,c.width,c.height);
+    x.fillStyle="#0b1736";x.fillRect(0,0,700,175);
+    x.fillStyle="#2563eb";x.fillRect(0,168,700,9);
+    x.fillStyle="#eff6ff";x.beginPath();x.arc(350,395,235,0,Math.PI*2);x.fill();
+    x.fillStyle="#dbeafe";x.beginPath();x.arc(350,395,206,0,Math.PI*2);x.fill();
 
-    // Gold wave
-    x.fillStyle="#f5b91f";x.beginPath();x.moveTo(0,205);x.quadraticCurveTo(360,120,720,210);x.lineTo(720,258);x.quadraticCurveTo(360,170,0,255);x.closePath();x.fill();
-    x.fillStyle="#fff";x.beginPath();x.moveTo(0,229);x.quadraticCurveTo(360,150,720,235);x.lineTo(720,270);x.quadraticCurveTo(360,190,0,274);x.closePath();x.fill();
-
+    x.fillStyle="#fff";rounded(x,35,32,92,92,20);x.fill();
     if(logo){
-      x.fillStyle="#fff";rounded(x,35,35,92,92,18);x.fill();
-      x.save();rounded(x,42,42,78,78,13);x.clip();
-      const sc=Math.min(78/logo.width,78/logo.height),w=logo.width*sc,h=logo.height*sc;
-      x.drawImage(logo,42+(78-w)/2,42+(78-h)/2,w,h);x.restore()
+      x.save();rounded(x,43,40,76,76,15);x.clip();
+      const ls=Math.min(76/logo.width,76/logo.height),lw=logo.width*ls,lh=logo.height*ls;
+      x.drawImage(logo,43+(76-lw)/2,40+(76-lh)/2,lw,lh);x.restore()
+    }else{
+      x.fillStyle="#0b1736";x.font="900 28px Arial";x.textAlign="center";x.fillText(prefix.slice(0,3),81,87);x.textAlign="left"
     }
-    let fs=34;while(fs>22){x.font=`900 ${fs}px Arial`;if(x.measureText(lib).width<=515)break;fs-=2}
-    x.fillStyle="#fff";x.font=`900 ${fs}px Arial`;x.fillText(lib,150,72);
-    x.fillStyle="#dbeafe";x.font="800 16px Arial";x.fillText("STUDENT ID CARD",150,108);
 
-    // Photo with blue studio-style backdrop and mild enhancement
-    x.fillStyle="#dbeafe";rounded(x,48,250,315,330,24);x.fill();
-    x.save();rounded(x,60,262,291,306,18);x.clip();
-    x.fillStyle="#bcd6ff";x.fillRect(60,262,291,306);
+    let lfs=34;while(lfs>22){x.font=`900 ${lfs}px Arial`;if(x.measureText(lib).width<=505)break;lfs-=2}
+    x.fillStyle="#fff";x.font=`900 ${lfs}px Arial`;x.fillText(lib,150,70);
+    x.fillStyle="#bfdbfe";x.font="800 16px Arial";x.fillText("STUDENT IDENTITY CARD",150,103);
+    x.font="600 12px Arial";x.fillText([libPhone?("Ph: "+libPhone):"",email].filter(Boolean).join("  •  ").slice(0,68),150,130);
+
     if(im){
-      x.filter="brightness(1.06) contrast(1.08) saturate(1.03)";
-      const sc=Math.max(291/im.width,306/im.height),w=im.width*sc,h=im.height*sc;
-      x.drawImage(im,60+(291-w)/2,262+(306-h)/2,w,h);x.filter="none"
+      x.save();x.beginPath();x.arc(350,395,175,0,Math.PI*2);x.clip();
+      x.fillStyle="#f8fafc";x.fillRect(175,220,350,350);
+      x.filter="brightness(1.07) contrast(1.08) saturate(1.04)";
+      const sc=Math.max(350/im.width,350/im.height),w=im.width*sc,h=im.height*sc;
+      x.drawImage(im,175+(350-w)/2,220+(350-h)/2,w,h);x.filter="none";x.restore()
     }
-    x.restore();
+    x.strokeStyle="#fff";x.lineWidth=12;x.beginPath();x.arc(350,395,181,0,Math.PI*2);x.stroke();
+    x.strokeStyle="#2563eb";x.lineWidth=4;x.beginPath();x.arc(350,395,190,0,Math.PI*2);x.stroke();
 
-    if(qr){
-      x.fillStyle="#fff";rounded(x,447,312,190,190,18);x.fill();
-      x.drawImage(qr,467,332,150,150)
-    }
+    const nm=String(r.name||"Student");let nfs=38;
+    while(nfs>25){x.font=`900 ${nfs}px Arial`;if(x.measureText(nm).width<=600)break;nfs-=2}
+    x.fillStyle="#0f172a";x.font=`900 ${nfs}px Arial`;x.textAlign="center";x.fillText(nm,350,625);
+    x.fillStyle="#1d4ed8";x.font="900 18px Arial";x.fillText(memberId,350,657);x.textAlign="left";
 
-    const nm=String(r.name||"Student");let nfs=35;
-    while(nfs>24){x.font=`900 ${nfs}px Arial`;if(x.measureText(nm).width<=620)break;nfs-=2}
-    x.fillStyle="#101828";x.font=`900 ${nfs}px Arial`;x.fillText(nm,48,635);
-    x.fillStyle="#344054";x.font="800 17px Arial";x.fillText("Member ID : "+memberId,48,670);
-
-    const rows=[
-      ["Seat No",seat],["Shift",shift],["Valid Till",valid],["Mobile",phone(r.phone)||"Not added"],
-      ["Father Name",father||"Not added"],["DOB",dob||"Not added"],["Address",studentAddress||"Not added"]
-    ];
-    let y=725;
-    rows.forEach(([k,v])=>{
-      x.fillStyle="#475467";x.font="800 16px Arial";x.fillText(k+" :",48,y);
-      x.fillStyle="#101828";x.font="700 16px Arial";x.fillText(String(v).slice(0,46),205,y);
-      y+=49
+    const rows=[["SEAT / TYPE",seatType],["SHIFT",r.shiftLabel||"-"],["MOBILE",phone(r.phone)||"Not added"],["VALID UNTIL",valid]];
+    if(father)rows.push(["FATHER / GUARDIAN",father]);
+    if(dob)rows.push(["DATE OF BIRTH",dob]);
+    let y=700;
+    rows.slice(0,6).forEach(([k,v])=>{
+      x.fillStyle="#64748b";x.font="800 11px Arial";x.fillText(k,55,y);
+      x.fillStyle="#111827";x.font="800 18px Arial";x.textAlign="right";x.fillText(String(v).slice(0,38),645,y);x.textAlign="left";
+      x.strokeStyle="#e2e8f0";x.beginPath();x.moveTo(55,y+16);x.lineTo(645,y+16);x.stroke();y+=48
     });
 
-    // Footer brand block
-    x.fillStyle="#061a4b";x.fillRect(0,1002,720,178);
-    x.fillStyle="#fff";x.font="900 20px Arial";x.fillText(lib,40,1045);
-    x.fillStyle="#cbdcf8";x.font="600 13px Arial";x.fillText(address.slice(0,90),40,1075);
-    x.fillText(libPhone?"Mob: "+libPhone:"",40,1102);
-    x.fillStyle="#fff";x.font="800 13px Arial";x.textAlign="right";x.fillText(signName||"Authorized Signature",675,1115);
-    x.strokeStyle="#fff";x.beginPath();x.moveTo(510,1130);x.lineTo(675,1130);x.stroke();x.textAlign="left";
+    x.fillStyle="#0b1736";x.fillRect(0,995,700,105);
+    x.fillStyle="#dbeafe";x.font="600 11px Arial";x.fillText((address||"Registered member only").slice(0,92),35,1025);
+    x.fillText((owner?"Managed by: "+owner:"")+(libPhone?"   •   "+libPhone:""),35,1050);
+    x.fillStyle="#fff";x.font="800 12px Arial";x.textAlign="right";x.fillText(signName||"Authorized Signature",665,1070);
+    x.strokeStyle="#fff";x.beginPath();x.moveTo(510,1083);x.lineTo(665,1083);x.stroke();x.textAlign="left";
 
     downloadCanvas(c,`${safeName(lib)}_ID_${safeName(r.name)}_${memberId}.png`)
   }
@@ -6838,76 +6425,76 @@ body.dark .v30-tool-icon{filter:saturate(.9) brightness(.9)}
     const br=window.LP41_BRANDING||{},pf=findProfile(r)||{};
     const lib=String(br.libraryName||window.HL36?.libraryName||"Library Pro").trim()||"Library Pro";
     const address=String(br.address||"").trim(),libPhone=phone(br.phone||"");
-    const upi=String(br.upi||"").trim(),signName=String(br.signature||"Authorized Signature").trim();
+    const email=String(br.email||"").trim(),upi=String(br.upi||"").trim();
+    const signName=String(br.signature||"Authorized Signature").trim(),owner=String(br.owner||"").trim();
+    const footer=String(br.footer||"Please keep this slip for membership and payment reference.").trim();
     const libId=String(window.HL36?.libraryId||"library");
-    const receiptNo="HL-"+new Date().getFullYear()+"-"+hash(libId+"|"+identity(r)+"|"+Date.now()).toUpperCase().slice(0,6);
+    const receiptNo="LP-"+new Date().getFullYear()+"-"+hash(libId+"|"+identity(r)+"|"+Date.now()).toUpperCase().slice(0,7);
     const fee=Number(r.fee||0),paid=Number(r.paid||0),due=Number(r.due||0);
-    const seat=String(r.seat||pf.seat||"-"),shift=String(r.shiftLabel||"-");
-    const c=document.createElement("canvas");c.width=900;c.height=1260;const x=c.getContext("2d");
-    const payText=upi?`upi://pay?pa=${upi}&pn=${encodeURIComponent(lib)}&am=${paid||fee||0}&cu=INR`:`${lib}|${receiptNo}|${r.name}`;
-    const [logo,qr]=await Promise.all([loadImage(br.logo||""),v47QrImage(payText,170)]);
+    const seatType=r.type==="fixed"?"Seat #"+r.seat:(r.type==="profile"?(r.seat?"Seat #"+r.seat:"Digital Admission"):"Unreserved");
+    const father=String(pf.father||pf.fatherName||pf.guardian||"").trim();
+    const c=document.createElement("canvas");c.width=1000;c.height=1250;const x=c.getContext("2d"),logo=await loadImage(br.logo||"");
 
-    x.fillStyle="#fff";x.fillRect(0,0,900,1260);
-    x.strokeStyle="#111827";x.lineWidth=2;x.strokeRect(28,28,844,1204);
+    x.fillStyle="#fff8c9";x.fillRect(0,0,1000,1250);
+    x.strokeStyle="#263238";x.lineWidth=4;x.setLineDash([10,8]);x.strokeRect(10,10,980,1230);x.setLineDash([]);
 
     if(logo){
-      x.save();rounded(x,50,50,82,82,12);x.clip();
-      const sc=Math.min(82/logo.width,82/logo.height),w=logo.width*sc,h=logo.height*sc;
-      x.drawImage(logo,50+(82-w)/2,50+(82-h)/2,w,h);x.restore()
+      x.fillStyle="#fff";rounded(x,62,50,92,92,14);x.fill();
+      x.save();rounded(x,68,56,80,80,11);x.clip();
+      const sc=Math.min(80/logo.width,80/logo.height),w=logo.width*sc,h=logo.height*sc;
+      x.drawImage(logo,68+(80-w)/2,56+(80-h)/2,w,h);x.restore()
     }
 
-    x.fillStyle="#0f172a";x.textAlign="center";
-    let fs=38;while(fs>26){x.font=`900 ${fs}px Arial`;if(x.measureText(lib).width<=610)break;fs-=2}
-    x.fillText(lib,500,78);
-    x.font="700 14px Arial";x.fillText(address.slice(0,95),500,108);
-    x.fillText(libPhone?("Mob: "+libPhone):"",500,133);
-    x.strokeStyle="#111827";x.beginPath();x.moveTo(48,158);x.lineTo(852,158);x.stroke();
+    x.fillStyle="#111827";x.textAlign="center";
+    let fs=48;while(fs>28){x.font=`900 ${fs}px Arial`;if(x.measureText(lib).width<=760)break;fs-=2}
+    x.fillText(lib,500,88);
+    x.font="700 17px Arial";x.fillText([address,libPhone?("Mob: "+libPhone):"",email].filter(Boolean).join("  •  ").slice(0,110),500,122);
+    x.strokeStyle="#111827";x.lineWidth=3;x.beginPath();x.moveTo(50,154);x.lineTo(950,154);x.stroke();
 
-    x.textAlign="left";x.font="900 17px 'Courier New'";x.fillText("MEMBERSHIP RECEIPT",48,200);
-    x.font="700 15px 'Courier New'";x.fillText("No. "+receiptNo,48,236);
-    x.textAlign="right";x.fillText("Date: "+today(),852,236);x.textAlign="left";
+    x.textAlign="left";x.font="800 18px 'Courier New'";x.fillText("No. "+receiptNo,50,198);
+    x.textAlign="right";x.fillText("Date: "+today(),950,198);x.textAlign="left";
 
-    x.font="900 18px 'Courier New'";x.fillText("Name :",48,286);
-    x.font="500 18px 'Courier New'";x.fillText(String(r.name||"Student"),145,286);
-    x.setLineDash([2,3]);x.beginPath();x.moveTo(140,296);x.lineTo(852,296);x.stroke();x.setLineDash([]);
+    x.font="900 21px 'Courier New'";x.fillText("Name:",50,248);
+    x.font="500 21px 'Courier New'";x.fillText(String(r.name||"Student"),150,248);
+    x.setLineDash([2,3]);x.beginPath();x.moveTo(145,258);x.lineTo(950,258);x.stroke();x.setLineDash([]);
 
-    x.font="900 17px 'Courier New'";x.fillText("Seat No :",48,338);x.font="500 17px 'Courier New'";x.fillText(seat,155,338);
-    x.font="900 17px 'Courier New'";x.fillText("Shift :",470,338);x.font="500 17px 'Courier New'";x.fillText(shift,555,338);
+    x.font="900 19px 'Courier New'";x.fillText("Seat / Type:",50,306);
+    x.font="500 19px 'Courier New'";x.fillText(seatType,210,306);
+    x.font="900 19px 'Courier New'";x.fillText("Shift:",565,306);
+    x.font="500 19px 'Courier New'";x.fillText(String(r.shiftLabel||"-"),650,306);
 
-    const tx=48,ty=380,tw=804,rowH=70;
-    x.strokeStyle="#111827";x.lineWidth=1.8;x.strokeRect(tx,ty,tw,rowH*6);
-    x.beginPath();x.moveTo(122,ty);x.lineTo(122,ty+rowH*6);x.moveTo(625,ty);x.lineTo(625,ty+rowH*6);x.stroke();
+    const tx=50,ty=355,tw=900,rowH=70;
+    x.strokeStyle="#111827";x.lineWidth=2;x.strokeRect(tx,ty,tw,rowH*6);
+    x.beginPath();x.moveTo(140,ty);x.lineTo(140,ty+rowH*6);x.moveTo(720,ty);x.lineTo(720,ty+rowH*6);x.stroke();
     for(let i=1;i<6;i++){x.beginPath();x.moveTo(tx,ty+i*rowH);x.lineTo(tx+tw,ty+i*rowH);x.stroke()}
-    x.font="900 16px 'Courier New'";x.fillText("S.N.",65,ty+43);x.fillText("Particular",142,ty+43);x.fillText("Amount",646,ty+43);
+    x.font="900 18px 'Courier New'";x.fillText("S.N.",70,ty+44);x.fillText("Particular",160,ty+44);x.fillText("Amount / Detail",740,ty+44);
 
-    const rows=[
-      ["1.","Monthly Fee","₹"+fee.toLocaleString("en-IN")],
-      ["2.","Receipt Date",r.paidDate||today()],
-      ["3.","Next Payment Date",r.renewal||"Not set"],
-      ["4.","Paid Amount","₹"+paid.toLocaleString("en-IN")],
-      ["5.","Due Amount","₹"+due.toLocaleString("en-IN")]
+    const trows=[
+      ["1.","Monthly / Plan Fee","₹"+fee.toLocaleString("en-IN")],
+      ["2.","Amount Paid","₹"+paid.toLocaleString("en-IN")],
+      ["3.","Payment Date",r.paidDate||"Not set"],
+      ["4.","Next Payment / Renewal",r.renewal||"Not set"],
+      ["5.","Dues","₹"+due.toLocaleString("en-IN")]
     ];
-    rows.forEach((a,i)=>{
+    trows.forEach((a,i)=>{
       const yy=ty+rowH*(i+1)+43;
       x.fillStyle=i===4&&due>0?"#dc2626":"#111827";
-      x.font="500 16px 'Courier New'";x.fillText(a[0],66,yy);x.fillText(a[1],142,yy);
-      x.font=i===4?"900 18px 'Courier New'":"600 16px 'Courier New'";x.fillText(a[2],646,yy)
+      x.font="500 18px 'Courier New'";x.fillText(a[0],70,yy);x.fillText(a[1],160,yy);
+      x.font=i===4?"900 20px 'Courier New'":"600 18px 'Courier New'";x.fillText(a[2],740,yy)
     });
 
-    x.fillStyle="#111827";x.textAlign="right";x.font="900 24px 'Courier New'";x.fillText("Total Paid: ₹"+paid.toLocaleString("en-IN"),835,870);
-    x.textAlign="left";
+    x.fillStyle="#111827";x.font="600 17px 'Courier New'";
+    let yy=835;x.fillText("Student Mobile: "+(phone(r.phone)||"Not added"),50,yy);yy+=36;
+    if(father){x.fillText("Father / Guardian: "+father.slice(0,52),50,yy);yy+=36}
+    if(upi){x.fillText("Library UPI: "+upi.slice(0,52),50,yy);yy+=36}
+    x.fillText("Reference: "+receiptNo,50,yy);
 
-    x.font="600 16px 'Courier New'";x.fillText("Student Sign.",70,995);
-    x.textAlign="right";x.fillText(signName||"Authorized Sign.",830,995);x.textAlign="left";
-    x.strokeStyle="#111827";x.beginPath();x.moveTo(70,1010);x.lineTo(250,1010);x.moveTo(635,1010);x.lineTo(830,1010);x.stroke();
-
-    if(qr){
-      x.fillStyle="#fff";x.strokeStyle="#cbd5e1";x.lineWidth=1.5;rounded(x,70,1045,205,165,15);x.fill();rounded(x,70,1045,205,165,15);x.stroke();
-      x.drawImage(qr,90,1057,145,145);
-      x.fillStyle="#475467";x.font="800 12px Arial";x.fillText(upi?"SCAN & PAY":"REFERENCE QR",295,1093);
-      x.font="600 11px Arial";x.fillText(upi?upi:receiptNo,295,1120)
-    }
-    x.fillStyle="#0f172a";x.font="900 18px Arial";x.textAlign="center";x.fillText(lib,450,1204);x.textAlign="left";
+    x.textAlign="right";x.font="900 25px 'Courier New'";x.fillText("Total Paid: ₹"+paid.toLocaleString("en-IN"),940,990);x.textAlign="left";
+    x.font="600 18px 'Courier New'";x.fillText("Student Sign",70,1115);
+    x.textAlign="right";x.fillText(signName||"Authorized Signature",930,1115);x.textAlign="left";
+    x.strokeStyle="#111827";x.beginPath();x.moveTo(70,1132);x.lineTo(260,1132);x.moveTo(735,1132);x.lineTo(930,1132);x.stroke();
+    if(owner){x.font="600 14px Arial";x.textAlign="right";x.fillText(owner,930,1155);x.textAlign="left"}
+    x.fillStyle="#475569";x.font="600 13px Arial";x.fillText(footer.slice(0,125),50,1200);
 
     downloadCanvas(c,`${safeName(lib)}_Slip_${safeName(r.name)}_${receiptNo}.png`)
   }
@@ -7639,10 +7226,7 @@ body.v36-locked> :not(#v36Gate):not(script):not(style){visibility:hidden!importa
 
 <div id="v36Gate" aria-hidden="true">
  <div class="v36-card">
-  <div class="v36-brand">
-  <div class="v36-logo"><img src="icons/icon-192.png" alt="Library Pro"></div>
-  <div class="v36-brand-copy"><h2 id="lp47LoginBrand">Library Pro</h2><p>Study Today, Build Tomorrow</p></div>
-</div>
+  <div class="v36-brand"><div class="v36-logo">📚</div><div><h2>Library Pro</h2></div></div>
   <div id="v37LoginStep" class="v36-step on">
    <input id="v37LicenseId" class="v36-in" maxlength="30" autocomplete="username" placeholder="User ID">
    <input id="v37Password" class="v36-in" type="password" maxlength="80" autocomplete="current-password" placeholder="Password">
@@ -8495,7 +8079,7 @@ function boot(){hideLegacySeller();try{firebase.auth().onAuthStateChanged(maybeS
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
 </script>
-<!-- ===== V47 SELECTED UI TRIAL ===== -->
+<!-- ===== V46 CLEAN OWNER UI + REAL DOCUMENTS ===== -->
 <!-- ===== END V39 ===== -->
 
 <!-- ===== V40 COMPACT RENEWAL CENTER + OWNER-ONLY WHATSAPP ===== -->
@@ -9826,96 +9410,6 @@ setInterval(()=>{buildHeader();cleanVault();compactSeller();ownerFloating();dueH
 })();
 </script>
 <!-- ===== END V46 ===== -->
-
-
-<!-- ===== V47 SELECTED UI CONTROLLER ===== -->
-<script id="lp47-selected-ui-js">
-(function(){
-'use strict';
-const $=id=>document.getElementById(id);
-
-function session(){
-  try{return JSON.parse(localStorage.getItem('hl_v36_session')||'{}')||{}}catch(e){return{}}
-}
-function brandName(){
-  const s=session();
-  return String((window.LP41_BRANDING&&window.LP41_BRANDING.libraryName)||window.HL36?.libraryName||s.libraryName||'Library Pro')
-}
-function syncLoginBrand(){
-  const h=$('lp47LoginBrand');if(h)h.textContent=brandName();
-}
-function shellTagline(){
-  const p=document.querySelector('.logo-area p');
-  if(p&&!String(p.textContent||'').trim())p.textContent='Study Today, Build Tomorrow'
-}
-function subtitles(){
-  const st=document.querySelector('#studentsSection .section-title');
-  if(st&&!st.querySelector('.lp47-section-sub')){
-    const p=document.createElement('span');p.className='lp47-section-sub';p.textContent='Manage all library students at one place';st.appendChild(p)
-  }
-  const ss=document.querySelector('#settingsSection .section-title');
-  if(ss&&!ss.querySelector('.lp47-section-sub')){
-    const p=document.createElement('span');p.className='lp47-section-sub';p.textContent='Manage app preferences and account settings';ss.appendChild(p)
-  }
-}
-window.lp47SetTheme=function(mode){
-  mode=String(mode||'light');
-  if(mode==='system'){
-    localStorage.setItem('hariom_theme_mode','system');
-    const dark=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches;
-    document.body.classList.toggle('dark',!!dark)
-  }else{
-    localStorage.setItem('hariom_theme_mode',mode);
-    localStorage.setItem('hariom_theme',mode);
-    document.body.classList.toggle('dark',mode==='dark')
-  }
-  paintThemeChoices()
-};
-function paintThemeChoices(){
-  const mode=localStorage.getItem('hariom_theme_mode')||localStorage.getItem('hariom_theme')||'light';
-  document.querySelectorAll('.lp47-theme-choice').forEach(b=>b.classList.toggle('on',b.dataset.mode===mode))
-}
-function enhanceSettings(){
-  const sec=$('settingsSection');if(!sec)return;
-  const cards=[...sec.querySelectorAll(':scope > .student-card')];
-  const appearance=cards.find(c=>/Appearance/i.test(c.textContent||''));
-  if(appearance&&!$('lp47ThemeChoices')){
-    const row=document.createElement('div');row.id='lp47ThemeChoices';row.className='lp47-theme-choices';
-    row.innerHTML=`<button class="lp47-theme-choice" data-mode="light" onclick="lp47SetTheme('light')"><b>☀️</b>LIGHT</button>
-    <button class="lp47-theme-choice" data-mode="dark" onclick="lp47SetTheme('dark')"><b>🌙</b>DARK</button>
-    <button class="lp47-theme-choice" data-mode="system" onclick="lp47SetTheme('system')"><b>🖥️</b>SYSTEM</button>`;
-    const btn=appearance.querySelector('.btn');btn?.before(row);
-    const info=appearance.querySelector('.student-info');if(info)info.textContent='Customize the app theme and display';
-  }
-  const admin=cards.find(c=>/Admin Status/i.test(c.textContent||''));
-  if(admin){
-    const info=admin.querySelector('#adminStatus');
-    if(info&&/verified/i.test(info.textContent||'')){info.classList.add('lp47-verified');if(!String(info.textContent).includes('✅'))info.textContent='✅ '+info.textContent}
-  }
-  const app=cards.find(c=>/Library Pro/i.test(c.textContent||''));
-  if(app&&!app.querySelector('.lp47-settings-info')){
-    const d=document.createElement('div');d.className='lp47-settings-info';
-    d.innerHTML='<b>'+brandName()+' Pro OS</b><br>Reserved + Unreserved + Digital Admission • Finance • Attendance • Documents • Backup';
-    app.appendChild(d)
-  }
-  paintThemeChoices()
-}
-function systemThemeWatch(){
-  try{
-    const mq=matchMedia('(prefers-color-scheme: dark)');
-    mq.addEventListener?.('change',()=>{if(localStorage.getItem('hariom_theme_mode')==='system')lp47SetTheme('system')})
-  }catch(e){}
-}
-function boot(){
-  syncLoginBrand();shellTagline();subtitles();enhanceSettings()
-}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
-window.addEventListener('load',()=>setTimeout(boot,350));
-setInterval(()=>{syncLoginBrand();shellTagline();subtitles();enhanceSettings()},1800);
-systemThemeWatch();
-})();
-</script>
-<!-- ===== END V47 SELECTED UI ===== -->
 
 </body>
 </html>
